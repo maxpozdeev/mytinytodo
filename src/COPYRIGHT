@@ -1,0 +1,48 @@
+﻿
+myTinyTodo is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+myTinyTodo is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+See file LICENSE or <http://www.gnu.org/licenses/gpl-3.0.txt>.
+
+
+myTinyTodo
+--------------
+Url:		http://www.pozdeev.com/mytinytodo/
+Copyright:	2009 Max Pozdeev <maxpozdeev@gmail.com>
+License:	GPL version 3 (see LICENSE file)
+
+
+myTinyTodo uses other works:
+
+jQuery
+--------------
+Url:		http://jquery.com/
+Copyright:	2009 John Resig <jeresig@gmail.com>
+License:	Dual licensed under the MIT and GPL version 2 licenses (see http://docs.jquery.com/License)
+
+jQuery UI
+--------------
+Url:		http://jqueryui.com/
+Copyright:	2009 jQuery UI Authors (see http://jqueryui.com/about)
+License:	Dual licensed under the MIT and GPL version 2 licenses (see http://jqueryui.com/about)
+
+Autocomplete - jQuery plugin
+------------------------------
+Url: 		http://bassistance.de/jquery-plugins/jquery-plugin-autocomplete/
+Copyright:	2007 Dylan Verheul, Dan G. Switzer, Anjesh Tuladhar, Jörn Zaefferer
+License:	Dual licensed under the MIT and GPL licenses:
+			* http://www.opensource.org/licenses/mit-license.php
+			* http://www.gnu.org/licenses/gpl.html
+
+Images based on Silk Icons set (see also images/COPYRIGHT file)
+-----------------------------------
+Url:		http://www.famfamfam.com/lab/icons/silk/
+Copyright:	Mark James
+License:	Creative Commons Attribution 2.5 License (http://creativecommons.org/licenses/by/2.5/)
