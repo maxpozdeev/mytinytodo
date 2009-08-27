@@ -32,6 +32,9 @@ $config['autotag'] = 1;
 # duedate calendar format: 1 => y-m-d (default), 2 => m/d/y, 3 => d.m.y
 $config['duedateformat'] = 1;
 
+# First day of week: 0-Sunday, 1-Monday, 2-Tuesday, .. 6-Saturday
+$config['firstdayofweek'] = 1;
+
 # select session handling mechanism: files or default (php default)
 $config['session'] = 'files';
 

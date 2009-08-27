@@ -23,6 +23,9 @@ if($config['duedateformat'] == 2) $duedateformat = 'm/d/yy';
 elseif($config['duedateformat'] == 3) $duedateformat = 'dd.mm.yy';
 else $duedateformat = 'yy-mm-dd';
 
+if(!isset($config['firstdayofweek']) || !is_int($config['firstdayofweek']) ||
+	$config['firstdayofweek']<0 || $config['firstdayofweek']>6) $config['firstdayofweek'] = 1;
+
 function __($s)
 {
 	global $lang;
@@ -72,8 +75,9 @@ $().ready(function(){
 	}
 ?>
 	preloadImg();
-	$("#duedate").datepicker({dateFormat: '<?php echo $duedateformat; ?>', firstDay: 1, showOn: 'button', buttonImage: 'images/calendar.png', buttonImageOnly: true, 
-		changeMonth:true, changeYear:true, constrainInput: false, duration:'', nextText:'&gt;', prevText:'&lt;', dayNamesMin:lang.daysMin, 
+	$("#duedate").datepicker({dateFormat: '<?php echo $duedateformat; ?>', firstDay: <?php echo $config['firstdayofweek']; ?>,
+		showOn: 'button', buttonImage: 'images/calendar.png', buttonImageOnly: true, changeMonth:true,
+		changeYear:true, constrainInput: false, duration:'', nextText:'&gt;', prevText:'&lt;', dayNamesMin:lang.daysMin, 
 		monthNamesShort:lang.monthsShort });
 <?php if(!isset($_GET['pda'])): ?>
 	$("#page_taskedit").draggable({ stop: function(e,ui){ flag.windowTaskEditMoved=true; tmp.editformpos=[$(this).css('left'),$(this).css('top')]; } }); 
@@ -183,7 +187,7 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
 <div id="space"></div>
 </div>
 
-<div id="footer"><div id="footer_content">Powered by <strong><a href="http://www.pozdeev.com/mytinytodo/">myTinyTodo</a></strong> v1.2.5 </div></div>
+<div id="footer"><div id="footer_content">Powered by <strong><a href="http://www.pozdeev.com/mytinytodo/">myTinyTodo</a></strong> v1.2.6 </div></div>
 
 </div>
 </body>
