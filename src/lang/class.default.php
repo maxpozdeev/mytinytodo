@@ -50,6 +50,7 @@ class DefaultLang
 		'daysago' => "%d days ago",
 		'indays' => "in %d days",
 		'months_short' => array("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"),
+		'months_long' => array("January","February","March","April","May","June","July","August","September","October","November","December"),
 		'days_min' => array("Su","Mo","Tu","We","Th","Fr","Sa"),
 		'date_md' => "%1\$s %2\$d", 
 		'date_ymd' => "%2\$s %3\$d, %1\$d",
