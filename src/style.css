@@ -11,7 +11,7 @@ h3 { border-bottom:2px solid #B5D5FF; margin-bottom:10px; padding:6px 0; font-si
 a { color:#0000ff; }
 #space { height:30px; }
 #footer { height:30px; margin-top:-30px; }
-#footer_content {  background:#b5d5ff; padding:5px; font-size:8pt; }
+#footer_content {  background:url(images/corner_right.gif) no-repeat top right #b5d5ff; padding:5px; font-size:8pt; }
 #footer_content a { color:#000000; }
 
 #bar { border-bottom:1px solid #b5d5ff; padding-bottom:5px; height:15px; }
@@ -23,14 +23,16 @@ a { color:#0000ff; }
 #authform div.h { font-weight:bold; }
 
 #tabs ul { list-style: none; padding:0; margin:0; }
-#tabs ul li { margin:0; font-size: 9pt; font-weight:bold; float: left; width:90px; text-align:center; margin-right: 6px; }
-#tabs ul a { margin:0px;  text-decoration: none; color:#444444; display: block; height:24px; width: 100%; padding-top: 4px; outline:none; }
-#tabs ul li.ui-tabs-selected { background-color: #ededed; }
-#tabs ul li.ui-state-hover a { color: #888888; }
+#tabs ul li { margin:0; font-size: 9pt; font-weight:bold; float: left; width:89px; text-align:center; margin-right: 6px; border-left:1px solid #fff; }
+#tabs ul a { margin:0px;  text-decoration: none; color:#444444; display: block; height:21px; width: 100%; padding-top: 6px; outline:none; }
+#tabs ul li.ui-tabs-selected { background:#ededed; border-left:1px solid #ededed; }
+#tabs ul li.ui-tabs-selected a { background:url(images/corner_right.gif) no-repeat top right; }
+#tabs ul li.ui-state-hover { border-left:1px solid #ededed; }
+#tabs ul li.ui-state-hover a { color: #888888; background:url(images/tab_hover.gif) no-repeat top right; }
 .ui-tabs .ui-tabs-hide { display: none; }
 #tabs ul li.ui-state-disabled a { color: #cccccc; }
 
-.tab-content { background-color: #ededed; padding:8px; border-bottom:2px solid #DEDEDE; }
+.tab-content { padding:8px; border-bottom:2px solid #DEDEDE; background:url(images/corner_right.gif) no-repeat top right #ededed; }
 #loading { float:left; padding-top:5px; background-color:#ffffff; display:none; padding-right:6px;}
 
 #task, #search { color:#444444; width:300px; }
