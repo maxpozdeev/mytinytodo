@@ -423,6 +423,7 @@ function updateAccessStatus(onInit)
 {
 	if(flag.needAuth && !flag.isLogged) $("#tasklist").sortable('disable').addClass('readonly');
 	else if(sortBy == 0) $("#tasklist").sortable('enable').removeClass('readonly');
+	else $("#tasklist").removeClass('readonly');
 
 	if(!flag.canAllRead && !flag.isLogged) {
 		$('#page_tasks > h3,#taskcontainer').hide();
