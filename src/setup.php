@@ -55,8 +55,7 @@ if(!$ver)
  `tags_count` INT default 0,
  `list_id` INT UNSIGNED NOT NULL default 0,
  PRIMARY KEY(`id`),
- UNIQUE KEY(`name`),
- KEY(`list_id`)
+ UNIQUE KEY `listid_nmae` (`list_id`,`name`)
 ) CHARSET=utf8 ");
 
 			$db->ex(
@@ -100,11 +99,11 @@ if(!$ver)
 			$db->ex(
 "CREATE TABLE tags (
  id INTEGER PRIMARY KEY,
- name VARCHAR(50) NOT NULL COLLATE NOCASE UNIQUE,
+ name VARCHAR(50) NOT NULL,
  tags_count INT default 0,
  list_id INTEGER UNSIGNED NOT NULL default 0
 ) ");
-			$db->ex("CREATE INDEX tags_list_id ON tags (list_id)");
+			$db->ex("CREATE UNIQUE INDEX tags_listid_name ON tags (list_id,name COLLATE NOCASE)");
 
 			$db->ex(
 "CREATE TABLE tag2task (
@@ -281,7 +280,8 @@ function update_12_13($db, $dbtype)
 		$db->ex("ALTER TABLE tags ADD `list_id` INT UNSIGNED NOT NULL default 0");
 
 		$db->ex("ALTER TABLE todolist ADD KEY(`list_id`)");
-		$db->ex("ALTER TABLE tags ADD KEY(`list_id`)");
+		$db->ex("DROP INDEX `name` ON tags");
+		$db->ex("ALTER TABLE tags ADD UNIQUE KEY `listid_name` (`list_id`,`name`)");
 	}
 	else
 	{
@@ -291,10 +291,26 @@ function update_12_13($db, $dbtype)
  name VARCHAR(50) NOT NULL
 ) ");
 		$db->ex("ALTER TABLE todolist ADD list_id INTEGER UNSIGNED NOT NULL default 0");
-		$db->ex("ALTER TABLE tags ADD list_id INT UNSIGNED NOT NULL default 0");
-
-		$db->ex("CREATE INDEX list_id ON todolist (list_id)");
-		$db->ex("CREATE INDEX tags_list_id ON tags (list_id)");
+		$db->ex("CREATE INDEX todolist_list_id ON todolist (list_id)");
+		
+		$db->ex(
+"CREATE TEMPORARY TABLE tags_backup (
+ id INTEGER,
+ name VARCHAR(50) NOT NULL,
+ tags_count INT default 0
+) ");		
+		$db->ex("INSERT INTO tags_backup SELECT id,name,tags_count FROM tags");
+		$db->ex("DROP TABLE tags");
+		$db->ex(
+"CREATE TABLE tags (
+ id INTEGER PRIMARY KEY,
+ name VARCHAR(50) NOT NULL,
+ tags_count INT default 0,
+ list_id INTEGER UNSIGNED NOT NULL default 0
+) ");
+		$db->ex("INSERT INTO tags (id,name,tags_count) SELECT id,name,tags_count FROM tags_backup");
+		$db->ex("CREATE UNIQUE INDEX tags_listid_name ON tags (list_id,name COLLATE NOCASE) ");
+		$db->ex("DROP TABLE tags_backup");
 	}
 	$db->ex("COMMIT");
 
@@ -303,7 +319,7 @@ function update_12_13($db, $dbtype)
 
 function createDefaultList($db)
 {
-	$db->ex("INSERT INTO lists (name) VALUES (?)", array('TODO'));
+	$db->ex("INSERT INTO lists (name) VALUES (?)", array('Todo'));
 
 	$db->ex("UPDATE todolist SET list_id=1");
 	$db->ex("UPDATE tags SET list_id=1");
