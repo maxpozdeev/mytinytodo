@@ -20,6 +20,9 @@ class DefaultLang
 		'invalidpass' => "Wrong password",
 		'readonly' => "read-only",
 		'tagfilter' => "Tag:",
+		'addList' => "Create new list",
+		'addListDefault' => "Todo",
+		'renameList' => "Rename list",
 	);
 
 	private $default_inc = array

@@ -16,6 +16,8 @@ class Lang extends DefaultLang
 		'invalidpass' => "Wrong password",
 		'readonly' => "read-only",
 		'tagfilter' => "Tag:",
+		'addList' => "Create new list",
+		'renameList' => "Rename list",
 	);
 
 	var $inc = array

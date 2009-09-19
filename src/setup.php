@@ -14,14 +14,9 @@ if($needAuth && !is_logged())
 $dbclass = strtolower(get_class($db));
 $dbtype = ($dbclass == 'database_mysql') ? 'mysql' : 'sqlite';
 
-$lastVer = '1.2';
+$lastVer = '1.3';
 echo '<html><head><meta name="robots" content="noindex,nofollow"></head><body>'; 
 echo "<b>myTinyTodo v$lastVer Setup</b><br><br>";
-
-# exclude sqlite2
-if($dbclass == 'database_sqlite') {
-	exitMessage("Install/update is not available for sqlite2. Use sqlite v3.");
-}
 
 # determine current installed version
 $ver = get_ver($db, $dbtype);
@@ -41,6 +36,7 @@ if(!$ver)
 "CREATE TABLE todolist (
  `id` INT UNSIGNED NOT NULL auto_increment,
  `d` DATETIME NOT NULL,
+ `list_id` INT UNSIGNED NOT NULL default 0,
  `compl` TINYINT UNSIGNED NOT NULL default 0,
  `title` VARCHAR(250) NOT NULL,
  `note` TEXT,
@@ -48,7 +44,8 @@ if(!$ver)
  `ow` INT NOT NULL default 0,				/* order weight */
  `tags` VARCHAR(250) NOT NULL default '',	/* denormalization - for fast access to task tags */
  `duedate` DATE default NULL,
-  PRIMARY KEY(`id`)
+  PRIMARY KEY(`id`),
+  KEY(`list_id`)
 ) CHARSET=utf8 ");
 
 			$db->ex(
@@ -56,8 +53,10 @@ if(!$ver)
  `id` INT UNSIGNED NOT NULL auto_increment,
  `name` VARCHAR(50) NOT NULL,
  `tags_count` INT default 0,
+ `list_id` INT UNSIGNED NOT NULL default 0,
  PRIMARY KEY(`id`),
- UNIQUE KEY(`name`)
+ UNIQUE KEY(`name`),
+ KEY(`list_id`)
 ) CHARSET=utf8 ");
 
 			$db->ex(
@@ -66,6 +65,13 @@ if(!$ver)
  `task_id` INT UNSIGNED NOT NULL,
  KEY(`tag_id`),
  KEY(`task_id`)
+) CHARSET=utf8 ");
+
+			$db->ex(
+"CREATE TABLE lists (
+ `id` INT UNSIGNED NOT NULL auto_increment,
+ `name` VARCHAR(50) NOT NULL default '',
+ PRIMARY KEY(`id`)
 ) CHARSET=utf8 ");
 
 		} catch (Exception $e) {
@@ -80,6 +86,7 @@ if(!$ver)
 "CREATE TABLE todolist (
  id INTEGER PRIMARY KEY,
  d DATETIME NOT NULL default '0000-00-00',
+ list_id INTEGER UNSIGNED NOT NULL default 0,
  compl TINYINT UNSIGNED NOT NULL default 0,
  title VARCHAR(250) NOT NULL,
  note TEXT,
@@ -88,27 +95,37 @@ if(!$ver)
  tags VARCHAR(250) NOT NULL default '',
  duedate DATE default NULL
 ) ");
+			$db->ex("CREATE INDEX list_id ON todolist (list_id)");
 
 			$db->ex(
 "CREATE TABLE tags (
  id INTEGER PRIMARY KEY,
  name VARCHAR(50) NOT NULL COLLATE NOCASE UNIQUE,
- tags_count INT default 0
+ tags_count INT default 0,
+ list_id INTEGER UNSIGNED NOT NULL default 0
 ) ");
+			$db->ex("CREATE INDEX tags_list_id ON tags (list_id)");
 
 			$db->ex(
 "CREATE TABLE tag2task (
  tag_id INTEGER NOT NULL,
  task_id INTEGER NOT NULL
 ) ");
-
 			$db->ex("CREATE INDEX tag_id ON tag2task (tag_id)");
 			$db->ex("CREATE INDEX task_id ON tag2task (task_id)");
+
+			$db->ex(
+"CREATE TABLE lists (
+ id INTEGER PRIMARY KEY,
+ name VARCHAR(50) NOT NULL
+) ");
 
 		} catch (Exception $e) {
 			exitMessage("<b>Error:</b> ". htmlarray($e->getMessage()));
 		} 
 	}
+
+	createDefaultList($db);
 }
 elseif($ver == $lastVer)
 {
@@ -116,17 +133,22 @@ elseif($ver == $lastVer)
 }
 else
 {
-	if(!in_array($ver, array('1.1'))) {
-		exitMessage("Can not update database. Unsupported version ($ver).");
+	if(!in_array($ver, array('1.1','1.2'))) {
+		exitMessage("Can not update database. Unsupported version (v$ver).");
 	}
 	if(!isset($_POST['update'])) {
-		exitMessage("Update database from v$ver to v1.2 <form method=post><input type=hidden name=update value=1><input type=submit value=' Update '></form>");
+		exitMessage("Update database v$ver <form method=post><input type=hidden name=update value=1><input type=submit value=' Update '></form>");
 	}
 
 	# update process
-	if($ver == '1.1')
+	if($ver == '1.2')
+	{
+		update_12_13($db, $dbtype);
+	}
+	elseif($ver == '1.1')
 	{
 		update_11_12($db, $dbtype);
+		update_12_13($db, $dbtype);
 	}
 }
 echo "Done<br><br> <b>Attention!</b> Delete this file for security reasons.";
@@ -145,6 +167,8 @@ function get_ver($db, $dbtype)
 		if(!has_field_sqlite($db, 'todolist', 'duedate')) return $v;
 	}
 	$v = '1.2';
+	if(!$db->table_exists('lists')) return $v;
+	$v = '1.3';
 	return $v;
 }
 
@@ -182,11 +206,10 @@ function has_field_mysql($db, $table, $field)
 ### 1.1-1.2 ##########
 function update_11_12($db, $dbtype)
 {
-	echo "Changing database structure...<br>";
 	if($dbtype == 'mysql') $db->ex("ALTER TABLE todolist ADD `duedate` DATE default NULL");
 	else $db->ex("ALTER TABLE todolist ADD duedate DATE default NULL");
 
-	echo "Fixing broken tags...<br>";
+	# Fixing broken tags
 	$db->ex("BEGIN");
 	$db->ex("DELETE FROM tags");
 	$db->ex("DELETE FROM tag2task");
@@ -241,5 +264,51 @@ function update_task_tags($id, $tag_ids)
 }
 
 ### end 1.1-1.2 #####
+
+### 1.2-1.3 ##########
+function update_12_13($db, $dbtype)
+{
+	$db->ex("BEGIN");
+	if($dbtype=='mysql')
+	{
+		$db->ex(
+"CREATE TABLE lists (
+ `id` INT UNSIGNED NOT NULL auto_increment,
+ `name` VARCHAR(50) NOT NULL default '',
+ PRIMARY KEY(`id`)
+) CHARSET=utf8 ");
+		$db->ex("ALTER TABLE todolist ADD `list_id` INT UNSIGNED NOT NULL default 0");
+		$db->ex("ALTER TABLE tags ADD `list_id` INT UNSIGNED NOT NULL default 0");
+
+		$db->ex("ALTER TABLE todolist ADD KEY(`list_id`)");
+		$db->ex("ALTER TABLE tags ADD KEY(`list_id`)");
+	}
+	else
+	{
+		$db->ex(
+"CREATE TABLE lists (
+ id INTEGER PRIMARY KEY,
+ name VARCHAR(50) NOT NULL
+) ");
+		$db->ex("ALTER TABLE todolist ADD list_id INTEGER UNSIGNED NOT NULL default 0");
+		$db->ex("ALTER TABLE tags ADD list_id INT UNSIGNED NOT NULL default 0");
+
+		$db->ex("CREATE INDEX list_id ON todolist (list_id)");
+		$db->ex("CREATE INDEX tags_list_id ON tags (list_id)");
+	}
+	$db->ex("COMMIT");
+
+	createDefaultList($db);
+}
+
+function createDefaultList($db)
+{
+	$db->ex("INSERT INTO lists (name) VALUES (?)", array('TODO'));
+
+	$db->ex("UPDATE todolist SET list_id=1");
+	$db->ex("UPDATE tags SET list_id=1");
+}
+
+### end 1.2-1.3 #####
 
 ?>

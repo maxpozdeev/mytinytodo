@@ -8,12 +8,27 @@ require_once('./lang/class.default.php');
 require_once('./lang/'.$config['lang'].'.php');
 $lang = new Lang();
 
-if(isset($_GET['loadTasks']))
+if(isset($_GET['loadLists']))
+{
+	check_read_access();
+	$t = array();
+	$t['total'] = 0;
+	$q = $db->dq("SELECT * FROM lists ORDER BY id ASC");
+	while($r = $q->fetch_assoc($q))
+	{
+		$t['total']++;
+		$t['list'][] = array('id'=>$r['id'], 'name'=>htmlarray($r['name']));
+	}
+	echo json_encode($t); 
+	exit;
+}
+elseif(isset($_GET['loadTasks']))
 {
 	check_read_access();
 	stop_gpc($_GET);
-	if(_get('compl')) $sqlWhere = '';
-	else $sqlWhere = ' AND compl=0';
+	$listId = (int)_get('list');
+	$sqlWhere = ' AND list_id='. $listId;
+	if(_get('compl') == 0) $sqlWhere .= ' AND compl=0';
 	$inner = '';
 	$tag = trim(_get('t'));
 	if($tag != '') {
@@ -272,8 +287,9 @@ elseif(isset($_GET['setPrio']))
 }
 elseif(isset($_GET['tagCloud']))
 {
+	$listId = (int)_get('list');
 	$a = array();
-	$q = $db->dq("SELECT name,tags_count FROM tags WHERE tags_count>0 ORDER BY tags_count ASC");
+	$q = $db->dq("SELECT name,tags_count FROM tags WHERE list_id=$listId AND tags_count>0 ORDER BY tags_count ASC");
 	while($r = $q->fetch_row()) {
 		$a[$r[0]] = $r[1];
 	}
@@ -296,7 +312,39 @@ elseif(isset($_GET['tagCloud']))
 	echo json_encode($t);
 	exit;
 }
+elseif(isset($_POST['addList']))
+{
+	check_write_access();
+	stop_gpc($_POST);
+	$t = array();
+	$t['total'] = 0;
+	$name = str_replace(array('"',"'",'<','>','&'),array('','','','',''),trim(_post('name')));
+	$db->dq("INSERT INTO lists (name) VALUES (?)", array($name));
+	$id = $db->last_insert_id();
+	$t['total'] = 1;
+	$r = $db->sqa("SELECT * FROM lists WHERE id=$id");
+	$t['list'][] = array('id'=>$r['id'], 'name'=>htmlarray($r['name']));
+	echo json_encode($t);
+	exit;
+}
+elseif(isset($_POST['renameList']))
+{
+	check_write_access();
+	stop_gpc($_POST);
+	$t = array();
+	$t['total'] = 0;
+	$id = (int)_post('id');
+	$name = str_replace(array('"',"'",'<','>','&'),array('','','','',''),trim(_post('name')));
+	$db->dq("UPDATE lists SET name=? WHERE id=$id", array($name));
+	$t['total'] = $db->affected();
+	$r = $db->sqa("SELECT * FROM lists WHERE id=$id");
+	$t['list'][] = array('id'=>$r['id'], 'name'=>htmlarray($r['name']));
+	echo json_encode($t);
+	exit;
+}
 
+
+###################################################################################################
 
 function prepareTaskRow($r, $tz=null)
 {

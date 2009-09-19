@@ -56,7 +56,6 @@ function __($s)
 
 <script type="text/javascript">
 $().ready(function(){
-//	$("#tabs").tabs({ select: tabSelected <?php echo $tabDisabled; ?>});
 	$("#tasklist").sortable({cancel:'span,input,a,textarea', delay: 150, update:orderChanged, start:sortStart, items:'> :not(.task-completed)'});
 	$("#tasklist").bind("click", tasklistClick);
 	$("#edittags").autocomplete('ajax.php?suggestTags', {scroll: false, multiple: true, selectFirst:false, max:8});
@@ -68,11 +67,9 @@ $().ready(function(){
 		echo "\tflag.needAuth = true;\n";
 		if(!canAllRead()) echo "\tflag.canAllRead = false;\n";
 		if(is_logged()) echo "\tflag.isLogged = true;\n";
-		if(is_logged() || canAllRead()) echo "\tloadTasks();\n";
 		echo "\tupdateAccessStatus(1);\n";
-	} else {
-		echo "\tloadTasks();\n";
 	}
+	echo "\tloadLists(1)\n";
 ?>
 	preloadImg();
 	$("#duedate").datepicker({dateFormat: '<?php echo $duedateformat; ?>', firstDay: <?php echo $config['firstdayofweek']; ?>,
@@ -114,10 +111,7 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
 <div id="page_tasks">
 
 <div id="lists" class="mtt-tabs">
-  <ul class="">
-    <li class="mtt-tabs-selected"><a href="#list1" onClick="mttTabSelected(this,0)">ToDo</a></li>
-	<li><a href="#list2" onClick="mttTabSelected(this,1)">Todo #2</a></li>
-  </ul>
+  <ul class=""></ul>
   <div class="mtt-htabs">
 
   <span id="htab_newtask">
@@ -203,8 +197,8 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
 </div>
 
 <div id="mylistscontainer" class="mtt-btnmenu-container" style="display:none">
- <div class="li" onClick="prompt('New list', 'To-Do')">New list</div>
- <div class="li" onClick="prompt('Rename list', 'list name')">Rename</div>
+ <div class="li" onClick="addList()">New list</div>
+ <div class="li" onClick="renameCurList()">Rename</div>
  <div class="li" onClick="confirm('This will delete current list with all tasks in it.\nAre you sure?')">Delete</div>
 </div>
 
