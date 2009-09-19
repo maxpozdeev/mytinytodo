@@ -56,7 +56,7 @@ function __($s)
 
 <script type="text/javascript">
 $().ready(function(){
-	$("#tabs").tabs({ select: tabSelected <?php echo $tabDisabled; ?>});
+//	$("#tabs").tabs({ select: tabSelected <?php echo $tabDisabled; ?>});
 	$("#tasklist").sortable({cancel:'span,input,a,textarea', delay: 150, update:orderChanged, start:sortStart, items:'> :not(.task-completed)'});
 	$("#tasklist").bind("click", tasklistClick);
 	$("#edittags").autocomplete('ajax.php?suggestTags', {scroll: false, multiple: true, selectFirst:false, max:8});
@@ -100,6 +100,10 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
 <div id="bar">
  <div style="float:left"><span id="msg" onClick="toggleMsgDetails()"></span><div id="msgdetails"></div></div>
  <div id="bar_auth" align="right">
+ 
+ <a href="#" id="mylists" class="nodecor" onClick="btnMenu(this);return false;"><u>My lists</u> <img src="images/arrdown.gif" border=0></a> |
+ <a href="settings.php">Settings</a> |
+
   <span id="bar_login"><span id="authstr">&nbsp;</span> <a href="#" class="nodecor" onClick="showAuth(this);return false;"><u><?php __('a_login');?></u> <img src="images/arrdown.gif" border=0></a></span>
   <a href="#" id="bar_logout" onClick="logout();return false"><?php __('a_logout');?></a>
  </div>
@@ -109,23 +113,38 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
 
 <div id="page_tasks">
 
-<div id="tabs">
+<div id="lists" class="mtt-tabs">
   <ul class="">
-	<li><a href="#newtask"><?php __('tab_newtask');?></a></li>
-	<li><a href="#searchtask"><?php __('tab_search');?></a></li>
-  </ul><br clear="all">
-  <div class="tab-content" id="newtask"> 
-	<form onSubmit="return submitNewTask(this)"><input type="text" name="task" value="" maxlength="250" id="task"> <input type="submit" value="<?php __('btn_add');?>"></form>
-  </div>
-  <div class="tab-content" id="searchtask">
-	<form onSubmit="return searchTasks()"><input type="text" name="search" value="" maxlength="250" id="search" onKeyUp="timerSearch()" autocomplete="off"> <input type="submit" value="<?php __('btn_search');?>"></form>
-	<div id="searchbar"><?php __('searching');?> <span id="searchbarkeyword"></span></div>
+    <li class="mtt-tabs-selected"><a href="#list1" onClick="mttTabSelected(this,0)">ToDo</a></li>
+	<li><a href="#list2" onClick="mttTabSelected(this,1)">Todo #2</a></li>
+  </ul>
+  <div class="mtt-htabs">
+
+  <span id="htab_newtask">
+
+  New task
+    <form onSubmit="return submitNewTask(this)"><input type="text" name="task" value="" maxlength="250" id="task"> <input type="submit" value="<?php __('btn_add');?>"></form>
+
+	&nbsp;| <a href="#" onClick="showhide($('#htab_search'),$('#htab_newtask')); return false;">Search</a> </span>
+
+  <span id="htab_search" style="display:none">
+
+<a href="#" onClick="showhide($('#htab_newtask'),$('#htab_search')); return false;">New task</a> |&nbsp;
+
+	Search
+	 <form onSubmit="return searchTasks()"><input type="text" name="search" value="" maxlength="250" id="search" onKeyUp="timerSearch()" autocomplete="off"> <input type="submit" value="<?php __('btn_search');?>"></form>
+	<div id="searchbar"><?php __('searching');?> <span id="searchbarkeyword"></span></div> 
+
+	</span>
+  
+
   </div>
 </div>
- 
+
 <h3><span id="taskviewcontainer" onClick="showTaskview(this);"><span class="btnstr"><?php __('tasks');?></span> (<span id="total">0</span>) &nbsp;<img src="images/arrdown.gif"></span>
 <span id="sort" onClick="showSort(this);"><span class="btnstr"></span> <img src="images/arrdown.gif"></span>
 <span id="tagcloudbtn" onClick="showTagCloud(this);" title="<?php __('tags');?>"><span class="btnstr"><?php __('tags');?></span> <img src="images/arrdown.gif"></span>
+<span class="mtt-notes-showhide">Notes: <a href="#" onClick="toggleAllNotes(1);this.blur();return false;">Show</a> / <a href="#" onClick="toggleAllNotes(0);this.blur();return false;">Hide</a></span>
 </h3>
 
 <div id="taskcontainer">
@@ -183,11 +202,17 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
  <div id="tagcloudcontent"></div>
 </div>
 
+<div id="mylistscontainer" class="mtt-btnmenu-container" style="display:none">
+ <div class="li" onClick="prompt('New list', 'To-Do')">New list</div>
+ <div class="li" onClick="prompt('Rename list', 'list name')">Rename</div>
+ <div class="li" onClick="confirm('This will delete current list with all tasks in it.\nAre you sure?')">Delete</div>
+</div>
+
 </div>
 <div id="space"></div>
 </div>
 
-<div id="footer"><div id="footer_content">Powered by <strong><a href="http://www.pozdeev.com/mytinytodo/">myTinyTodo</a></strong> v1.2.6 </div></div>
+<div id="footer"><div id="footer_content">Powered by <strong><a href="http://www.pozdeev.com/mytinytodo/">myTinyTodo</a></strong> v1.3a </div></div>
 
 </div>
 </body>

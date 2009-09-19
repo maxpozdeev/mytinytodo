@@ -17,10 +17,12 @@ var tz = 0;
 var img = {
 	'note': ['images/page_white_text_add_bw.png','images/page_white_text_add.png'],
 	'edit': ['images/page_white_edit_bw.png','images/page_white_edit.png'],
-	'del': ['images/page_cross_bw.png','images/page_cross.png']
+	'del': ['images/page_cross_bw.png','images/page_cross.png'],
+	'toggle': ['images/toggle_plus.gif','images/toggle_minus.gif']
 };
 var taskCnt = { total:0, past: 0, today:0, soon:0 };
 var tmp = {};
+var oBtnMenu = {};
 
 function loadTasks()
 {
@@ -60,11 +62,12 @@ function prepareTaskStr(item)
 		'<a href="#" onClick="return toggleTaskNote('+id+')"><img src="'+img.note[0]+'" onMouseOver="this.src=img.note[1]" onMouseOut="this.src=img.note[0]" title="'+lang.actionNote+'"></a>'+
 		'<a href="#" onClick="return editTask('+id+')"><img src="'+img.edit[0]+'" onMouseOver="this.src=img.edit[1]" onMouseOut="this.src=img.edit[0]" title="'+lang.actionEdit+'"></a>'+
 		'<a href="#" onClick="return deleteTask('+id+')"><img src="'+img.del[0]+'" onMouseOver="this.src=img.del[1]" onMouseOut="this.src=img.del[0]" title="'+lang.actionDelete+'"></a></div>'+
-		'<div class="task-left"><input type="checkbox" '+(readOnly?'disabled':'')+' onClick="completeTask('+id+',this)" '+(item.compl?'checked':'')+'></div>'+
+		'<div class="task-left"><img src="'+img.toggle[0]+'" class="mtt-toggle '+(item.note==''?'invisible':'')+'" onClick="toggleNote('+id+')">'+
+		'<input type="checkbox" '+(readOnly?'disabled':'')+' onClick="completeTask('+id+',this)" '+(item.compl?'checked':'')+'></div>'+
 		'<div class="task-middle">'+prepareDuedate(item.duedate, item.dueClass, item.dueStr)+
 		'<span class="nobr"><span class="task-through">'+preparePrio(prio,id)+'<span class="task-title">'+prepareHtml(item.title)+'</span>'+
 		prepareTagsStr(item.tags)+'<span class="task-date">'+lang.taskDate(item.date)+'</span></span></span>'+
-		'<div class="task-note-block'+(item.note==''?' hidden':'')+'">'+
+		'<div class="task-note-block hidden">'+
 			'<div id="tasknote'+id+'" class="task-note"><span>'+prepareHtml(item.note)+'</span></div>'+
 			'<div id="tasknotearea'+id+'" class="task-note-area"><textarea id="notetext'+id+'"></textarea>'+
 				'<span class="task-note-actions"><a href="#" onClick="return saveTaskNote('+id+')">'+lang.actionNoteSave+
@@ -837,3 +840,78 @@ function editFormResize(startstop, event)
 	}
 	else  $('#page_taskedit textarea').height(f.height() - tmp.editformdiff);
 }
+
+function mttTabSelected(el, indx)
+{
+	$(el.parentNode.parentNode).children('.mtt-tabs-selected').removeClass('mtt-tabs-selected');
+	$(el.parentNode).addClass('mtt-tabs-selected');
+
+}
+
+function btnMenu(el)
+{
+	if(!el.id) return;
+	oBtnMenu.container = el.id+'container';
+	oBtnMenu.targets = [el.id, oBtnMenu.container];
+	w = $('#'+oBtnMenu.container);
+	if(w.css('display') == 'none')
+	{
+		oBtnMenu.h = [];
+		$(w).children('.li').each( function(i,o){ 
+			if(o.onclick) {
+				oBtnMenu.h[i] = o.onclick;
+				$(o).bind("click2", o.onclick);
+				o.onclick = function(event) { $('#'+oBtnMenu.container).hide(); $(o).trigger('click2'); btnMenuClose(); }
+			} else {
+				oBtnMenu.h[i] = null;
+			}
+		} );
+		offset = $(el).offset();
+		w.css({ position: 'absolute', top: offset.top+el.offsetHeight-1, left: offset.left , 'min-width': $(el).width() }).show();
+		$(document).bind("click", btnMenuClose);
+	}
+	else {
+		el.blur();
+		btnMenuClose();
+	}
+}
+
+function btnMenuClose(e)
+{
+	if(e) {
+		if(isParentId(e.target, oBtnMenu.targets)) return;
+	}
+	$(document).unbind("click", btnMenuClose);
+	$('#'+oBtnMenu.container).hide().children('.li').each( function(i,o){ 
+		if(oBtnMenu.h[i]) {
+			o.onclick = oBtnMenu.h[i];
+			$(o).unbind('click2');
+		}
+	});
+	oBtnMenu = {};
+}
+
+function toggleNote(id)
+{
+	var o = $('#taskrow_'+id+'>div>div.task-note-block');
+	if(o.is('.hidden')) $('#taskrow_'+id+'>div>.mtt-toggle').attr('src', img.toggle[1]);
+	else $('#taskrow_'+id+'>div>.mtt-toggle').attr('src', img.toggle[0]);
+	o.toggleClass('hidden');
+}
+
+function toggleAllNotes(showhide)
+{
+	for(id in taskList)
+	{
+		if(taskList[id].note == '') continue;
+		if(showhide) {
+			$('#taskrow_'+id+'>div>.mtt-toggle').attr('src', img.toggle[1]);
+			$('#taskrow_'+id+'>div>div.task-note-block').removeClass('hidden');
+		}
+		else {
+			$('#taskrow_'+id+'>div>.mtt-toggle').attr('src', img.toggle[0]);
+			$('#taskrow_'+id+'>div>div.task-note-block').addClass('hidden');
+		}
+	}
+}
+
