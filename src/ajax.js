@@ -117,7 +117,7 @@ function submitNewTask(form)
 	var tz = -1 * (new Date()).getTimezoneOffset();
 	setAjaxErrorTrigger()
 	nocache = '&rnd='+Math.random();
-	$.post('ajax.php?newTask'+nocache, { title: form.task.value, tz:tz, tag:filter.tag }, function(json){
+	$.post('ajax.php?newTask'+nocache, { list:curList.id, title: form.task.value, tz:tz, tag:filter.tag }, function(json){
 		resetAjaxErrorTrigger();
 		if(!parseInt(json.total)) return;
 		$('#total').text( parseInt($('#total').text()) + parseInt(json.total) );
@@ -312,7 +312,7 @@ function saveTask(form)
 	if(flag.needAuth && !flag.isLogged && flag.canAllRead) return false;
 	setAjaxErrorTrigger();
 	nocache = '&rnd='+Math.random();
-	$.post('ajax.php?editTask='+form.id.value+nocache, { title: form.task.value, note:form.note.value, prio:form.prio.value, tags:form.tags.value, duedate:form.duedate.value }, function(json){
+	$.post('ajax.php?editTask='+form.id.value+nocache, { list:curList.id, title: form.task.value, note:form.note.value, prio:form.prio.value, tags:form.tags.value, duedate:form.duedate.value }, function(json){
 		resetAjaxErrorTrigger();
 		if(!parseInt(json.total)) return;
 		var item = json.list[0];

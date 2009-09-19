@@ -58,7 +58,7 @@ function __($s)
 $().ready(function(){
 	$("#tasklist").sortable({cancel:'span,input,a,textarea', delay: 150, update:orderChanged, start:sortStart, items:'> :not(.task-completed)'});
 	$("#tasklist").bind("click", tasklistClick);
-	$("#edittags").autocomplete('ajax.php?suggestTags', {scroll: false, multiple: true, selectFirst:false, max:8});
+	$("#edittags").autocomplete('ajax.php?suggestTags', {scroll: false, multiple: true, selectFirst:false, max:8, extraParams:{list:function(){return curList.id}}});
 	$("#priopopup").mouseleave(function(){$(this).hide()});
 	setSort(<?php echo $sort; ?>,1);
 <?php

@@ -32,7 +32,7 @@ elseif(isset($_GET['loadTasks']))
 	$inner = '';
 	$tag = trim(_get('t'));
 	if($tag != '') {
-		$tag_id = get_tag_id($tag);
+		$tag_id = get_tag_id($tag, $listId);
 		$inner = "INNER JOIN tag2task ON id=tag2task.task_id";
 		$sqlWhere .= " AND tag_id=$tag_id ";
 	}
@@ -63,6 +63,7 @@ elseif(isset($_GET['newTask']))
 	stop_gpc($_POST);
 	$t = array();
 	$t['total'] = 0;
+	$listId = (int)_post('list');
 	$title = trim(_post('title'));
 	$prio = 0;
 	$tags = '';
@@ -85,13 +86,13 @@ elseif(isset($_GET['newTask']))
 	$tz = (int)_post('tz');
 	if( (isset($config['autotz']) && $config['autotz']==0) || $tz<-720 || $tz>720 || $tz%30!=0 ) $d = strftime("%Y-%m-%d %H:%M:%S");
 	else $d = gmdate("Y-m-d H:i:s", time()+$tz*60);
-	$ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM todolist WHERE compl=0");
+	$ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM todolist WHERE list_id=$listId AND compl=0");
 	$db->ex("BEGIN");
-	$db->dq("INSERT INTO todolist (title,d,ow,prio) VALUES (?,?,$ow,$prio)", array($title, $d));
+	$db->dq("INSERT INTO todolist (list_id,title,d,ow,prio) VALUES ($listId,?,?,$ow,$prio)", array($title, $d));
 	$id = $db->last_insert_id();
 	if($tags)
 	{
-		$tag_ids = prepare_tags($tags);
+		$tag_ids = prepare_tags($tags, $listId);
 		if($tag_ids) {
 			update_task_tags($id, $tag_ids);
 			$db->ex("UPDATE todolist SET tags=? WHERE id=$id", $tags);
@@ -171,6 +172,7 @@ elseif(isset($_GET['editTask']))
 	check_write_access();
 	$id = (int)$_GET['editTask'];
 	stop_gpc($_POST);
+	$listId = (int)_post('list');
 	$title = trim(_post('title'));
 	$note = str_replace("\r\n", "\n", trim(_post('note')));
 	$prio = (int)_post('prio');
@@ -185,7 +187,7 @@ elseif(isset($_GET['editTask']))
 	}
 	$tags = trim(_post('tags'));
 	$db->ex("BEGIN");
-	$tag_ids = prepare_tags($tags); 
+	$tag_ids = prepare_tags($tags, $listId); 
 	$cur_ids = get_task_tags($id);
 	if($cur_ids) {
 		$ids = implode(',', $cur_ids);
@@ -260,10 +262,11 @@ elseif(isset($_GET['logout']))
 elseif(isset($_GET['suggestTags']))
 {
 	check_read_access();
+	$listId = (int)_get('list');
 	$begin = trim(_get('q'));
 	$limit = (int)_get('limit');
 	if($limit<1) $limit = 8;
-	$q = $db->dq("SELECT name,id FROM tags WHERE name LIKE ". $db->quoteForLike('%s%%',$begin). " AND tags_count>0 ORDER BY name LIMIT $limit");
+	$q = $db->dq("SELECT name,id FROM tags WHERE list_id=$listId AND name LIKE ". $db->quoteForLike('%s%%',$begin). " AND tags_count>0 ORDER BY name LIMIT $limit");
 	$s = '';
 	while($r = $q->fetch_row()) {
 		$s .= "$r[0]|$r[1]\n";
@@ -382,7 +385,7 @@ function check_write_access()
 	exit;
 }
 
-function prepare_tags(&$tags_str)
+function prepare_tags(&$tags_str, $listId)
 {
 	$tag_ids = array();
 	$tag_names = array();
@@ -392,7 +395,7 @@ function prepare_tags(&$tags_str)
 		# remove duplicate tags?
 		$tag = str_replace(array('"',"'",'<','>','&'),array('','','','',''),trim($v));
 		if($tag == '') continue;
-		list($tag_id,$tag_name) = get_or_create_tag($tag);
+		list($tag_id,$tag_name) = get_or_create_tag($tag, $listId);
 		if($tag_id && !in_array($tag_id, $tag_ids)) {
 			$tag_ids[] = $tag_id;
 			$tag_names[] = $tag_name;
@@ -402,21 +405,21 @@ function prepare_tags(&$tags_str)
 	return $tag_ids;
 }
 
-function get_or_create_tag($name)
+function get_or_create_tag($name, $listId)
 {
 	global $db;
-	$tag = $db->sq("SELECT id,name FROM tags WHERE name=?", $name);
+	$tag = $db->sq("SELECT id,name FROM tags WHERE list_id=? AND name=?", array($listId, $name));
 	if($tag) return $tag;
 
 	# need to create tag
-	$db->ex("INSERT INTO tags (name) VALUES (?)", $name);
+	$db->ex("INSERT INTO tags (name,list_id) VALUES (?,?)", array($name,$listId));
 	return array($db->last_insert_id(), $name);
 }
 
-function get_tag_id($tag)
+function get_tag_id($tag, $listId)
 {
 	global $db;
-	$id = $db->sq("SELECT id FROM tags WHERE name=?", $tag);
+	$id = $db->sq("SELECT id FROM tags WHERE list_id=? AND name=?", array($listId, $tag));
 	return $id ? $id : 0;
 }
 
