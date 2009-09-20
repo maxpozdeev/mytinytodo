@@ -133,7 +133,7 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
 <span id="sort" onClick="showSort(this);" style="float:right"><span class="btnstr"></span> <img src="images/arrdown.gif"></span>
 <span id="taskviewcontainer" onClick="showTaskview(this);"><span class="btnstr"><?php __('tasks');?></span> (<span id="total">0</span>) &nbsp;<img src="images/arrdown.gif"></span>
 <span id="tagcloudbtn" onClick="showTagCloud(this);" title="<?php __('tags');?>"><span class="btnstr"><?php __('tags');?></span> <img src="images/arrdown.gif"></span>
-<span class="mtt-notes-showhide">Notes: <a href="#" onClick="toggleAllNotes(1);this.blur();return false;">Show</a> / <a href="#" onClick="toggleAllNotes(0);this.blur();return false;">Hide</a></span>
+<span class="mtt-notes-showhide"><?php __('notes');?> <a href="#" onClick="toggleAllNotes(1);this.blur();return false;"><?php __('notes_show');?></a> / <a href="#" onClick="toggleAllNotes(0);this.blur();return false;"><?php __('notes_hide');?></a></span>
 </h3>
 
 <div id="taskcontainer">

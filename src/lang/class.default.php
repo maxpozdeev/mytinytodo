@@ -64,6 +64,9 @@ class DefaultLang
 		'f_today' => "Today and tomorrow",
 		'f_soon' => "Soon",
 		'tasks_and_compl' => "Tasks + completed",
+		'notes' => "Notes:",
+		'notes_show' => "Show",
+		'notes_hide' => "Hide",
 	);
 
 	var $js = array();
