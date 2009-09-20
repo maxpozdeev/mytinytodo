@@ -31,7 +31,6 @@ function loadTasks()
 	nocache = '&rnd='+Math.random();
 	$.getJSON('ajax.php?loadTasks&compl='+filter.compl+'&sort='+sortBy+search+tag+'&tz='+tz+nocache, function(json){
 		resetAjaxErrorTrigger();
-		$('#total').html(json.total);
 		taskList = new Array();
 		taskOrder = new Array();
 		taskCnt.past = taskCnt.today = taskCnt.soon = 0;
@@ -44,6 +43,10 @@ function loadTasks()
 			if(!item.compl) changeTaskCnt(item.dueClass);
 		});
 		refreshTaskCnt();
+		if(filter.due == '') $('#total').html(taskCnt.total);
+		else if(filter.due == 'past') $('#total').html(taskCnt.past);
+		else if(filter.due == 'today') $('#total').html(taskCnt.today);
+		else if(filter.due == 'soon') $('#total').html(taskCnt.soon);
 		$('#tasklist').html(tasks);
 		if(filter.compl) showhide($('#compl_hide'),$('#compl_show'));
 		else showhide($('#compl_show'),$('#compl_hide'));
