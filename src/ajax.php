@@ -345,6 +345,26 @@ elseif(isset($_POST['renameList']))
 	echo json_encode($t);
 	exit;
 }
+elseif(isset($_POST['deleteList']))
+{
+	check_write_access();
+	stop_gpc($_POST);
+	$t = array();
+	$t['total'] = 0;
+	$id = (int)_post('id');
+	$db->ex("BEGIN");
+	$db->ex("DELETE FROM lists WHERE id=$id");
+	$t['total'] = $db->affected();
+	if($t['total']) {
+		$db->ex("DELETE FROM tags WHERE list_id=$id");
+		# sqlite doesnt support DELETE FROM INNNER JOIN
+		$db->ex("DELETE FROM tag2task WHERE task_id IN (SELECT id FROM todolist WHERE list_id=$id)");
+		$db->ex("DELETE FROM todolist WHERE list_id=$id");
+	}
+	$db->ex("COMMIT");
+	echo json_encode($t);
+	exit;
+}
 
 
 ###################################################################################################

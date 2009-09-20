@@ -23,6 +23,7 @@ class DefaultLang
 		'addList' => "Create new list",
 		'addListDefault' => "Todo",
 		'renameList' => "Rename list",
+		'deleteList' => "This will delete current list with all tasks in it.\\nAre you sure?",
 	);
 
 	private $default_inc = array

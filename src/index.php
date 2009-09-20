@@ -194,7 +194,7 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
 <div id="mylistscontainer" class="mtt-btnmenu-container" style="display:none">
  <div class="li" onClick="addList()">New list</div>
  <div class="li" onClick="renameCurList()">Rename</div>
- <div class="li" onClick="confirm('This will delete current list with all tasks in it.\nAre you sure?')">Delete</div>
+ <div class="li" onClick="deleteCurList()">Delete</div>
 </div>
 
 </div>

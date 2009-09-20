@@ -18,6 +18,7 @@ class Lang extends DefaultLang
 		'tagfilter' => "Tag:",
 		'addList' => "Create new list",
 		'renameList' => "Rename list",
+		'deleteList' => "This will delete current list with all tasks in it.\\nAre you sure?",
 	);
 
 	var $inc = array

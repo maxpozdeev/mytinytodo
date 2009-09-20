@@ -35,7 +35,6 @@ function loadTasks()
 	nocache = '&rnd='+Math.random();
 	$.getJSON('ajax.php?loadTasks&list='+curList.id+'&compl='+filter.compl+'&sort='+sortBy+search+tag+'&tz='+tz+nocache, function(json){
 		resetAjaxErrorTrigger();
-		$('#total').html(json.total);
 		taskList = new Array();
 		taskOrder = new Array();
 		taskCnt.past = taskCnt.today = taskCnt.soon = 0;
@@ -48,6 +47,10 @@ function loadTasks()
 			if(!item.compl) changeTaskCnt(item.dueClass);
 		});
 		refreshTaskCnt();
+		if(filter.due == '') $('#total').html(taskCnt.total);
+		else if(filter.due == 'past') $('#total').html(taskCnt.past);
+		else if(filter.due == 'today') $('#total').html(taskCnt.today);
+		else if(filter.due == 'soon') $('#total').html(taskCnt.soon);
 		$('#tasklist').html(tasks);
 		if(filter.compl) showhide($('#compl_hide'),$('#compl_show'));
 		else showhide($('#compl_show'),$('#compl_hide'));
@@ -462,11 +465,6 @@ function doAuth(form)
 		if(json.logged)
 		{
 			flag.isLogged = true;
-			if(filter.search != '') {
-				filter.search = '';
-				$('#searchbarkeyword').text('');
-				$('#searchbar').hide();
-			}
 			updateAccessStatus();
 			loadLists();
 		}
@@ -844,6 +842,11 @@ function mttTabSelected(el, indx)
 	if(!tabLists[indx]) return;
 	if(indx != curList.i) {
 		$('#tasklist').html('');
+		if(filter.search != '') {
+			filter.search = '';
+			$('#searchbarkeyword').text('');
+			$('#searchbar').hide();
+		}
 	}
 	curList = tabLists[indx];
 	flag.tagsChanged = true;
@@ -922,6 +925,11 @@ function toggleAllNotes(showhide)
 function loadLists(onInit)
 {
 	if(flag.needAuth && !flag.isLogged && !flag.canAllRead) return false;
+	if(filter.search != '') {
+		filter.search = '';
+		$('#searchbarkeyword').text('');
+		$('#searchbar').hide();
+	}
 	setAjaxErrorTrigger();
 	nocache = '&rnd='+Math.random();
 	$.getJSON('ajax.php?loadLists'+nocache, function(json){
@@ -965,7 +973,7 @@ function renameCurList()
 {
 	if(!curList) return;
 	var r = prompt(lang.renameList, dehtml(curList.name));
-	if(r == null) return;
+	if(r == null || r == '') return;
 	setAjaxErrorTrigger()
 	nocache = '&rnd='+Math.random();
 	$.post('ajax.php?'+nocache, { renameList:1, id:curList.id, name:r }, function(json){
@@ -977,6 +985,19 @@ function renameCurList()
 		curList = item;
 		$('#lists>ul>.mtt-tabs-selected>a').html(item.name);
 	}, 'json');
+}
+
+function deleteCurList()
+{
+	var r = confirm(lang.deleteList);
+	if(!r) return;
+	setAjaxErrorTrigger()
+	$.post('ajax.php?'+'&rnd='+Math.random(), { deleteList:1, id:curList.id }, function(json){
+		resetAjaxErrorTrigger();
+		if(!parseInt(json.total)) return;
+		loadLists();
+	}, 'json');
+
 }
 
 function addsearchToggle(toSearch)
