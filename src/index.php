@@ -75,7 +75,7 @@ $().ready(function(){
 	$("#duedate").datepicker({dateFormat: '<?php echo $duedateformat; ?>', firstDay: <?php echo $config['firstdayofweek']; ?>,
 		showOn: 'button', buttonImage: 'images/calendar.png', buttonImageOnly: true, changeMonth:true,
 		changeYear:true, constrainInput: false, duration:'', nextText:'&gt;', prevText:'&lt;', dayNamesMin:lang.daysMin, 
-		monthNamesShort:lang.monthsShort });
+		monthNamesShort:lang.monthsLong });
 <?php if(!isset($_GET['pda'])): ?>
 	$("#page_taskedit").draggable({ stop: function(e,ui){ flag.windowTaskEditMoved=true; tmp.editformpos=[$(this).css('left'),$(this).css('top')]; } }); 
 	$("#page_taskedit").resizable({ minWidth:$("#page_taskedit").width(), minHeight:$("#page_taskedit").height(), start:function(ui,e){editFormResize(1)}, resize:function(ui,e){editFormResize(0,e)}, stop:function(ui,e){editFormResize(2,e)} });

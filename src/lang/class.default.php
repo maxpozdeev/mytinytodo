@@ -93,8 +93,8 @@ class DefaultLang
 		foreach($this->get('days_min') as $v) { $t[] = '"'.str_replace('"','\\"',$v).'"'; }
 		$a[] = "daysMin: [". implode(',', $t). "]";
 		$t = array();
-		foreach($this->get('months_short') as $v) { $t[] = '"'.str_replace('"','\\"',$v).'"'; }
-		$a[] = "monthsShort: [". implode(',', $t). "]";
+		foreach($this->get('months_long') as $v) { $t[] = '"'.str_replace('"','\\"',$v).'"'; }
+		$a[] = "monthsLong: [". implode(',', $t). "]";
 		return "lang = {\n". implode(",\n", $a). "\n};";
 	}
 
