@@ -8,6 +8,7 @@ form { display: inline; }
 h2,h3 { margin:0; }
 h2 { font-size:15pt; float:left; padding-right:10px; background-color:#ffffff; }
 h3 { border-bottom:2px solid #B5D5FF; margin-bottom:10px; padding:6px 0; font-size:11pt; }
+#page_tasks h3 { padding-left:4px; padding-right:4px; }
 a { color:#0000ff; }
 #space { height:30px; }
 #footer { height:30px; margin-top:-30px; }
@@ -165,7 +166,7 @@ div.task-note-area textarea { color:#999999; width:100%; display:block; height:6
 .ui-datepicker-title { text-align:center; }
 .ui-datepicker-prev, .ui-datepicker-next { cursor:pointer; padding:0px 3px; }
 
-#taskviewcontainer { border-bottom:1px dashed #ccc; padding:1px 2px; margin-left:4px; }
+#taskviewcontainer { border-bottom:1px dashed #ccc; padding:1px 2px; }
 #taskviewcontainer:hover { cursor:pointer; border-bottom:1px solid #bbb; }
 #taskview { overflow: hidden; z-index:103; background-color:#f9f9f9; border:1px solid #cccccc; padding:3px; } 
 #taskview .li { margin:1px 0px; padding:2px; cursor:pointer; }
