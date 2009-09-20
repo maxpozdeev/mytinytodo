@@ -225,6 +225,7 @@ function toggleTaskNote(id)
 		$('#taskrow_'+id+'>div>div.task-note-block').removeClass('hidden');
 		$(aArea).css('display', 'block');
 		$('#tasknote'+id).css('display', 'none');
+		if(taskList[id].note != '') $('#taskrow_'+id+'>div>.mtt-toggle').attr('src', img.toggle[1]);
 		$('#notetext'+id).focus();
 	} else {
 		cancelTaskNote(id)
@@ -253,6 +254,8 @@ function saveTaskNote(id)
 		taskList[id].note = item.note;
 		taskList[id].noteText = item.noteText;
 		$('#tasknote'+item.id+'>span').html(prepareHtml(item.note));
+		if(item.note == '') $('#taskrow_'+id+'>div>.mtt-toggle').attr('src', img.toggle[0]).addClass('invisible');
+		else $('#taskrow_'+id+'>div>.mtt-toggle').attr('src', img.toggle[1]).removeClass('invisible');
 		cancelTaskNote(item.id);
 	}, 'json');
 	return false;
@@ -725,11 +728,9 @@ function tagCloudClose(e)
 function preloadImg()
 {
 	for(i in img) {
-		o = new Image();
-		o.src = img[i][0];
-		if(img[i][1] != img[i][0]) {
+		for(ii in img[i]) {
 			o = new Image();
-			o.src = img[i][1];
+			o.src = img[i][ii];
 		}
 	}
 }
