@@ -28,8 +28,8 @@ class DefaultLang
 	private $default_inc = array
 	(
 		'My Tiny Todolist' => "My Tiny Todolist",
-		'tab_newtask' => "new task",
-		'tab_search' => "search",
+		'htab_newtask' => "New task",
+		'htab_search' => "Search",
 		'btn_add' => "Add",
 		'btn_search' => "Search",
 		'searching' => "Searching for",

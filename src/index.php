@@ -67,7 +67,7 @@ $().ready(function(){
 		echo "\tflag.needAuth = true;\n";
 		if(!canAllRead()) echo "\tflag.canAllRead = false;\n";
 		if(is_logged()) echo "\tflag.isLogged = true;\n";
-		echo "\tupdateAccessStatus(1);\n";
+		echo "\tupdateAccessStatus();\n";
 	}
 	echo "\tloadLists(1)\n";
 ?>
@@ -96,13 +96,17 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
 
 <div id="bar">
  <div style="float:left"><span id="msg" onClick="toggleMsgDetails()"></span><div id="msgdetails"></div></div>
- <div id="bar_auth" align="right">
- 
- <a href="#" id="mylists" class="nodecor" onClick="btnMenu(this);return false;"><u>My lists</u> <img src="images/arrdown.gif" border=0></a> |
- <a href="settings.php">Settings</a> |
-
-  <span id="bar_login"><span id="authstr">&nbsp;</span> <a href="#" class="nodecor" onClick="showAuth(this);return false;"><u><?php __('a_login');?></u> <img src="images/arrdown.gif" border=0></a></span>
+ <div align="right">
+ <span class="menu-owner">
+   <a href="#" id="mylists" class="nodecor" onClick="btnMenu(this);return false;"><u>My lists</u> <img src="images/arrdown.gif" border=0></a> |
+   <a href="settings.php">Settings</a>
+ </span>
+ <span class="bar-delim" style="display:none"> | </span>
+ <span id="bar_auth">
+  <span id="bar_login"><a href="#" class="nodecor" onClick="showAuth(this);return false;"><u><?php __('a_login');?></u> <img src="images/arrdown.gif" border=0></a></span>
+  <span id="authstr">&nbsp;</span>
   <a href="#" id="bar_logout" onClick="logout();return false"><?php __('a_logout');?></a>
+ </span>
  </div>
 </div>
 
@@ -111,28 +115,18 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
 <div id="page_tasks">
 
 <div id="lists" class="mtt-tabs">
-  <ul class=""></ul>
-  <div class="mtt-htabs">
+ <ul class=""></ul>
+ <div class="mtt-htabs">
+   <span id="htab_newtask"><?php __('htab_newtask');?>  <form onSubmit="return submitNewTask(this)"><input type="text" name="task" value="" maxlength="250" id="task"> <input type="submit" value="<?php __('btn_add');?>"></form>
+	&nbsp;| <a href="#" class="htab-toggle" onClick="addsearchToggle(1);this.blur();return false;"><?php __('htab_search');?></a>
+   </span>
 
-  <span id="htab_newtask">
-
-  New task
-    <form onSubmit="return submitNewTask(this)"><input type="text" name="task" value="" maxlength="250" id="task"> <input type="submit" value="<?php __('btn_add');?>"></form>
-
-	&nbsp;| <a href="#" onClick="showhide($('#htab_search'),$('#htab_newtask')); return false;">Search</a> </span>
-
-  <span id="htab_search" style="display:none">
-
-<a href="#" onClick="showhide($('#htab_newtask'),$('#htab_search')); return false;">New task</a> |&nbsp;
-
-	Search
-	 <form onSubmit="return searchTasks()"><input type="text" name="search" value="" maxlength="250" id="search" onKeyUp="timerSearch()" autocomplete="off"> <input type="submit" value="<?php __('btn_search');?>"></form>
+   <span id="htab_search" style="display:none">
+	<a href="#" class="htab-toggle" onClick="addsearchToggle(0);this.blur();return false;"><?php __('htab_newtask');?></a> |&nbsp;
+	<?php __('htab_search');?> <form onSubmit="return searchTasks()"><input type="text" name="search" value="" maxlength="250" id="search" onKeyUp="timerSearch()" autocomplete="off"> <input type="submit" value="<?php __('btn_search');?>"></form>
 	<div id="searchbar"><?php __('searching');?> <span id="searchbarkeyword"></span></div> 
-
-	</span>
-  
-
-  </div>
+   </span>
+ </div>
 </div>
 
 <h3><span id="taskviewcontainer" onClick="showTaskview(this);"><span class="btnstr"><?php __('tasks');?></span> (<span id="total">0</span>) &nbsp;<img src="images/arrdown.gif"></span>

@@ -403,17 +403,6 @@ function searchTasks()
 	return false;
 }
 
-function tabSelected(event, ui)
-{
-	// reload tasks when we return to task tab (from search tab)
-	if(ui.index == 0 && filter.search != '') {
-		filter.search = '';
-		$('#searchbarkeyword').text('');
-		$('#searchbar').hide();
-		loadTasks();
-	}
-}
-
 function dehtml(str)
 {
 	return str.replace(/&quot;/g,'"').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&');
@@ -424,33 +413,39 @@ function errorDenied()
 	flashError(lang.denied);
 }
 
-function updateAccessStatus(onInit)
+function updateAccessStatus()
 {
-	if(flag.needAuth && !flag.isLogged) $("#tasklist").sortable('disable').addClass('readonly');
-	else if(sortBy == 0) $("#tasklist").sortable('enable').removeClass('readonly');
-	else $("#tasklist").removeClass('readonly');
-
-	if(!flag.canAllRead && !flag.isLogged) {
-		$('#page_tasks').hide();
-		$('#lists').hide();
+	// flag.needAuth is not changed after pageload
+	if(flag.needAuth)
+	{
+		$('#bar_auth').show();
+		if(flag.isLogged) {
+			showhide($("#bar_logout"),$("#bar_login"));
+			$('#bar .menu-owner').show();
+			$('#bar .bar-delim').show();
+		}
+		else {
+			showhide($("#bar_login"),$("#bar_logout"));
+			$('#bar .menu-owner').hide();
+			$('#bar .bar-delim').hide();
+		}
+		if(!flag.canAllRead && !flag.isLogged) {
+			$('#page_tasks').hide();
+			$('#lists').hide();
+		} else {
+			$('#page_tasks').show();
+		}
+	}
+	if(flag.needAuth && flag.canAllRead && !flag.isLogged) {
+		$("#tasklist").sortable('disable');
+		$('#page_tasks').addClass('readonly')
+		$("#authstr").text(lang.readonly).show();
+		addsearchToggle(1);
 	}
 	else {
-		$('#page_tasks').show();
-	}
-	if(flag.needAuth) {
-		$('#bar_auth').show();
-		showhide($("#bar_login"),$("#bar_logout"));
-	}
-	if(!flag.needAuth) {
+		$('#page_tasks').removeClass('readonly')
+		if(sortBy == 0) $("#tasklist").sortable('enable');
 		$("#authstr").text('').hide();
-		$('#bar_auth').hide();
-	}
-	else if(flag.canAllRead && !flag.isLogged) $("#authstr").text(lang.readonly).addClass('attention').show();
-	else if(flag.isLogged) showhide($("#bar_logout"),$("#bar_login"));
-	else if(!flag.canAllRead) $("#authstr").text('').hide();
-
-	if(onInit == null || !onInit)
-	{
 	}
 }
 
@@ -470,7 +465,6 @@ function doAuth(form)
 				$('#searchbar').hide();
 			}
 			updateAccessStatus();
-//			loadTasks();
 			loadLists();
 		}
 		else {
@@ -926,8 +920,7 @@ function toggleAllNotes(showhide)
 
 function loadLists(onInit)
 {
-	if(flag.needAuth && !flag.isLogged) return false;
-
+	if(flag.needAuth && !flag.isLogged && !flag.canAllRead) return false;
 	setAjaxErrorTrigger();
 	nocache = '&rnd='+Math.random();
 	$.getJSON('ajax.php?loadLists'+nocache, function(json){
@@ -983,4 +976,26 @@ function renameCurList()
 		curList = item;
 		$('#lists>ul>.mtt-tabs-selected>a').html(item.name);
 	}, 'json');
+}
+
+function addsearchToggle(toSearch)
+{
+	if(toSearch)
+	{
+		showhide($('#htab_search'), $('#htab_newtask'));
+		$('#search').focus();
+	}
+	else
+	{
+		if(flag.needAuth && flag.canAllRead && !flag.isLogged) return false;
+		showhide($('#htab_newtask'), $('#htab_search'));
+		// reload tasks when we return to task tab (from search tab)
+		if(filter.search != '') {
+			filter.search = '';
+			$('#searchbarkeyword').text('');
+			$('#searchbar').hide();
+			loadTasks();
+		}
+		$('#task').focus();
+	}
 }
