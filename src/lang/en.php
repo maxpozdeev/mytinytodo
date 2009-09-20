@@ -63,6 +63,9 @@ class Lang extends DefaultLang
 		'notes' => "Notes:",
 		'notes_show' => "Show",
 		'notes_hide' => "Hide",
+		'list_new' => "New list",
+		'list_rename' => "Rename",
+		'list_delete' => "Delete",
 	);
 }
 

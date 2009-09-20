@@ -192,9 +192,9 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
 </div>
 
 <div id="mylistscontainer" class="mtt-btnmenu-container" style="display:none">
- <div class="li" onClick="addList()">New list</div>
- <div class="li" onClick="renameCurList()">Rename</div>
- <div class="li" onClick="deleteCurList()">Delete</div>
+ <div class="li" onClick="addList()"><?php __('list_new');?></div>
+ <div class="li" onClick="renameCurList()"><?php __('list_rename');?></div>
+ <div class="li" onClick="deleteCurList()"><?php __('list_delete');?></div>
 </div>
 
 </div>
