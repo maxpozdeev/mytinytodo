@@ -66,6 +66,9 @@ class Lang extends DefaultLang
 		'list_new' => "New list",
 		'list_rename' => "Rename",
 		'list_delete' => "Delete",
+		'alltags' => "All tags:",
+		'alltags_show' => "Show all",
+		'alltags_hide' => "Hide all",
 	);
 }
 

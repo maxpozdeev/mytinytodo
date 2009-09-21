@@ -25,6 +25,7 @@ var tmp = {};
 var oBtnMenu = {};
 var tabLists;
 var curList = 0;
+var tagsList = [];
 
 function loadTasks()
 {
@@ -310,6 +311,7 @@ function cancelEdit(e)
 	document.edittask.note.value = '';
 	document.edittask.tags.value = '';
 	document.edittask.duedate.value = '';
+	toggleEditAllTags(0);
 	return false;
 }
 
@@ -672,6 +674,23 @@ function changeTaskOrder(id)
 	}
 }
 
+function loadTags(callback)
+{
+	setAjaxErrorTrigger();
+	$.getJSON('ajax.php?tagCloud&list='+curList.id+'&rnd='+Math.random(), function(json){
+		resetAjaxErrorTrigger();
+		if(!parseInt(json.total)) tagsList = [];
+		else tagsList = json.cloud;
+		var cloud = '';
+		$.each(tagsList, function(i,item){
+			cloud += '<a href="#" onClick=\'addFilterTag("'+item.tag+'");tagCloudClose();return false;\' class="tag w'+item.w+'" >'+item.tag+'</a>';
+		});
+		$('#tagcloudcontent').html(cloud)
+		flag.tagsChanged = false;
+		callback();
+	});
+}
+
 function showTagCloud(el)
 {
 	w = $('#tagcloud');
@@ -682,29 +701,12 @@ function showTagCloud(el)
 			$('#tagcloudcontent').html('');
 			$('#tagcloudload').show();
 			offset = $(el).offset();
-			l = Math.ceil(offset.left - w.outerWidth()/2 + $(el).outerWidth()/2);
-			if(l<0) l=0;
-			w.css({ position: 'absolute', top: offset.top+el.offsetHeight-1, left: l }).show();
-
-			setAjaxErrorTrigger();
-			nocache = '&rnd='+Math.random();
-			$.getJSON('ajax.php?tagCloud&list='+curList.id+nocache, function(json){
-				resetAjaxErrorTrigger();
-				$('#tagcloudload').hide();
-				if(!parseInt(json.total)) return;
-				var cloud = '';
-				$.each(json.cloud, function(i,item){
-					cloud += '<a href="#" onClick=\'addFilterTag("'+item.tag+'");tagCloudClose();return false;\' class="tag w'+item.w+'" >'+item.tag+'</a>';
-				});
-				$('#tagcloudcontent').html(cloud)
-				flag.tagsChanged = false;
-			});
+			w.css({ position: 'absolute', top: offset.top+el.offsetHeight-1, left: offset.left }).show();
+			loadTags(function(){$('#tagcloudload').hide();});
 		}
 		else {
 			offset = $(el).offset();
-			l = Math.ceil(offset.left - w.outerWidth()/2 + $(el).outerWidth()/2);
-			if(l<0) l=0;
-			w.css({ position: 'absolute', top: offset.top+el.offsetHeight-1, left: l }).show();
+			w.css({ position: 'absolute', top: offset.top+el.offsetHeight-1, left: offset.left }).show();
 		}
 		$(document).bind("click", tagCloudClose);
 	}
@@ -828,7 +830,7 @@ function editFormResize(startstop, event)
 	else if(startstop == 2) {
 		//to avoid bug http://dev.jqueryui.com/ticket/3628
 		if(f.is('.ui-draggable')) {
-			f.css('left',tmp.editformpos[0]).css('top',tmp.editformpos[1]).css('position', 'fixed');
+			f.css( {left:tmp.editformpos[0], top:tmp.editformpos[1], height:''} ).css('position', 'fixed');
 		}
 	}
 	else  $('#page_taskedit textarea').height(f.height() - tmp.editformdiff);
@@ -906,12 +908,12 @@ function toggleNote(id)
 	o.toggleClass('hidden');
 }
 
-function toggleAllNotes(showhide)
+function toggleAllNotes(show)
 {
 	for(id in taskList)
 	{
 		if(taskList[id].note == '') continue;
-		if(showhide) {
+		if(show) {
 			$('#taskrow_'+id+'>div>.mtt-toggle').attr('src', img.toggle[1]);
 			$('#taskrow_'+id+'>div>div.task-note-block').removeClass('hidden');
 		}
@@ -1020,4 +1022,39 @@ function addsearchToggle(toSearch)
 		}
 		$('#task').focus();
 	}
+}
+
+function toggleEditAllTags(show)
+{
+	if(show)
+	{
+		if(flag.tagsChanged) loadTags(fillEditAllTags);
+		else fillEditAllTags();
+		showhide($('#alltags_hide'), $('#alltags_show'));
+	}
+	else {
+		$('#alltags').hide();
+		showhide($('#alltags_show'), $('#alltags_hide'))
+	}
+}
+
+function fillEditAllTags()
+{
+	var a = [];
+	for(var i=tagsList.length-1; i>=0; i--) { 
+		a.push('<a href="#" class="tag" onClick=\'addEditTag("'+tagsList[i].tag+'");return false\'>'+tagsList[i].tag+'</a>');
+	}
+	$('#alltags .tags-list').html(a.join(', '));
+	$('#alltags').show();
+}
+
+function addEditTag(tag)
+{
+	var v = $('#edittags').val();
+	if(v == '') { 
+		$('#edittags').val(tag);
+		return;
+	}
+	var r = v.search(new RegExp('(^|,)\\s*'+tag+'\\s*(,|$)'));
+	if(r < 0) $('#edittags').val(v+', '+tag);
 }

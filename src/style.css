@@ -62,7 +62,6 @@ a { color:#0000ff; }
 .task-left { float:left; }
 .task-left .mtt-toggle { cursor:pointer; }
 .task-middle { margin-left:40px; margin-right:65px; }
-.nobr input { margin-left:0px; margin-right:4px; }
 #tasklist { list-style-type: none; margin: 0; padding: 0;}
 #tasklist li { padding:6px 2px 6px 6px; border-bottom:1px solid #DEDEDE; min-height:18px; margin-bottom:1px; background-color:#fff; }
 #tasklist li:hover { background-color:#f6f6f6; }
@@ -111,12 +110,14 @@ div.task-note-area textarea { color:#999999; width:100%; display:block; height:6
 #authstr { display: none; color:#ff0000; }
 
 .form-row { margin-top:4px; margin-bottom:4px; }
-.form-row span.h { font-weight:bold; color:#333333; }
+.form-row .h { font-weight:bold; color:#333333; }
 #overlay { position:fixed; z-index:200; background-color:#111111; display:none; top:0px; left:0px; width:100%; height:100%; }
 #page_taskedit { position:fixed; z-index:201; background-color:#fdfdfd; padding:8px; border:1px solid #cccccc; width:510px; }
 #page_taskedit .form-row .in500 { width:99%; }
 #page_taskedit .form-row textarea.in500 { height:130px; /*resize:none;*/ }
 .ui-icon-gripsmall-diagonal-se { background-image:url(images/resizegrip.gif); }
+#alltags .tag { font-weight:bold; color:#333333; }
+#alltags .tag:hover { background-color:#999988; color:white; }
 
 /* autocomplete */
 .ac_results { padding: 0px; border: 1px solid #cccccc; background-color: #f0f0f0; overflow: hidden;  z-index: 99999; }
