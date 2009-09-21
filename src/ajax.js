@@ -31,9 +31,9 @@ function loadTasks()
 {
 	tz = -1 * (new Date()).getTimezoneOffset();
 	setAjaxErrorTrigger();
-	if(filter.search) search = '&s='+encodeURIComponent(filter.search); else search = '';
-	if(filter.tag) tag = '&t='+encodeURIComponent(filter.tag); else tag = '';
-	nocache = '&rnd='+Math.random();
+	var search = filter.search ? '&s='+encodeURIComponent(filter.search) : '';
+	var tag = filter.tag ? '&t='+encodeURIComponent(filter.tag) : '';
+	var nocache = '&rnd='+Math.random();
 	$.getJSON('ajax.php?loadTasks&list='+curList.id+'&compl='+filter.compl+'&sort='+sortBy+search+tag+'&tz='+tz+nocache, function(json){
 		resetAjaxErrorTrigger();
 		taskList = new Array();
@@ -61,9 +61,9 @@ function loadTasks()
 
 function prepareTaskStr(item)
 {
-	id = parseInt(item.id);
-	prio = parseInt(item.prio);
-	readOnly = (flag.needAuth && flag.canAllRead && !flag.isLogged) ? true : false;
+	var id = parseInt(item.id);
+	var prio = parseInt(item.prio);
+	var readOnly = (flag.needAuth && flag.canAllRead && !flag.isLogged) ? true : false;
 	return '<li id="taskrow_'+id+'" class="'+(item.compl?'task-completed ':'')+item.dueClass+'" onDblClick="editTask('+id+')"><div class="task-actions">'+
 		'<a href="#" onClick="return toggleTaskNote('+id+')"><img src="'+img.note[0]+'" onMouseOver="this.src=img.note[1]" onMouseOut="this.src=img.note[0]" title="'+lang.actionNote+'"></a>'+
 		'<a href="#" onClick="return editTask('+id+')"><img src="'+img.edit[0]+'" onMouseOver="this.src=img.edit[1]" onMouseOut="this.src=img.edit[0]" title="'+lang.actionEdit+'"></a>'+
@@ -85,13 +85,13 @@ function prepareTaskStr(item)
 function prepareHtml(s)
 {
 	// make URLs clickable
-	s = s.replace(/(^|\s|>)(www\.([\w\#$%&~\/.\-\+;:=,\?\[\]@]+?))(,|\.|:|)?(?=\s|&quot;|&lt;|&gt;|\"|<|>|$)/gi, '$1<a href="http://$2" target="_blank">$2</a>$4');
+	var s = s.replace(/(^|\s|>)(www\.([\w\#$%&~\/.\-\+;:=,\?\[\]@]+?))(,|\.|:|)?(?=\s|&quot;|&lt;|&gt;|\"|<|>|$)/gi, '$1<a href="http://$2" target="_blank">$2</a>$4');
 	return s.replace(/(^|\s|>)((?:http|https|ftp):\/\/([\w\#$%&~\/.\-\+;:=,\?\[\]@]+?))(,|\.|:|)?(?=\s|&quot;|&lt;|&gt;|\"|<|>|$)/ig, '$1<a href="$2" target="_blank">$2</a>$4');
 }
 
 function preparePrio(prio,id)
 {
-	cl = v = '';
+	var cl =''; var v = '';
 	if(prio < 0) { cl = 'prio-neg'; v = '&minus;'+Math.abs(prio); }
 	else if(prio > 0) { cl = 'prio-pos'; v = '+'+prio; }
 	else { cl = 'prio-o'; v = '&plusmn;0'; }
@@ -101,9 +101,9 @@ function preparePrio(prio,id)
 function prepareTagsStr(tags)
 {
 	if(!tags || tags == '') return '';
-	a = tags.split(',');
+	var a = tags.split(',');
 	if(!a.length) return '';
-	for(i in a) {
+	for(var i in a) {
 		a[i] = '<a href="#" class="tag" onClick=\'addFilterTag("'+a[i]+'");return false\'>'+a[i]+'</a>';
 	}
 	return '<span class="task-tags">'+a.join(', ')+'</span>';
@@ -120,7 +120,7 @@ function submitNewTask(form)
 	if(form.task.value == '') return false;
 	var tz = -1 * (new Date()).getTimezoneOffset();
 	setAjaxErrorTrigger()
-	nocache = '&rnd='+Math.random();
+	var nocache = '&rnd='+Math.random();
 	$.post('ajax.php?newTask'+nocache, { list:curList.id, title: form.task.value, tz:tz, tag:filter.tag }, function(json){
 		resetAjaxErrorTrigger();
 		if(!parseInt(json.total)) return;
@@ -159,7 +159,7 @@ function flashError(str, details)
 
 function toggleMsgDetails()
 {
-	el = $("#msgdetails");
+	var el = $("#msgdetails");
 	if(!el) return;
 	if(el.css('display') == 'none') el.show();
 	else el.hide()
@@ -177,7 +177,7 @@ function deleteTask(id)
 		return false;
 	}
 	setAjaxErrorTrigger()
-	nocache = '&rnd='+Math.random();
+	var nocache = '&rnd='+Math.random();
 	$.getJSON('ajax.php?deleteTask='+id+nocache, function(json){
 		resetAjaxErrorTrigger();
 		if(!parseInt(json.total)) return;
@@ -194,7 +194,7 @@ function deleteTask(id)
 
 function completeTask(id,ch)
 {
-	compl = 0;
+	var compl = 0;
 	if(ch.checked) compl = 1;
 	setAjaxErrorTrigger();
 	$.getJSON('ajax.php?completeTask='+id+'&compl='+compl+nocache, function(json){
@@ -222,7 +222,7 @@ function completeTask(id,ch)
 
 function toggleTaskNote(id)
 {
-	aArea = '#tasknotearea'+id;
+	var aArea = '#tasknotearea'+id;
 	if($(aArea).css('display') == 'none')
 	{
 		$('#notetext'+id).val(taskList[id].noteText);
@@ -250,7 +250,7 @@ function cancelTaskNote(id)
 function saveTaskNote(id)
 {
 	setAjaxErrorTrigger()
-	nocache = '&rnd='+Math.random();
+	var nocache = '&rnd='+Math.random();
 	$.post('ajax.php?editNote='+id+nocache, {note: $('#notetext'+id).val()}, function(json){
 		resetAjaxErrorTrigger();
 		if(!parseInt(json.total)) return;
@@ -274,12 +274,12 @@ function editTask(id)
 	document.edittask.id.value = item.id;
 	document.edittask.tags.value = item.tags.split(',').join(', ');
 	document.edittask.duedate.value = item.duedate;
-	sel = document.edittask.prio;
-	for(i=0; i<sel.length; i++) {
+	var sel = document.edittask.prio;
+	for(var i=0; i<sel.length; i++) {
 		if(sel.options[i].value == item.prio) sel.options[i].selected = true;
 	}
 	$('<div id="overlay"></div>').appendTo('body').css('opacity', 0.5).show();
-	w = $('#page_taskedit');
+	var w = $('#page_taskedit');
 	if(!flag.windowTaskEditMoved)
 	{
 		var x,y;
@@ -319,7 +319,7 @@ function saveTask(form)
 {
 	if(flag.needAuth && !flag.isLogged && flag.canAllRead) return false;
 	setAjaxErrorTrigger();
-	nocache = '&rnd='+Math.random();
+	var nocache = '&rnd='+Math.random();
 	$.post('ajax.php?editTask='+form.id.value+nocache, { list:curList.id, title: form.task.value, note:form.note.value, prio:form.prio.value, tags:form.tags.value, duedate:form.duedate.value }, function(json){
 		resetAjaxErrorTrigger();
 		if(!parseInt(json.total)) return;
@@ -358,19 +358,19 @@ function orderChanged(event,ui)
 {
 	if(!ui.item[0]) return;
 	var itemId = ui.item[0].id;
-	n = $(this).sortable('toArray');
+	var n = $(this).sortable('toArray');
 	// remove possible empty id's
-	for(i=0; i<sortOrder.length; i++) {
+	for(var i=0; i<sortOrder.length; i++) {
 		if(sortOrder[i] == '') { sortOrder.splice(i,1); i--; }
 	}
 	if(n.toString() == sortOrder.toString()) return;
 	// make assoc from array for easy index
 	var h0 = new Array();
-	for(j=0; j<sortOrder.length; j++) {
+	for(var j=0; j<sortOrder.length; j++) {
 		h0[sortOrder[j]] = j;
 	}
 	var h1 = new Array();
-	for(j=0; j<n.length; j++) {
+	for(var j=0; j<n.length; j++) {
 		h1[n[j]] = j;
 		taskOrder[j] = n[j].split('_')[1];
 	}
@@ -378,18 +378,18 @@ function orderChanged(event,ui)
 	var s = '';
 	var diff;
 	var replaceOW = taskList[sortOrder[h1[itemId]].split('_')[1]].ow;
-	for(j in h0)
+	for(var j in h0)
 	{
 		diff = h1[j] - h0[j];
 		if(diff != 0) {
-			a = j.split('_');
+			var a = j.split('_');
 			if(j == itemId) diff = replaceOW - taskList[a[1]].ow;
 			s += a[1] +'='+ diff+ '&';
 			taskList[a[1]].ow += diff;
 		}
 	}
 	setAjaxErrorTrigger();
-	nocache = '&rnd='+Math.random();
+	var nocache = '&rnd='+Math.random();
 	$.post('ajax.php?changeOrder'+nocache, { order: s }, function(json){
 		resetAjaxErrorTrigger();
 	}, 'json');
@@ -460,7 +460,7 @@ function updateAccessStatus()
 function doAuth(form)
 {
 	setAjaxErrorTrigger();
-	nocache = '&rnd='+Math.random();
+	var nocache = '&rnd='+Math.random();
 	$.post('ajax.php?login'+nocache, { password: form.password.value }, function(json){
 		resetAjaxErrorTrigger();
 		form.password.value = '';
@@ -481,7 +481,7 @@ function doAuth(form)
 function logout()
 {
 	setAjaxErrorTrigger();
-	nocache = '&rnd='+Math.random();
+	var nocache = '&rnd='+Math.random();
 	$.getJSON('ajax.php?logout'+nocache, function(json){
 		resetAjaxErrorTrigger();
 	});
@@ -499,9 +499,9 @@ function logout()
 
 function tasklistClick(e)
 {
-	node = e.target.nodeName;
+	var node = e.target.nodeName;
 	if(node=='SPAN' || node=='LI' || node=='DIV') {
-		li = getRecursParent(e.target, 'LI', 10);
+		var li = getRecursParent(e.target, 'LI', 10);
 		if(li) {
 			if(selTask && li.id != selTask) $('#'+selTask).removeClass('clicked doubleclicked');
 			selTask = li.id;
@@ -536,10 +536,10 @@ function addFilterTag(tag)
 
 function showAuth(el)
 {
-	w = $('#authform');
+	var w = $('#authform');
 	if(w.css('display') == 'none')
 	{
-		offset = $(el).offset();
+		var offset = $(el).offset();
 		w.css({
 			position: 'absolute',
 			top: offset.top + el.offsetHeight + 3,
@@ -559,7 +559,7 @@ function prioPopup(act, el, id)
 		clearTimeout(objPrio.timer);
 		return;
 	}
-	offset = $(el).offset();
+	var offset = $(el).offset();
 	$('#priopopup').css({ position: 'absolute', top: offset.top + 1, left: offset.left + 1 });
 	objPrio.taskId = id;
 	objPrio.el = el;
@@ -571,7 +571,7 @@ function prioClick(prio, el)
 	el.blur();
 	prio = parseInt(prio);
 	setAjaxErrorTrigger();
-	nocache = '&rnd='+Math.random();
+	var nocache = '&rnd='+Math.random();
 	$.getJSON('ajax.php?setPrio='+objPrio.taskId+'&prio='+prio+nocache, function(json){
 		resetAjaxErrorTrigger();
 	});
@@ -584,10 +584,10 @@ function prioClick(prio, el)
 
 function showSort(el)
 {
-	w = $('#sortform');
+	var w = $('#sortform');
 	if(w.css('display') == 'none')
 	{
-		offset = $(el).offset();
+		var offset = $(el).offset();
 		w.css({ position: 'absolute', top: offset.top+el.offsetHeight-1, left: offset.left , 'min-width': $(el).width() }).show();
 		$(document).bind("click", sortClose);
 	}
@@ -609,7 +609,7 @@ function setSort(v, init)
 		else $("#tasklist").sortable('disable');
 		if(!init) {
 			changeTaskOrder();
-			exp = new Date();
+			var exp = new Date();
 			exp.setTime(exp.getTime() + 3650*86400*1000);	//+10 years
 			document.cookie = "sort="+sortBy+'; expires='+exp.toUTCString();
 		}
@@ -636,7 +636,7 @@ function changeTaskOrder(id)
 {
 	id = parseInt(id);
 	if(taskOrder.length < 2) return;
-	oldOrder = taskOrder.slice();
+	var oldOrder = taskOrder.slice();
 	if(sortBy == 0) taskOrder.sort( function(a,b){ 
 			if(taskList[a].compl != taskList[b].compl) return taskList[a].compl-taskList[b].compl;
 			return taskList[a].ow-taskList[b].ow
@@ -658,17 +658,17 @@ function changeTaskOrder(id)
 	if(id && taskList[id])
 	{
 		// optimization: determine where to insert task: top or after some task
-		indx = $.inArray(id,taskOrder);
+		var indx = $.inArray(id,taskOrder);
 		if(indx ==0) {
 			$('#tasklist').prepend($('#taskrow_'+id))
 		} else {
-			after = taskOrder[indx-1];
+			var after = taskOrder[indx-1];
 			$('#taskrow_'+after).after($('#taskrow_'+id));
 		}
 	}
 	else {
-		o = $('#tasklist');
-		for(i in taskOrder) {
+		var o = $('#tasklist');
+		for(var i in taskOrder) {
 			o.append($('#taskrow_'+taskOrder[i]));
 		}
 	}
@@ -693,19 +693,19 @@ function loadTags(callback)
 
 function showTagCloud(el)
 {
-	w = $('#tagcloud');
+	var w = $('#tagcloud');
 	if(w.css('display') == 'none')
 	{
 		if(flag.tagsChanged)
 		{
 			$('#tagcloudcontent').html('');
 			$('#tagcloudload').show();
-			offset = $(el).offset();
+			var offset = $(el).offset();
 			w.css({ position: 'absolute', top: offset.top+el.offsetHeight-1, left: offset.left }).show();
 			loadTags(function(){$('#tagcloudload').hide();});
 		}
 		else {
-			offset = $(el).offset();
+			var offset = $(el).offset();
 			w.css({ position: 'absolute', top: offset.top+el.offsetHeight-1, left: offset.left }).show();
 		}
 		$(document).bind("click", tagCloudClose);
@@ -727,9 +727,9 @@ function tagCloudClose(e)
 
 function preloadImg()
 {
-	for(i in img) {
-		for(ii in img[i]) {
-			o = new Image();
+	for(var i in img) {
+		for(var ii in img[i]) {
+			var o = new Image();
 			o.src = img[i][ii];
 		}
 	}
@@ -739,7 +739,7 @@ function changeTaskCnt(cl, dir)
 {
 	if(!dir) dir = 1;
 	else if(dir > 0) dir = 1;
-	else if(dir < 0) die = -1;
+	else if(dir < 0) dir = -1;
 	if(cl == 'soon') { taskCnt.soon += dir; return true; }
 	else if(cl == 'today') { taskCnt.today += dir; return true; }
 	else if(cl == 'past') { taskCnt.past+= dir; return true; }
@@ -754,10 +754,10 @@ function refreshTaskCnt()
 
 function showTaskview(el)
 {
-	w = $('#taskview');
+	var w = $('#taskview');
 	if(w.css('display') == 'none')
 	{
-		offset = $(el).offset();
+		var offset = $(el).offset();
 		w.css({ position: 'absolute', top: offset.top+el.offsetHeight-1, left: offset.left , 'min-width': $(el).width() }).show();
 		$(document).bind("click", taskviewClose);
 	}
@@ -823,7 +823,7 @@ function setTaskview(v, dontLoadTasks)
 
 function editFormResize(startstop, event)
 {
-	f = $('#page_taskedit');
+	var f = $('#page_taskedit');
 	if(startstop == 1) {
 		tmp.editformdiff = f.height() - $('#page_taskedit textarea').height();
 	}
@@ -862,7 +862,7 @@ function btnMenu(el)
 	if(!el.id) return;
 	oBtnMenu.container = el.id+'container';
 	oBtnMenu.targets = [el.id, oBtnMenu.container];
-	w = $('#'+oBtnMenu.container);
+	var w = $('#'+oBtnMenu.container);
 	if(w.css('display') == 'none')
 	{
 		oBtnMenu.h = [];
@@ -875,7 +875,7 @@ function btnMenu(el)
 				oBtnMenu.h[i] = null;
 			}
 		} );
-		offset = $(el).offset();
+		var offset = $(el).offset();
 		w.css({ position: 'absolute', top: offset.top+el.offsetHeight-1, left: offset.left , 'min-width': $(el).width() }).show();
 		$(document).bind("click", btnMenuClose);
 	}
@@ -910,7 +910,7 @@ function toggleNote(id)
 
 function toggleAllNotes(show)
 {
-	for(id in taskList)
+	for(var id in taskList)
 	{
 		if(taskList[id].note == '') continue;
 		if(show) {
@@ -933,7 +933,7 @@ function loadLists(onInit)
 		$('#searchbar').hide();
 	}
 	setAjaxErrorTrigger();
-	nocache = '&rnd='+Math.random();
+	var nocache = '&rnd='+Math.random();
 	$.getJSON('ajax.php?loadLists'+nocache, function(json){
 		resetAjaxErrorTrigger();
 		if(!parseInt(json.total)) {
@@ -959,7 +959,7 @@ function addList()
 	var r = prompt(lang.addList, lang.addListDefault);
 	if(r == null) return;
 	setAjaxErrorTrigger()
-	nocache = '&rnd='+Math.random();
+	var nocache = '&rnd='+Math.random();
 	$.post('ajax.php?'+nocache, { addList:1, name:r }, function(json){
 		resetAjaxErrorTrigger();
 		if(!parseInt(json.total)) return;
@@ -977,7 +977,7 @@ function renameCurList()
 	var r = prompt(lang.renameList, dehtml(curList.name));
 	if(r == null || r == '') return;
 	setAjaxErrorTrigger()
-	nocache = '&rnd='+Math.random();
+	var nocache = '&rnd='+Math.random();
 	$.post('ajax.php?'+nocache, { renameList:1, id:curList.id, name:r }, function(json){
 		resetAjaxErrorTrigger();
 		if(!parseInt(json.total)) return;
