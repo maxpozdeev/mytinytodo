@@ -179,7 +179,7 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
 
 <div id="tagcloud" style="display:none">
  <div id="tagcloudcancel" onClick="cancelTagFilter();tagCloudClose();"><?php __('tagfilter_cancel');?></div>
- <div id="tagcloudload""><img src="images/loading1_24.gif"></div>
+ <div id="tagcloudload"><img src="images/loading1_24.gif"></div>
  <div id="tagcloudcontent"></div>
 </div>
 
