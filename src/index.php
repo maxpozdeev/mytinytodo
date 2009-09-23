@@ -37,12 +37,12 @@ function __($s)
 <HEAD>
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
 <title><?php __('My Tiny Todolist');?></title>
-<link rel="stylesheet" type="text/css" href="style.css" media="all">
+<link rel="stylesheet" type="text/css" href="style.css?v=@VERSION" media="all">
 <?php if(isset($_GET['pda'])): ?>
 <meta name="viewport" id="viewport" content="width=device-width">
-<link rel="stylesheet" type="text/css" href="pda.css" media="all">
+<link rel="stylesheet" type="text/css" href="pda.css?v=@VERSION" media="all">
 <?php else: ?>
-<link rel="stylesheet" type="text/css" href="print.css" media="print">
+<link rel="stylesheet" type="text/css" href="print.css?v=@VERSION" media="print">
 <?php endif; ?>
 </HEAD>
 
@@ -187,7 +187,7 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
 <div id="space"></div>
 </div>
 
-<div id="footer"><div id="footer_content">Powered by <strong><a href="http://www.pozdeev.com/mytinytodo/">myTinyTodo</a></strong> v1.2.6 </div></div>
+<div id="footer"><div id="footer_content">Powered by <strong><a href="http://www.pozdeev.com/mytinytodo/">myTinyTodo</a></strong> v@VERSION </div></div>
 
 </div>
 </body>
