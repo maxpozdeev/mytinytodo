@@ -17,8 +17,7 @@ var tz = 0;
 var img = {
 	'note': ['images/page_white_text_add_bw.png','images/page_white_text_add.png'],
 	'edit': ['images/page_white_edit_bw.png','images/page_white_edit.png'],
-	'del': ['images/page_cross_bw.png','images/page_cross.png'],
-	'toggle': ['images/toggle_plus.gif','images/toggle_minus.gif']
+	'del': ['images/page_cross_bw.png','images/page_cross.png']
 };
 var taskCnt = { total:0, past: 0, today:0, soon:0 };
 var tmp = {};
@@ -68,7 +67,7 @@ function prepareTaskStr(item)
 		'<a href="#" onClick="return toggleTaskNote('+id+')"><img src="'+img.note[0]+'" onMouseOver="this.src=img.note[1]" onMouseOut="this.src=img.note[0]" title="'+lang.actionNote+'"></a>'+
 		'<a href="#" onClick="return editTask('+id+')"><img src="'+img.edit[0]+'" onMouseOver="this.src=img.edit[1]" onMouseOut="this.src=img.edit[0]" title="'+lang.actionEdit+'"></a>'+
 		'<a href="#" onClick="return deleteTask('+id+')"><img src="'+img.del[0]+'" onMouseOver="this.src=img.del[1]" onMouseOut="this.src=img.del[0]" title="'+lang.actionDelete+'"></a></div>'+
-		'<div class="task-left"><img src="'+img.toggle[0]+'" class="mtt-toggle '+(item.note==''?'invisible':'')+'" onClick="toggleNote('+id+')">'+
+		'<div class="task-left"><div class="mtt-toggle '+(item.note==''?'invisible':'')+'" onClick="toggleNote('+id+')"></div>'+
 		'<input type="checkbox" '+(readOnly?'disabled':'')+' onClick="completeTask('+id+',this)" '+(item.compl?'checked':'')+'></div>'+
 		'<div class="task-middle">'+prepareDuedate(item.duedate, item.dueClass, item.dueStr)+
 		'<span class="nobr"><span class="task-through">'+preparePrio(prio,id)+'<span class="task-title">'+prepareHtml(item.title)+'</span>'+
@@ -229,7 +228,7 @@ function toggleTaskNote(id)
 		$('#taskrow_'+id+'>div>div.task-note-block').removeClass('hidden');
 		$(aArea).css('display', 'block');
 		$('#tasknote'+id).css('display', 'none');
-		if(taskList[id].note != '') $('#taskrow_'+id+'>div>.mtt-toggle').attr('src', img.toggle[1]);
+		if(taskList[id].note != '') $('#taskrow_'+id+' .mtt-toggle').addClass('mtt-toggle-expanded');
 		$('#notetext'+id).focus();
 	} else {
 		cancelTaskNote(id)
@@ -258,8 +257,8 @@ function saveTaskNote(id)
 		taskList[id].note = item.note;
 		taskList[id].noteText = item.noteText;
 		$('#tasknote'+item.id+'>span').html(prepareHtml(item.note));
-		if(item.note == '') $('#taskrow_'+id+'>div>.mtt-toggle').attr('src', img.toggle[0]).addClass('invisible');
-		else $('#taskrow_'+id+'>div>.mtt-toggle').attr('src', img.toggle[1]).removeClass('invisible');
+		if(item.note == '') $('#taskrow_'+id+' .mtt-toggle').removeClass('mtt-toggle-expanded').addClass('invisible');
+		else $('#taskrow_'+id+' .mtt-toggle').addClass('mtt-toggle-expanded').removeClass('invisible');
 		cancelTaskNote(item.id);
 	}, 'json');
 	return false;
@@ -903,8 +902,8 @@ function btnMenuClose(e)
 function toggleNote(id)
 {
 	var o = $('#taskrow_'+id+'>div>div.task-note-block');
-	if(o.is('.hidden')) $('#taskrow_'+id+'>div>.mtt-toggle').attr('src', img.toggle[1]);
-	else $('#taskrow_'+id+'>div>.mtt-toggle').attr('src', img.toggle[0]);
+	if(o.is('.hidden')) $('#taskrow_'+id+' .mtt-toggle').addClass('mtt-toggle-expanded');
+	else $('#taskrow_'+id+' .mtt-toggle').removeClass('mtt-toggle-expanded');
 	o.toggleClass('hidden');
 }
 
@@ -914,11 +913,11 @@ function toggleAllNotes(show)
 	{
 		if(taskList[id].note == '') continue;
 		if(show) {
-			$('#taskrow_'+id+'>div>.mtt-toggle').attr('src', img.toggle[1]);
+			$('#taskrow_'+id+' .mtt-toggle').addClass('mtt-toggle-expanded');
 			$('#taskrow_'+id+'>div>div.task-note-block').removeClass('hidden');
 		}
 		else {
-			$('#taskrow_'+id+'>div>.mtt-toggle').attr('src', img.toggle[0]);
+			$('#taskrow_'+id+' .mtt-toggle').removeClass('mtt-toggle-expanded');
 			$('#taskrow_'+id+'>div>div.task-note-block').addClass('hidden');
 		}
 	}
