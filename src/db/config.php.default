@@ -6,9 +6,6 @@ $config = array();
 # Uncomment this line if you want to use Mysql, in format: array("host","login","password","database");
 #$config['mysql'] = array("localhost","user","password", "mytinytodo");
 
-# To use old SQLite2 (instead of SQLite3) uncomment the line below
-#$config['sqlite'] = 2;
-
 # Language pack
 $config['lang'] = "en";
 

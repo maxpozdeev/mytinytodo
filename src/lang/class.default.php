@@ -20,13 +20,17 @@ class DefaultLang
 		'invalidpass' => "Wrong password",
 		'readonly' => "read-only",
 		'tagfilter' => "Tag:",
+		'addList' => "Create new list",
+		'addListDefault' => "Todo",
+		'renameList' => "Rename list",
+		'deleteList' => "This will delete current list with all tasks in it.\\nAre you sure?",
 	);
 
 	private $default_inc = array
 	(
 		'My Tiny Todolist' => "My Tiny Todolist",
-		'tab_newtask' => "new task",
-		'tab_search' => "search",
+		'htab_newtask' => "New task",
+		'htab_search' => "Search",
 		'btn_add' => "Add",
 		'btn_search' => "Search",
 		'searching' => "Searching for",
@@ -61,6 +65,15 @@ class DefaultLang
 		'f_today' => "Today and tomorrow",
 		'f_soon' => "Soon",
 		'tasks_and_compl' => "Tasks + completed",
+		'notes' => "Notes:",
+		'notes_show' => "Show",
+		'notes_hide' => "Hide",
+		'list_new' => "New list",
+		'list_rename' => "Rename",
+		'list_delete' => "Delete",
+		'alltags' => "All tags:",
+		'alltags_show' => "Show all",
+		'alltags_hide' => "Hide all",
 	);
 
 	var $js = array();
@@ -83,8 +96,8 @@ class DefaultLang
 		foreach($this->get('days_min') as $v) { $t[] = '"'.str_replace('"','\\"',$v).'"'; }
 		$a[] = "daysMin: [". implode(',', $t). "]";
 		$t = array();
-		foreach($this->get('months_short') as $v) { $t[] = '"'.str_replace('"','\\"',$v).'"'; }
-		$a[] = "monthsShort: [". implode(',', $t). "]";
+		foreach($this->get('months_long') as $v) { $t[] = '"'.str_replace('"','\\"',$v).'"'; }
+		$a[] = "monthsLong: [". implode(',', $t). "]";
 		return "lang = {\n". implode(",\n", $a). "\n};";
 	}
 
