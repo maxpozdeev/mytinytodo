@@ -74,7 +74,8 @@ li.task-completed span.task-through { text-decoration:line-through; color:#77777
 li.task-completed .task-title a { color:#777777; }
 li.task-completed .task-actions a { color:#7070ff; }
 #tasklist li.task-completed .duedate { color:#777777; border-color:#777777; }
-li.task-completed  { opacity:0.7; }
+li.task-completed  { opacity:0.8; }
+li.task-completed .mtt-toggle { opacity:0.8; }
 
 #tasklist.filter-past li, #tasklist.filter-today li, #tasklist.filter-soon li { display:none; }
 #tasklist.filter-past li.past, #tasklist.filter-today li.today, #tasklist.filter-soon li.soon { display:block; }
