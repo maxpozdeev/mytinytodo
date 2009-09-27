@@ -3,8 +3,14 @@
 # Configuration goes here
 $config = array();
 
-# Uncomment this line if you want to use Mysql, in format: array("host","login","password","database");
-#$config['mysql'] = array("localhost","user","password", "mytinytodo");
+# Database type: sqlite or mysql
+$config['db'] = 'sqlite';
+
+# Specify these settings if you selected above to use Mysql
+$config['mysql.host'] = "localhost";
+$config['mysql.db'] = "mytinytodo";
+$config['mysql.user'] = "user";
+$config['mysql.password'] = ""; 
 
 # Language pack
 $config['lang'] = "en";
@@ -13,9 +19,9 @@ $config['lang'] = "en";
 #  or leave empty that everyone could read/write todolist
 $config['password'] = "";
 
-# Restrict access for the others when password above is set:
-#  "no" - No access, "read" - Read only
-$config['allow'] = "no";
+# Allow readonly access for the others when password above is set:
+#  0 - No access, 1 - Read only
+$config['allowread'] = 0;
 
 # To disable smart syntax uncomment the line below
 #$config['smartsyntax'] = 0;

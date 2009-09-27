@@ -58,5 +58,40 @@ function _get($param,$defvalue = '')
 	}
 } 
 
+function saveConfig($config)
+{
+	$params = array(
+		'db' => array('default'=>'sqlite', 'type'=>'s'),
+		'mysql.host' => array('default'=>'localhost', 'type'=>'s'),
+		'mysql.db' => array('default'=>'mytinytodo', 'type'=>'s'),
+		'mysql.user' => array('default'=>'user', 'type'=>'s'),
+		'mysql.password' => array('default'=>'', 'type'=>'s'),
+		'lang' => array('default'=>'en', 'type'=>'s'),
+		'password' => array('default'=>'', 'type'=>'s'),
+		'allowread' => array('default'=>0, 'type'=>'i'),
+		'smartsyntax' => array('default'=>1, 'type'=>'i'),
+		'autotz' => array('default'=>1, 'type'=>'i'),
+		'autotag' => array('default'=>1, 'type'=>'i'),
+		'duedateformat' => array('default'=>1, 'type'=>'i'),
+		'firstdayofweek' => array('default'=>1, 'type'=>'i'),
+		'session' => array('default'=>'files', 'type'=>'s'),
+	);
+
+	$s = '';
+	foreach($params as $param=>$v)
+	{
+		$val = isset($config[$param]) ? $config[$param] : $v['default'];
+		if($v['type']=='i') {
+			$s .= "\$config['$param'] = ".(int)$val.";\n";
+		}
+		else {
+			$s .= "\$config['$param'] = '".str_replace(array("\\","'"),array("\\\\","\\'"),$val)."';\n";
+		}
+	}
+	$f = fopen('./db/config.php', 'w');
+	if($f === false) throw new Exception("Error while saving config file");
+	fwrite($f, "<?php\n\$config = array();\n$s?>");
+	fclose($f);
+}
 
 ?>

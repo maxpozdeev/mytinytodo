@@ -6,21 +6,12 @@ require_once('./db/config.php');
 ini_set('display_errors', 'On');
 
 # MySQL Database Connection
-if(isset($config['mysql']))
+if($config['db'] == 'mysql')
 {
 	require_once('class.db.mysql.php');
 	$db = new Database_Mysql;
-	$db->connect($config['mysql'][0], $config['mysql'][1], $config['mysql'][2], $config['mysql'][3]);
+	$db->connect($config['mysql.host'], $config['mysql.user'], $config['mysql.password'], $config['mysql.db']);
 	$db->dq("SET NAMES utf8");
-}
-
-# SQLite2 Database
-elseif(isset($config['sqlite']) && 2 == $config['sqlite'])
-
-{
-	require_once('class.db.sqlite.php');
-	$db = new Database_Sqlite;
-	$db->connect('./db/todolist.db');
 }
 
 # SQLite3 (pdo_sqlite)
@@ -30,7 +21,6 @@ else
 	$db = new Database_Sqlite3;
 	$db->connect('./db/todolist.db');
 }
-
 
 
 $needAuth = (isset($config['password']) && $config['password'] != '') ? 1 : 0;
@@ -55,7 +45,7 @@ function canAllRead()
 {
 	global $config;
 	if(!isset($config['password']) || $config['password'] == '') return true;
-	if(isset($config['allow']) && $config['allow'] == "read") return true;
+	if(isset($config['allowread']) && $config['allowread']) return true;
 	return false;
 }
 

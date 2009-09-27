@@ -6,6 +6,23 @@
 	Licensed under the GNU GPL v3 license. See file COPYRIGHT for details.
 */
 
+# Check old config file (prior v1.3)
+require_once('./db/config.php');
+if(!isset($config['db']))
+{
+	if(isset($config['mysql'])) {
+		$config['db'] = 'mysql';
+		$config['mysql.host'] = $config['mysql'][0];
+		$config['mysql.db'] = $config['mysql'][3];
+		$config['mysql.user'] = $config['mysql'][1];
+		$config['mysql.password'] = $config['mysql'][2];
+	} else {
+		$config['db'] = 'sqlite';
+	}
+	if(isset($config['allow']) && $config['allow'] == 'read') $config['allowread'] = 1;
+	#saveConfig($config);
+}
+
 require_once('./init.php');
 if($needAuth && !is_logged())
 {
@@ -16,18 +33,44 @@ $dbtype = ($dbclass == 'database_mysql') ? 'mysql' : 'sqlite';
 
 $lastVer = '1.3';
 echo '<html><head><meta name="robots" content="noindex,nofollow"></head><body>'; 
-echo "<b>myTinyTodo v$lastVer Setup</b><br><br>";
+echo "<big><b>myTinyTodo v$lastVer Setup</b></big><br><br>";
 
 # determine current installed version
 $ver = get_ver($db, $dbtype);
 
 if(!$ver)
 {
-	# install database
-	if(!isset($_POST['install'])) {
+	# Which DB to select
+	if(!isset($_POST['installdb']) && !isset($_POST['install']))
+	{
+		exitMessage("<form method=post>Select database type to use:<br><br>
+<label><input type=radio name=installdb value=sqlite checked>SQLite</label><br><br>
+<label><input type=radio name=installdb value=mysql>MySQL</label><br>
+<table style=\"margin-left:30px\"><tr><td>Host:</td><td><input name=mysql_host value=localhost></td></tr>
+<tr><td>Database:</td><td><input name=mysql_db value=mytinytodo></td></tr>
+<tr><td>User:</td><td><input name=mysql_user value=user></td></tr>
+<tr><td>Password:</td><td><input type=password name=mysql_password></td></tr>
+</table><br><input type=submit value=' Next '></form>");
+	}
+	elseif(isset($_POST['installdb']))
+	{
+		# Save configuration
+		$dbtype = ($_POST['installdb'] == 'mysql') ? 'mysql' : 'sqlite';
+		$config['db'] = $dbtype;
+		if($dbtype == 'mysql') {
+			$config['mysql.host'] = _post('mysql_host');
+			$config['mysql.db'] = _post('mysql_db');
+			$config['mysql.user'] = _post('mysql_user');
+			$config['mysql.password'] = _post('mysql_password');
+		}
+		if(!testConnect($error)) {
+			exitMessage("Database connection error: $error");
+		}
+		saveConfig($config);
 		exitMessage("This will create myTinyTodo database <form method=post><input type=hidden name=install value=1><input type=submit value=' Install '></form>");
 	}
 
+	# install database
 	if($dbtype == 'mysql') 
 	{
 		try
@@ -202,6 +245,27 @@ function has_field_mysql($db, $table, $field)
 	return false;
 }
 
+function testConnect(&$error)
+{
+	global $config;
+	try {
+		if($config['db'] == 'mysql')
+		{
+			require_once('class.db.mysql.php');
+			$db = new Database_Mysql;
+			$db->connect($config['mysql.host'], $config['mysql.user'], $config['mysql.password'], $config['mysql.db']);
+		} else
+		{
+			if(false === $f = @fopen('./db/todolist.db', 'a+')) throw new Exception("database file is not readable/writable");
+			else fclose($f);
+		}
+	} catch(Exception $e) {
+		$error = $e->getMessage();
+		return 0;
+	}
+	return 1;
+}
+
 ### 1.1-1.2 ##########
 function update_11_12($db, $dbtype)
 {
@@ -267,6 +331,11 @@ function update_task_tags($id, $tag_ids)
 ### 1.2-1.3 ##########
 function update_12_13($db, $dbtype)
 {
+	# update config
+	global $config;
+	saveConfig($config);
+
+	# and then db
 	$db->ex("BEGIN");
 	if($dbtype=='mysql')
 	{

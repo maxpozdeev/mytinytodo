@@ -11,10 +11,6 @@ require_once('./lang/class.default.php');
 require_once('./lang/'.$config['lang'].'.php');
 
 $lang = new Lang();
-if(!$needAuth) $tabDisabled = '';
-elseif(!is_logged() && canAllRead()) $tabDisabled = ', selected:1, disabled: [0]';
-elseif(!is_logged()) $tabDisabled = ', disabled: [0,1]';
-else $tabDisabled = '';
 
 $sort = 0;
 if(isset($_COOKIE['sort']) && $_COOKIE['sort'] != '') $sort = (int)$_COOKIE['sort'];
