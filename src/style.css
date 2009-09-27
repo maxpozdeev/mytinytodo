@@ -30,10 +30,8 @@ a { color:#0000ff; }
 .mtt-tabs ul li.mtt-tabs-selected a { background:url(images/corner_right.gif) no-repeat top right; }
 .mtt-tabs ul li:hover { border-left:1px solid #ededed; }
 .mtt-tabs ul li:hover a { color: #888888; background:url(images/tab_hover.gif) no-repeat top right; }
-.mtt-htabs { clear:both; background-color:#ededed; padding:8px;  border-bottom:2px solid #DEDEDE; }
 #page_tasks.readonly #htab_search a.htab-toggle { color:#444; }
-
-.tab-content { padding:8px; border-bottom:2px solid #DEDEDE; background:url(images/corner_right.gif) no-repeat top right #ededed; }
+.mtt-htabs  { clear:both; padding:8px; border-bottom:2px solid #DEDEDE; background:url(images/corner_right.gif) no-repeat top right #ededed; }
 #loading { float:left; padding-top:5px; background-color:#ffffff; display:none; padding-right:6px;}
 
 #task, #search { color:#444444; width:300px; }
