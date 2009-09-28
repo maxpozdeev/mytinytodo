@@ -278,6 +278,9 @@ function editTask(id)
 		if(sel.options[i].value == item.prio) sel.options[i].selected = true;
 	}
 	$('<div id="overlay"></div>').appendTo('body').css('opacity', 0.5).show();
+	//clear selection
+	if(document.selection && document.selection.empty) document.selection.empty();
+	else if(window.getSelection) window.getSelection().removeAllRanges();
 	var w = $('#page_taskedit');
 	if(!flag.windowTaskEditMoved)
 	{
