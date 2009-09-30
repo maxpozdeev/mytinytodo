@@ -949,6 +949,7 @@ function loadLists(onInit)
 			tabLists[i] = item;
 			ti += '<li class="'+(i==0?'mtt-tabs-selected':'')+'"><a href="#list'+item.id+'" onClick="mttTabSelected(this,'+i+');return false;">'+item.name+'</a></li>';
 		});
+		ti += '<li class="mtt-tabs-button menu-owner"><a href="#" id="mylists" onClick="btnMenu(this);return false;"><img src="images/arrdown.gif"></a></li>';
 		$('#lists>ul').html(ti);
 		$('#lists').show();
 		curList = tabLists[0];

@@ -94,7 +94,6 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
  <div style="float:left"><span id="msg" onClick="toggleMsgDetails()"></span><div id="msgdetails"></div></div>
  <div align="right">
  <span class="menu-owner">
-   <a href="#" id="mylists" class="nodecor" onClick="btnMenu(this);return false;"><u>My lists</u> <img src="images/arrdown.gif" border=0></a> |
    <a href="settings.php">Settings</a>
  </span>
  <span class="bar-delim" style="display:none"> | </span>
