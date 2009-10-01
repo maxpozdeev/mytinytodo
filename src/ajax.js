@@ -463,8 +463,7 @@ function updateAccessStatus()
 function doAuth(form)
 {
 	setAjaxErrorTrigger();
-	var nocache = '&rnd='+Math.random();
-	$.post('ajax.php?login'+nocache, { password: form.password.value }, function(json){
+	$.post('ajax.php?rnd='+Math.random(), { login:1, password: form.password.value }, function(json){
 		resetAjaxErrorTrigger();
 		form.password.value = '';
 		if(json.logged)
@@ -484,10 +483,9 @@ function doAuth(form)
 function logout()
 {
 	setAjaxErrorTrigger();
-	var nocache = '&rnd='+Math.random();
-	$.getJSON('ajax.php?logout'+nocache, function(json){
+	$.post('ajax.php?rnd='+Math.random(), { logout:1 }, function(json){
 		resetAjaxErrorTrigger();
-	});
+	}, 'json');
 	flag.isLogged = false;
 	updateAccessStatus();
 	if(flag.canAllRead) {

@@ -234,7 +234,7 @@ elseif(isset($_GET['changeOrder']))
 	echo json_encode($t);
 	exit;
 }
-elseif(isset($_GET['login']))
+elseif(isset($_POST['login']))
 {
 	$t = array('logged' => 0);
 	if(!$needAuth) {
@@ -252,7 +252,7 @@ elseif(isset($_GET['login']))
 	echo json_encode($t);
 	exit;
 }
-elseif(isset($_GET['logout']))
+elseif(isset($_POST['logout']))
 {
 	$_SESSION = array();
 	$t = array('logged' => 0);
