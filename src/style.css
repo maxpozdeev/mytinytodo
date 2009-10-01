@@ -178,3 +178,4 @@ div.task-note-area textarea { color:#999999; width:100%; display:block; height:6
 .mtt-btnmenu-container { overflow: hidden; z-index:103; background-color:#f9f9f9; border:1px solid #cccccc; padding:3px; } 
 .mtt-btnmenu-container .li { margin:1px 0px; padding:2px; cursor:pointer; }
 .mtt-btnmenu-container .li:hover { background-color:#316AC5; color:white; }
+.mtt-btnmenu-container .li.mtt-need-list.li-disabled {color:#ACA899; }
