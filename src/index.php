@@ -112,13 +112,14 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
 <div id="lists" class="mtt-tabs">
  <ul class=""></ul>
  <div class="mtt-htabs">
-   <span id="htab_newtask"><?php __('htab_newtask');?>  <form onSubmit="return submitNewTask(this)"><input type="text" name="task" value="" maxlength="250" id="task"> <input type="submit" value="<?php __('btn_add');?>"></form>
-	&nbsp;| <a href="#" class="htab-toggle" onClick="addsearchToggle(1);this.blur();return false;"><?php __('htab_search');?></a>
+   <span id="htab_newtask"><?php __('htab_newtask');?> 
+	<form onSubmit="return submitNewTask(this)"><input type="text" name="task" value="" maxlength="250" id="task"> <input type="submit" value="<?php __('btn_add');?>"></form>
+	&nbsp;&nbsp;| <a href="#" class="htab-toggle" onClick="addsearchToggle(1);this.blur();return false;"><?php __('htab_search');?></a>
    </span>
 
-   <span id="htab_search" style="display:none">
-	<a href="#" class="htab-toggle" onClick="addsearchToggle(0);this.blur();return false;"><?php __('htab_newtask');?></a> |&nbsp;
-	<?php __('htab_search');?> <form onSubmit="return searchTasks()"><input type="text" name="search" value="" maxlength="250" id="search" onKeyUp="timerSearch()" autocomplete="off"> <input type="submit" value="<?php __('btn_search');?>"></form>
+   <span id="htab_search" style="display:none"><?php __('htab_search');?>
+	<form onSubmit="return searchTasks()"><input type="text" name="search" value="" maxlength="250" id="search" onKeyUp="timerSearch()" autocomplete="off"> <input type="submit" value="<?php __('btn_search');?>"></form>
+	&nbsp;&nbsp;| <a href="#" class="htab-toggle" onClick="addsearchToggle(0);this.blur();return false;"><?php __('htab_newtask');?></a> 
 	<div id="searchbar"><?php __('searching');?> <span id="searchbarkeyword"></span></div> 
    </span>
  </div>
