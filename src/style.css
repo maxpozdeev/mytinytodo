@@ -39,10 +39,15 @@ a { color:#0000ff; }
 
 #task, #search { color:#444444; width:300px; }
 .small-bar{ font-size:8pt; color:#999999; font-weight:normal;}
-#msg { background-color:#ff3333;  padding:1px 4px; display:none; font-weight:bold; cursor:pointer; }
-#msgdetails { padding:1px 4px; border:1px solid #ff3333; background-color:#fff; display:none; max-width:700px;  }
 #searchbar { font-size:10pt; font-weight:normal; display:none;  margin-top:5px; }
 #searchbarkeyword { font-weight:bold; }
+
+#msg .msg-text {  padding:1px 4px; font-weight:bold; cursor:pointer; }
+#msg .msg-details { padding:1px 4px; background-color:#fff; display:none; max-width:700px;  }
+#msg.mtt-error .msg-text { background-color:#ff3333; }
+#msg.mtt-error .msg-details { border:1px solid #ff3333;  }
+#msg.mtt-info .msg-text { background-color:#EFC300; }
+#msg.mtt-info .msg-details { border:1px solid #EFC300;}
 
 #sort { margin-left:5px; font-size:8pt; font-weight:normal; border-bottom:1px dashed #ccc; padding:2px; cursor:pointer; -moz-user-select:none; -webkit-user-select: none; }
 #sort:hover { border-bottom:1px solid #bbb; } 
@@ -179,3 +184,9 @@ div.task-note-area textarea { color:#999999; width:100%; display:block; height:6
 .mtt-btnmenu-container .li { margin:1px 0px; padding:2px; cursor:pointer; }
 .mtt-btnmenu-container .li:hover { background-color:#316AC5; color:white; }
 .mtt-btnmenu-container .li.mtt-need-list.li-disabled {color:#ACA899; }
+
+.mtt-settings-table { width:100%; border-collapse:collapse; }
+.mtt-settings-table th, .mtt-settings-table td { border-bottom:1px solid #dedede; padding:8px; vertical-align:top; }
+.mtt-settings-table .form-buttons { border-bottom:none; text-align:center; }
+.mtt-settings-table th { text-align:left; width:210px; padding-left:8px; }
+.mtt-settings-table .descr { font-size:8pt; font-weight:normal; color:#222; }

@@ -58,9 +58,9 @@ function _get($param,$defvalue = '')
 	}
 } 
 
-function saveConfig($config)
+class Config
 {
-	$params = array(
+	public static $params = array(
 		'db' => array('default'=>'sqlite', 'type'=>'s'),
 		'mysql.host' => array('default'=>'localhost', 'type'=>'s'),
 		'mysql.db' => array('default'=>'mytinytodo', 'type'=>'s'),
@@ -74,24 +74,36 @@ function saveConfig($config)
 		'autotag' => array('default'=>1, 'type'=>'i'),
 		'duedateformat' => array('default'=>1, 'type'=>'i'),
 		'firstdayofweek' => array('default'=>1, 'type'=>'i'),
-		'session' => array('default'=>'files', 'type'=>'s'),
+		'session' => array('default'=>'files', 'type'=>'s', 'options'=>array('files','default')),
 	);
 
-	$s = '';
-	foreach($params as $param=>$v)
+	public static function save($config)
 	{
-		$val = isset($config[$param]) ? $config[$param] : $v['default'];
-		if($v['type']=='i') {
-			$s .= "\$config['$param'] = ".(int)$val.";\n";
+		$s = '';
+		foreach(self::$params as $param=>$v)
+		{
+			if(!isset($config[$param])) $val = $v['default'];
+			elseif(isset($v['options']) && !in_array($config[$param], $v['options'])) $val = $v['default'];
+			else $val = $config[$param];
+			if($v['type']=='i') {
+				$s .= "\$config['$param'] = ".(int)$val.";\n";
+			}
+			else {
+				$s .= "\$config['$param'] = '".str_replace(array("\\","'"),array("\\\\","\\'"),$val)."';\n";
+			}
 		}
-		else {
-			$s .= "\$config['$param'] = '".str_replace(array("\\","'"),array("\\\\","\\'"),$val)."';\n";
-		}
+		$f = fopen('./db/config.php', 'w');
+		if($f === false) throw new Exception("Error while saving config file");
+		fwrite($f, "<?php\n\$config = array();\n$s?>");
+		fclose($f);
 	}
-	$f = fopen('./db/config.php', 'w');
-	if($f === false) throw new Exception("Error while saving config file");
-	fwrite($f, "<?php\n\$config = array();\n$s?>");
-	fclose($f);
+
+	public static function get($key, $config)
+	{
+		if(isset($config[$key])) return $config[$key];
+		elseif(isset(self::$params[$key])) return self::$params[$key]['default'];
+		else return null;
+	}
 }
 
 ?>

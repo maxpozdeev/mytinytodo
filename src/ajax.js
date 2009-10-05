@@ -1,7 +1,7 @@
 theme = {
 	newTaskFlashColor: '#ffffaa',
 	editTaskFlashColor: '#bbffaa',
-	errorFlashColor: '#ffffff'
+	msgFlashColor: '#ffffff'
 };
 
 //Global vars
@@ -25,6 +25,7 @@ var oBtnMenu = {};
 var tabLists = [];
 var curList = 0;
 var tagsList = [];
+var page = {cur:'', prev:''};
 
 function loadTasks()
 {
@@ -143,7 +144,7 @@ function setAjaxErrorTrigger()
 	$("#msg").ajaxError(function(event, request, settings){
 		var errtxt;
 		if(request.status == 0) errtxt = 'Bad connection';
-		else if(request.status != 200) errtxt = 'HTTP (ajax.php): '+request.status+'/'+request.statusText;
+		else if(request.status != 200) errtxt = 'HTTP: '+request.status+'/'+request.statusText;
 		else errtxt = request.responseText;
 		flashError(lang.error, errtxt);
 	});
@@ -151,15 +152,23 @@ function setAjaxErrorTrigger()
 
 function flashError(str, details)
 {
-	$("#msg").text(str).css('display','block');
-	$("#msgdetails").text(details);
+	$("#msg>.msg-text").text(str)
+	$("#msg>.msg-details").text(details);
 	$("#loading").hide();
-	$("#msg").effect("highlight", {color:theme.errorFlashColor}, 700);
+	$("#msg").addClass('mtt-error').effect("highlight", {color:theme.msgFlashColor}, 700);
+}
+
+function flashInfo(str, details)
+{
+	$("#msg>.msg-text").text(str)
+	$("#msg>.msg-details").text(details);
+	$("#loading").hide();
+	$("#msg").addClass('mtt-info').effect("highlight", {color:theme.msgFlashColor}, 700);
 }
 
 function toggleMsgDetails()
 {
-	var el = $("#msgdetails");
+	var el = $("#msg>.msg-details");
 	if(!el) return;
 	if(el.css('display') == 'none') el.show();
 	else el.hide()
@@ -167,8 +176,7 @@ function toggleMsgDetails()
 
 function resetAjaxErrorTrigger()
 {
-	$("#msg").hide().unbind('ajaxError');
-	$("#msgdetails").text('').hide();
+	$("#msg").hide().removeClass('mtt-error mtt-info').unbind('ajaxError');
 }
 
 function deleteTask(id)
@@ -458,6 +466,8 @@ function updateAccessStatus()
 		if(sortBy == 0) $("#tasklist").sortable('enable');
 		$("#authstr").text('').hide();
 	}
+	$('#page_ajax').hide();
+	page.cur = '';
 }
 
 function doAuth(form)
@@ -1071,4 +1081,38 @@ function addEditTag(tag)
 	}
 	var r = v.search(new RegExp('(^|,)\\s*'+tag+'\\s*(,|$)'));
 	if(r < 0) $('#edittags').val(v+', '+tag);
+}
+
+function showSettings()
+{
+	if(page.cur == 'settings') return false;
+	$('#page_ajax').load('settings.php?ajax=yes',null,function(){ 
+		showhide($('#page_ajax').addClass('mtt-page-settings'), $('#page_tasks'));
+		page.prev = page.cur;
+		page.cur = 'settings';
+	})
+}
+
+function closeSettings()
+{
+	showhide($('#page_tasks'), $('#page_ajax').removeClass('mtt-page-settings'));
+	page.prev = page.cur;
+	page.cur = '';
+	resetAjaxErrorTrigger();
+}
+
+function saveSettings(frm)
+{
+	if(!frm) return false;
+	var params = { save:'ajax' };
+	$(frm).find("input:text,input:checked,select,:password").filter(":enabled").each(function() { params[this.name || '__'] = this.value; }); 
+	$(frm).find(":submit").attr('disabled','disabled').blur();
+	setAjaxErrorTrigger();
+	$.post('settings.php?'+'&rnd='+Math.random(), params, function(json){
+		resetAjaxErrorTrigger();
+		if(json.saved) {
+			flashInfo(lang.settingsSaved);
+			setTimeout('window.location.reload();', 1000);
+		}
+	}, 'json');
 }

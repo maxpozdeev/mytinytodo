@@ -20,7 +20,7 @@ if(!isset($config['db']))
 		$config['db'] = 'sqlite';
 	}
 	if(isset($config['allow']) && $config['allow'] == 'read') $config['allowread'] = 1;
-	#saveConfig($config);
+	#Config::save($config);
 }
 
 require_once('./init.php');
@@ -66,7 +66,7 @@ if(!$ver)
 		if(!testConnect($error)) {
 			exitMessage("Database connection error: $error");
 		}
-		saveConfig($config);
+		Config::save($config);
 		exitMessage("This will create myTinyTodo database <form method=post><input type=hidden name=install value=1><input type=submit value=' Install '></form>");
 	}
 
@@ -333,7 +333,7 @@ function update_12_13($db, $dbtype)
 {
 	# update config
 	global $config;
-	saveConfig($config);
+	Config::save($config);
 
 	# and then db
 	$db->ex("BEGIN");

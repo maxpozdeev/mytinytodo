@@ -19,6 +19,7 @@ class Lang extends DefaultLang
 		'addList' => "Create new list",
 		'renameList' => "Rename list",
 		'deleteList' => "This will delete current list with all tasks in it.\\nAre you sure?",
+		'settingsSaved' => "Settings saved. Reloading...",
 	);
 
 	var $inc = array
@@ -69,6 +70,7 @@ class Lang extends DefaultLang
 		'alltags' => "All tags:",
 		'alltags_show' => "Show all",
 		'alltags_hide' => "Hide all",
+		'a_settings' => "Settings",
 	);
 }
 

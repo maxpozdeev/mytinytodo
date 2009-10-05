@@ -24,6 +24,7 @@ class DefaultLang
 		'addListDefault' => "Todo",
 		'renameList' => "Rename list",
 		'deleteList' => "This will delete current list with all tasks in it.\\nAre you sure?",
+		'settingsSaved' => "Settings saved. Reloading...",
 	);
 
 	private $default_inc = array
@@ -74,6 +75,7 @@ class DefaultLang
 		'alltags' => "All tags:",
 		'alltags_show' => "Show all",
 		'alltags_hide' => "Hide all",
+		'a_settings' => "Settings",
 	);
 
 	var $js = array();

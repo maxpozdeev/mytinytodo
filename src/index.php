@@ -91,10 +91,10 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
 <div id="loading"><img src="images/loading1.gif"></div>
 
 <div id="bar">
- <div style="float:left"><span id="msg" onClick="toggleMsgDetails()"></span><div id="msgdetails"></div></div>
+ <div id="msg" style="float:left"><span class="msg-text" onClick="toggleMsgDetails()"></span><div class="msg-details"></div></div>
  <div align="right">
  <span class="menu-owner">
-   <a href="settings.php">Settings</a>
+   <a href="#settings" onClick="showSettings();return false;"><?php __('a_settings');?></a>
  </span>
  <span class="bar-delim" style="display:none"> | </span>
  <span id="bar_auth">
@@ -199,6 +199,8 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
  <div class="li mtt-need-list" onClick="renameCurList()"><?php __('list_rename');?></div>
  <div class="li mtt-need-list" onClick="deleteCurList()"><?php __('list_delete');?></div>
 </div>
+
+<div id="page_ajax" style="display:none"></div>
 
 </div>
 <div id="space"></div>
