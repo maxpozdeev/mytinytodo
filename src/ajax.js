@@ -533,7 +533,7 @@ function getRecursParent(el, needle, level)
 
 function cancelTagFilter(dontLoadTasks)
 {
-	$('#tagcloudbtn>.btnstr').text($('#tagcloudbtn').attr('title'));
+	$('#tagcloudbtn>.btnstr').text(lang.tags);
 	filter.tag = '';
 	if(dontLoadTasks==null || !dontLoadTasks) loadTasks();
 }

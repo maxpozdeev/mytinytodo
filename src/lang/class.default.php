@@ -100,6 +100,7 @@ class DefaultLang
 		$t = array();
 		foreach($this->get('months_long') as $v) { $t[] = '"'.str_replace('"','\\"',$v).'"'; }
 		$a[] = "monthsLong: [". implode(',', $t). "]";
+		$a[] = "tags: \"". str_replace('"','\\"',$this->get('tags')). "\"";
 		return "lang = {\n". implode(",\n", $a). "\n};";
 	}
 
