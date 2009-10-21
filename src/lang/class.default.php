@@ -57,8 +57,6 @@ class DefaultLang
 		'months_short' => array("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"),
 		'months_long' => array("January","February","March","April","May","June","July","August","September","October","November","December"),
 		'days_min' => array("Su","Mo","Tu","We","Th","Fr","Sa"),
-		'date_md' => "%1\$s %2\$d", 
-		'date_ymd' => "%2\$s %3\$d, %1\$d",
 		'today' => "today",
 		'yesterday' => "yesterday",
 		'tomorrow' => "tomorrow",
@@ -109,18 +107,6 @@ class DefaultLang
 		if(isset($this->inc[$key])) return $this->inc[$key];
 		if(isset($this->default_inc[$key])) return $this->default_inc[$key];
 		return $key;
-	}
-
-	function formatMD($m, $d)
-	{
-		$months = $this->get('months_short');
-		return sprintf($this->get('date_md'), $months[$m-1], $d);
-	}
-
-	function formatYMD($y, $m, $d)
-	{
-		$months = $this->get('months_short');
-		return sprintf($this->get('date_ymd'), $y, $months[$m-1],  $d);
 	}
 }
 

@@ -17,6 +17,7 @@ if(isset($_COOKIE['sort']) && $_COOKIE['sort'] != '') $sort = (int)$_COOKIE['sor
 
 if($config['duedateformat'] == 2) $duedateformat = 'm/d/yy';
 elseif($config['duedateformat'] == 3) $duedateformat = 'dd.mm.yy';
+elseif($config['duedateformat'] == 4) $duedateformat = 'dd/mm/yy';
 else $duedateformat = 'yy-mm-dd';
 
 if(!isset($config['firstdayofweek']) || !is_int($config['firstdayofweek']) ||
@@ -65,7 +66,7 @@ $().ready(function(){
 		if(is_logged()) echo "\tflag.isLogged = true;\n";
 		echo "\tupdateAccessStatus();\n";
 	}
-	echo "\tloadLists(1)\n";
+	echo "\tloadLists(1);\n";
 ?>
 	preloadImg();
 	$("#duedate").datepicker({dateFormat: '<?php echo $duedateformat; ?>', firstDay: <?php echo $config['firstdayofweek']; ?>,

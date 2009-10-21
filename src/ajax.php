@@ -486,12 +486,18 @@ function tag_size($qmin, $q, $step)
 
 function parse_duedate($s)
 {
+	global $config;
 	$y = $m = $d = 0;
 	if(preg_match("|^(\d+)-(\d+)-(\d+)\b|", $s, $ma)) {
 		$y = (int)$ma[1]; $m = (int)$ma[2]; $d = (int)$ma[3];
 	}
-	elseif(preg_match("|^(\d+)\/(\d+)\/(\d+)\b|", $s, $ma)) {
-		$m = (int)$ma[1]; $d = (int)$ma[2]; $y = (int)$ma[3];
+	elseif(preg_match("|^(\d+)\/(\d+)\/(\d+)\b|", $s, $ma))
+	{
+		if($config['duedateformat'] == 4) {
+			$d = (int)$ma[1]; $m = (int)$ma[2]; $y = (int)$ma[3];
+		} else {
+			$m = (int)$ma[1]; $d = (int)$ma[2]; $y = (int)$ma[3];
+		}
 	}
 	elseif(preg_match("|^(\d+)\.(\d+)\.(\d+)\b|", $s, $ma)) {
 		$d = (int)$ma[1]; $m = (int)$ma[2]; $y = (int)$ma[3];
@@ -502,8 +508,13 @@ function parse_duedate($s)
 		if( $m<(int)$a[1] || ($m==(int)$a[1] && $d<(int)$a[2]) ) $y = (int)$a[0]+1; 
 		else $y = (int)$a[0];
 	}
-	elseif(preg_match("|^(\d+)\/(\d+)\b|", $s, $ma)) {
-		$m = (int)$ma[1]; $d = (int)$ma[2];
+	elseif(preg_match("|^(\d+)\/(\d+)\b|", $s, $ma))
+	{
+		if($config['duedateformat'] == 4) {
+			$d = (int)$ma[1]; $m = (int)$ma[2];
+		} else {
+			$m = (int)$ma[1]; $d = (int)$ma[2];
+		}
 		$a = explode(',', date('Y,m,d'));
 		if( $m<(int)$a[1] || ($m==(int)$a[1] && $d<(int)$a[2]) ) $y = (int)$a[0]+1; 
 		else $y = (int)$a[0];
@@ -537,18 +548,19 @@ function prepare_duedate($duedate, $tz=null)
 	}
 	$diff = mktime(0,0,0,$ad[1],$ad[2],$ad[0]) - mktime(0,0,0,$at[1],$at[2],$at[0]);
 
-	if($diff < -604800 && $ad[0] == $at[0])	{ $a['class'] = 'past'; $a['str'] = $lang->formatMD((int)$ad[1], (int)$ad[2]); }
-	elseif($diff < -604800)	{ $a['class'] = 'past'; $a['str'] = $lang->formatYMD((int)$ad[0], (int)$ad[1], (int)$ad[2]); }
+	if($diff < -604800 && $ad[0] == $at[0])	{ $a['class'] = 'past'; $a['str'] = formatDate3($config['dateformatshort'], (int)$ad[0], (int)$ad[1], (int)$ad[2]); }
+	elseif($diff < -604800)	{ $a['class'] = 'past'; $a['str'] = formatDate3($config['dateformat'], (int)$ad[0], (int)$ad[1], (int)$ad[2]); }
 	elseif($diff < -86400)		{ $a['class'] = 'past'; $a['str'] = sprintf($lang->get('daysago'),ceil(abs($diff)/86400)); }
 	elseif($diff < 0)			{ $a['class'] = 'past'; $a['str'] = $lang->get('yesterday'); }
 	elseif($diff < 86400)		{ $a['class'] = 'today'; $a['str'] = $lang->get('today'); }
 	elseif($diff < 172800)		{ $a['class'] = 'today'; $a['str'] = $lang->get('tomorrow'); }
 	elseif($diff < 691200)		{ $a['class'] = 'soon'; $a['str'] = sprintf($lang->get('indays'),ceil($diff/86400)); }
-	elseif($ad[0] == $at[0])	{ $a['class'] = 'future'; $a['str'] = $lang->formatMD((int)$ad[1], (int)$ad[2]); }
-	else						{ $a['class'] = 'future'; $a['str'] = $lang->formatYMD((int)$ad[0], (int)$ad[1], (int)$ad[2]); }
+	elseif($ad[0] == $at[0])	{ $a['class'] = 'future'; $a['str'] = formatDate3($config['dateformatshort'], (int)$ad[0], (int)$ad[1], (int)$ad[2]); }
+	else						{ $a['class'] = 'future'; $a['str'] = formatDate3($config['dateformat'], (int)$ad[0], (int)$ad[1], (int)$ad[2]); }
 
 	if($config['duedateformat'] == 2) $a['formatted'] = (int)$ad[1].'/'.(int)$ad[2].'/'.$ad[0];
 	elseif($config['duedateformat'] == 3) $a['formatted'] = $ad[2].'.'.$ad[1].'.'.$ad[0];
+	elseif($config['duedateformat'] == 4) $a['formatted'] = $ad[2].'/'.$ad[1].'/'.$ad[0];
 	else $a['formatted'] = $duedate;
 
 	return $a;
@@ -594,6 +606,27 @@ function myExceptionHandler($e)
 	}
 	echo 'Exception: \''. $e->getMessage() .'\' in '. $e->getFile() .':'. $e->getLine();
 	exit;
+}
+
+function formatDate3($format, $ay, $am, $ad)
+{
+	# F - month long, M - month short
+	# m - month 2-digit, n - month 1-digit
+	# d - day 2-digit, j - day 1-digit
+	global $lang;
+	$ml = $lang->get('months_long');
+	$ms = $lang->get('months_short');
+	$Y = $ay;
+	$n = $am;
+	$m = $n < 10 ? '0'.$n : $n;
+	$F = $ml[$am-1];
+	$M = $ms[$am-1];
+	$j = $ad;
+	$d = $j < 10 ? '0'.$j : $j;
+	return str_replace(
+		array('Y','F','M','n','m','d','j'),
+		array($Y, $F, $M, $n, $m, $d, $j),
+		$format);
 }
 
 ?>

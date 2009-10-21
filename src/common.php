@@ -75,6 +75,9 @@ class Config
 		'duedateformat' => array('default'=>1, 'type'=>'i'),
 		'firstdayofweek' => array('default'=>1, 'type'=>'i'),
 		'session' => array('default'=>'files', 'type'=>'s', 'options'=>array('files','default')),
+		'clock' => array('default'=>24, 'type'=>'i', 'options'=>array(12,24)),
+		'dateformat' => array('default'=>'j M Y', 'type'=>'s'),
+		'dateformatshort' => array('default'=>'j M', 'type'=>'s'),
 	);
 
 	public static function save($config)

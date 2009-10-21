@@ -41,4 +41,9 @@ $config['firstdayofweek'] = 1;
 # select session handling mechanism: files or default (php default)
 $config['session'] = 'files';
 
+# Date/time formats
+$config['clock'] = 24;
+$config['dateformat'] = 'j M Y';
+$config['dateformatshort'] = 'j M';
+
 ?>
