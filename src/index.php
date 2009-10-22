@@ -115,7 +115,7 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
  <div class="mtt-htabs">
    <span id="htab_newtask"><?php __('htab_newtask');?> 
 	<form onSubmit="return submitNewTask(this)"><input type="text" name="task" value="" maxlength="250" id="task"> <input type="submit" value="<?php __('btn_add');?>"></form>
-	<a href="#" onClick="showEditForm(1);return false;"><?php __('advanced_add');?></a>
+	<a href="#" onClick="showEditForm(1);return false;" title="<?php __('advanced_add');?>"><img src="images/page_white_edit_bw.png" style="border:none;vertical-align:text-top;" onMouseOver="this.src='images/page_white_edit.png'" onMouseOut="this.src='images/page_white_edit_bw.png'"></a>
 	&nbsp;&nbsp;| <a href="#" class="htab-toggle" onClick="addsearchToggle(1);this.blur();return false;"><?php __('htab_search');?></a>
    </span>
 
