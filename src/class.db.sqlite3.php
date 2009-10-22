@@ -1,5 +1,7 @@
 <?php
 
+# Copyright 2009 Max Pozdeev 
+
 class DatabaseResult_Sqlite3
 {
 	private $parent;

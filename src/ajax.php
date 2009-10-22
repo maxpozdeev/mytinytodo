@@ -1,5 +1,11 @@
 <?php
 
+/*
+	This file is part of myTinyTodo.
+	(C) Copyright 2009 Max Pozdeev <maxpozdeev@gmail.com>
+	Licensed under the GNU GPL v3 license. See file COPYRIGHT for details.
+*/ 
+
 set_error_handler('myErrorHandler');
 set_exception_handler('myExceptionHandler');
 
