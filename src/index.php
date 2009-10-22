@@ -115,6 +115,7 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
  <div class="mtt-htabs">
    <span id="htab_newtask"><?php __('htab_newtask');?> 
 	<form onSubmit="return submitNewTask(this)"><input type="text" name="task" value="" maxlength="250" id="task"> <input type="submit" value="<?php __('btn_add');?>"></form>
+	<a href="#" onClick="showEditForm(1);return false;"><?php __('advanced_add');?></a>
 	&nbsp;&nbsp;| <a href="#" class="htab-toggle" onClick="addsearchToggle(1);this.blur();return false;"><?php __('htab_search');?></a>
    </span>
 
@@ -142,7 +143,8 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
 
 <div id="page_taskedit" style="display:none">
 
-<h3><?php __('edit_task');?></h3>
+<h3 class="mtt-inadd"><?php __('add_task');?></h3>
+<h3 class="mtt-inedit"><?php __('edit_task');?></h3>
 
 <form onSubmit="return saveTask(this)" name="edittask">
 <input type="hidden" name="id" value="">

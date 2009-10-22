@@ -286,10 +286,24 @@ function editTask(id)
 	for(var i=0; i<sel.length; i++) {
 		if(sel.options[i].value == item.prio) sel.options[i].selected = true;
 	}
+	showEditForm();
+	return false;
+}
+
+function showEditForm(isAdd)
+{
 	$('<div id="overlay"></div>').appendTo('body').css('opacity', 0.5).show();
 	//clear selection
 	if(document.selection && document.selection.empty) document.selection.empty();
 	else if(window.getSelection) window.getSelection().removeAllRanges();
+	if(isAdd) {
+		showhide($('#page_taskedit>h3.mtt-inadd'), $('#page_taskedit>h3.mtt-inedit'));
+		$('#page_taskedit>form').attr('onSubmit', 'return submitFullTask(this)');
+	}
+	else {
+		showhide( $('#page_taskedit>h3.mtt-inedit'), $('#page_taskedit>h3.mtt-inadd'));
+		$('#page_taskedit>form').attr('onSubmit', 'return saveTask(this)');
+	}
 	var w = $('#page_taskedit');
 	if(!flag.windowTaskEditMoved)
 	{
@@ -304,12 +318,11 @@ function editTask(id)
 		}
 		if(x < 0) x = 0;
 		if(y < 0) y = 0;
-		w.css('left',x).css('top',y);
+		w.css({left:x, top:y});
 		tmp.editformpos = [x, y];
 	}
 	w.fadeIn('fast');	//.show();
 	$(document).bind('keydown', cancelEdit);
-	return false;
 }
 
 function cancelEdit(e)
@@ -1115,4 +1128,27 @@ function saveSettings(frm)
 			setTimeout('window.location.reload();', 1000);
 		}
 	}, 'json');
+}
+
+function submitFullTask(form)
+{
+	if(flag.needAuth && !flag.isLogged && flag.canAllRead) return false;
+	setAjaxErrorTrigger();
+	var nocache = '&rnd='+Math.random();
+	$.post('ajax.php?fullNewTask'+nocache, { list:curList.id, tag:filter.tag, title: form.task.value, note:form.note.value, prio:form.prio.value, tags:form.tags.value, duedate:form.duedate.value }, function(json){
+		resetAjaxErrorTrigger();
+		if(!parseInt(json.total)) return;
+		$('#total').text( parseInt($('#total').text()) + parseInt(json.total) );
+		form.task.value = '';
+		var item = json.list[0];
+		taskList[item.id] = item;
+		taskOrder.push(parseInt(item.id));
+		$('#tasklist').append(prepareTaskStr(item));
+		changeTaskOrder(item.id);
+		cancelEdit();
+		$('#taskrow_'+item.id).effect("highlight", {color:theme.newTaskFlashColor}, 2000);
+	}, 'json');
+	$("#edittags").flushCache();
+	flag.tagsChanged = true;
+	return false;
 }

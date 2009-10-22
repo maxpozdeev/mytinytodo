@@ -105,6 +105,48 @@ elseif(isset($_GET['newTask']))
 	echo json_encode($t); 
 	exit;
 }
+elseif(isset($_GET['fullNewTask']))
+{
+	check_write_access();
+	stop_gpc($_POST);
+	$listId = (int)_post('list');
+	$title = trim(_post('title'));
+	$note = str_replace("\r\n", "\n", trim(_post('note')));
+	$prio = (int)_post('prio');
+	if($prio < -1) $prio = -1;
+	elseif($prio > 2) $prio = 2;
+	$duedate = parse_duedate(trim(_post('duedate')));
+	$t = array();
+	$t['total'] = 0;
+	if($title == '') {
+		echo json_encode($t);
+		exit;
+	}
+	$tags = trim(_post('tags'));
+	if(isset($config['autotag']) && $config['autotag']) $tags .= ','._post('tag');
+	$tz = (int)_post('tz');
+	if( (isset($config['autotz']) && $config['autotz']==0) || $tz<-720 || $tz>720 || $tz%30!=0 ) $d = strftime("%Y-%m-%d %H:%M:%S");
+	else $d = gmdate("Y-m-d H:i:s", time()+$tz*60);
+	$ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM todolist WHERE list_id=$listId AND compl=0");
+	if(is_null($duedate)) $duedate = 'NULL'; else $duedate = $db->quote($duedate);
+	$db->ex("BEGIN");
+	$db->dq("INSERT INTO todolist (list_id,title,d,ow,prio,note,duedate) VALUES($listId,?,?,$ow,$prio,?,$duedate)", array($title,$d,$note));
+	$id = $db->last_insert_id();
+	if($tags)
+	{
+		$tag_ids = prepare_tags($tags, $listId);
+		if($tag_ids) {
+			update_task_tags($id, $tag_ids);
+			$db->ex("UPDATE todolist SET tags=? WHERE id=$id", $tags);
+		}
+	}
+	$db->ex("COMMIT");
+	$r = $db->sqa("SELECT * FROM todolist WHERE id=$id");
+	$t['list'][] = prepareTaskRow($r);
+	$t['total'] = 1;
+	echo json_encode($t); 
+	exit;
+}
 elseif(isset($_GET['deleteTask']))
 {
 	check_write_access();
