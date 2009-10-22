@@ -205,6 +205,7 @@ function completeTask(id,ch)
 	var compl = 0;
 	if(ch.checked) compl = 1;
 	setAjaxErrorTrigger();
+	var nocache = '&rnd='+Math.random();
 	$.getJSON('ajax.php?completeTask='+id+'&compl='+compl+nocache, function(json){
 		resetAjaxErrorTrigger();
 		if(!parseInt(json.total)) return;
