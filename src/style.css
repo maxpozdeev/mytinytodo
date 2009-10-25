@@ -1,6 +1,6 @@
 body, td, th, input,textarea,select { font-family: arial; font-size:10pt; } 
 html { height:100%; }
-body { margin:0px; padding:0px;  height:100%; min-height:100%; }
+body { margin:0px; padding:0px;  height:100%; min-height:100%; background-color:#fff; }
 #wrapper { margin:0px auto; max-width:1000px;  height:100%; }
 #container { height:auto !important;height:100%;min-height:100%;    }
 #body { padding:8px; padding-bottom:16px; }
