@@ -60,7 +60,7 @@ function loadTasks()
 	});
 }
 
-function prepareTaskStr(item)
+function prepareTaskStr(item, noteExp)
 {
 	var id = parseInt(item.id);
 	var prio = parseInt(item.prio);
@@ -69,12 +69,12 @@ function prepareTaskStr(item)
 		'<a href="#" onClick="return toggleTaskNote('+id+')"><img src="'+img.note[0]+'" onMouseOver="this.src=img.note[1]" onMouseOut="this.src=img.note[0]" title="'+lang.actionNote+'"></a>'+
 		'<a href="#" onClick="return editTask('+id+')"><img src="'+img.edit[0]+'" onMouseOver="this.src=img.edit[1]" onMouseOut="this.src=img.edit[0]" title="'+lang.actionEdit+'"></a>'+
 		'<a href="#" onClick="return deleteTask('+id+')"><img src="'+img.del[0]+'" onMouseOver="this.src=img.del[1]" onMouseOut="this.src=img.del[0]" title="'+lang.actionDelete+'"></a></div>'+
-		'<div class="task-left"><div class="mtt-toggle '+(item.note==''?'invisible':'')+'" onClick="toggleNote('+id+')"></div>'+
+		'<div class="task-left"><div class="mtt-toggle '+(item.note==''?'invisible':(noteExp?'mtt-toggle-expanded':''))+'" onClick="toggleNote('+id+')"></div>'+
 		'<input type="checkbox" '+(readOnly?'disabled':'')+' onClick="completeTask('+id+',this)" '+(item.compl?'checked':'')+'></div>'+
 		'<div class="task-middle">'+prepareDuedate(item.duedate, item.dueClass, item.dueStr)+
 		'<span class="nobr"><span class="task-through">'+preparePrio(prio,id)+'<span class="task-title">'+prepareHtml(item.title)+'</span>'+
 		prepareTagsStr(item.tags)+'<span class="task-date">'+lang.taskDate(item.date)+'</span></span></span>'+
-		'<div class="task-note-block hidden">'+
+		'<div class="task-note-block '+(item.note!=''&&noteExp?'':'hidden')+'">'+
 			'<div id="tasknote'+id+'" class="task-note"><span>'+prepareHtml(item.note)+'</span></div>'+
 			'<div id="tasknotearea'+id+'" class="task-note-area"><textarea id="notetext'+id+'"></textarea>'+
 				'<span class="task-note-actions"><a href="#" onClick="return saveTaskNote('+id+')">'+lang.actionNoteSave+
@@ -352,9 +352,8 @@ function saveTask(form)
 		var item = json.list[0];
 		if(!taskList[item.id].compl) changeTaskCnt(taskList[item.id].dueClass, -1);
 		taskList[item.id] = item;
-		$('#taskrow_'+item.id).replaceWith(prepareTaskStr(item));
-		if(item.note == '') $('#taskrow_'+item.id+'>div.task-note-block').addClass('hidden');
-		else $('#taskrow_'+item.id+'>div.task-note-block').removeClass('hidden');
+		var noteExpanded = (item.note != '' && $('#taskrow_'+item.id+' .mtt-toggle').is('.mtt-toggle-expanded')) ? 1 : 0;
+		$('#taskrow_'+item.id).replaceWith(prepareTaskStr(item, noteExpanded));
 		if(sortBy != 0) changeTaskOrder(item.id);
 		cancelEdit();
 		if(!taskList[item.id].compl) {
