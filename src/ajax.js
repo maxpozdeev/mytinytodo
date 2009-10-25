@@ -336,6 +336,7 @@ function cancelEdit(e)
 	document.edittask.note.value = '';
 	document.edittask.tags.value = '';
 	document.edittask.duedate.value = '';
+	document.edittask.prio.value = '0';
 	toggleEditAllTags(0);
 	return false;
 }
