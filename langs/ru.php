@@ -1,8 +1,8 @@
 <?php
 
 /*
-	myTinyTodo Russian language pack
-	v1.2.x compatible
+	myTinyTodo language pack (Russian)
+	v1.3 compatible
 */
 
 class Lang extends DefaultLang
@@ -21,18 +21,24 @@ class Lang extends DefaultLang
 		'invalidpass' => "Неверный пароль",
 		'readonly' => "только для чтения",
 		'tagfilter' => "Тег:",
+		'addList' => "Новый список",
+		'renameList' => "Переименовать список",
+		'deleteList' => "Вы действительно хотите удалить этот список со всеми задачами?",
+		'settingsSaved' => "Настройки сохранены. Перезагрузка...",
 	);
 
 	var $inc = array
 	(
-		'My Tiny Todolist' => "Мой список задач",
-		'tab_newtask' => "новая задача",
-		'tab_search' => "поиск",
+		'My Tiny Todolist' => "Мои задачи",
+		'htab_newtask' => "Новая задача",
+		'htab_search' => "Поиск",		
 		'btn_add' => "Добавить",
 		'btn_search' => "Искать",
+		'advanced_add' => "Расширенная форма",
 		'searching' => "Поиск",
 		'tasks' => "Задачи",
 		'edit_task' => "Редактирование задачи",
+		'add_task' => "Новая задача",
 		'priority' => "Приоритет",
 		'task' => "Задача",
 		'note' => "Заметка",
@@ -53,15 +59,23 @@ class Lang extends DefaultLang
 		'months_short' => array("Янв","Фев","Мар","Апр","Май","Июн","Июл","Авг","Сен","Окт","Ноя","Дек"),
 		'months_long' => array("Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"),
 		'days_min' => array("Вс","Пн","Вт","Ср","Чт","Пт","Сб"), 
-		'date_md' => "%2\$d %1\$s",
-		'date_ymd' => "%3\$d %2\$s %1\$d",
 		'today' => "сегодня",
 		'yesterday' => "вчера",
 		'tomorrow' => "завтра",
 		'f_past' => "Просроченные",
 		'f_today' => "Сегодня и завтра",
 		'f_soon' => "Скоро",
-		'tasks_and_compl' => "Задачи + завершенные", 
+		'tasks_and_compl' => "Задачи + завершенные",
+		'notes' => "Заметки:",
+		'notes_show' => "Показать",
+		'notes_hide' => "Скрыть",
+		'list_new' => "Новый список",
+		'list_rename' => "Переименовать",
+		'list_delete' => "Удалить",
+		'alltags' => "Все теги:",
+		'alltags_show' => "Показать все",
+		'alltags_hide' => "Скрыть все",
+		'a_settings' => "Настройки",
 	);
 }
 
