@@ -968,7 +968,7 @@ function loadLists(onInit)
 			$.each(json.list, function(i,item){
 				item.i = i;
 				tabLists[i] = item;
-				ti += '<li class="'+(i==0?'mtt-tabs-selected':'')+'"><a href="#list'+item.id+'" onClick="mttTabSelected(this,'+i+');return false;">'+item.name+'</a></li>';
+				ti += '<li class="'+(i==0?'mtt-tabs-selected':'')+'"><a href="#list'+item.id+'" onClick="mttTabSelected(this,'+i+');return false;" title="'+item.name+'">'+item.name+'</a></li>';
 			});
 			if(!curList) {
 				$('#lists .mtt-htabs').children().removeClass('invisible');
@@ -1003,7 +1003,7 @@ function addList()
 		var i = tabLists.length;
 		item.i = i;
 		tabLists[i] = item;
-		if(i > 0) $('#lists>ul>li.mtt-tabs-button').before('<li><a href="#list'+item.id+'" onClick="mttTabSelected(this,'+i+');return false;">'+item.name+'</a></li>') ;
+		if(i > 0) $('#lists>ul>li.mtt-tabs-button').before('<li><a href="#list'+item.id+'" onClick="mttTabSelected(this,'+i+');return false;" title="'+item.name+'">'+item.name+'</a></li>') ;
 		else loadLists();
 	}, 'json');
 }
@@ -1022,7 +1022,7 @@ function renameCurList()
 		item.i = curList.i;
 		tabLists[curList.i] = item;
 		curList = item;
-		$('#lists>ul>.mtt-tabs-selected>a').html(item.name);
+		$('#lists>ul>.mtt-tabs-selected>a').attr('title', item.name).html(item.name);
 	}, 'json');
 }
 
