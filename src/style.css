@@ -32,6 +32,7 @@ a { color:#0000ff; }
 .mtt-htabs  { clear:both; padding:8px; border-bottom:2px solid #DEDEDE; background:url(images/corner_right.gif) no-repeat top right #ededed; }
 #loading { float:left; padding-top:5px; background-color:#ffffff; display:none; padding-right:6px;}
 .mtt-tabs ul li.mtt-tabs-button { min-width:21px; width:21px; }
+.mtt-tabs ul li.mtt-tabs-button a { padding:6px 0px 0px 0px; }
 .mtt-tabs ul li.mtt-tabs-button a img { border:none;}
 .mtt-tabs ul li.mtt-tabs-button:hover a img { opacity:0.5; }
 #page_tasks.readonly li.mtt-tabs-button { display:none; }
