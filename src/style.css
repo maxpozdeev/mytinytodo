@@ -24,8 +24,8 @@ a { color:#0000ff; }
 #authform div.h { font-weight:bold; }
 
 .mtt-tabs ul { list-style: none; padding:0; margin:0; }
-.mtt-tabs ul li { margin:0; font-size:9pt; font-weight:bold; float: left; min-width:89px; max-width:199px; text-align:center; overflow:hidden; margin-right:3px; border-left:1px solid #ededed; background:url(images/tab_hover.gif) no-repeat top right; }
-.mtt-tabs ul a { margin:0; text-decoration:none; color:#444444; display:block; height:21px; width:100%; padding:6px 2px 0px 2px; outline:none; }
+.mtt-tabs ul li { margin:1px 0 0 0; font-size:9pt; font-weight:bold; float: left; min-width:89px; max-width:199px; text-align:center; overflow:hidden; margin-right:3px; border-left:1px solid #ededed; background:#fbfbfb url(images/tab_hover.gif) no-repeat top right; }
+.mtt-tabs ul a { margin:0; text-decoration:none; white-space:nowrap; color:#444444; display:block; height:21px; width:100%; padding:6px 2px 0px 2px; outline:none; }
 .mtt-tabs ul li.mtt-tabs-selected { background:#ededed url(images/corner_right.gif) no-repeat top right; border-left:1px solid #ededed; }
 .mtt-tabs ul li:hover a { color: #888888; }
 #page_tasks.readonly #htab_search a.htab-toggle { color:#444; }
