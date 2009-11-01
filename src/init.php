@@ -24,7 +24,7 @@ else
 
 
 $needAuth = (isset($config['password']) && $config['password'] != '') ? 1 : 0;
-if($needAuth)
+if($needAuth && !isset($dontStartSession))
 {
 	if(isset($config['session']) && $config['session'] == 'files')
 	{

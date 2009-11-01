@@ -109,4 +109,24 @@ class Config
 	}
 }
 
+function formatDate3($format, $ay, $am, $ad, $lang)
+{
+	# F - month long, M - month short
+	# m - month 2-digit, n - month 1-digit
+	# d - day 2-digit, j - day 1-digit
+	$ml = $lang->get('months_long');
+	$ms = $lang->get('months_short');
+	$Y = $ay;
+	$n = $am;
+	$m = $n < 10 ? '0'.$n : $n;
+	$F = $ml[$am-1];
+	$M = $ms[$am-1];
+	$j = $ad;
+	$d = $j < 10 ? '0'.$j : $j;
+	return str_replace(
+		array('Y','F','M','n','m','d','j'),
+		array($Y, $F, $M, $n, $m, $d, $j),
+		$format);
+}
+
 ?>

@@ -124,6 +124,8 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
 	&nbsp;&nbsp;| <a href="#" class="htab-toggle" onClick="addsearchToggle(0);this.blur();return false;"><?php __('htab_newtask');?></a> 
 	<div id="searchbar"><?php __('searching');?> <span id="searchbarkeyword"></span></div> 
    </span>
+
+   <span id="rss_icon" style="display:none;"><a href="#" title="<?php __('rss_feed');?>"><img src="images/feed_bw.png" style="border:none;" onMouseOver="this.src='images/feed.png'" onMouseOut="this.src='images/feed_bw.png'"></a></span>
  </div>
 </div>
 

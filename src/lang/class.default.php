@@ -76,6 +76,7 @@ class DefaultLang
 		'alltags_show' => "Show all",
 		'alltags_hide' => "Hide all",
 		'a_settings' => "Settings",
+		'rss_feed' => "RSS Feed",
 	);
 
 	var $js = array();

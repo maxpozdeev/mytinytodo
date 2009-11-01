@@ -76,6 +76,7 @@ class Lang extends DefaultLang
 		'alltags_show' => "Показать все",
 		'alltags_hide' => "Скрыть все",
 		'a_settings' => "Настройки",
+		'rss_feed' => "RSS-лента",
 	);
 }
 

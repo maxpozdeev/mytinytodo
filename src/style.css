@@ -56,6 +56,7 @@ a { color:#0000ff; }
 #sortform .li:hover { background-color:#316AC5; color:white; }
 
 .mtt-notes-showhide { font-size:8pt; font-weight:normal; margin-left:5px; }
+#rss_icon { float:right;margin-top:4px; }
 
 .task-left { float:left; }
 .task-left .mtt-toggle { margin-top:2px; cursor:pointer; width:15px; height:15px; float:left; background:url(images/toggle_plus.gif) left top no-repeat; }
@@ -184,6 +185,7 @@ div.task-note-area textarea { color:#999999; width:100%; display:block; height:6
 .mtt-btnmenu-container .li { margin:1px 0px; padding:2px; cursor:pointer; }
 .mtt-btnmenu-container .li:hover { background-color:#316AC5; color:white; }
 .mtt-btnmenu-container .li.mtt-need-list.li-disabled {color:#ACA899; }
+.mtt-btnmenu-delimiter { height:0px; border-top:1px solid #cccccc; margin:2px -1px 2px -1px }
 
 .mtt-settings-table { width:100%; border-collapse:collapse; }
 .mtt-settings-table th, .mtt-settings-table td { border-bottom:1px solid #dedede; padding:8px; vertical-align:top; }

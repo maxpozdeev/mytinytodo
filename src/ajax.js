@@ -863,7 +863,6 @@ function editFormResize(startstop, event)
 
 function mttTabSelected(el, indx)
 {
-
 	$(el.parentNode.parentNode).children('.mtt-tabs-selected').removeClass('mtt-tabs-selected');
 	$(el.parentNode).addClass('mtt-tabs-selected');
 	if(!tabLists[indx]) return;
@@ -874,6 +873,7 @@ function mttTabSelected(el, indx)
 			$('#searchbarkeyword').text('');
 			$('#searchbar').hide();
 		}
+		if(flag.canAllRead) $('#rss_icon').find('a').attr('href', 'feed.php?list='+tabLists[indx].id);
 	}
 	curList = tabLists[indx];
 	flag.tagsChanged = true;
@@ -977,12 +977,14 @@ function loadLists(onInit)
 			}
 			curList = tabLists[0];
 			loadTasks();
+			if(flag.canAllRead) $('#rss_icon').show().find('a').attr('href', 'feed.php?list='+curList.id);
 		}
 		else {
 			curList = 0;
 			$('#lists .mtt-htabs').children().addClass('invisible');
 			$('#page_tasks h3').children().addClass('invisible');
 			$('#mylistscontainer .mtt-need-list').addClass('li-disabled');
+			$('#rss_icon').hide();
 		}
 		ti += '<li class="mtt-tabs-button menu-owner"><a href="#" id="mylists" onClick="btnMenu(this);return false;"><img src="images/arrdown.gif"></a></li>';
 		$('#lists>ul').html(ti);
