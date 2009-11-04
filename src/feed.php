@@ -22,6 +22,8 @@ $listData = $db->sqa("SELECT * FROM lists WHERE id=$listId");
 if(!$listData) {
 	die("No such list");
 }
+$listData['_feed_title'] = sprintf($lang->get('feed_title'), $listData['name']);
+$listData['_feed_descr'] = sprintf($lang->get('feed_description'), $listData['name']);
 htmlarray_ref($listData);
 
 $data = array();
@@ -49,7 +51,7 @@ function printRss($listData, $data)
 	$buildDate = gmdate('r');
 
 	$s = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<rss version=\"2.0\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\">\n<channel>\n".
-		"<title>$listData[name]</title>\n<link>$link</link>\n<description>New tasks in $listData[name]</description>\n".
+		"<title>$listData[_feed_title]</title>\n<link>$link</link>\n<description>$listData[_feed_descr]</description>\n".
 		"<lastBuildDate>$buildDate</lastBuildDate>\n\n";
 
 	foreach($data as $v)
@@ -57,9 +59,10 @@ function printRss($listData, $data)
 		$da = explode(' ', $v['d']);
 		$dDate = explode('-', $da[0]);
 		$dTime = explode(':', $da[1]);
-		$d = gmdate('r', mktime((int)$dTime[0],(int)$dTime[1],(int)$dTime[2], (int)$dDate[1],(int)$dDate[2],(int)$dDate[0]));
+		$d_ts = mktime((int)$dTime[0],(int)$dTime[1],(int)$dTime[2], (int)$dDate[1],(int)$dDate[2],(int)$dDate[0]);
+		$d = gmdate('r', $d_ts);
 
-		$guid = $listData['id'].'-'.$v['id'].'-'.$da[0].'_'.$da[1];
+		$guid = $listData['id'].'-'.$v['id'].'-'.$d_ts;
 
 		$s .= "<item>\n<title>$v[title]</title>\n".
 			"<link>$link</link>\n".

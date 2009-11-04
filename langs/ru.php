@@ -77,6 +77,8 @@ class Lang extends DefaultLang
 		'alltags_hide' => "Скрыть все",
 		'a_settings' => "Настройки",
 		'rss_feed' => "RSS-лента",
+		'feed_title' => "%s",
+		'feed_description' => "%s - новые задачи",
 	);
 }
 

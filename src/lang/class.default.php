@@ -77,6 +77,8 @@ class DefaultLang
 		'alltags_hide' => "Hide all",
 		'a_settings' => "Settings",
 		'rss_feed' => "RSS Feed",
+		'feed_title' => "%s",
+		'feed_description' => "New tasks in %s",
 	);
 
 	var $js = array();
