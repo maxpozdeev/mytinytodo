@@ -23,6 +23,10 @@ else $duedateformat = 'yy-mm-dd';
 if(!isset($config['firstdayofweek']) || !is_int($config['firstdayofweek']) ||
 	$config['firstdayofweek']<0 || $config['firstdayofweek']>6) $config['firstdayofweek'] = 1;
 
+if(isset($config['title']) && $config['title'] != '') $title = htmlarray($config['title']);
+else $title = $lang->get('My Tiny Todolist');
+
+
 function __($s)
 {
 	global $lang;
@@ -33,7 +37,7 @@ function __($s)
 <html>
 <HEAD>
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
-<title><?php __('My Tiny Todolist');?></title>
+<title><?php echo $title; ?></title>
 <link rel="stylesheet" type="text/css" href="style.css?v=@VERSION" media="all">
 <?php if(isset($_GET['pda'])): ?>
 <meta name="viewport" id="viewport" content="width=device-width">
@@ -87,7 +91,7 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
 <div id="container">
 <div id="body">
 
-<h2><?php __('My Tiny Todolist');?></h2>
+<h2><?php echo $title; ?></h2>
 
 <div id="loading"><img src="images/loading1.gif"></div>
 

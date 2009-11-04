@@ -66,6 +66,7 @@ class Config
 		'mysql.db' => array('default'=>'mytinytodo', 'type'=>'s'),
 		'mysql.user' => array('default'=>'user', 'type'=>'s'),
 		'mysql.password' => array('default'=>'', 'type'=>'s'),
+		'title' => array('default'=>'', 'type'=>'s'),
 		'lang' => array('default'=>'en', 'type'=>'s'),
 		'password' => array('default'=>'', 'type'=>'s'),
 		'allowread' => array('default'=>0, 'type'=>'i'),

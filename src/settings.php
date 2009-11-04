@@ -32,6 +32,7 @@ if(isset($_POST['save']))
 	$config['clock'] = (int)_post('clock');
 	$config['dateformat'] = _post('dateformat');
 	$config['dateformatshort'] = _post('dateformatshort');
+	$config['title'] = trim(_post('title'));
 	Config::save($config);
 	$t['saved'] = 1;
 	echo json_encode($t);
@@ -79,6 +80,11 @@ function selectOptions($a, $value, $default=null)
 <form method="post" action="settings.php" onSubmit="saveSettings(this);return false;">
 
 <table class="mtt-settings-table">
+
+<tr>
+<th>Title:<br><span class="descr">(specify if you want to change default title)</span></th>
+<td> <input name="title" value="<?php echo htmlspecialchars(_c('title'));?>" style="width:350px"> </td>
+</tr>
 
 <tr>
 <th>Language:</th>
