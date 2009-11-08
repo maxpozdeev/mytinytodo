@@ -708,7 +708,7 @@ function loadTags(callback)
 		else tagsList = json.cloud;
 		var cloud = '';
 		$.each(tagsList, function(i,item){
-			cloud += '<a href="#" onClick=\'addFilterTag("'+item.tag+'");tagCloudClose();return false;\' class="tag w'+item.w+'" >'+item.tag+'</a>';
+			cloud += ' <a href="#" onClick=\'addFilterTag("'+item.tag+'");tagCloudClose();return false;\' class="tag w'+item.w+'" >'+item.tag+'</a>';
 		});
 		$('#tagcloudcontent').html(cloud)
 		flag.tagsChanged = false;

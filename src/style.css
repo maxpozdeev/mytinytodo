@@ -138,7 +138,7 @@ div.task-note-area textarea { color:#999999; width:100%; display:block; height:6
 #tagcloudbtn .tag { font-weight:bold; }
 #tagcloudload { display:none; }
 #tagcloud { overflow: hidden; z-index:101; background-color:#f9f9f9; border:1px solid #cccccc; padding:5px; width:400px; text-align:center; } 
-#tagcloud .tag { margin:1px; padding:2px; line-height:140%; color:black; }
+#tagcloud .tag { margin:1px 0px; padding:2px; line-height:140%; color:black; }
 #tagcloud .tag:hover { background-color:#999988; color:white; }
 #tagcloud .w0 { font-size:80%; }
 #tagcloud .w1 { font-size:90%; }
