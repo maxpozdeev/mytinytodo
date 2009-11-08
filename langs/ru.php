@@ -1,8 +1,13 @@
 <?php
 
 /*
-	myTinyTodo language pack (Russian)
-	v1.3 compatible
+	myTinyTodo language pack
+	Language: Russian
+	Author: Max Pozdeev
+	E-Mail: maxpozdeev@gmail.com
+	Url: http://www.mytinytodo.net
+	Version: v1.3.0
+	Date: 2009-11-08
 */
 
 class Lang extends DefaultLang
