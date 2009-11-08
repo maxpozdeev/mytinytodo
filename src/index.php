@@ -216,7 +216,7 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
 <div id="space"></div>
 </div>
 
-<div id="footer"><div id="footer_content">Powered by <strong><a href="http://www.pozdeev.com/mytinytodo/">myTinyTodo</a></strong> v@VERSION </div></div>
+<div id="footer"><div id="footer_content">Powered by <strong><a href="http://www.mytinytodo.net/">myTinyTodo</a></strong> v@VERSION </div></div>
 
 </div>
 </body>
