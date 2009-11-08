@@ -27,7 +27,7 @@ if(isset($config['title']) && $config['title'] != '') $title = htmlarray($config
 else $title = $lang->get('My Tiny Todolist');
 
 
-function __($s)
+function _e($s)
 {
 	global $lang;
 	echo $lang->get($s);
@@ -99,13 +99,13 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
  <div id="msg" style="float:left"><span class="msg-text" onClick="toggleMsgDetails()"></span><div class="msg-details"></div></div>
  <div align="right">
  <span class="menu-owner">
-   <a href="#settings" onClick="showSettings();return false;"><?php __('a_settings');?></a>
+   <a href="#settings" onClick="showSettings();return false;"><?php _e('a_settings');?></a>
  </span>
  <span class="bar-delim" style="display:none"> | </span>
  <span id="bar_auth">
-  <span id="bar_login"><a href="#" class="nodecor" onClick="showAuth(this);return false;"><u><?php __('a_login');?></u> <img src="images/arrdown.gif" border=0></a></span>
+  <span id="bar_login"><a href="#" class="nodecor" onClick="showAuth(this);return false;"><u><?php _e('a_login');?></u> <img src="images/arrdown.gif" border=0></a></span>
   <span id="authstr">&nbsp;</span>
-  <a href="#" id="bar_logout" onClick="logout();return false"><?php __('a_logout');?></a>
+  <a href="#" id="bar_logout" onClick="logout();return false"><?php _e('a_logout');?></a>
  </span>
  </div>
 </div>
@@ -117,27 +117,27 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
 <div id="lists" class="mtt-tabs">
  <ul class=""></ul>
  <div class="mtt-htabs">
-   <span id="htab_newtask"><?php __('htab_newtask');?> 
-	<form onSubmit="return submitNewTask(this)"><input type="text" name="task" value="" maxlength="250" id="task"> <input type="submit" value="<?php __('btn_add');?>"></form>
-	<a href="#" onClick="showEditForm(1);return false;" title="<?php __('advanced_add');?>"><img src="images/page_white_edit_bw.png" style="border:none;vertical-align:text-top;" onMouseOver="this.src='images/page_white_edit.png'" onMouseOut="this.src='images/page_white_edit_bw.png'"></a>
-	&nbsp;&nbsp;| <a href="#" class="htab-toggle" onClick="addsearchToggle(1);this.blur();return false;"><?php __('htab_search');?></a>
+   <span id="htab_newtask"><?php _e('htab_newtask');?> 
+	<form onSubmit="return submitNewTask(this)"><input type="text" name="task" value="" maxlength="250" id="task"> <input type="submit" value="<?php _e('btn_add');?>"></form>
+	<a href="#" onClick="showEditForm(1);return false;" title="<?php _e('advanced_add');?>"><img src="images/page_white_edit_bw.png" style="border:none;vertical-align:text-top;" onMouseOver="this.src='images/page_white_edit.png'" onMouseOut="this.src='images/page_white_edit_bw.png'"></a>
+	&nbsp;&nbsp;| <a href="#" class="htab-toggle" onClick="addsearchToggle(1);this.blur();return false;"><?php _e('htab_search');?></a>
    </span>
 
-   <span id="htab_search" style="display:none"><?php __('htab_search');?>
-	<form onSubmit="return searchTasks()"><input type="text" name="search" value="" maxlength="250" id="search" onKeyUp="timerSearch()" autocomplete="off"> <input type="submit" value="<?php __('btn_search');?>"></form>
-	&nbsp;&nbsp;| <a href="#" class="htab-toggle" onClick="addsearchToggle(0);this.blur();return false;"><?php __('htab_newtask');?></a> 
-	<div id="searchbar"><?php __('searching');?> <span id="searchbarkeyword"></span></div> 
+   <span id="htab_search" style="display:none"><?php _e('htab_search');?>
+	<form onSubmit="return searchTasks()"><input type="text" name="search" value="" maxlength="250" id="search" onKeyUp="timerSearch()" autocomplete="off"> <input type="submit" value="<?php _e('btn_search');?>"></form>
+	&nbsp;&nbsp;| <a href="#" class="htab-toggle" onClick="addsearchToggle(0);this.blur();return false;"><?php _e('htab_newtask');?></a> 
+	<div id="searchbar"><?php _e('searching');?> <span id="searchbarkeyword"></span></div> 
    </span>
 
-   <span id="rss_icon" style="display:none;"><a href="#" title="<?php __('rss_feed');?>"><img src="images/feed_bw.png" style="border:none;" onMouseOver="this.src='images/feed.png'" onMouseOut="this.src='images/feed_bw.png'"></a></span>
+   <span id="rss_icon" style="display:none;"><a href="#" title="<?php _e('rss_feed');?>"><img src="images/feed_bw.png" style="border:none;" onMouseOver="this.src='images/feed.png'" onMouseOut="this.src='images/feed_bw.png'"></a></span>
  </div>
 </div>
 
 <h3>
 <span id="sort" onClick="showSort(this);" style="float:right"><span class="btnstr"></span> <img src="images/arrdown.gif"></span>
-<span id="taskviewcontainer" onClick="showTaskview(this);"><span class="btnstr"><?php __('tasks');?></span> (<span id="total">0</span>) &nbsp;<img src="images/arrdown.gif"></span>
-<span id="tagcloudbtn" onClick="showTagCloud(this);"><span class="btnstr"><?php __('tags');?></span> <img src="images/arrdown.gif"></span>
-<span class="mtt-notes-showhide"><?php __('notes');?> <a href="#" onClick="toggleAllNotes(1);this.blur();return false;"><?php __('notes_show');?></a> / <a href="#" onClick="toggleAllNotes(0);this.blur();return false;"><?php __('notes_hide');?></a></span>
+<span id="taskviewcontainer" onClick="showTaskview(this);"><span class="btnstr"><?php _e('tasks');?></span> (<span id="total">0</span>) &nbsp;<img src="images/arrdown.gif"></span>
+<span id="tagcloudbtn" onClick="showTagCloud(this);"><span class="btnstr"><?php _e('tags');?></span> <img src="images/arrdown.gif"></span>
+<span class="mtt-notes-showhide"><?php _e('notes');?> <a href="#" onClick="toggleAllNotes(1);this.blur();return false;"><?php _e('notes_show');?></a> / <a href="#" onClick="toggleAllNotes(0);this.blur();return false;"><?php _e('notes_hide');?></a></span>
 </h3>
 
 <div id="taskcontainer">
@@ -149,25 +149,25 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
 
 <div id="page_taskedit" style="display:none">
 
-<h3 class="mtt-inadd"><?php __('add_task');?></h3>
-<h3 class="mtt-inedit"><?php __('edit_task');?></h3>
+<h3 class="mtt-inadd"><?php _e('add_task');?></h3>
+<h3 class="mtt-inedit"><?php _e('edit_task');?></h3>
 
 <form onSubmit="return saveTask(this)" name="edittask">
 <input type="hidden" name="id" value="">
-<div class="form-row"><span class="h"><?php __('priority');?></span> <SELECT name="prio"><option value="2">+2</option><option value="1">+1</option><option value="0" selected>&plusmn;0</option><option value="-1">&minus;1</option></SELECT> 
- &nbsp; <span class="h"><?php __('due');?> </span> <input name="duedate" id="duedate" value="" class="in100" title="Y-M-D, M/D/Y, D.M.Y, M/D, D.M" autocomplete="off"></div>
-<div class="form-row"><div class="h"><?php __('task');?></div> <input type="text" name="task" value="" class="in500" maxlength="250"></div>
-<div class="form-row"><div class="h"><?php __('note');?></div> <textarea name="note" class="in500"></textarea></div>
-<div class="form-row"><div class="h"><?php __('tags');?></div>
+<div class="form-row"><span class="h"><?php _e('priority');?></span> <SELECT name="prio"><option value="2">+2</option><option value="1">+1</option><option value="0" selected>&plusmn;0</option><option value="-1">&minus;1</option></SELECT> 
+ &nbsp; <span class="h"><?php _e('due');?> </span> <input name="duedate" id="duedate" value="" class="in100" title="Y-M-D, M/D/Y, D.M.Y, M/D, D.M" autocomplete="off"></div>
+<div class="form-row"><div class="h"><?php _e('task');?></div> <input type="text" name="task" value="" class="in500" maxlength="250"></div>
+<div class="form-row"><div class="h"><?php _e('note');?></div> <textarea name="note" class="in500"></textarea></div>
+<div class="form-row"><div class="h"><?php _e('tags');?></div>
  <table cellspacing="0" cellpadding="0" width="100%"><tr>
   <td><input type="text" name="tags" id="edittags" value="" class="in500" maxlength="250"></td>
   <td width="1" style="white-space:nowrap; padding-left:5px; text-align:right;">
-   <a href="#" id="alltags_show" onClick="toggleEditAllTags(1);return false;"><?php __('alltags_show');?></a>
-   <a href="#" id="alltags_hide" onClick="toggleEditAllTags(0);return false;" style="display:none"><?php __('alltags_hide');?></a></td>
+   <a href="#" id="alltags_show" onClick="toggleEditAllTags(1);return false;"><?php _e('alltags_show');?></a>
+   <a href="#" id="alltags_hide" onClick="toggleEditAllTags(0);return false;" style="display:none"><?php _e('alltags_hide');?></a></td>
  </tr></table>
 </div>
-<div class="form-row" id="alltags" style="display:none;"><?php __('alltags');?> <span class="tags-list"></span></div>
-<div class="form-row"><input type="submit" value="<?php __('save');?>" onClick="this.blur()"> <input type="button" value="<?php __('cancel');?>" onClick="cancelEdit();this.blur();return false"></div>
+<div class="form-row" id="alltags" style="display:none;"><?php _e('alltags');?> <span class="tags-list"></span></div>
+<div class="form-row"><input type="submit" value="<?php _e('save');?>" onClick="this.blur()"> <input type="button" value="<?php _e('cancel');?>" onClick="cancelEdit();this.blur();return false"></div>
 </form>
 
 </div>  <!-- end of page_taskedit -->
@@ -175,7 +175,7 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
 
 <div id="authform" style="display:none">
 <form onSubmit="doAuth(this);return false;">
- <div class="h"><?php __('password');?></div><div><input type="password" name="password" id="password"></div><div><input type="submit" value="<?php __('btn_login');?>"></div>
+ <div class="h"><?php _e('password');?></div><div><input type="password" name="password" id="password"></div><div><input type="submit" value="<?php _e('btn_login');?>"></div>
 </form>
 </div>
 
@@ -185,29 +185,29 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
 </div>
 
 <div id="taskview" style="display:none">
- <div class="li" onClick="setTaskview(0);taskviewClose();"><span id="view_tasks"><?php __('tasks');?></span></div>
- <div class="li" onClick="setTaskview(1);taskviewClose();"><span id="view_compl"><?php __('tasks_and_compl');?></span></div>
- <div class="li" onClick="setTaskview('past');taskviewClose();"><span id="view_past"><?php __('f_past');?></span> (<span id="cnt_past">0</span>)</div>
- <div class="li" onClick="setTaskview('today');taskviewClose();"><span id="view_today"><?php __('f_today');?></span> (<span id="cnt_today">0</span>)</div>
- <div class="li" onClick="setTaskview('soon');taskviewClose();"><span id="view_soon"><?php __('f_soon');?></span> (<span id="cnt_soon">0</span>)</div>
+ <div class="li" onClick="setTaskview(0);taskviewClose();"><span id="view_tasks"><?php _e('tasks');?></span></div>
+ <div class="li" onClick="setTaskview(1);taskviewClose();"><span id="view_compl"><?php _e('tasks_and_compl');?></span></div>
+ <div class="li" onClick="setTaskview('past');taskviewClose();"><span id="view_past"><?php _e('f_past');?></span> (<span id="cnt_past">0</span>)</div>
+ <div class="li" onClick="setTaskview('today');taskviewClose();"><span id="view_today"><?php _e('f_today');?></span> (<span id="cnt_today">0</span>)</div>
+ <div class="li" onClick="setTaskview('soon');taskviewClose();"><span id="view_soon"><?php _e('f_soon');?></span> (<span id="cnt_soon">0</span>)</div>
 </div>
 
 <div id="sortform" style="display:none">
- <div id="sortByHand" class="li" onClick="setSort(0);sortClose();"><?php __('sortByHand');?></div>
- <div id="sortByPrio" class="li" onClick="setSort(1);sortClose();"><?php __('sortByPriority');?></div>
- <div id="sortByDueDate"  class="li" onClick="setSort(2);sortClose();"><?php __('sortByDueDate');?></div>
+ <div id="sortByHand" class="li" onClick="setSort(0);sortClose();"><?php _e('sortByHand');?></div>
+ <div id="sortByPrio" class="li" onClick="setSort(1);sortClose();"><?php _e('sortByPriority');?></div>
+ <div id="sortByDueDate"  class="li" onClick="setSort(2);sortClose();"><?php _e('sortByDueDate');?></div>
 </div>
 
 <div id="tagcloud" style="display:none">
- <div id="tagcloudcancel" onClick="cancelTagFilter();tagCloudClose();"><?php __('tagfilter_cancel');?></div>
+ <div id="tagcloudcancel" onClick="cancelTagFilter();tagCloudClose();"><?php _e('tagfilter_cancel');?></div>
  <div id="tagcloudload"><img src="images/loading1_24.gif"></div>
  <div id="tagcloudcontent"></div>
 </div>
 
 <div id="mylistscontainer" class="mtt-btnmenu-container" style="display:none">
- <div class="li" onClick="addList()"><?php __('list_new');?></div>
- <div class="li mtt-need-list" onClick="renameCurList()"><?php __('list_rename');?></div>
- <div class="li mtt-need-list" onClick="deleteCurList()"><?php __('list_delete');?></div>
+ <div class="li" onClick="addList()"><?php _e('list_new');?></div>
+ <div class="li mtt-need-list" onClick="renameCurList()"><?php _e('list_rename');?></div>
+ <div class="li mtt-need-list" onClick="deleteCurList()"><?php _e('list_delete');?></div>
 </div>
 
 <div id="page_ajax" style="display:none"></div>
