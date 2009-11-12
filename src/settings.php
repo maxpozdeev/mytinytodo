@@ -83,7 +83,7 @@ function selectOptions($a, $value, $default=null)
 
 <tr>
 <th>Title:<br><span class="descr">(specify if you want to change default title)</span></th>
-<td> <input name="title" value="<?php echo htmlspecialchars(_c('title'));?>" style="width:350px"> </td>
+<td> <input name="title" value="<?php echo htmlspecialchars(_c('title'));?>" class="in350"> </td>
 </tr>
 
 <tr>

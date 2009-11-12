@@ -43,3 +43,4 @@ div.task-note-area textarea { width:95%; }
 #authstr { float:none; }
 
 #tagcloud { max-width:100%; }
+.mtt-settings-table .in350 { min-width:50px; }

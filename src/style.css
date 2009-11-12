@@ -192,3 +192,4 @@ div.task-note-area textarea { color:#999999; width:100%; display:block; height:6
 .mtt-settings-table .form-buttons { border-bottom:none; text-align:center; }
 .mtt-settings-table th { text-align:left; width:210px; padding-left:8px; }
 .mtt-settings-table .descr { font-size:8pt; font-weight:normal; color:#222; }
+.mtt-settings-table .in350 { min-width:350px; }
