@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 /*
 	myTinyTodo language pack
@@ -6,8 +6,8 @@
 	Author: Raphael Guimarães
 	E-Mail:
 	Url:
-	Version: v1.3b3
-	Date: 2009-11-04
+	AppVersion: v1.3.0
+	Date: 2009-11-09
 */
 
 class Lang extends DefaultLang
@@ -82,6 +82,8 @@ class Lang extends DefaultLang
 		'alltags_hide' => "Esconder todos",
 		'a_settings' => "Preferências",
 		'rss_feed' => "RSS Feed",
+		'feed_title' => "%s",
+		'feed_description' => "Nova tarefa em %s",
 	);
 }
 
