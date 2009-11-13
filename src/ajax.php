@@ -50,7 +50,7 @@ elseif(isset($_GET['loadTasks']))
 	elseif($sort == 2) $sqlSort .= "ddn ASC, duedate ASC, prio DESC, ow ASC";
 	else $sqlSort .= "ow ASC";
 	$tz = (int)_get('tz');
-	if((isset($config['autotz']) && $config['autotz']==0) || $tz<-720 || $tz>720 || $tz%30!=0) $tz = null;
+	if((isset($config['autotz']) && $config['autotz']==0) || $tz<-720 || $tz>720 || $tz%30!=0) $tz = round(date('Z')/60);
 	$t = array();
 	$t['total'] = 0;
 	$t['list'] = array();
@@ -90,11 +90,10 @@ elseif(isset($_GET['newTask']))
 	}
 	if(isset($config['autotag']) && $config['autotag']) $tags .= ','._post('tag');
 	$tz = (int)_post('tz');
-	if( (isset($config['autotz']) && $config['autotz']==0) || $tz<-720 || $tz>720 || $tz%30!=0 ) $d = strftime("%Y-%m-%d %H:%M:%S");
-	else $d = gmdate("Y-m-d H:i:s", time()+$tz*60);
+	if( (isset($config['autotz']) && $config['autotz']==0) || $tz<-720 || $tz>720 || $tz%30!=0 ) $tz = round(date('Z')/60);
 	$ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM todolist WHERE list_id=$listId AND compl=0");
 	$db->ex("BEGIN");
-	$db->dq("INSERT INTO todolist (list_id,title,d,ow,prio) VALUES ($listId,?,?,$ow,$prio)", array($title, $d));
+	$db->dq("INSERT INTO todolist (list_id,title,d_created,ow,prio) VALUES ($listId,?,?,$ow,$prio)", array($title, time()));
 	$id = $db->last_insert_id();
 	if($tags)
 	{
@@ -106,7 +105,7 @@ elseif(isset($_GET['newTask']))
 	}
 	$db->ex("COMMIT");
 	$r = $db->sqa("SELECT * FROM todolist WHERE id=$id");
-	$t['list'][] = prepareTaskRow($r);
+	$t['list'][] = prepareTaskRow($r, $tz);
 	$t['total'] = 1;
 	echo json_encode($t); 
 	exit;
@@ -131,12 +130,11 @@ elseif(isset($_GET['fullNewTask']))
 	$tags = trim(_post('tags'));
 	if(isset($config['autotag']) && $config['autotag']) $tags .= ','._post('tag');
 	$tz = (int)_post('tz');
-	if( (isset($config['autotz']) && $config['autotz']==0) || $tz<-720 || $tz>720 || $tz%30!=0 ) $d = strftime("%Y-%m-%d %H:%M:%S");
-	else $d = gmdate("Y-m-d H:i:s", time()+$tz*60);
+	if( (isset($config['autotz']) && $config['autotz']==0) || $tz<-720 || $tz>720 || $tz%30!=0 ) $tz = round(date('Z')/60);
 	$ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM todolist WHERE list_id=$listId AND compl=0");
 	if(is_null($duedate)) $duedate = 'NULL'; else $duedate = $db->quote($duedate);
 	$db->ex("BEGIN");
-	$db->dq("INSERT INTO todolist (list_id,title,d,ow,prio,note,duedate) VALUES($listId,?,?,$ow,$prio,?,$duedate)", array($title,$d,$note));
+	$db->dq("INSERT INTO todolist (list_id,title,d_created,ow,prio,note,duedate) VALUES($listId,?,?,$ow,$prio,?,$duedate)", array($title,time(),$note));
 	$id = $db->last_insert_id();
 	if($tags)
 	{
@@ -148,7 +146,7 @@ elseif(isset($_GET['fullNewTask']))
 	}
 	$db->ex("COMMIT");
 	$r = $db->sqa("SELECT * FROM todolist WHERE id=$id");
-	$t['list'][] = prepareTaskRow($r);
+	$t['list'][] = prepareTaskRow($r, $tz);
 	$t['total'] = 1;
 	echo json_encode($t); 
 	exit;
@@ -201,20 +199,6 @@ elseif(isset($_GET['editNote']))
 	echo json_encode($t);
 	exit;
 }
-elseif(isset($_GET['getTask']))
-{
-	check_read_access();
-	$id = (int)$_GET['getTask'];
-	$t = array();
-	$t['total'] = 0;
-	$r = $db->sqa("SELECT * FROM todolist WHERE id=$id");
-	if($r) {
-		$t['list'][] = prepareTaskRow($r);
-		$t['total'] = 1;
-	}
-	echo json_encode($t); 
-	exit;
-}
 elseif(isset($_GET['editTask']))
 {
 	check_write_access();
@@ -234,6 +218,8 @@ elseif(isset($_GET['editTask']))
 		exit;
 	}
 	$tags = trim(_post('tags'));
+	$tz = (int)_post('tz');
+	if( (isset($config['autotz']) && $config['autotz']==0) || $tz<-720 || $tz>720 || $tz%30!=0 ) $tz = round(date('Z')/60);
 	$db->ex("BEGIN");
 	$tag_ids = prepare_tags($tags, $listId); 
 	$cur_ids = get_task_tags($id);
@@ -250,7 +236,7 @@ elseif(isset($_GET['editTask']))
 	$db->ex("COMMIT");
 	$r = $db->sqa("SELECT * FROM todolist WHERE id=$id");
 	if($r) {
-		$t['list'][] = prepareTaskRow($r);
+		$t['list'][] = prepareTaskRow($r, $tz);
 		$t['total'] = 1;
 	}
 	echo json_encode($t); 
@@ -417,13 +403,13 @@ elseif(isset($_POST['deleteList']))
 
 ###################################################################################################
 
-function prepareTaskRow($r, $tz=null)
+function prepareTaskRow($r, $tz)
 {
 	$dueA = prepare_duedate($r['duedate'], $tz);
 	return array(
 		'id' => $r['id'],
 		'title' => htmlarray($r['title']),
-		'date' => htmlarray($r['d']),
+		'date' => htmlarray(timestampToDatetime($r['d_created'], $tz)),
 		'compl' => (int)$r['compl'],
 		'prio' => $r['prio'],
 		'note' => nl2br(htmlarray($r['note'])),
@@ -578,7 +564,7 @@ function parse_duedate($s)
 	return "$y-$m-$d";
 }
 
-function prepare_duedate($duedate, $tz=null)
+function prepare_duedate($duedate, $tz)
 {
 	global $lang, $config;
 
@@ -586,14 +572,8 @@ function prepare_duedate($duedate, $tz=null)
 	if($duedate == '') {
 		return $a;
 	}
-	if(is_null($tz)) {
-		$ad = explode('-', $duedate);
-		$at = explode('-', date('Y-m-d'));
-	}
-	else {
-		$ad = explode('-', $duedate);
-		$at = explode('-', gmdate('Y-m-d',time() + $tz*60));
-	}
+	$ad = explode('-', $duedate);
+	$at = explode('-', gmdate('Y-m-d', time() + $tz*60));
 	$diff = mktime(0,0,0,$ad[1],$ad[2],$ad[0]) - mktime(0,0,0,$at[1],$at[2],$at[0]);
 
 	if($diff < -604800 && $ad[0] == $at[0])	{ $a['class'] = 'past'; $a['str'] = formatDate3($config['dateformatshort'], (int)$ad[0], (int)$ad[1], (int)$ad[2], $lang); }

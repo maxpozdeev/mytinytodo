@@ -55,4 +55,23 @@ function is_logged()
 	return true;
 }
 
+function timestampToDatetime($timestamp, $tz)
+{
+	global $config, $lang;
+	$format = $config['dateformat'] .' '. ($config['clock'] == 12 ? 'g:i A' : 'H:i');
+	$newformat = strtr($format, array('F'=>'%1', 'M'=>'%2'));
+	$adate = explode(',', gmdate('n,'.$newformat, $timestamp + $tz*60), 2);
+	$s = $adate[1];
+	if($newformat != $format)
+	{
+		$am = (int)$adate[0];
+		$ml = $lang->get('months_long');
+		$ms = $lang->get('months_short');
+		$F = $ml[$am-1];
+		$M = $ms[$am-1];
+		$s = strtr($s, array('%1'=>$F, '%2'=>$M));
+	}
+	return $s;
+}
+
 ?>

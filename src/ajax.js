@@ -13,7 +13,6 @@ var objPrio = {};
 var selTask = 0;
 var sortBy = 0;
 var flag = { needAuth:false, isLogged:false, canAllRead:true, tagsChanged:true, windowTaskEditMoved:false };
-var tz = 0;
 var img = {
 	'note': ['images/page_white_text_add_bw.png','images/page_white_text_add.png'],
 	'edit': ['images/page_white_edit_bw.png','images/page_white_edit.png'],
@@ -30,7 +29,7 @@ var page = {cur:'', prev:''};
 function loadTasks()
 {
 	if(!curList) return false;
-	tz = -1 * (new Date()).getTimezoneOffset();
+	var tz = -1 * (new Date()).getTimezoneOffset();
 	setAjaxErrorTrigger();
 	var search = filter.search ? '&s='+encodeURIComponent(filter.search) : '';
 	var tag = filter.tag ? '&t='+encodeURIComponent(filter.tag) : '';
@@ -344,9 +343,10 @@ function cancelEdit(e)
 function saveTask(form)
 {
 	if(flag.needAuth && !flag.isLogged && flag.canAllRead) return false;
+	var tz = -1 * (new Date()).getTimezoneOffset();
 	setAjaxErrorTrigger();
 	var nocache = '&rnd='+Math.random();
-	$.post('ajax.php?editTask='+form.id.value+nocache, { list:curList.id, title: form.task.value, note:form.note.value, prio:form.prio.value, tags:form.tags.value, duedate:form.duedate.value }, function(json){
+	$.post('ajax.php?editTask='+form.id.value+nocache, { list:curList.id, tz:tz, title: form.task.value, note:form.note.value, prio:form.prio.value, tags:form.tags.value, duedate:form.duedate.value }, function(json){
 		resetAjaxErrorTrigger();
 		if(!parseInt(json.total)) return;
 		var item = json.list[0];
