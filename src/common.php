@@ -124,10 +124,7 @@ function formatDate3($format, $ay, $am, $ad, $lang)
 	$M = $ms[$am-1];
 	$j = $ad;
 	$d = $j < 10 ? '0'.$j : $j;
-	return str_replace(
-		array('Y','F','M','n','m','d','j'),
-		array($Y, $F, $M, $n, $m, $d, $j),
-		$format);
+	return strtr($format, array('Y'=>$Y, 'F'=>$F, 'M'=>$M, 'n'=>$n, 'm'=>$m, 'd'=>$d, 'j'=>$j));
 }
 
 ?>
