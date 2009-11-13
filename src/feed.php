@@ -27,7 +27,7 @@ $listData['_feed_descr'] = sprintf($lang->get('feed_description'), $listData['na
 htmlarray_ref($listData);
 
 $data = array();
-$q = $db->dq("SELECT * FROM todolist WHERE list_id=$listId ORDER BY d DESC LIMIT 100");
+$q = $db->dq("SELECT * FROM todolist WHERE list_id=$listId ORDER BY d_created DESC LIMIT 100");
 while($r = $q->fetch_assoc($q)) 
 {
 	if($r['prio'] > 0) $r['prio'] = '+'.$r['prio'];
@@ -56,13 +56,8 @@ function printRss($listData, $data)
 
 	foreach($data as $v)
 	{
-		$da = explode(' ', $v['d']);
-		$dDate = explode('-', $da[0]);
-		$dTime = explode(':', $da[1]);
-		$d_ts = mktime((int)$dTime[0],(int)$dTime[1],(int)$dTime[2], (int)$dDate[1],(int)$dDate[2],(int)$dDate[0]);
-		$d = gmdate('r', $d_ts);
-
-		$guid = $listData['id'].'-'.$v['id'].'-'.$d_ts;
+		$d = gmdate('r', $v['d_created']);
+		$guid = $listData['id'].'-'.$v['id'].'-'.$v['d_created'];
 
 		$s .= "<item>\n<title>$v[title]</title>\n".
 			"<link>$link</link>\n".
