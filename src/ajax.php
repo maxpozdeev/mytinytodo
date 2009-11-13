@@ -179,7 +179,7 @@ elseif(isset($_GET['completeTask']))
 	$compl = _get('compl') ? 1 : 0;
 	if($compl) 	$ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM todolist WHERE compl=1");
 	else $ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM todolist WHERE compl=0");
-	$db->dq("UPDATE todolist SET compl=$compl,ow=$ow WHERE id=$id");
+	$db->dq("UPDATE todolist SET compl=$compl,ow=$ow,d_completed=? WHERE id=$id", array($compl?time():0 ));
 	$t = array();
 	$t['total'] = 1;
 	$t['list'][] = array('id'=>$id, 'compl'=>$compl, 'ow'=>$ow);
