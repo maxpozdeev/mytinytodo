@@ -71,8 +71,8 @@ function prepareTaskStr(item, noteExp)
 		'<div class="task-left"><div class="mtt-toggle '+(item.note==''?'invisible':(noteExp?'mtt-toggle-expanded':''))+'" onClick="toggleNote('+id+')"></div>'+
 		'<input type="checkbox" '+(readOnly?'disabled':'')+' onClick="completeTask('+id+',this)" '+(item.compl?'checked':'')+'></div>'+
 		'<div class="task-middle">'+prepareDuedate(item.duedate, item.dueClass, item.dueStr)+
-		'<span class="nobr"><span class="task-through">'+preparePrio(prio,id)+'<span class="task-title">'+prepareHtml(item.title)+'</span>'+
-		prepareTagsStr(item.tags)+'<span class="task-date">'+lang.taskDate(item.date)+'</span></span></span>'+
+		'<span class="task-through">'+preparePrio(prio,id)+'<span class="task-title">'+prepareHtml(item.title)+'</span>'+
+		prepareTagsStr(item.tags)+'<span class="task-date">'+item.dateInline+'</span></span>'+
 		'<div class="task-note-block '+(item.note!=''&&noteExp?'':'hidden')+'">'+
 			'<div id="tasknote'+id+'" class="task-note"><span>'+prepareHtml(item.note)+'</span></div>'+
 			'<div id="tasknotearea'+id+'" class="task-note-area"><textarea id="notetext'+id+'"></textarea>'+

@@ -405,11 +405,14 @@ elseif(isset($_POST['deleteList']))
 
 function prepareTaskRow($r, $tz)
 {
+	global $lang;
 	$dueA = prepare_duedate($r['duedate'], $tz);
+	$dCreated = timestampToDatetime($r['d_created'], $tz);
 	return array(
 		'id' => $r['id'],
 		'title' => htmlarray($r['title']),
-		'date' => htmlarray(timestampToDatetime($r['d_created'], $tz)),
+		'date' => htmlarray($dCreated),
+		'dateInline' => htmlarray(sprintf($lang->get('taskdate_inline'), $dCreated)),
 		'compl' => (int)$r['compl'],
 		'prio' => $r['prio'],
 		'note' => nl2br(htmlarray($r['note'])),

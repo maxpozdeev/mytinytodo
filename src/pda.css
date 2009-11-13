@@ -19,19 +19,19 @@ h3 { margin-bottom:4px; padding:4px 0; }
 .task-note-actions { display:block; padding-top:8px; }
 div.task-note-block { margin-left:12px; border-left:1px solid #777777; background:none; padding-left:4px; margin-top:1px; padding-top:0px; display:none; } 
 div.task-note-area textarea { width:95%; }
-.nobr { white-space:nowrap; }
 .task-middle { margin-right:0px; }
 
+#tasklist li .task-through { white-space:nowrap; }
 #tasklist li:hover { background-color:#ffffff; }
 #tasklist li.clicked { background-color:#f6f6f6; }
 #tasklist li.clicked .task-date { display:none; }
 #tasklist li.clicked .task-actions { display:block; }
 #tasklist li.clicked div.task-note-block { display:block; }
 #tasklist li.clicked div.task-note-block.hidden { display:none; }
-#tasklist li.clicked .nobr { white-space:normal; }
+#tasklist li.clicked .task-through { white-space:normal; }
 #tasklist li.clicked.doubleclicked .task-actions { display:none; }
 #tasklist li.clicked.doubleclicked div.task-note-block { display:none; }
-#tasklist li.clicked.doubleclicked .nobr { white-space:nowrap; }
+#tasklist li.clicked.doubleclicked .task-through { white-space:nowrap; }
 
 #page_taskedit { max-width:100%; padding:0px; }
 .form-table { width:100%; }
