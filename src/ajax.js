@@ -29,6 +29,7 @@ var page = {cur:'', prev:''};
 function loadTasks()
 {
 	if(!curList) return false;
+	setSort(curList.sort, 1);
 	var tz = -1 * (new Date()).getTimezoneOffset();
 	setAjaxErrorTrigger();
 	var search = filter.search ? '&s='+encodeURIComponent(filter.search) : '';
@@ -470,14 +471,12 @@ function updateAccessStatus()
 		}
 	}
 	if(flag.needAuth && flag.canAllRead && !flag.isLogged) {
-		$("#tasklist").sortable('disable');
 		$('#page_tasks').addClass('readonly')
 		$("#authstr").text(lang.readonly).show();
 		addsearchToggle(1);
 	}
 	else {
 		$('#page_tasks').removeClass('readonly')
-		if(sortBy == 0) $("#tasklist").sortable('enable');
 		$("#authstr").text('').hide();
 	}
 	$('#page_ajax').hide();
@@ -628,16 +627,25 @@ function setSort(v, init)
 	else if(v == 1) $('#sort>.btnstr').text($('#sortByPrio').text());
 	else if(v == 2) $('#sort>.btnstr').text($('#sortByDueDate').text());
 	else return;
-	if(sortBy != v) {
-		sortBy = v;
-		if(v==0) $("#tasklist").sortable('enable');
-		else $("#tasklist").sortable('disable');
-		if(!init) {
-			changeTaskOrder();
-			var exp = new Date();
-			exp.setTime(exp.getTime() + 3650*86400*1000);	//+10 years
-			document.cookie = "sort="+sortBy+'; expires='+exp.toUTCString();
-		}
+
+	if(flag.needAuth && flag.canAllRead && !flag.isLogged) {
+		$("#tasklist").sortable('disable');
+		return;
+	}
+	sortBy = v;
+	if(sortBy==0) $("#tasklist").sortable('enable');
+	else $("#tasklist").sortable('disable');
+	
+	if(!init)
+	{
+		curList.sort = sortBy;
+		tabLists[curList.i].sort = sortBy;
+		changeTaskOrder();
+		setAjaxErrorTrigger()
+		var nocache = '&rnd='+Math.random();
+		$.post('ajax.php?setSort'+nocache, { list:curList.id, sort:sortBy }, function(json){
+			resetAjaxErrorTrigger();
+		}, 'json');
 	}
 }
 

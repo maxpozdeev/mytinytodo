@@ -23,7 +23,7 @@ if(isset($_GET['loadLists']))
 	while($r = $q->fetch_assoc($q))
 	{
 		$t['total']++;
-		$t['list'][] = array('id'=>$r['id'], 'name'=>htmlarray($r['name']));
+		$t['list'][] = array('id'=>$r['id'], 'name'=>htmlarray($r['name']), 'sort'=>$r['sorting']);
 	}
 	echo json_encode($t); 
 	exit;
@@ -397,6 +397,16 @@ elseif(isset($_POST['deleteList']))
 	}
 	$db->ex("COMMIT");
 	echo json_encode($t);
+	exit;
+}
+elseif(isset($_GET['setSort']))
+{
+	check_write_access();
+	$listId = (int)_post('list');
+	$sort = (int)_post('sort');
+	if($sort < 0 || $sort > 2) $sort = 0;
+	$db->ex("UPDATE lists SET sorting=$sort WHERE id=$listId");
+	echo json_encode(array('total'=>1));
 	exit;
 }
 

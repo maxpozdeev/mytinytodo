@@ -12,9 +12,6 @@ require_once('./lang/'.$config['lang'].'.php');
 
 $lang = new Lang();
 
-$sort = 0;
-if(isset($_COOKIE['sort']) && $_COOKIE['sort'] != '') $sort = (int)$_COOKIE['sort'];
-
 if($config['duedateformat'] == 2) $duedateformat = 'm/d/yy';
 elseif($config['duedateformat'] == 3) $duedateformat = 'dd.mm.yy';
 elseif($config['duedateformat'] == 4) $duedateformat = 'dd/mm/yy';
@@ -61,7 +58,6 @@ $().ready(function(){
 	$("#tasklist").bind("click", tasklistClick);
 	$("#edittags").autocomplete('ajax.php?suggestTags', {scroll: false, multiple: true, selectFirst:false, max:8, extraParams:{list:function(){return curList.id}}});
 	$("#priopopup").mouseleave(function(){$(this).hide()});
-	setSort(<?php echo $sort; ?>,1);
 <?php
 	if($needAuth)
 	{

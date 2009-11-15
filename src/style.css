@@ -54,6 +54,7 @@ a { color:#0000ff; }
 #sortform { overflow: hidden; z-index:101; background-color:#f9f9f9; border:1px solid #cccccc; padding:3px; } 
 #sortform .li { margin:1px 0px; padding:2px; cursor:pointer; }
 #sortform .li:hover { background-color:#316AC5; color:white; }
+#page_tasks.readonly #sort { display:none; }
 
 .mtt-notes-showhide { font-size:8pt; font-weight:normal; margin-left:5px; }
 #rss_icon { float:right;margin-top:4px; }
