@@ -199,9 +199,11 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
 </div>
 
 <div id="mylistscontainer" class="mtt-btnmenu-container" style="display:none">
- <div class="li" onClick="addList()"><?php _e('list_new');?></div>
- <div class="li mtt-need-list" onClick="renameCurList()"><?php _e('list_rename');?></div>
- <div class="li mtt-need-list" onClick="deleteCurList()"><?php _e('list_delete');?></div>
+<ul>
+ <li onClick="addList()"><?php _e('list_new');?></li>
+ <li class="mtt-need-list" onClick="renameCurList()"><?php _e('list_rename');?></li>
+ <li class="mtt-need-list" onClick="deleteCurList()"><?php _e('list_delete');?></li>
+</ul>
 </div>
 
 <div id="page_ajax" style="display:none"></div>
