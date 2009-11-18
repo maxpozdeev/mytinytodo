@@ -128,8 +128,8 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
 </div>
 
 <h3>
-<span id="sort" onClick="showSort(this);" style="float:right"><span class="btnstr"></span> <img src="images/arrdown.gif"></span>
-<span id="taskviewcontainer" onClick="showTaskview(this);"><span class="btnstr"><?php _e('tasks');?></span> (<span id="total">0</span>) &nbsp;<img src="images/arrdown.gif"></span>
+<span id="sort" onClick="btnMenu(this);return false;" style="float:right" class="mtt-btnmenu"><span class="btnstr"></span> <img src="images/arrdown.gif"></span>
+<span id="taskview" onClick="btnMenu(this);return false;" class="mtt-btnmenu"><span class="btnstr"><?php _e('tasks');?></span> (<span id="total">0</span>) &nbsp;<img src="images/arrdown.gif"></span>
 <span id="tagcloudbtn" onClick="showTagCloud(this);"><span class="btnstr"><?php _e('tags');?></span> <img src="images/arrdown.gif"></span>
 <span class="mtt-notes-showhide"><?php _e('notes');?> <a href="#" onClick="toggleAllNotes(1);this.blur();return false;"><?php _e('notes_show');?></a> / <a href="#" onClick="toggleAllNotes(0);this.blur();return false;"><?php _e('notes_hide');?></a></span>
 </h3>
@@ -178,18 +178,22 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
 <span class="prio-pos" onClick="prioClick(1,this)">+1</span> <span class="prio-pos" onClick="prioClick(2,this)">+2</span>
 </div>
 
-<div id="taskview" style="display:none">
- <div class="li" onClick="setTaskview(0);taskviewClose();"><span id="view_tasks"><?php _e('tasks');?></span></div>
- <div class="li" onClick="setTaskview(1);taskviewClose();"><span id="view_compl"><?php _e('tasks_and_compl');?></span></div>
- <div class="li" onClick="setTaskview('past');taskviewClose();"><span id="view_past"><?php _e('f_past');?></span> (<span id="cnt_past">0</span>)</div>
- <div class="li" onClick="setTaskview('today');taskviewClose();"><span id="view_today"><?php _e('f_today');?></span> (<span id="cnt_today">0</span>)</div>
- <div class="li" onClick="setTaskview('soon');taskviewClose();"><span id="view_soon"><?php _e('f_soon');?></span> (<span id="cnt_soon">0</span>)</div>
+<div id="taskviewcontainer" class="mtt-btnmenu-container" style="display:none">
+<ul>
+ <li onClick="setTaskview(0)"><span id="view_tasks"><?php _e('tasks');?></span></li>
+ <li onClick="setTaskview(1)"><span id="view_compl"><?php _e('tasks_and_compl');?></span></li>
+ <li onClick="setTaskview('past')"><span id="view_past"><?php _e('f_past');?></span> (<span id="cnt_past">0</span>)</li>
+ <li onClick="setTaskview('today')"><span id="view_today"><?php _e('f_today');?></span> (<span id="cnt_today">0</span>)</li>
+ <li onClick="setTaskview('soon')"><span id="view_soon"><?php _e('f_soon');?></span> (<span id="cnt_soon">0</span>)</li>
+</ul>
 </div>
 
-<div id="sortform" style="display:none">
- <div id="sortByHand" class="li" onClick="setSort(0);sortClose();"><?php _e('sortByHand');?></div>
- <div id="sortByPrio" class="li" onClick="setSort(1);sortClose();"><?php _e('sortByPriority');?></div>
- <div id="sortByDueDate"  class="li" onClick="setSort(2);sortClose();"><?php _e('sortByDueDate');?></div>
+<div id="sortcontainer" class="mtt-btnmenu-container" style="display:none">
+<ul>
+ <li id="sortByHand" onClick="setSort(0)"><?php _e('sortByHand');?></li>
+ <li id="sortByPrio" onClick="setSort(1)"><?php _e('sortByPriority');?></li>
+ <li id="sortByDueDate" onClick="setSort(2)"><?php _e('sortByDueDate');?></li>
+</ul>
 </div>
 
 <div id="tagcloud" style="display:none">

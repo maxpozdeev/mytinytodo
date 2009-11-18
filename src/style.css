@@ -49,11 +49,7 @@ a { color:#0000ff; }
 #msg.mtt-info .msg-text { background-color:#EFC300; }
 #msg.mtt-info .msg-details { border:1px solid #EFC300;}
 
-#sort { margin-left:5px; font-size:8pt; font-weight:normal; border-bottom:1px dashed #ccc; padding:2px; cursor:pointer; -moz-user-select:none; -webkit-user-select: none; }
-#sort:hover { border-bottom:1px solid #bbb; } 
-#sortform { overflow: hidden; z-index:101; background-color:#f9f9f9; border:1px solid #cccccc; padding:3px; } 
-#sortform .li { margin:1px 0px; padding:2px; cursor:pointer; }
-#sortform .li:hover { background-color:#316AC5; color:white; }
+#sort { margin-left:5px; font-size:8pt; font-weight:normal; }
 #page_tasks.readonly #sort { display:none; }
 
 .mtt-notes-showhide { font-size:8pt; font-weight:normal; margin-left:5px; }
@@ -154,6 +150,8 @@ div.task-note-area textarea { color:#999999; width:100%; display:block; height:6
 #tagcloudcancel { border:1px solid #cccccc; padding:2px; margin-bottom:4px; cursor:pointer; background-color:#fdfdfd; }
 #tagcloudcancel:hover { border-color:#aaaaaa; }
 
+#taskview { padding:1px 2px; }
+
 .ui-datepicker { width:180px; z-index:202; border: 1px solid #cccccc; background: #ffffff; display:none; padding:2px; }
 .ui-datepicker-trigger { cursor:pointer; vertical-align:text-bottom; margin-left:1px; } 
 .ui-datepicker-calendar { width:100%; border-collapse:collapse; }
@@ -169,18 +167,15 @@ div.task-note-area textarea { color:#999999; width:100%; display:block; height:6
 .ui-datepicker-title { text-align:center; }
 .ui-datepicker-prev, .ui-datepicker-next { cursor:pointer; padding:0px 3px; }
 
-#taskviewcontainer { border-bottom:1px dashed #ccc; padding:1px 2px; }
-#taskviewcontainer:hover { cursor:pointer; border-bottom:1px solid #bbb; }
-#taskview { overflow: hidden; z-index:103; background-color:#f9f9f9; border:1px solid #cccccc; padding:3px; } 
-#taskview .li { margin:1px 0px; padding:2px; cursor:pointer; }
-#taskview .li:hover { background-color:#316AC5; color:white; }
-
 .ui-resizable { position:relative;}
 .ui-resizable-handle { position:absolute; font-size:0.1px; z-index:99999; display:block;}
 .ui-resizable-disabled .ui-resizable-handle, .ui-resizable-autohide .ui-resizable-handle { display:none; }
 .ui-resizable-s { cursor:s-resize; height:7px; width:100%; bottom:-5px; left:0px; }
 .ui-resizable-e { cursor:e-resize; width:7px; right:-5px; top:0px; height:100%; }
 .ui-resizable-se { cursor:se-resize; width:12px; height:12px; right:1px; bottom:1px; }
+
+.mtt-btnmenu { border-bottom:1px dashed #ccc; padding:2px 2px; -moz-user-select:none; -webkit-user-select: none; }
+.mtt-btnmenu:hover { cursor:pointer; border-bottom:1px solid #bbb; }
 
 .mtt-btnmenu-container { overflow: hidden; z-index:103; background-color:#f9f9f9; border:1px solid #cccccc; padding:3px; } 
 .mtt-btnmenu-container ul { list-style: none; padding:0; margin:0; }

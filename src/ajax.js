@@ -606,21 +606,6 @@ function prioClick(prio, el)
 	$('#taskrow_'+objPrio.taskId).effect("highlight", {color:theme.editTaskFlashColor}, 'normal');
 }
 
-function showSort(el)
-{
-	var w = $('#sortform');
-	if(w.css('display') == 'none')
-	{
-		var offset = $(el).offset();
-		w.css({ position: 'absolute', top: offset.top+el.offsetHeight-1, left: offset.left , 'min-width': $(el).width() }).show();
-		$(document).bind("click", sortClose);
-	}
-	else {
-		el.blur();
-		sortClose();
-	}
-}
-
 function setSort(v, init)
 {
 	if(v == 0) $('#sort>.btnstr').text($('#sortByHand').text());
@@ -647,15 +632,6 @@ function setSort(v, init)
 			resetAjaxErrorTrigger();
 		}, 'json');
 	}
-}
-
-function sortClose(e)
-{
-	if(e) {
-		if(isParentId(e.target, ['sortform','sort'])) return;
-	}
-	$(document).unbind("click", sortClose);
-	$('#sortform').hide();
 }
 
 function isParentId(el, id)
@@ -785,36 +761,12 @@ function refreshTaskCnt()
 	$('#cnt_soon').text(taskCnt.soon);
 }
 
-function showTaskview(el)
-{
-	var w = $('#taskview');
-	if(w.css('display') == 'none')
-	{
-		var offset = $(el).offset();
-		w.css({ position: 'absolute', top: offset.top+el.offsetHeight-1, left: offset.left , 'min-width': $(el).width() }).show();
-		$(document).bind("click", taskviewClose);
-	}
-	else {
-		el.blur();
-		taskviewClose();
-	}
-}
-
-function taskviewClose(e)
-{
-	if(e) {
-		if(isParentId(e.target, ['taskviewcontainer','taskview'])) return;
-	}
-	$(document).unbind("click", taskviewClose);
-	$('#taskview').hide();
-}
-
 function setTaskview(v, dontLoadTasks)
 {
 	if(v == 0)
 	{
 		if(filter.due == '' && filter.compl == 0) return;
-		$('#taskviewcontainer .btnstr').text($('#view_tasks').text());
+		$('#taskview .btnstr').text($('#view_tasks').text());
 		if(filter.due != '') {
 			$('#tasklist').removeClass('filter-'+filter.due);
 			filter.due = '';
@@ -829,7 +781,7 @@ function setTaskview(v, dontLoadTasks)
 	else if(v == 1)
 	{
 		if(filter.due == '' && filter.compl == 1) return;
-		$('#taskviewcontainer .btnstr').text($('#view_compl').text());
+		$('#taskview .btnstr').text($('#view_compl').text());
 		if(filter.due != '') {
 			$('#tasklist').removeClass('filter-'+filter.due);
 			filter.due = '';
@@ -848,7 +800,7 @@ function setTaskview(v, dontLoadTasks)
 			$('#tasklist').removeClass('filter-'+filter.due);
 		}
 		$('#tasklist').addClass('filter-'+v);
-		$('#taskviewcontainer .btnstr').text($('#view_'+v).text());
+		$('#taskview .btnstr').text($('#view_'+v).text());
 		$('#total').text(taskCnt[v]);
 		filter.due = v;
 	}
