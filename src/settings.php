@@ -22,7 +22,6 @@ if(isset($_POST['save']))
 	$config['lang'] = _post('lang');
 	if(isset($_POST['password']) && $_POST['password'] != '') $config['password'] = $_POST['password'];
 	elseif(!_post('allowpassword')) $config['password'] = '';
-	if(isset($_POST['allowread'])) $config['allowread'] = (int)_post('allowread');
 	$config['smartsyntax'] = (int)_post('smartsyntax');
 	$config['autotz'] = (int)_post('autotz');
 	$config['autotag'] = (int)_post('autotag');
@@ -94,21 +93,14 @@ function selectOptions($a, $value, $default=null)
 <tr>
 <th>Password protection:</th>
 <td>
- <label><input type="radio" name="allowpassword" value="1" <?php if(_c('password')!='') echo "checked"; ?> onClick='$(this.form).find("input[name=password],input[name=allowread]").attr("disabled",false)'>Enabled</label> <br>
- <label><input type="radio" name="allowpassword" value="0" <?php if(_c('password')=='') echo "checked"; ?> onClick='$(this.form).find("input[name=password],input[name=allowread]").attr("disabled","disabled")'>Disabled</label> <br>
+ <label><input type="radio" name="allowpassword" value="1" <?php if(_c('password')!='') echo "checked"; ?> onClick='$(this.form).find("input[name=password]").attr("disabled",false)'>Enabled</label> <br>
+ <label><input type="radio" name="allowpassword" value="0" <?php if(_c('password')=='') echo "checked"; ?> onClick='$(this.form).find("input[name=password]").attr("disabled","disabled")'>Disabled</label> <br>
 </td></tr>
 
 <tr>
 <th>New password:<br><span class="descr">(leave blank if won't change current password)</span></th>
 <td> <input type="password" name="password" <?php if(_c('password')=='') echo "disabled"; ?>> </td>
 </tr>
-
-<tr>
-<th>Allow read-only:<br><span class="descr">(grant access to unauthorized users to view your tasks )</span></th>
-<td>
- <label><input type="radio" name="allowread" value="1" <?php if(_c('allowread')) echo "checked"; if(_c('password')=='') echo " disabled"; ?>>Enabled</label> <br>
- <label><input type="radio" name="allowread" value="0" <?php if(!_c('allowread')) echo "checked"; if(_c('password')=='') echo " disabled"; ?>>Disabled</label>
-</td></tr>
 
 <tr>
 <th>Smart syntax:<br><span class="descr">(/priority/ task /tags/)</span></th>

@@ -62,7 +62,6 @@ $().ready(function(){
 	if($needAuth)
 	{
 		echo "\tflag.needAuth = true;\n";
-		if(!canAllRead()) echo "\tflag.canAllRead = false;\n";
 		if(is_logged()) echo "\tflag.isLogged = true;\n";
 		echo "\tupdateAccessStatus();\n";
 	}
@@ -202,11 +201,12 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
  <div id="tagcloudcontent"></div>
 </div>
 
-<div id="mylistscontainer" class="mtt-btnmenu-container" style="display:none">
+<div id="mylistscontainer" class="mtt-btnmenu-container mtt-btnmenu-hasimages" style="display:none">
 <ul>
  <li onClick="addList()"><?php _e('list_new');?></li>
  <li class="mtt-need-list" onClick="renameCurList()"><?php _e('list_rename');?></li>
  <li class="mtt-need-list" onClick="deleteCurList()"><?php _e('list_delete');?></li>
+ <li class="mtt-need-list" id="btnPublish" onClick="publishCurList()"><?php _e('list_publish');?></li>
 </ul>
 </div>
 

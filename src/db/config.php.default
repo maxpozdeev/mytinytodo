@@ -19,10 +19,6 @@ $config['lang'] = "en";
 #  or leave empty that everyone could read/write todolist
 $config['password'] = "";
 
-# Allow readonly access for the others when password above is set:
-#  0 - No access, 1 - Read only
-$config['allowread'] = 0;
-
 # To disable smart syntax uncomment the line below
 #$config['smartsyntax'] = 0;
 

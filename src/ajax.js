@@ -12,7 +12,7 @@ var searchTimer;
 var objPrio = {};
 var selTask = 0;
 var sortBy = 0;
-var flag = { needAuth:false, isLogged:false, canAllRead:true, tagsChanged:true, windowTaskEditMoved:false };
+var flag = { needAuth:false, isLogged:false, tagsChanged:true, windowTaskEditMoved:false };
 var img = {
 	'note': ['images/page_white_text_add_bw.png','images/page_white_text_add.png'],
 	'edit': ['images/page_white_edit_bw.png','images/page_white_edit.png'],
@@ -64,7 +64,7 @@ function prepareTaskStr(item, noteExp)
 {
 	var id = parseInt(item.id);
 	var prio = parseInt(item.prio);
-	var readOnly = (flag.needAuth && flag.canAllRead && !flag.isLogged) ? true : false;
+	var readOnly = (flag.needAuth && !flag.isLogged) ? true : false;
 	return '<li id="taskrow_'+id+'" class="'+(item.compl?'task-completed ':'')+item.dueClass+'" onDblClick="editTask('+id+')"><div class="task-actions">'+
 		'<a href="#" onClick="return toggleTaskNote('+id+')"><img src="'+img.note[0]+'" onMouseOver="this.src=img.note[1]" onMouseOut="this.src=img.note[0]" title="'+lang.actionNote+'"></a>'+
 		'<a href="#" onClick="return editTask('+id+')"><img src="'+img.edit[0]+'" onMouseOver="this.src=img.edit[1]" onMouseOut="this.src=img.edit[0]" title="'+lang.actionEdit+'"></a>'+
@@ -343,7 +343,7 @@ function cancelEdit(e)
 
 function saveTask(form)
 {
-	if(flag.needAuth && !flag.isLogged && flag.canAllRead) return false;
+	if(flag.needAuth && !flag.isLogged) return false;
 	var tz = -1 * (new Date()).getTimezoneOffset();
 	setAjaxErrorTrigger();
 	var nocache = '&rnd='+Math.random();
@@ -463,14 +463,8 @@ function updateAccessStatus()
 			$('#bar .menu-owner').hide();
 			$('#bar .bar-delim').hide();
 		}
-		if(!flag.canAllRead && !flag.isLogged) {
-			$('#page_tasks').hide();
-			$('#lists').hide();
-		} else {
-			$('#page_tasks').show();
-		}
 	}
-	if(flag.needAuth && flag.canAllRead && !flag.isLogged) {
+	if(flag.needAuth && !flag.isLogged) {
 		$('#page_tasks').addClass('readonly')
 		$("#authstr").text(lang.readonly).show();
 		addsearchToggle(1);
@@ -511,13 +505,7 @@ function logout()
 	}, 'json');
 	flag.isLogged = false;
 	updateAccessStatus();
-	if(flag.canAllRead) {
-		loadTasks();
-	}
-	else {
-		$('#total').html('0');
-		$('#tasklist').html('');
-	}
+	loadLists();
 	return false;
 }
 
@@ -613,7 +601,7 @@ function setSort(v, init)
 	else if(v == 2) $('#sort>.btnstr').text($('#sortByDueDate').text());
 	else return;
 
-	if(flag.needAuth && flag.canAllRead && !flag.isLogged) {
+	if(flag.needAuth && !flag.isLogged) {
 		$("#tasklist").sortable('disable');
 		return;
 	}
@@ -624,7 +612,6 @@ function setSort(v, init)
 	if(!init)
 	{
 		curList.sort = sortBy;
-		tabLists[curList.i].sort = sortBy;
 		changeTaskOrder();
 		setAjaxErrorTrigger()
 		var nocache = '&rnd='+Math.random();
@@ -833,7 +820,10 @@ function mttTabSelected(el, indx)
 			$('#searchbarkeyword').text('');
 			$('#searchbar').hide();
 		}
-		if(flag.canAllRead) $('#rss_icon').find('a').attr('href', 'feed.php?list='+tabLists[indx].id);
+		//if(tabLists[indx].published)
+			$('#rss_icon').find('a').attr('href', 'feed.php?list='+tabLists[indx].id);
+		if(tabLists[indx].published) $('#btnPublish').addClass('mtt-item-checked');
+		else $('#btnPublish').removeClass('mtt-item-checked');
 	}
 	curList = tabLists[indx];
 	flag.tagsChanged = true;
@@ -911,7 +901,6 @@ function toggleAllNotes(show)
 
 function loadLists(onInit)
 {
-	if(flag.needAuth && !flag.isLogged && !flag.canAllRead) return false;
 	if(filter.search != '') {
 		filter.search = '';
 		$('#searchbarkeyword').text('');
@@ -937,7 +926,11 @@ function loadLists(onInit)
 			}
 			curList = tabLists[0];
 			loadTasks();
-			if(flag.canAllRead) $('#rss_icon').show().find('a').attr('href', 'feed.php?list='+curList.id);
+			if(curList.published) $('#btnPublish').addClass('mtt-item-checked');
+			else $('#btnPublish').removeClass('mtt-item-checked');
+			//if(curList.published)
+				$('#rss_icon').show().find('a').attr('href', 'feed.php?list='+curList.id);
+			$('#page_tasks').show();
 		}
 		else {
 			curList = 0;
@@ -945,6 +938,7 @@ function loadLists(onInit)
 			$('#page_tasks h3').children().addClass('invisible');
 			$('#mylistscontainer .mtt-need-list').addClass('mtt-disabled');
 			$('#rss_icon').hide();
+			if(flag.needAuth && !flag.isLogged) $('#page_tasks').hide();
 		}
 		ti += '<li class="mtt-tabs-button menu-owner"><a href="#" id="mylists" onClick="btnMenu(this);return false;"><img src="images/arrdown.gif"></a></li>';
 		$('#lists>ul').html(ti);
@@ -1011,7 +1005,7 @@ function addsearchToggle(toSearch)
 	}
 	else
 	{
-		if(flag.needAuth && flag.canAllRead && !flag.isLogged) return false;
+		if(flag.needAuth && !flag.isLogged) return false;
 		showhide($('#htab_newtask'), $('#htab_search'));
 		// reload tasks when we return to task tab (from search tab)
 		if(filter.search != '') {
@@ -1095,7 +1089,7 @@ function saveSettings(frm)
 
 function submitFullTask(form)
 {
-	if(flag.needAuth && !flag.isLogged && flag.canAllRead) return false;
+	if(flag.needAuth && !flag.isLogged) return false;
 	setAjaxErrorTrigger();
 	var nocache = '&rnd='+Math.random();
 	$.post('ajax.php?fullNewTask'+nocache, { list:curList.id, tag:filter.tag, title: form.task.value, note:form.note.value, prio:form.prio.value, tags:form.tags.value, duedate:form.duedate.value }, function(json){
@@ -1114,4 +1108,18 @@ function submitFullTask(form)
 	$("#edittags").flushCache();
 	flag.tagsChanged = true;
 	return false;
+}
+
+function publishCurList()
+{
+	if(!curList) return false;
+	setAjaxErrorTrigger();
+	var nocache = '&rnd='+Math.random();
+	$.post('ajax.php?publishList'+nocache, { list:curList.id, publish:curList.published?0:1 }, function(json){
+		resetAjaxErrorTrigger();
+		if(!parseInt(json.total)) return;
+		curList.published = curList.published?0:1;
+		if(curList.published) $('#btnPublish').addClass('mtt-item-checked');
+		else $('#btnPublish').removeClass('mtt-item-checked');
+	}, 'json');
 }

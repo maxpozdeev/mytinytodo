@@ -12,16 +12,16 @@ require_once('./lang/class.default.php');
 require_once('./lang/'.$config['lang'].'.php'); 
 $lang = new Lang(); 
 
-if(!canAllRead()) {
-	die("Access denied!<br> Disable password protection or Grant read access");
-}
-
 $listId = (int)_get('list');
 
 $listData = $db->sqa("SELECT * FROM lists WHERE id=$listId");
+if($needAuth && (!$listData || !$listData['published'])) {
+	die("Access denied!<br> List is not published.");
+}
 if(!$listData) {
 	die("No such list");
 }
+
 $listData['_feed_title'] = sprintf($lang->get('feed_title'), $listData['name']);
 $listData['_feed_descr'] = sprintf($lang->get('feed_description'), $listData['name']);
 htmlarray_ref($listData);

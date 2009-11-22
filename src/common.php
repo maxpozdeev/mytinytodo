@@ -69,7 +69,6 @@ class Config
 		'title' => array('default'=>'', 'type'=>'s'),
 		'lang' => array('default'=>'en', 'type'=>'s'),
 		'password' => array('default'=>'', 'type'=>'s'),
-		'allowread' => array('default'=>0, 'type'=>'i'),
 		'smartsyntax' => array('default'=>1, 'type'=>'i'),
 		'autotz' => array('default'=>1, 'type'=>'i'),
 		'autotag' => array('default'=>1, 'type'=>'i'),

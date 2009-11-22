@@ -16,23 +16,29 @@ $lang = new Lang();
 
 if(isset($_GET['loadLists']))
 {
-	check_read_access();
+	if($needAuth && !is_logged()) $sqlWhere = 'WHERE published=1';
+	else $sqlWhere = '';
 	$t = array();
 	$t['total'] = 0;
-	$q = $db->dq("SELECT * FROM lists ORDER BY id ASC");
+	$q = $db->dq("SELECT * FROM lists $sqlWhere ORDER BY id ASC");
 	while($r = $q->fetch_assoc($q))
 	{
 		$t['total']++;
-		$t['list'][] = array('id'=>$r['id'], 'name'=>htmlarray($r['name']), 'sort'=>$r['sorting']);
+		$t['list'][] = array(
+			'id' => $r['id'],
+			'name' => htmlarray($r['name']),
+			'sort' => (int)$r['sorting'],
+			'published' => $r['published'] ? 1 :0,
+		);
 	}
 	echo json_encode($t); 
 	exit;
 }
 elseif(isset($_GET['loadTasks']))
 {
-	check_read_access();
 	stop_gpc($_GET);
 	$listId = (int)_get('list');
+	check_read_access($listId);
 	$sqlWhere = ' AND list_id='. $listId;
 	if(_get('compl') == 0) $sqlWhere .= ' AND compl=0';
 	$inner = '';
@@ -295,8 +301,8 @@ elseif(isset($_POST['logout']))
 }
 elseif(isset($_GET['suggestTags']))
 {
-	check_read_access();
 	$listId = (int)_get('list');
+	check_read_access($listId);
 	$begin = trim(_get('q'));
 	$limit = (int)_get('limit');
 	if($limit<1) $limit = 8;
@@ -325,6 +331,7 @@ elseif(isset($_GET['setPrio']))
 elseif(isset($_GET['tagCloud']))
 {
 	$listId = (int)_get('list');
+	check_read_access($listId);
 	$a = array();
 	$q = $db->dq("SELECT name,tags_count FROM tags WHERE list_id=$listId AND tags_count>0 ORDER BY tags_count ASC");
 	while($r = $q->fetch_row()) {
@@ -409,6 +416,15 @@ elseif(isset($_GET['setSort']))
 	echo json_encode(array('total'=>1));
 	exit;
 }
+elseif(isset($_GET['publishList']))
+{
+	check_write_access();
+	$listId = (int)_post('list');
+	$publish = (int)_post('publish');
+	$db->ex("UPDATE lists SET published=? WHERE id=$listId", array($publish ? 1 : 0));
+	echo json_encode(array('total'=>1));
+	exit;
+}
 
 
 ###################################################################################################
@@ -436,9 +452,16 @@ function prepareTaskRow($r, $tz)
 	);
 }
 
-function check_read_access()
+function check_read_access($listId = null)
 {
-	if(canAllRead() || is_logged()) return;
+	global $db;
+	if(!isset($config['password']) || $config['password'] == '') return true;
+	if(is_logged()) return true;
+	if($listId)
+	{
+		$id = $db->sq("SELECT id FROM lists WHERE id=? AND published=1", array($listId));
+		if($id) return;
+	}
 	echo json_encode( array('total'=>0, 'list'=>array(), 'denied'=>1) );
 	exit;
 }
