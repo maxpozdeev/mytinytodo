@@ -109,8 +109,8 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
 
 <div id="page_tasks">
 
-<div id="lists" class="mtt-tabs">
- <ul class=""></ul>
+<div id="lists">
+ <ul class="mtt-tabs"></ul>
  <div class="mtt-htabs">
    <span id="rss_icon" style="display:none;"><a href="#" title="<?php _e('rss_feed');?>"><img src="images/feed_bw.png" style="border:none;" onMouseOver="this.src='images/feed.png'" onMouseOut="this.src='images/feed_bw.png'"></a></span>
    <span id="htab_newtask"><?php _e('htab_newtask');?> 

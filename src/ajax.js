@@ -918,7 +918,7 @@ function loadLists(onInit)
 			$.each(json.list, function(i,item){
 				item.i = i;
 				tabLists[i] = item;
-				ti += '<li class="'+(i==0?'mtt-tabs-selected':'')+'"><a href="#list'+item.id+'" onClick="mttTabSelected(this,'+i+');return false;" title="'+item.name+'">'+item.name+'</a></li>';
+				ti += '<li class="'+(i==0?'mtt-tabs-selected':'')+'"><a href="#list'+item.id+'" onClick="mttTabSelected(this,'+i+');return false;" title="'+item.name+'"><span>'+item.name+'</span></a></li>';
 			});
 			if(!curList) {
 				$('#lists .mtt-htabs').children().removeClass('invisible');
@@ -941,7 +941,7 @@ function loadLists(onInit)
 			$('#rss_icon').hide();
 			if(flag.needAuth && !flag.isLogged) $('#page_tasks').hide();
 		}
-		ti += '<li class="mtt-tabs-button menu-owner"><a href="#" id="mylists" onClick="btnMenu(this);return false;"><img src="images/arrdown.gif"></a></li>';
+		ti += '<li class="mtt-tabs-button menu-owner"><a href="#" id="mylists" onClick="btnMenu(this);return false;"><span><img src="images/arrdown.gif"></span></a></li>';
 		$('#lists>ul').html(ti);
 		$('#lists').show();
 	});
