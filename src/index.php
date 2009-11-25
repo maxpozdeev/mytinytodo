@@ -146,6 +146,7 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
 <h3 class="mtt-inedit"><?php _e('edit_task');?></h3>
 
 <form onSubmit="return saveTask(this)" name="edittask">
+<input type="hidden" name="isadd" value="0">
 <input type="hidden" name="id" value="">
 <div class="form-row"><span class="h"><?php _e('priority');?></span> <SELECT name="prio"><option value="2">+2</option><option value="1">+1</option><option value="0" selected>&plusmn;0</option><option value="-1">&minus;1</option></SELECT> 
  &nbsp; <span class="h"><?php _e('due');?> </span> <input name="duedate" id="duedate" value="" class="in100" title="Y-M-D, M/D/Y, D.M.Y, M/D, D.M" autocomplete="off"></div>

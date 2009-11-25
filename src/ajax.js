@@ -299,11 +299,11 @@ function showEditForm(isAdd)
 	else if(window.getSelection) window.getSelection().removeAllRanges();
 	if(isAdd) {
 		showhide($('#page_taskedit>h3.mtt-inadd'), $('#page_taskedit>h3.mtt-inedit'));
-		$('#page_taskedit>form').attr('onSubmit', 'return submitFullTask(this)');
+		document.edittask.isadd.value = 1;
 	}
 	else {
 		showhide( $('#page_taskedit>h3.mtt-inedit'), $('#page_taskedit>h3.mtt-inadd'));
-		$('#page_taskedit>form').attr('onSubmit', 'return saveTask(this)');
+		document.edittask.isadd.value = 0;
 	}
 	var w = $('#page_taskedit');
 	if(!flag.windowTaskEditMoved)
@@ -344,6 +344,7 @@ function cancelEdit(e)
 function saveTask(form)
 {
 	if(flag.needAuth && !flag.isLogged) return false;
+	if(form.isadd.value != 0) return submitFullTask(form);
 	var tz = -1 * (new Date()).getTimezoneOffset();
 	setAjaxErrorTrigger();
 	var nocache = '&rnd='+Math.random();
