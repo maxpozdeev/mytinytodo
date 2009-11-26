@@ -154,7 +154,7 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
 <div class="form-row"><div class="h"><?php _e('tags');?></div>
  <table cellspacing="0" cellpadding="0" width="100%"><tr>
   <td><input type="text" name="tags" id="edittags" value="" class="in500" maxlength="250"></td>
-  <td width="1" style="white-space:nowrap; padding-left:5px; text-align:right;">
+  <td width="1%" style="white-space:nowrap; padding-left:5px; text-align:right;">
    <a href="#" id="alltags_show" onClick="toggleEditAllTags(1);return false;"><?php _e('alltags_show');?></a>
    <a href="#" id="alltags_hide" onClick="toggleEditAllTags(0);return false;" style="display:none"><?php _e('alltags_hide');?></a></td>
  </tr></table>
