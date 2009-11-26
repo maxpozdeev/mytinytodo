@@ -117,6 +117,7 @@ if(!$ver)
  `d_created` INT UNSIGNED NOT NULL default 0,
  `sorting` TINYINT UNSIGNED NOT NULL default 0,
  `published` TINYINT UNSIGNED NOT NULL default 0,
+ `taskview` INT UNSIGNED NOT NULL default 0,
  PRIMARY KEY(`id`)
 ) CHARSET=utf8 ");
 
@@ -167,7 +168,8 @@ if(!$ver)
  name VARCHAR(50) NOT NULL,
  d_created INTEGER UNSIGNED NOT NULL default 0,
  sorting TINYINT UNSIGNED NOT NULL default 0,
- published TINYINT UNSIGNED NOT NULL default 0
+ published TINYINT UNSIGNED NOT NULL default 0,
+ taskview INTEGER UNSIGNED NOT NULL default 0
 ) ");
 
 		} catch (Exception $e) {
@@ -441,6 +443,7 @@ function update_130_131($db, $dbtype)
 		$db->ex("ALTER TABLE lists ADD `d_created` INT UNSIGNED NOT NULL default 0");
 		$db->ex("ALTER TABLE lists ADD `sorting` TINYINT UNSIGNED NOT NULL default 0");
 		$db->ex("ALTER TABLE lists ADD `published` TINYINT UNSIGNED NOT NULL default 0");
+		$db->ex("ALTER TABLE lists ADD `taskview` INT UNSIGNED NOT NULL default 0");
 
 		$db->ex("ALTER TABLE todolist ADD `d_created` INT UNSIGNED NOT NULL default 0");
 		$db->ex("ALTER TABLE todolist ADD `d_completed` INT UNSIGNED NOT NULL default 0");
@@ -459,6 +462,7 @@ function update_130_131($db, $dbtype)
 		$db->ex("ALTER TABLE lists ADD d_created INTEGER UNSIGNED NOT NULL default 0");
 		$db->ex("ALTER TABLE lists ADD sorting TINYINT UNSIGNED NOT NULL default 0");
 		$db->ex("ALTER TABLE lists ADD published TINYINT UNSIGNED NOT NULL default 0");
+		$db->ex("ALTER TABLE lists ADD taskview INTEGER UNSIGNED NOT NULL default 0");
 
 		$db->ex("ALTER TABLE todolist ADD d_created INTEGER UNSIGNED NOT NULL default 0");
 		$db->ex("ALTER TABLE todolist ADD d_completed INTEGER UNSIGNED NOT NULL default 0");
