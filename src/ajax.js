@@ -473,6 +473,7 @@ function updateAccessStatus()
 	else {
 		$('#page_tasks').removeClass('readonly')
 		$("#authstr").text('').hide();
+		addsearchToggle(0);
 	}
 	$('#page_ajax').hide();
 	page.cur = '';
