@@ -63,9 +63,8 @@ $().ready(function(){
 	{
 		echo "\tflag.needAuth = true;\n";
 		if(is_logged()) echo "\tflag.isLogged = true;\n";
-		echo "\tupdateAccessStatus();\n";
 	}
-	echo "\tloadLists(1);\n";
+	echo "\tloadLists(1, 1);\n";
 ?>
 	preloadImg();
 	$("#duedate").datepicker({dateFormat: '<?php echo $duedateformat; ?>', firstDay: <?php echo $config['firstdayofweek']; ?>,

@@ -40,15 +40,6 @@ if($needAuth && !isset($dontStartSession))
 	session_start();
 }
 
-/*
-function canAllRead()
-{
-	global $config;
-	if(!isset($config['password']) || $config['password'] == '') return true;
-	if(isset($config['allowread']) && $config['allowread']) return true;
-	return false;
-}*/
-
 function is_logged()
 {
 	if(!isset($_SESSION['logged']) || !$_SESSION['logged']) return false;
