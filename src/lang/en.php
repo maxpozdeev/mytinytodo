@@ -4,10 +4,9 @@
 	myTinyTodo language pack
 	Language: English
 	Author: Max Pozdeev
-	E-Mail: maxpozdeev@gmail.com
 	Url: http://www.mytinytodo.net
-	Version: v1.3.0
-	Date: 2009-11-08
+	AppVersion: v1.3.1
+	Date: 2009-11-22
 */
 
 class Lang extends DefaultLang
@@ -64,6 +63,7 @@ class Lang extends DefaultLang
 		'months_short' => array("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"),
 		'months_long' => array("January","February","March","April","May","June","July","August","September","October","November","December"),
 		'days_min' => array("Su","Mo","Tu","We","Th","Fr","Sa"),
+		'days_long' => array("Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"),
 		'today' => "today",
 		'yesterday' => "yesterday",
 		'tomorrow' => "tomorrow",

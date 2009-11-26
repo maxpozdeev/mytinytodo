@@ -59,6 +59,7 @@ class DefaultLang
 		'months_short' => array("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"),
 		'months_long' => array("January","February","March","April","May","June","July","August","September","October","November","December"),
 		'days_min' => array("Su","Mo","Tu","We","Th","Fr","Sa"),
+		'days_long' => array("Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"),
 		'today' => "today",
 		'yesterday' => "yesterday",
 		'tomorrow' => "tomorrow",
@@ -101,6 +102,9 @@ class DefaultLang
 		$t = array();
 		foreach($this->get('days_min') as $v) { $t[] = '"'.str_replace('"','\\"',$v).'"'; }
 		$a[] = "daysMin: [". implode(',', $t). "]";
+		$t = array();
+		foreach($this->get('days_long') as $v) { $t[] = '"'.str_replace('"','\\"',$v).'"'; }
+		$a[] = "daysLong: [". implode(',', $t). "]";
 		$t = array();
 		foreach($this->get('months_long') as $v) { $t[] = '"'.str_replace('"','\\"',$v).'"'; }
 		$a[] = "monthsLong: [". implode(',', $t). "]";

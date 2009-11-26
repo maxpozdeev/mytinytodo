@@ -4,10 +4,9 @@
 	myTinyTodo language pack
 	Language: Russian
 	Author: Max Pozdeev
-	E-Mail: maxpozdeev@gmail.com
 	Url: http://www.mytinytodo.net
-	Version: v1.3.0
-	Date: 2009-11-08
+	AppVersion: v1.3.1
+	Date: 2009-11-26
 */
 
 class Lang extends DefaultLang
@@ -17,7 +16,6 @@ class Lang extends DefaultLang
 		'actionNote' => "заметка",
 		'actionEdit' => "редактировать",
 		'actionDelete' => "удалить",
-		'taskDate' => array("function(date) { return 'добавленa '+date; }"),
 		'confirmDelete' => "Вы уверены?",
 		'actionNoteSave' => "сохранить",
 		'actionNoteCancel' => "отмена",
@@ -42,6 +40,7 @@ class Lang extends DefaultLang
 		'advanced_add' => "Расширенная форма",
 		'searching' => "Поиск",
 		'tasks' => "Задачи",
+		'taskDate' => "добавленa %s",
 		'edit_task' => "Редактирование задачи",
 		'add_task' => "Новая задача",
 		'priority' => "Приоритет",
@@ -64,6 +63,7 @@ class Lang extends DefaultLang
 		'months_short' => array("Янв","Фев","Мар","Апр","Май","Июн","Июл","Авг","Сен","Окт","Ноя","Дек"),
 		'months_long' => array("Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"),
 		'days_min' => array("Вс","Пн","Вт","Ср","Чт","Пт","Сб"), 
+		'days_long' => array("Воскресенье","Понедельник","Вторник","Среда","Четверг","Пятница","Суббота"),
 		'today' => "сегодня",
 		'yesterday' => "вчера",
 		'tomorrow' => "завтра",
@@ -77,6 +77,7 @@ class Lang extends DefaultLang
 		'list_new' => "Новый список",
 		'list_rename' => "Переименовать",
 		'list_delete' => "Удалить",
+		'list_publish' => "Опубликовать",
 		'alltags' => "Все теги:",
 		'alltags_show' => "Показать все",
 		'alltags_hide' => "Скрыть все",
