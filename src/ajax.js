@@ -31,6 +31,7 @@ function loadTasks()
 	if(!curList) return false;
 	setSort(curList.sort, 1);
 	var tz = -1 * (new Date()).getTimezoneOffset();
+	$('#tasklist').html('');
 	setAjaxErrorTrigger();
 	var search = filter.search ? '&s='+encodeURIComponent(filter.search) : '';
 	var tag = filter.tag ? '&t='+encodeURIComponent(filter.tag) : '';
@@ -938,13 +939,13 @@ function loadLists(onInit, updAccess)
 			$('#page_tasks h3').children().addClass('invisible');
 			$('#mylistscontainer .mtt-need-list').addClass('mtt-disabled');
 			$('#rss_icon').hide();
+			$('#tasklist').html('');
 		}
 		ti += '<li class="mtt-tabs-button menu-owner"><a href="#" id="mylists" onClick="btnMenu(this);return false;"><span><img src="images/arrdown.gif"></span></a></li>';
 		$('#lists>ul').html(ti);
 		$('#lists').show();
 	});
 	$('#page_tasks').hide();
-	$('#tasklist').html('');
 	if(updAccess) updateAccessStatus();
 }
 
