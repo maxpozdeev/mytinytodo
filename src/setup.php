@@ -113,6 +113,7 @@ if(!$ver)
 			$db->ex(
 "CREATE TABLE lists (
  `id` INT UNSIGNED NOT NULL auto_increment,
+ `ow` INT NOT NULL default 0,
  `name` VARCHAR(50) NOT NULL default '',
  `d_created` INT UNSIGNED NOT NULL default 0,
  `sorting` TINYINT UNSIGNED NOT NULL default 0,
@@ -139,7 +140,7 @@ if(!$ver)
  title VARCHAR(250) NOT NULL,
  note TEXT,
  prio TINYINT NOT NULL default 0,
- ow INT NOT NULL default 0,
+ ow INTEGER NOT NULL default 0,
  tags VARCHAR(250) NOT NULL default '',
  duedate DATE default NULL
 ) ");
@@ -149,7 +150,7 @@ if(!$ver)
 "CREATE TABLE tags (
  id INTEGER PRIMARY KEY,
  name VARCHAR(50) NOT NULL,
- tags_count INT default 0,
+ tags_count INTEGER default 0,
  list_id INTEGER UNSIGNED NOT NULL default 0
 ) ");
 			$db->ex("CREATE UNIQUE INDEX tags_listid_name ON tags (list_id,name COLLATE NOCASE)");
@@ -165,6 +166,7 @@ if(!$ver)
 			$db->ex(
 "CREATE TABLE lists (
  id INTEGER PRIMARY KEY,
+ ow INTEGER NOT NULL default 0,
  name VARCHAR(50) NOT NULL,
  d_created INTEGER UNSIGNED NOT NULL default 0,
  sorting TINYINT UNSIGNED NOT NULL default 0,
@@ -440,6 +442,7 @@ function update_130_131($db, $dbtype)
 	$db->ex("BEGIN");
 	if($dbtype=='mysql')
 	{
+		$db->ex("ALTER TABLE lists ADD `ow` INT NOT NULL default 0");
 		$db->ex("ALTER TABLE lists ADD `d_created` INT UNSIGNED NOT NULL default 0");
 		$db->ex("ALTER TABLE lists ADD `sorting` TINYINT UNSIGNED NOT NULL default 0");
 		$db->ex("ALTER TABLE lists ADD `published` TINYINT UNSIGNED NOT NULL default 0");
@@ -459,6 +462,7 @@ function update_130_131($db, $dbtype)
 	}
 	else
 	{
+		$db->ex("ALTER TABLE lists ADD ow INTEGER NOT NULL default 0");
 		$db->ex("ALTER TABLE lists ADD d_created INTEGER UNSIGNED NOT NULL default 0");
 		$db->ex("ALTER TABLE lists ADD sorting TINYINT UNSIGNED NOT NULL default 0");
 		$db->ex("ALTER TABLE lists ADD published TINYINT UNSIGNED NOT NULL default 0");
