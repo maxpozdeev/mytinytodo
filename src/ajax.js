@@ -931,7 +931,6 @@ function loadLists(onInit, updAccess)
 			else $('#btnPublish').removeClass('mtt-item-checked');
 			//if(curList.published)
 				$('#rss_icon').show().find('a').attr('href', 'feed.php?list='+curList.id);
-			$('#page_tasks').show();
 		}
 		else {
 			curList = 0;
@@ -944,6 +943,7 @@ function loadLists(onInit, updAccess)
 		ti += '<li class="mtt-tabs-button menu-owner"><a href="#" id="mylists" onClick="btnMenu(this);return false;"><span><img src="images/arrdown.gif"></span></a></li>';
 		$('#lists>ul').html(ti);
 		$('#lists').show();
+		if(!flag.needAuth || flag.isLogged || curList) $('#page_tasks').show();
 	});
 	$('#page_tasks').hide();
 	if(updAccess) updateAccessStatus();

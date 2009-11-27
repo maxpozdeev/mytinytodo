@@ -106,7 +106,7 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
 
 <br clear="all">
 
-<div id="page_tasks">
+<div id="page_tasks" style="display:none">
 
 <div id="lists">
  <ul class="mtt-tabs"></ul>
