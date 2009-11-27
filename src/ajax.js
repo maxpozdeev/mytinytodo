@@ -504,9 +504,9 @@ function logout()
 	setAjaxErrorTrigger();
 	$.post('ajax.php?rnd='+Math.random(), { logout:1 }, function(json){
 		resetAjaxErrorTrigger();
+		flag.isLogged = false;
+		loadLists(0,1);
 	}, 'json');
-	flag.isLogged = false;
-	loadLists(0,1);
 	return false;
 }
 
