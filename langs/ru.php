@@ -40,7 +40,7 @@ class Lang extends DefaultLang
 		'advanced_add' => "Расширенная форма",
 		'searching' => "Поиск",
 		'tasks' => "Задачи",
-		'taskDate' => "добавленa %s",
+		'taskdate_inline' => "добавленa %s",
 		'edit_task' => "Редактирование задачи",
 		'add_task' => "Новая задача",
 		'priority' => "Приоритет",
