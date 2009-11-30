@@ -9,7 +9,7 @@
 $dontStartSession = 1;
 require_once('./init.php');
 require_once('./lang/class.default.php');
-require_once('./lang/'.$config['lang'].'.php'); 
+require_once('./lang/'.Config::get('lang').'.php'); 
 $lang = new Lang(); 
 
 $listId = (int)_get('list');
@@ -35,7 +35,7 @@ while($r = $q->fetch_assoc($q))
 	if($r['prio']) $a[] = $lang->get('priority'). ": $r[prio]";
 	if($r['duedate'] != '') {
 		$ad = explode('-', $r['duedate']);
-		$a[] = $lang->get('due'). ": ".formatDate3($config['dateformat'], (int)$ad[0], (int)$ad[1], (int)$ad[2], $lang);
+		$a[] = $lang->get('due'). ": ".formatDate3(Config::get('dateformat'), (int)$ad[0], (int)$ad[1], (int)$ad[2], $lang);
 	}
 	if($r['tags'] != '') $a[] = $lang->get('tags'). ": ". str_replace(',', ', ', $r['tags']);
 	$r['_descr'] = nl2br($r['note']). ($a && $r['note']!='' ? "<br><br>" : "").  implode("<br>", $a);

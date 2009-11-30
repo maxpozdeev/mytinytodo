@@ -19,20 +19,20 @@ if(isset($_POST['save']))
 	$t = array();
 	$langs = getLangs();
 	Config::$params['lang']['options'] = array_keys($langs);
-	$config['lang'] = _post('lang');
-	if(isset($_POST['password']) && $_POST['password'] != '') $config['password'] = $_POST['password'];
-	elseif(!_post('allowpassword')) $config['password'] = '';
-	$config['smartsyntax'] = (int)_post('smartsyntax');
-	$config['autotz'] = (int)_post('autotz');
-	$config['autotag'] = (int)_post('autotag');
-	$config['session'] = _post('session');
-	$config['firstdayofweek'] = (int)_post('firstdayofweek');
-	$config['duedateformat'] = (int)_post('duedateformat');
-	$config['clock'] = (int)_post('clock');
-	$config['dateformat'] = _post('dateformat');
-	$config['dateformatshort'] = _post('dateformatshort');
-	$config['title'] = trim(_post('title'));
-	Config::save($config);
+	Config::set('lang', _post('lang'));
+	if(isset($_POST['password']) && $_POST['password'] != '') Config::set('password', $_POST['password']);
+	elseif(!_post('allowpassword')) Config::set('password', '');
+	Config::set('smartsyntax', (int)_post('smartsyntax'));
+	Config::set('autotz', (int)_post('autotz'));
+	Config::set('autotag', (int)_post('autotag'));
+	Config::set('session', _post('session'));
+	Config::set('firstdayofweek', (int)_post('firstdayofweek'));
+	Config::set('duedateformat', (int)_post('duedateformat'));
+	Config::set('clock', (int)_post('clock'));
+	Config::set('dateformat', _post('dateformat'));
+	Config::set('dateformatshort', _post('dateformatshort'));
+	Config::set('title', trim(_post('title')));
+	Config::save();
 	$t['saved'] = 1;
 	echo json_encode($t);
 	exit;
@@ -41,8 +41,7 @@ if(isset($_POST['save']))
 
 function _c($key)
 {
-	global $config;
-	return Config::get($key, $config);
+	return Config::get($key);
 }
 
 function getLangs()
@@ -87,7 +86,7 @@ function selectOptions($a, $value, $default=null)
 
 <tr>
 <th>Language:</th>
-<td> <SELECT name="lang"><?php $langs = getLangs(); echo selectOptions($langs, $config['lang']); ?></SELECT> </td>
+<td> <SELECT name="lang"><?php $langs = getLangs(); echo selectOptions($langs, _c('lang')); ?></SELECT> </td>
 </tr>
 
 <tr>

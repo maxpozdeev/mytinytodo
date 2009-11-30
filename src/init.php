@@ -5,12 +5,16 @@ require_once('./db/config.php');
 
 ini_set('display_errors', 'On');
 
+if(!isset($config)) global $config;
+Config::loadConfig($config);
+unset($config);
+
 # MySQL Database Connection
-if($config['db'] == 'mysql')
+if(Config::get('db') == 'mysql')
 {
 	require_once('class.db.mysql.php');
 	$db = new Database_Mysql;
-	$db->connect($config['mysql.host'], $config['mysql.user'], $config['mysql.password'], $config['mysql.db']);
+	$db->connect(Config::get('mysql.host'), Config::get('mysql.user'), Config::get('mysql.password'), Config::get('mysql.db'));
 	$db->dq("SET NAMES utf8");
 }
 
@@ -23,10 +27,10 @@ else
 }
 
 
-$needAuth = (isset($config['password']) && $config['password'] != '') ? 1 : 0;
+$needAuth = (Config::get('password') != '') ? 1 : 0;
 if($needAuth && !isset($dontStartSession))
 {
-	if(isset($config['session']) && $config['session'] == 'files')
+	if(Config::get('session') == 'files')
 	{
 		session_save_path(realpath('./tmp/sessions/'));
 		ini_set('session.gc_maxlifetime', '1209600'); # 14 days session file minimum lifetime
@@ -48,8 +52,8 @@ function is_logged()
 
 function timestampToDatetime($timestamp, $tz)
 {
-	global $config, $lang;
-	$format = $config['dateformat'] .' '. ($config['clock'] == 12 ? 'g:i A' : 'H:i');
+	global $lang;
+	$format = Config::get('dateformat') .' '. (Config::get('clock') == 12 ? 'g:i A' : 'H:i');
 	$newformat = strtr($format, array('F'=>'%1', 'M'=>'%2'));
 	$adate = explode(',', gmdate('n,'.$newformat, $timestamp + $tz*60), 2);
 	$s = $adate[1];

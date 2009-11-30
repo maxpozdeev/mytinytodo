@@ -12,6 +12,9 @@ $config['mysql.db'] = "mytinytodo";
 $config['mysql.user'] = "user";
 $config['mysql.password'] = ""; 
 
+# Tables prefix
+$config['prefix'] = "mtt_";
+
 # Language pack
 $config['lang'] = "en";
 

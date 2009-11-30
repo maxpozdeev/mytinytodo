@@ -11,7 +11,7 @@ set_exception_handler('myExceptionHandler');
 
 require_once('./init.php');
 require_once('./lang/class.default.php');
-require_once('./lang/'.$config['lang'].'.php');
+require_once('./lang/'.Config::get('lang').'.php');
 $lang = new Lang();
 
 if(isset($_GET['loadLists']))
@@ -56,7 +56,7 @@ elseif(isset($_GET['loadTasks']))
 	elseif($sort == 2) $sqlSort .= "ddn ASC, duedate ASC, prio DESC, ow ASC";
 	else $sqlSort .= "ow ASC";
 	$tz = (int)_get('tz');
-	if((isset($config['autotz']) && $config['autotz']==0) || $tz<-720 || $tz>720 || $tz%30!=0) $tz = round(date('Z')/60);
+	if(Config::get('autotz')==0 || $tz<-720 || $tz>720 || $tz%30!=0) $tz = round(date('Z')/60);
 	$t = array();
 	$t['total'] = 0;
 	$t['list'] = array();
@@ -79,7 +79,7 @@ elseif(isset($_GET['newTask']))
 	$title = trim(_post('title'));
 	$prio = 0;
 	$tags = '';
-	if(!isset($config['smartsyntax']) || $config['smartsyntax'] != 0)
+	if(Config::get('smartsyntax') != 0)
 	{
 		$a = parse_smartsyntax($title);
 		if($a === false) {
@@ -94,9 +94,9 @@ elseif(isset($_GET['newTask']))
 		echo json_encode($t);
 		exit;
 	}
-	if(isset($config['autotag']) && $config['autotag']) $tags .= ','._post('tag');
+	if(Config::get('autotag')) $tags .= ','._post('tag');
 	$tz = (int)_post('tz');
-	if( (isset($config['autotz']) && $config['autotz']==0) || $tz<-720 || $tz>720 || $tz%30!=0 ) $tz = round(date('Z')/60);
+	if(Config::get('autotz')==0 || $tz<-720 || $tz>720 || $tz%30!=0 ) $tz = round(date('Z')/60);
 	$ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM todolist WHERE list_id=$listId AND compl=0");
 	$db->ex("BEGIN");
 	$db->dq("INSERT INTO todolist (list_id,title,d_created,ow,prio) VALUES ($listId,?,?,$ow,$prio)", array($title, time()));
@@ -134,9 +134,9 @@ elseif(isset($_GET['fullNewTask']))
 		exit;
 	}
 	$tags = trim(_post('tags'));
-	if(isset($config['autotag']) && $config['autotag']) $tags .= ','._post('tag');
+	if(Config::get('autotag')) $tags .= ','._post('tag');
 	$tz = (int)_post('tz');
-	if( (isset($config['autotz']) && $config['autotz']==0) || $tz<-720 || $tz>720 || $tz%30!=0 ) $tz = round(date('Z')/60);
+	if( Config::get('autotz')==0 || $tz<-720 || $tz>720 || $tz%30!=0 ) $tz = round(date('Z')/60);
 	$ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM todolist WHERE list_id=$listId AND compl=0");
 	if(is_null($duedate)) $duedate = 'NULL'; else $duedate = $db->quote($duedate);
 	$db->ex("BEGIN");
@@ -225,7 +225,7 @@ elseif(isset($_GET['editTask']))
 	}
 	$tags = trim(_post('tags'));
 	$tz = (int)_post('tz');
-	if( (isset($config['autotz']) && $config['autotz']==0) || $tz<-720 || $tz>720 || $tz%30!=0 ) $tz = round(date('Z')/60);
+	if( Config::get('autotz')==0 || $tz<-720 || $tz>720 || $tz%30!=0 ) $tz = round(date('Z')/60);
 	$db->ex("BEGIN");
 	$tag_ids = prepare_tags($tags, $listId); 
 	$cur_ids = get_task_tags($id);
@@ -284,7 +284,7 @@ elseif(isset($_POST['login']))
 	}
 	stop_gpc($_POST);
 	$password = _post('password');
-	if($password == $config['password']) {
+	if($password == Config::get('password')) {
 		$t['logged'] = 1;
 		session_regenerate_id(1);
 		$_SESSION['logged'] = 1;
@@ -455,7 +455,7 @@ function prepareTaskRow($r, $tz)
 function check_read_access($listId = null)
 {
 	global $db;
-	if(!isset($config['password']) || $config['password'] == '') return true;
+	if(Config::get('password') == '') return true;
 	if(is_logged()) return true;
 	if($listId)
 	{
@@ -468,8 +468,7 @@ function check_read_access($listId = null)
 
 function check_write_access()
 {
-	global $config;
-	if(!isset($config['password']) || $config['password'] == '') return;
+	if(Config::get('password') == '') return;
 	if(is_logged()) return;
 	echo json_encode( array('total'=>0, 'list'=>array(), 'denied'=>1) );
 	exit;
@@ -556,14 +555,13 @@ function tag_size($qmin, $q, $step)
 
 function parse_duedate($s)
 {
-	global $config;
 	$y = $m = $d = 0;
 	if(preg_match("|^(\d+)-(\d+)-(\d+)\b|", $s, $ma)) {
 		$y = (int)$ma[1]; $m = (int)$ma[2]; $d = (int)$ma[3];
 	}
 	elseif(preg_match("|^(\d+)\/(\d+)\/(\d+)\b|", $s, $ma))
 	{
-		if($config['duedateformat'] == 4) {
+		if(Config::get('duedateformat') == 4) {
 			$d = (int)$ma[1]; $m = (int)$ma[2]; $y = (int)$ma[3];
 		} else {
 			$m = (int)$ma[1]; $d = (int)$ma[2]; $y = (int)$ma[3];
@@ -580,7 +578,7 @@ function parse_duedate($s)
 	}
 	elseif(preg_match("|^(\d+)\/(\d+)\b|", $s, $ma))
 	{
-		if($config['duedateformat'] == 4) {
+		if(Config::get('duedateformat') == 4) {
 			$d = (int)$ma[1]; $m = (int)$ma[2];
 		} else {
 			$m = (int)$ma[1]; $d = (int)$ma[2];
@@ -602,7 +600,7 @@ function parse_duedate($s)
 
 function prepare_duedate($duedate, $tz)
 {
-	global $lang, $config;
+	global $lang;
 
 	$a = array( 'class'=>'', 'str'=>'', 'formatted'=>'' );
 	if($duedate == '') {
@@ -612,19 +610,19 @@ function prepare_duedate($duedate, $tz)
 	$at = explode('-', gmdate('Y-m-d', time() + $tz*60));
 	$diff = mktime(0,0,0,$ad[1],$ad[2],$ad[0]) - mktime(0,0,0,$at[1],$at[2],$at[0]);
 
-	if($diff < -604800 && $ad[0] == $at[0])	{ $a['class'] = 'past'; $a['str'] = formatDate3($config['dateformatshort'], (int)$ad[0], (int)$ad[1], (int)$ad[2], $lang); }
-	elseif($diff < -604800)	{ $a['class'] = 'past'; $a['str'] = formatDate3($config['dateformat'], (int)$ad[0], (int)$ad[1], (int)$ad[2], $lang); }
+	if($diff < -604800 && $ad[0] == $at[0])	{ $a['class'] = 'past'; $a['str'] = formatDate3(Config::get('dateformatshort'), (int)$ad[0], (int)$ad[1], (int)$ad[2], $lang); }
+	elseif($diff < -604800)	{ $a['class'] = 'past'; $a['str'] = formatDate3(Config::get('dateformat'), (int)$ad[0], (int)$ad[1], (int)$ad[2], $lang); }
 	elseif($diff < -86400)		{ $a['class'] = 'past'; $a['str'] = sprintf($lang->get('daysago'),ceil(abs($diff)/86400)); }
 	elseif($diff < 0)			{ $a['class'] = 'past'; $a['str'] = $lang->get('yesterday'); }
 	elseif($diff < 86400)		{ $a['class'] = 'today'; $a['str'] = $lang->get('today'); }
 	elseif($diff < 172800)		{ $a['class'] = 'today'; $a['str'] = $lang->get('tomorrow'); }
 	elseif($diff < 691200)		{ $a['class'] = 'soon'; $a['str'] = sprintf($lang->get('indays'),ceil($diff/86400)); }
-	elseif($ad[0] == $at[0])	{ $a['class'] = 'future'; $a['str'] = formatDate3($config['dateformatshort'], (int)$ad[0], (int)$ad[1], (int)$ad[2], $lang); }
-	else						{ $a['class'] = 'future'; $a['str'] = formatDate3($config['dateformat'], (int)$ad[0], (int)$ad[1], (int)$ad[2], $lang); }
+	elseif($ad[0] == $at[0])	{ $a['class'] = 'future'; $a['str'] = formatDate3(Config::get('dateformatshort'), (int)$ad[0], (int)$ad[1], (int)$ad[2], $lang); }
+	else						{ $a['class'] = 'future'; $a['str'] = formatDate3(Config::get('dateformat'), (int)$ad[0], (int)$ad[1], (int)$ad[2], $lang); }
 
-	if($config['duedateformat'] == 2) $a['formatted'] = (int)$ad[1].'/'.(int)$ad[2].'/'.$ad[0];
-	elseif($config['duedateformat'] == 3) $a['formatted'] = $ad[2].'.'.$ad[1].'.'.$ad[0];
-	elseif($config['duedateformat'] == 4) $a['formatted'] = $ad[2].'/'.$ad[1].'/'.$ad[0];
+	if(Config::get('duedateformat') == 2) $a['formatted'] = (int)$ad[1].'/'.(int)$ad[2].'/'.$ad[0];
+	elseif(Config::get('duedateformat') == 3) $a['formatted'] = $ad[2].'.'.$ad[1].'.'.$ad[0];
+	elseif(Config::get('duedateformat') == 4) $a['formatted'] = $ad[2].'/'.$ad[1].'/'.$ad[0];
 	else $a['formatted'] = $duedate;
 
 	return $a;

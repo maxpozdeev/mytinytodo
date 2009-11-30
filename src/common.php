@@ -66,6 +66,7 @@ class Config
 		'mysql.db' => array('default'=>'mytinytodo', 'type'=>'s'),
 		'mysql.user' => array('default'=>'user', 'type'=>'s'),
 		'mysql.password' => array('default'=>'', 'type'=>'s'),
+		'prefix' => array('default'=>'', 'type'=>'s'),
 		'title' => array('default'=>'', 'type'=>'s'),
 		'lang' => array('default'=>'en', 'type'=>'s'),
 		'password' => array('default'=>'', 'type'=>'s'),
@@ -80,14 +81,33 @@ class Config
 		'dateformatshort' => array('default'=>'j M', 'type'=>'s'),
 	);
 
-	public static function save($config)
+	public static $config;
+
+	public function loadConfig($config)
+	{
+		self::$config = $config;
+	}
+
+	public static function get($key)
+	{
+		if(isset(self::$config[$key])) return self::$config[$key];
+		elseif(isset(self::$params[$key])) return self::$params[$key]['default'];
+		else return null;
+	}
+
+	public static function set($key, $value)
+	{
+		self::$config[$key] = $value;
+	}
+
+	public static function save()
 	{
 		$s = '';
 		foreach(self::$params as $param=>$v)
 		{
-			if(!isset($config[$param])) $val = $v['default'];
-			elseif(isset($v['options']) && !in_array($config[$param], $v['options'])) $val = $v['default'];
-			else $val = $config[$param];
+			if(!isset(self::$config[$param])) $val = $v['default'];
+			elseif(isset($v['options']) && !in_array(self::$config[$param], $v['options'])) $val = $v['default'];
+			else $val = self::$config[$param];
 			if($v['type']=='i') {
 				$s .= "\$config['$param'] = ".(int)$val.";\n";
 			}
@@ -99,13 +119,6 @@ class Config
 		if($f === false) throw new Exception("Error while saving config file");
 		fwrite($f, "<?php\n\$config = array();\n$s?>");
 		fclose($f);
-	}
-
-	public static function get($key, $config)
-	{
-		if(isset($config[$key])) return $config[$key];
-		elseif(isset(self::$params[$key])) return self::$params[$key]['default'];
-		else return null;
 	}
 }
 

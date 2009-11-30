@@ -8,19 +8,18 @@
 
 require_once('init.php');
 require_once('./lang/class.default.php');
-require_once('./lang/'.$config['lang'].'.php');
+require_once('./lang/'.Config::get('lang').'.php');
 
 $lang = new Lang();
 
-if($config['duedateformat'] == 2) $duedateformat = 'm/d/yy';
-elseif($config['duedateformat'] == 3) $duedateformat = 'dd.mm.yy';
-elseif($config['duedateformat'] == 4) $duedateformat = 'dd/mm/yy';
+if(Config::get('duedateformat') == 2) $duedateformat = 'm/d/yy';
+elseif(Config::get('duedateformat') == 3) $duedateformat = 'dd.mm.yy';
+elseif(Config::get('duedateformat') == 4) $duedateformat = 'dd/mm/yy';
 else $duedateformat = 'yy-mm-dd';
 
-if(!isset($config['firstdayofweek']) || !is_int($config['firstdayofweek']) ||
-	$config['firstdayofweek']<0 || $config['firstdayofweek']>6) $config['firstdayofweek'] = 1;
+if(!is_int(Config::get('firstdayofweek')) || Config::get('firstdayofweek')<0 || Config::get('firstdayofweek')>6) Config::set('firstdayofweek', 1);
 
-if(isset($config['title']) && $config['title'] != '') $title = htmlarray($config['title']);
+if(Config::get('title') != '') $title = htmlarray(Config::get('title'));
 else $title = $lang->get('My Tiny Todolist');
 
 
@@ -67,7 +66,7 @@ $().ready(function(){
 	echo "\tloadLists(1, 1);\n";
 ?>
 	preloadImg();
-	$("#duedate").datepicker({dateFormat: '<?php echo $duedateformat; ?>', firstDay: <?php echo $config['firstdayofweek']; ?>,
+	$("#duedate").datepicker({dateFormat: '<?php echo $duedateformat; ?>', firstDay: <?php echo Config::get('firstdayofweek'); ?>,
 		showOn: 'button', buttonImage: 'images/calendar.png', buttonImageOnly: true, changeMonth:true,
 		changeYear:true, constrainInput: false, duration:'', nextText:'&gt;', prevText:'&lt;', dayNamesMin:lang.daysMin, 
 		dayNames:lang.daysLong, monthNamesShort:lang.monthsLong });
