@@ -96,8 +96,8 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
  </span>
  <span class="bar-delim" style="display:none"> | </span>
  <span id="bar_auth">
+  <span id="bar_public" style="display:none"><?php _e('public_tasks');?> |</span>
   <span id="bar_login"><a href="#" class="nodecor" onClick="showAuth(this);return false;"><u><?php _e('a_login');?></u> <img src="images/arrdown.gif" border=0></a></span>
-  <span id="authstr">&nbsp;</span>
   <a href="#" id="bar_logout" onClick="logout();return false"><?php _e('a_logout');?></a>
  </span>
  </div>

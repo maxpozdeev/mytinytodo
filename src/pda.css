@@ -40,7 +40,6 @@ div.task-note-area textarea { width:95%; }
 
 #loading {  padding:0px; padding-top:1px; padding-right:1px; height:16px; overflow:hidden; }
 #loading img { /*width:8px; height:8px;*/ }
-#authstr { float:none; }
 
 #tagcloud { max-width:100%; }
 .mtt-settings-table .in350 { min-width:50px; }

@@ -468,12 +468,11 @@ function updateAccessStatus()
 	}
 	if(flag.needAuth && !flag.isLogged) {
 		$('#page_tasks').addClass('readonly')
-		$("#authstr").text(lang.readonly).show();
 		addsearchToggle(1);
 	}
 	else {
 		$('#page_tasks').removeClass('readonly')
-		$("#authstr").text('').hide();
+		$("#bar_public").hide();
 		addsearchToggle(0);
 	}
 	$('#page_ajax').hide();
@@ -931,6 +930,7 @@ function loadLists(onInit, updAccess)
 			else $('#btnPublish').removeClass('mtt-item-checked');
 			//if(curList.published)
 				$('#rss_icon').show().find('a').attr('href', 'feed.php?list='+curList.id);
+			if(flag.needAuth && !flag.isLogged) $('#bar_public').show();
 		}
 		else {
 			curList = 0;
