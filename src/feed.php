@@ -14,7 +14,7 @@ $lang = new Lang();
 
 $listId = (int)_get('list');
 
-$listData = $db->sqa("SELECT * FROM lists WHERE id=$listId");
+$listData = $db->sqa("SELECT * FROM {$db->prefix}lists WHERE id=$listId");
 if($needAuth && (!$listData || !$listData['published'])) {
 	die("Access denied!<br> List is not published.");
 }
@@ -27,7 +27,7 @@ $listData['_feed_descr'] = sprintf($lang->get('feed_description'), $listData['na
 htmlarray_ref($listData);
 
 $data = array();
-$q = $db->dq("SELECT * FROM todolist WHERE list_id=$listId ORDER BY d_created DESC LIMIT 100");
+$q = $db->dq("SELECT * FROM {$db->prefix}todolist WHERE list_id=$listId ORDER BY d_created DESC LIMIT 100");
 while($r = $q->fetch_assoc($q)) 
 {
 	if($r['prio'] > 0) $r['prio'] = '+'.$r['prio'];

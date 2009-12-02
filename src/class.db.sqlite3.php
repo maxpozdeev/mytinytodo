@@ -7,6 +7,7 @@ class DatabaseResult_Sqlite3
 	private $parent;
 	private $q;
 	var $query;
+	var $prefix;
 
 	function __construct($query, &$h, $resultless = 0)
 	{

@@ -20,7 +20,7 @@ if(isset($_GET['loadLists']))
 	else $sqlWhere = '';
 	$t = array();
 	$t['total'] = 0;
-	$q = $db->dq("SELECT * FROM lists $sqlWhere ORDER BY id ASC");
+	$q = $db->dq("SELECT * FROM {$db->prefix}lists $sqlWhere ORDER BY id ASC");
 	while($r = $q->fetch_assoc($q))
 	{
 		$t['total']++;
@@ -45,7 +45,7 @@ elseif(isset($_GET['loadTasks']))
 	$tag = trim(_get('t'));
 	if($tag != '') {
 		$tag_id = get_tag_id($tag, $listId);
-		$inner = "INNER JOIN tag2task ON id=tag2task.task_id";
+		$inner = "INNER JOIN {$db->prefix}tag2task ON id=task_id";
 		$sqlWhere .= " AND tag_id=$tag_id ";
 	}
 	$s = trim(_get('s'));
@@ -60,7 +60,7 @@ elseif(isset($_GET['loadTasks']))
 	$t = array();
 	$t['total'] = 0;
 	$t['list'] = array();
-	$q = $db->dq("SELECT *, duedate IS NULL AS ddn FROM todolist $inner WHERE 1=1 $sqlWhere $sqlSort");
+	$q = $db->dq("SELECT *, duedate IS NULL AS ddn FROM {$db->prefix}todolist $inner WHERE 1=1 $sqlWhere $sqlSort");
 	while($r = $q->fetch_assoc($q))
 	{
 		$t['total']++;
@@ -97,20 +97,20 @@ elseif(isset($_GET['newTask']))
 	if(Config::get('autotag')) $tags .= ','._post('tag');
 	$tz = (int)_post('tz');
 	if(Config::get('autotz')==0 || $tz<-720 || $tz>720 || $tz%30!=0 ) $tz = round(date('Z')/60);
-	$ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM todolist WHERE list_id=$listId AND compl=0");
+	$ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->prefix}todolist WHERE list_id=$listId AND compl=0");
 	$db->ex("BEGIN");
-	$db->dq("INSERT INTO todolist (list_id,title,d_created,ow,prio) VALUES ($listId,?,?,$ow,$prio)", array($title, time()));
+	$db->dq("INSERT INTO {$db->prefix}todolist (list_id,title,d_created,ow,prio) VALUES ($listId,?,?,$ow,$prio)", array($title, time()));
 	$id = $db->last_insert_id();
 	if($tags)
 	{
 		$tag_ids = prepare_tags($tags, $listId);
 		if($tag_ids) {
 			update_task_tags($id, $tag_ids);
-			$db->ex("UPDATE todolist SET tags=? WHERE id=$id", $tags);
+			$db->ex("UPDATE {$db->prefix}todolist SET tags=? WHERE id=$id", $tags);
 		}
 	}
 	$db->ex("COMMIT");
-	$r = $db->sqa("SELECT * FROM todolist WHERE id=$id");
+	$r = $db->sqa("SELECT * FROM {$db->prefix}todolist WHERE id=$id");
 	$t['list'][] = prepareTaskRow($r, $tz);
 	$t['total'] = 1;
 	echo json_encode($t); 
@@ -137,21 +137,21 @@ elseif(isset($_GET['fullNewTask']))
 	if(Config::get('autotag')) $tags .= ','._post('tag');
 	$tz = (int)_post('tz');
 	if( Config::get('autotz')==0 || $tz<-720 || $tz>720 || $tz%30!=0 ) $tz = round(date('Z')/60);
-	$ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM todolist WHERE list_id=$listId AND compl=0");
+	$ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->prefix}todolist WHERE list_id=$listId AND compl=0");
 	if(is_null($duedate)) $duedate = 'NULL'; else $duedate = $db->quote($duedate);
 	$db->ex("BEGIN");
-	$db->dq("INSERT INTO todolist (list_id,title,d_created,ow,prio,note,duedate) VALUES($listId,?,?,$ow,$prio,?,$duedate)", array($title,time(),$note));
+	$db->dq("INSERT INTO {$db->prefix}todolist (list_id,title,d_created,ow,prio,note,duedate) VALUES($listId,?,?,$ow,$prio,?,$duedate)", array($title,time(),$note));
 	$id = $db->last_insert_id();
 	if($tags)
 	{
 		$tag_ids = prepare_tags($tags, $listId);
 		if($tag_ids) {
 			update_task_tags($id, $tag_ids);
-			$db->ex("UPDATE todolist SET tags=? WHERE id=$id", $tags);
+			$db->ex("UPDATE {$db->prefix}todolist SET tags=? WHERE id=$id", $tags);
 		}
 	}
 	$db->ex("COMMIT");
-	$r = $db->sqa("SELECT * FROM todolist WHERE id=$id");
+	$r = $db->sqa("SELECT * FROM {$db->prefix}todolist WHERE id=$id");
 	$t['list'][] = prepareTaskRow($r, $tz);
 	$t['total'] = 1;
 	echo json_encode($t); 
@@ -165,11 +165,11 @@ elseif(isset($_GET['deleteTask']))
 	$db->ex("BEGIN");
 	if($tags) {
 		$s = implode(',', $tags);
-		$db->ex("DELETE FROM tag2task WHERE task_id=$id");
-		$db->ex("UPDATE tags SET tags_count=tags_count-1 WHERE id IN ($s)");
-		$db->ex("DELETE FROM tags WHERE tags_count < 1");	# slow on large amount of tags
+		$db->ex("DELETE FROM {$db->prefix}tag2task WHERE task_id=$id");
+		$db->ex("UPDATE {$db->prefix}tags SET tags_count=tags_count-1 WHERE id IN ($s)");
+		$db->ex("DELETE FROM {$db->prefix}tags WHERE tags_count < 1");	# slow on large amount of tags
 	}
-	$db->dq("DELETE FROM todolist WHERE id=$id");
+	$db->dq("DELETE FROM {$db->prefix}todolist WHERE id=$id");
 	$affected = $db->affected();
 	$db->ex("COMMIT");
 	$t = array();
@@ -183,9 +183,9 @@ elseif(isset($_GET['completeTask']))
 	check_write_access();
 	$id = (int)$_GET['completeTask'];
 	$compl = _get('compl') ? 1 : 0;
-	if($compl) 	$ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM todolist WHERE compl=1");
-	else $ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM todolist WHERE compl=0");
-	$db->dq("UPDATE todolist SET compl=$compl,ow=$ow,d_completed=? WHERE id=$id", array($compl?time():0 ));
+	if($compl) 	$ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->prefix}todolist WHERE compl=1");
+	else $ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->prefix}todolist WHERE compl=0");
+	$db->dq("UPDATE {$db->prefix}todolist SET compl=$compl,ow=$ow,d_completed=? WHERE id=$id", array($compl?time():0 ));
 	$t = array();
 	$t['total'] = 1;
 	$t['list'][] = array('id'=>$id, 'compl'=>$compl, 'ow'=>$ow);
@@ -198,7 +198,7 @@ elseif(isset($_GET['editNote']))
 	$id = (int)$_GET['editNote'];
 	stop_gpc($_POST);
 	$note = str_replace("\r\n", "\n", trim(_post('note')));
-	$db->dq("UPDATE todolist SET note=? WHERE id=$id", $note);
+	$db->dq("UPDATE {$db->prefix}todolist SET note=? WHERE id=$id", $note);
 	$t = array();
 	$t['total'] = 1;
 	$t['list'][] = array('id'=>$id, 'note'=>nl2br(htmlarray($note)), 'noteText'=>(string)$note);
@@ -231,16 +231,16 @@ elseif(isset($_GET['editTask']))
 	$cur_ids = get_task_tags($id);
 	if($cur_ids) {
 		$ids = implode(',', $cur_ids);
-		$db->ex("DELETE FROM tag2task WHERE task_id=$id");
-		$db->dq("UPDATE tags SET tags_count=tags_count-1 WHERE id IN ($ids)");
+		$db->ex("DELETE FROM {$db->prefix}tag2task WHERE task_id=$id");
+		$db->dq("UPDATE {$db->prefix}tags SET tags_count=tags_count-1 WHERE id IN ($ids)");
 	}
 	if($tag_ids) {
 		update_task_tags($id, $tag_ids);
 	}
 	if(is_null($duedate)) $duedate = 'NULL'; else $duedate = $db->quote($duedate);
-	$db->dq("UPDATE todolist SET title=?,note=?,prio=?,tags=?,duedate=$duedate WHERE id=$id", array($title,$note,$prio,$tags));
+	$db->dq("UPDATE {$db->prefix}todolist SET title=?,note=?,prio=?,tags=?,duedate=$duedate WHERE id=$id", array($title,$note,$prio,$tags));
 	$db->ex("COMMIT");
-	$r = $db->sqa("SELECT * FROM todolist WHERE id=$id");
+	$r = $db->sqa("SELECT * FROM {$db->prefix}todolist WHERE id=$id");
 	if($r) {
 		$t['list'][] = prepareTaskRow($r, $tz);
 		$t['total'] = 1;
@@ -266,7 +266,7 @@ elseif(isset($_GET['changeOrder']))
 		foreach($ad as $diff=>$ids) {
 			if($diff >=0) $set = "ow=ow+".$diff;
 			else $set = "ow=ow-".abs($diff);
-			$db->dq("UPDATE todolist SET $set WHERE id IN (".implode(',',$ids).")");
+			$db->dq("UPDATE {$db->prefix}todolist SET $set WHERE id IN (".implode(',',$ids).")");
 		}
 		$db->ex("COMMIT");
 		$t['total'] = 1;
@@ -306,7 +306,7 @@ elseif(isset($_GET['suggestTags']))
 	$begin = trim(_get('q'));
 	$limit = (int)_get('limit');
 	if($limit<1) $limit = 8;
-	$q = $db->dq("SELECT name,id FROM tags WHERE list_id=$listId AND name LIKE ". $db->quoteForLike('%s%%',$begin). " AND tags_count>0 ORDER BY name LIMIT $limit");
+	$q = $db->dq("SELECT name,id FROM {$db->prefix}tags WHERE list_id=$listId AND name LIKE ". $db->quoteForLike('%s%%',$begin). " AND tags_count>0 ORDER BY name LIMIT $limit");
 	$s = '';
 	while($r = $q->fetch_row()) {
 		$s .= "$r[0]|$r[1]\n";
@@ -321,7 +321,7 @@ elseif(isset($_GET['setPrio']))
 	$prio = (int)_get('prio');
 	if($prio < -1) $prio = -1;
 	elseif($prio > 2) $prio = 2;
-	$db->ex("UPDATE todolist SET prio=$prio WHERE id=$id");
+	$db->ex("UPDATE {$db->prefix}todolist SET prio=$prio WHERE id=$id");
 	$t = array();
 	$t['total'] = 1;
 	$t['list'][] = array('id'=>$id, 'prio'=>$prio);
@@ -333,7 +333,7 @@ elseif(isset($_GET['tagCloud']))
 	$listId = (int)_get('list');
 	check_read_access($listId);
 	$a = array();
-	$q = $db->dq("SELECT name,tags_count FROM tags WHERE list_id=$listId AND tags_count>0 ORDER BY tags_count ASC");
+	$q = $db->dq("SELECT name,tags_count FROM {$db->prefix}tags WHERE list_id=$listId AND tags_count>0 ORDER BY tags_count ASC");
 	while($r = $q->fetch_row()) {
 		$a[$r[0]] = $r[1];
 	}
@@ -363,10 +363,10 @@ elseif(isset($_POST['addList']))
 	$t = array();
 	$t['total'] = 0;
 	$name = str_replace(array('"',"'",'<','>','&'),array('','','','',''),trim(_post('name')));
-	$db->dq("INSERT INTO lists (name) VALUES (?)", array($name));
+	$db->dq("INSERT INTO {$db->prefix}lists (name) VALUES (?)", array($name));
 	$id = $db->last_insert_id();
 	$t['total'] = 1;
-	$r = $db->sqa("SELECT * FROM lists WHERE id=$id");
+	$r = $db->sqa("SELECT * FROM {$db->prefix}lists WHERE id=$id");
 	$t['list'][] = array('id'=>$r['id'], 'name'=>htmlarray($r['name']));
 	echo json_encode($t);
 	exit;
@@ -379,9 +379,9 @@ elseif(isset($_POST['renameList']))
 	$t['total'] = 0;
 	$id = (int)_post('id');
 	$name = str_replace(array('"',"'",'<','>','&'),array('','','','',''),trim(_post('name')));
-	$db->dq("UPDATE lists SET name=? WHERE id=$id", array($name));
+	$db->dq("UPDATE {$db->prefix}lists SET name=? WHERE id=$id", array($name));
 	$t['total'] = $db->affected();
-	$r = $db->sqa("SELECT * FROM lists WHERE id=$id");
+	$r = $db->sqa("SELECT * FROM {$db->prefix}lists WHERE id=$id");
 	$t['list'][] = array('id'=>$r['id'], 'name'=>htmlarray($r['name']));
 	echo json_encode($t);
 	exit;
@@ -394,13 +394,13 @@ elseif(isset($_POST['deleteList']))
 	$t['total'] = 0;
 	$id = (int)_post('id');
 	$db->ex("BEGIN");
-	$db->ex("DELETE FROM lists WHERE id=$id");
+	$db->ex("DELETE FROM {$db->prefix}lists WHERE id=$id");
 	$t['total'] = $db->affected();
 	if($t['total']) {
-		$db->ex("DELETE FROM tags WHERE list_id=$id");
+		$db->ex("DELETE FROM {$db->prefix}tags WHERE list_id=$id");
 		# sqlite doesnt support DELETE FROM INNNER JOIN
-		$db->ex("DELETE FROM tag2task WHERE task_id IN (SELECT id FROM todolist WHERE list_id=$id)");
-		$db->ex("DELETE FROM todolist WHERE list_id=$id");
+		$db->ex("DELETE FROM {$db->prefix}tag2task WHERE task_id IN (SELECT id FROM {$db->prefix}todolist WHERE list_id=$id)");
+		$db->ex("DELETE FROM {$db->prefix}todolist WHERE list_id=$id");
 	}
 	$db->ex("COMMIT");
 	echo json_encode($t);
@@ -412,7 +412,7 @@ elseif(isset($_GET['setSort']))
 	$listId = (int)_post('list');
 	$sort = (int)_post('sort');
 	if($sort < 0 || $sort > 2) $sort = 0;
-	$db->ex("UPDATE lists SET sorting=$sort WHERE id=$listId");
+	$db->ex("UPDATE {$db->prefix}lists SET sorting=$sort WHERE id=$listId");
 	echo json_encode(array('total'=>1));
 	exit;
 }
@@ -421,7 +421,7 @@ elseif(isset($_GET['publishList']))
 	check_write_access();
 	$listId = (int)_post('list');
 	$publish = (int)_post('publish');
-	$db->ex("UPDATE lists SET published=? WHERE id=$listId", array($publish ? 1 : 0));
+	$db->ex("UPDATE {$db->prefix}lists SET published=? WHERE id=$listId", array($publish ? 1 : 0));
 	echo json_encode(array('total'=>1));
 	exit;
 }
@@ -459,7 +459,7 @@ function check_read_access($listId = null)
 	if(is_logged()) return true;
 	if($listId)
 	{
-		$id = $db->sq("SELECT id FROM lists WHERE id=? AND published=1", array($listId));
+		$id = $db->sq("SELECT id FROM {$db->prefix}lists WHERE id=? AND published=1", array($listId));
 		if($id) return;
 	}
 	echo json_encode( array('total'=>0, 'list'=>array(), 'denied'=>1) );
@@ -497,25 +497,25 @@ function prepare_tags(&$tags_str, $listId)
 function get_or_create_tag($name, $listId)
 {
 	global $db;
-	$tag = $db->sq("SELECT id,name FROM tags WHERE list_id=? AND name=?", array($listId, $name));
+	$tag = $db->sq("SELECT id,name FROM {$db->prefix}tags WHERE list_id=? AND name=?", array($listId, $name));
 	if($tag) return $tag;
 
 	# need to create tag
-	$db->ex("INSERT INTO tags (name,list_id) VALUES (?,?)", array($name,$listId));
+	$db->ex("INSERT INTO {$db->prefix}tags (name,list_id) VALUES (?,?)", array($name,$listId));
 	return array($db->last_insert_id(), $name);
 }
 
 function get_tag_id($tag, $listId)
 {
 	global $db;
-	$id = $db->sq("SELECT id FROM tags WHERE list_id=? AND name=?", array($listId, $tag));
+	$id = $db->sq("SELECT id FROM {$db->prefix}tags WHERE list_id=? AND name=?", array($listId, $tag));
 	return $id ? $id : 0;
 }
 
 function get_task_tags($id)
 {
 	global $db;
-	$q = $db->dq("SELECT tag_id FROM tag2task WHERE task_id=?", $id);
+	$q = $db->dq("SELECT tag_id FROM {$db->prefix}tag2task WHERE task_id=?", $id);
 	$a = array();
 	while($r = $q->fetch_row()) {
 		$a[] = $r[0];
@@ -527,9 +527,9 @@ function update_task_tags($id, $tag_ids)
 {
 	global $db;
 	foreach($tag_ids as $v) {
-		$db->ex("INSERT INTO tag2task (task_id,tag_id) VALUES ($id,$v)");
+		$db->ex("INSERT INTO {$db->prefix}tag2task (task_id,tag_id) VALUES ($id,$v)");
 	}
-	$db->ex("UPDATE tags SET tags_count=tags_count+1 WHERE id IN (". implode(',', $tag_ids). ")");
+	$db->ex("UPDATE {$db->prefix}tags SET tags_count=tags_count+1 WHERE id IN (". implode(',', $tag_ids). ")");
 }
 
 function parse_smartsyntax($title)

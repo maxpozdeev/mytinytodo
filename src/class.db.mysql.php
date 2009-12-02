@@ -10,6 +10,7 @@ class DatabaseResult_Mysql
 	var $query;
 	var $rows = NULL;
 	var $affected = NULL;
+	var $prefix = '';
 
 	function __construct($query, &$h, $resultless = 0)
 	{

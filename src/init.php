@@ -25,6 +25,7 @@ else
 	$db = new Database_Sqlite3;
 	$db->connect('./db/todolist.db');
 }
+$db->prefix = Config::get('prefix');
 
 
 $needAuth = (Config::get('password') != '') ? 1 : 0;

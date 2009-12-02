@@ -20,7 +20,6 @@ if(!isset($config['db']))
 		$config['db'] = 'sqlite';
 	}
 	if(isset($config['allow']) && $config['allow'] == 'read') $config['allowread'] = 1;
-	#Config::save($config);
 }
 
 require_once('./init.php');
@@ -76,7 +75,7 @@ if(!$ver)
 		try
 		{
 			$db->ex(
-"CREATE TABLE todolist (
+"CREATE TABLE {$db->prefix}todolist (
  `id` INT UNSIGNED NOT NULL auto_increment,
  `list_id` INT UNSIGNED NOT NULL default 0,
  `d_created` INT UNSIGNED NOT NULL default 0,	/* time() timestamp */
@@ -93,7 +92,7 @@ if(!$ver)
 ) CHARSET=utf8 ");
 
 			$db->ex(
-"CREATE TABLE tags (
+"CREATE TABLE {$db->prefix}tags (
  `id` INT UNSIGNED NOT NULL auto_increment,
  `name` VARCHAR(50) NOT NULL,
  `tags_count` INT default 0,
@@ -103,7 +102,7 @@ if(!$ver)
 ) CHARSET=utf8 ");
 
 			$db->ex(
-"CREATE TABLE tag2task (
+"CREATE TABLE {$db->prefix}tag2task (
  `tag_id` INT UNSIGNED NOT NULL,
  `task_id` INT UNSIGNED NOT NULL,
  KEY(`tag_id`),
@@ -111,7 +110,7 @@ if(!$ver)
 ) CHARSET=utf8 ");
 
 			$db->ex(
-"CREATE TABLE lists (
+"CREATE TABLE {$db->prefix}lists (
  `id` INT UNSIGNED NOT NULL auto_increment,
  `ow` INT NOT NULL default 0,
  `name` VARCHAR(50) NOT NULL default '',
@@ -131,7 +130,7 @@ if(!$ver)
 		try
 		{
 			$db->ex(
-"CREATE TABLE todolist (
+"CREATE TABLE {$db->prefix}todolist (
  id INTEGER PRIMARY KEY,
  list_id INTEGER UNSIGNED NOT NULL default 0,
  d_created INTEGER UNSIGNED NOT NULL default 0,
@@ -144,27 +143,27 @@ if(!$ver)
  tags VARCHAR(250) NOT NULL default '',
  duedate DATE default NULL
 ) ");
-			$db->ex("CREATE INDEX list_id ON todolist (list_id)");
+			$db->ex("CREATE INDEX list_id ON {$db->prefix}todolist (list_id)");
 
 			$db->ex(
-"CREATE TABLE tags (
+"CREATE TABLE {$db->prefix}tags (
  id INTEGER PRIMARY KEY,
  name VARCHAR(50) NOT NULL,
  tags_count INTEGER default 0,
  list_id INTEGER UNSIGNED NOT NULL default 0
 ) ");
-			$db->ex("CREATE UNIQUE INDEX tags_listid_name ON tags (list_id,name COLLATE NOCASE)");
+			$db->ex("CREATE UNIQUE INDEX tags_listid_name ON {$db->prefix}tags (list_id,name COLLATE NOCASE)");
 
 			$db->ex(
-"CREATE TABLE tag2task (
+"CREATE TABLE {$db->prefix}tag2task (
  tag_id INTEGER NOT NULL,
  task_id INTEGER NOT NULL
 ) ");
-			$db->ex("CREATE INDEX tag_id ON tag2task (tag_id)");
-			$db->ex("CREATE INDEX task_id ON tag2task (task_id)");
+			$db->ex("CREATE INDEX tag_id ON {$db->prefix}tag2task (tag_id)");
+			$db->ex("CREATE INDEX task_id ON {$db->prefix}tag2task (task_id)");
 
 			$db->ex(
-"CREATE TABLE lists (
+"CREATE TABLE {$db->prefix}lists (
  id INTEGER PRIMARY KEY,
  ow INTEGER NOT NULL default 0,
  name VARCHAR(50) NOT NULL,
@@ -220,22 +219,22 @@ printFooter();
 
 function get_ver($db, $dbtype)
 {
-	if(!$db->table_exists('todolist')) return '';
+	if(!$db->table_exists($db->prefix.'todolist')) return '';
 	$v = '1.0';
-	if(!$db->table_exists('tags')) return $v;
+	if(!$db->table_exists($db->prefix.'tags')) return $v;
 	$v = '1.1';
 	if($dbtype == 'mysql') {
-		if(!has_field_mysql($db, 'todolist', 'duedate')) return $v;
+		if(!has_field_mysql($db, $db->prefix.'todolist', 'duedate')) return $v;
 	} else {
-		if(!has_field_sqlite($db, 'todolist', 'duedate')) return $v;
+		if(!has_field_sqlite($db, $db->prefix.'todolist', 'duedate')) return $v;
 	}
 	$v = '1.2';
-	if(!$db->table_exists('lists')) return $v;
+	if(!$db->table_exists($db->prefix.'lists')) return $v;
 	$v = '1.3.0';
 	if($dbtype == 'mysql') {
-		if(!has_field_mysql($db, 'todolist', 'd_completed')) return $v;
+		if(!has_field_mysql($db, $db->prefix.'todolist', 'd_completed')) return $v;
 	} else {
-		if(!has_field_sqlite($db, 'todolist', 'd_completed')) return $v;
+		if(!has_field_sqlite($db, $db->prefix.'todolist', 'd_completed')) return $v;
 	}
 	$v = '1.3.1';
 	return $v;
@@ -415,10 +414,10 @@ function update_12_13($db, $dbtype)
 
 function createDefaultList($db)
 {
-	$db->ex("INSERT INTO lists (name,d_created) VALUES (?,?)", array('Todo', time()));
+	$db->ex("INSERT INTO {$db->prefix}lists (name,d_created) VALUES (?,?)", array('Todo', time()));
 
-	$db->ex("UPDATE todolist SET list_id=1");
-	$db->ex("UPDATE tags SET list_id=1");
+	$db->ex("UPDATE {$db->prefix}todolist SET list_id=1");
+	$db->ex("UPDATE {$db->prefix}tags SET list_id=1");
 }
 
 ### end 1.2-1.3 #####
