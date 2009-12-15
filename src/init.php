@@ -55,7 +55,7 @@ function timestampToDatetime($timestamp, $tz)
 {
 	global $lang;
 	$format = Config::get('dateformat') .' '. (Config::get('clock') == 12 ? 'g:i A' : 'H:i');
-	return formatTime($timestamp, $format, $tz);
+	return formatTime($format, $timestamp, $tz);
 }
 
 function formatTime($format, $timestamp=0, $tz=null)

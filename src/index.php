@@ -141,6 +141,11 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
 <div id="page_taskedit" style="display:none">
 
 <h3 class="mtt-inadd"><?php _e('add_task');?></h3>
+
+<div id="taskedit-date" class="mtt-inedit">
+ <div class="date-created">Created: <span></span></div>
+ <div class="date-completed">Completed: <span></span></div>
+</div>
 <h3 class="mtt-inedit"><?php _e('edit_task');?></h3>
 
 <form onSubmit="return saveTask(this)" name="edittask">

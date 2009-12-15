@@ -439,6 +439,7 @@ function prepareTaskRow($r, $tz)
 		'title' => htmlarray($r['title']),
 		'date' => htmlarray($dCreated),
 		'dateInline' => htmlarray(sprintf($lang->get('taskdate_inline'), $dCreated)),
+		'dateCompleted' => htmlarray(timestampToDatetime($r['d_completed'], $tz)),
 		'compl' => (int)$r['compl'],
 		'prio' => $r['prio'],
 		'note' => nl2br(htmlarray($r['note'])),

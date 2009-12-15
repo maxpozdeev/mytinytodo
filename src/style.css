@@ -118,6 +118,9 @@ div.task-note-area textarea { color:#999999; width:100%; display:block; height:6
 .ui-icon-gripsmall-diagonal-se { background-image:url(images/resizegrip.gif); }
 #alltags .tag { font-weight:bold; color:#333333; }
 #alltags .tag:hover { background-color:#999988; color:white; }
+#page_taskedit.mtt-inadd .mtt-inedit { display:none; }
+#page_taskedit.mtt-inedit .mtt-inadd { display:none; }
+#taskedit-date { font-size:8pt; font-weight:normal; text-align:right; float:right; color:#777; }
 
 /* autocomplete */
 .ac_results { padding: 0px; border: 1px solid #cccccc; background-color: #f0f0f0; overflow: hidden;  z-index: 99999; }

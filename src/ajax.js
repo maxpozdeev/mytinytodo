@@ -288,6 +288,9 @@ function editTask(id)
 	for(var i=0; i<sel.length; i++) {
 		if(sel.options[i].value == item.prio) sel.options[i].selected = true;
 	}
+	$('#taskedit-date .date-created>span').text(item.date);
+	if(item.compl) $('#taskedit-date .date-completed').show().find('span').text(item.dateCompleted);
+	else $('#taskedit-date .date-completed').hide();
 	showEditForm();
 	return false;
 }
@@ -299,11 +302,11 @@ function showEditForm(isAdd)
 	if(document.selection && document.selection.empty) document.selection.empty();
 	else if(window.getSelection) window.getSelection().removeAllRanges();
 	if(isAdd) {
-		showhide($('#page_taskedit>h3.mtt-inadd'), $('#page_taskedit>h3.mtt-inedit'));
+		$('#page_taskedit').removeClass('mtt-inedit').addClass('mtt-inadd');
 		document.edittask.isadd.value = 1;
 	}
 	else {
-		showhide( $('#page_taskedit>h3.mtt-inedit'), $('#page_taskedit>h3.mtt-inadd'));
+		$('#page_taskedit').removeClass('mtt-inadd').addClass('mtt-inedit');
 		document.edittask.isadd.value = 0;
 	}
 	var w = $('#page_taskedit');
