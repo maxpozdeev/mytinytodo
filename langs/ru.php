@@ -3,10 +3,11 @@
 /*
 	myTinyTodo language pack
 	Language: Russian
+	Language Original: Русский
 	Author: Max Pozdeev
-	Url: http://www.mytinytodo.net
-	AppVersion: v1.3.1
-	Date: 2009-11-26
+	Author Url: http://www.mytinytodo.net
+	AppVersion: v1.3.2
+	Date: 2009-12-15
 */
 
 class Lang extends DefaultLang
@@ -85,6 +86,35 @@ class Lang extends DefaultLang
 		'rss_feed' => "RSS-лента",
 		'feed_title' => "%s",
 		'feed_description' => "%s - новые задачи",
+
+		/* Settings */
+		'set_header' => "Настройки",
+		'set_title' => "Заголовок страницы",
+		'set_title_descr' => "(если поле не заполнено, будет использован заголовок по-умолчанию)",
+		'set_language' => "Язык (Language)",
+		'set_protection' => "Парольная защита",
+		'set_enabled' => "Включено",
+		'set_disabled' => "Выключено",
+		'set_newpass' => "Новый пароль",
+		'set_newpass_descr' => "(не заполняйте поле если не хотите менять текущий пароль)",
+		'set_smartsyntax' => "Smart syntax",
+		'set_smartsyntax_descr' => "(возможность использовать синтаксис: /приоритет/ задача /теги/)",
+		'set_autotz' => "Автоопределение часового пояса",
+		'set_autotz_descr' => "(определение часового пояса пользователя с помощью javascript)",
+		'set_autotag' => "Autotagging",
+		'set_autotag_descr' => "(автодобавление текущего тега из фильтра в новую задачу)",
+		'set_sessions' => "Хранилище сессий",
+		'set_sessions_php' => "PHP",
+		'set_sessions_files' => "Файлы",
+		'set_firstdayofweek' => "Первый день недели",
+		'set_duedate' => "Формат даты для календаря",
+		'set_date' => "Формат даты",
+		'set_shortdate' => "Формат короткой даты",
+		'set_clock' => "Формат часов",
+		'set_12hour' => "12-часовой",
+		'set_24hour' => "24-часовой",
+		'set_submit' => "Сохранить изменения",
+		'set_cancel' => "Отмена",
 	);
 }
 

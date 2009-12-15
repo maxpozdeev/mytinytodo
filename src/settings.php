@@ -8,6 +8,10 @@
 
 require_once('./init.php');
 
+require_once('./lang/class.default.php');
+require_once('./lang/'.Config::get('lang').'.php');
+$lang = new Lang();
+
 if($needAuth && !is_logged())
 {
 	die("Access denied!<br> Disable password protection or Log in.");
@@ -44,6 +48,18 @@ function _c($key)
 	return Config::get($key);
 }
 
+function _e($s)
+{
+	global $lang;
+	echo $lang->get($s);
+}
+
+function __($s)
+{
+	global $lang;
+	return $lang->get($s);
+}
+
 function getLangs()
 {
     if (!$h = opendir('./lang')) return false;
@@ -71,7 +87,7 @@ function selectOptions($a, $value, $default=null)
 
 ?>
 
-<h3>Settings</h3>
+<h3><?php _e('set_header');?></h3>
 
 <div id="settings_msg" style="display:none"></div>
 
@@ -80,94 +96,96 @@ function selectOptions($a, $value, $default=null)
 <table class="mtt-settings-table">
 
 <tr>
-<th>Title:<br><span class="descr">(specify if you want to change default title)</span></th>
+<th><?php _e('set_title');?>:<br><span class="descr"><?php _e('set_title_descr');?></span></th>
 <td> <input name="title" value="<?php echo htmlspecialchars(_c('title'));?>" class="in350"> </td>
 </tr>
 
 <tr>
-<th>Language:</th>
+<th><?php _e('set_language');?>:</th>
 <td> <SELECT name="lang"><?php $langs = getLangs(); echo selectOptions($langs, _c('lang')); ?></SELECT> </td>
 </tr>
 
 <tr>
-<th>Password protection:</th>
+<th><?php _e('set_protection');?>:</th>
 <td>
- <label><input type="radio" name="allowpassword" value="1" <?php if(_c('password')!='') echo "checked"; ?> onClick='$(this.form).find("input[name=password]").attr("disabled",false)'>Enabled</label> <br>
- <label><input type="radio" name="allowpassword" value="0" <?php if(_c('password')=='') echo "checked"; ?> onClick='$(this.form).find("input[name=password]").attr("disabled","disabled")'>Disabled</label> <br>
+ <label><input type="radio" name="allowpassword" value="1" <?php if(_c('password')!='') echo "checked"; ?> onClick='$(this.form).find("input[name=password]").attr("disabled",false)'><?php _e('set_enabled');?></label> <br>
+ <label><input type="radio" name="allowpassword" value="0" <?php if(_c('password')=='') echo "checked"; ?> onClick='$(this.form).find("input[name=password]").attr("disabled","disabled")'><?php _e('set_disabled');?></label> <br>
 </td></tr>
 
 <tr>
-<th>New password:<br><span class="descr">(leave blank if won't change current password)</span></th>
+<th><?php _e('set_newpass');?>:<br><span class="descr"><?php _e('set_newpass_descr');?></span></th>
 <td> <input type="password" name="password" <?php if(_c('password')=='') echo "disabled"; ?>> </td>
 </tr>
 
 <tr>
-<th>Smart syntax:<br><span class="descr">(/priority/ task /tags/)</span></th>
+<th><?php _e('set_smartsyntax');?>:<br><span class="descr"><?php _e('set_smartsyntax_descr');?></span></th>
 <td>
- <label><input type="radio" name="smartsyntax" value="1" <?php if(_c('smartsyntax')) echo "checked"; ?>>Enabled</label> <br>
- <label><input type="radio" name="smartsyntax" value="0" <?php if(!_c('smartsyntax')) echo "checked"; ?>>Disabled</label>
+ <label><input type="radio" name="smartsyntax" value="1" <?php if(_c('smartsyntax')) echo "checked"; ?>><?php _e('set_enabled');?></label> <br>
+ <label><input type="radio" name="smartsyntax" value="0" <?php if(!_c('smartsyntax')) echo "checked"; ?>><?php _e('set_disabled');?></label>
 </td></tr>
 
 <tr>
-<th>Automatic timezone:<br><span class="descr">(determines timezone offset of user environment with javascript)</span></th>
+<th><?php _e('set_autotz');?>:<br><span class="descr"><?php _e('set_autotz_descr');?></span></th>
 <td>
- <label><input type="radio" name="autotz" value="1" <?php if(_c('autotz')) echo "checked"; ?>>Enabled</label> <br>
- <label><input type="radio" name="autotz" value="0" <?php if(!_c('autotz')) echo "checked"; ?>>Disabled</label>
+ <label><input type="radio" name="autotz" value="1" <?php if(_c('autotz')) echo "checked"; ?>><?php _e('set_enabled');?></label> <br>
+ <label><input type="radio" name="autotz" value="0" <?php if(!_c('autotz')) echo "checked"; ?>><?php _e('set_disabled');?></label>
 </td></tr>
 
 <tr>
-<th>Autotagging:<br><span class="descr">(automatically adds tag of current tag filter to newly created task)</span></th>
+<th><?php _e('set_autotag');?>:<br><span class="descr"><?php _e('set_autotag_descr');?></span></th>
 <td>
- <label><input type="radio" name="autotag" value="1" <?php if(_c('autotag')) echo "checked"; ?>>Enabled</label> <br>
- <label><input type="radio" name="autotag" value="0" <?php if(!_c('autotag')) echo "checked"; ?>>Disabled</label>
+ <label><input type="radio" name="autotag" value="1" <?php if(_c('autotag')) echo "checked"; ?>><?php _e('set_enabled');?></label> <br>
+ <label><input type="radio" name="autotag" value="0" <?php if(!_c('autotag')) echo "checked"; ?>><?php _e('set_disabled');?></label>
 </td></tr>
 
 <tr>
-<th>Session handling mechanism:</span></th>
+<th><?php _e('set_sessions');?>:</span></th>
 <td>
- <label><input type="radio" name="session" value="default" <?php if(_c('session')=='default') echo "checked"; ?>>PHP</label> <br>
- <label><input type="radio" name="session" value="files" <?php if(_c('session')=='files') echo "checked"; ?>>Files</label> <span class="descr">(in &lt;mytinytodo_dir&gt;/tmp/sessions)</span>
+ <label><input type="radio" name="session" value="default" <?php if(_c('session')=='default') echo "checked"; ?>><?php _e('set_sessions_php');?></label> <br>
+ <label><input type="radio" name="session" value="files" <?php if(_c('session')=='files') echo "checked"; ?>><?php _e('set_sessions_files');?></label> <span class="descr">(&lt;mytinytodo_dir&gt;/tmp/sessions)</span>
 </td></tr>
 
 <tr>
-<th>First day of week:</span></th>
+<th><?php _e('set_firstdayofweek');?>:</span></th>
 <td>
- <SELECT name="firstdayofweek"><?php echo selectOptions(array(0=>'Sunday',1=>'Monday',2=>'Tuesday',3=>'Wednesday',4=>'Thursday',5=>'Friday',6=>'Saturday'), _c('firstdayofweek')); ?></SELECT>
+ <SELECT name="firstdayofweek"><?php echo selectOptions(__('days_long'), _c('firstdayofweek')); ?></SELECT>
 </td></tr>
 
 <tr>
-<th>Duedate calendar format:</span></th>
+<th><?php _e('set_duedate');?>:</span></th>
 <td>
  <SELECT name="duedateformat"><?php echo selectOptions(array(1=>'yyyy-mm-dd ('.date('Y-m-d').')', 2=>'m/d/yyyy ('.date('n/j/Y').')', 3=>'dd.mm.yyyy ('.date('d.m.Y').')', 4=>'dd/mm/yyyy ('.date('d/m/Y').')'), _c('duedateformat')); ?></SELECT>
 </td></tr>
 
 <tr>
-<th>Date format:</span></th>
+<th><?php _e('set_date');?>:</span></th>
 <td>
  <input name="dateformat" value="<?php echo htmlspecialchars(_c('dateformat'));?>">
  <SELECT onChange="if(this.value!=0) this.form.dateformat.value=this.value;">
- <?php echo selectOptions(array('F j, Y'=>date('F j, Y'), 'M d, Y'=>date('M d, Y'), 'j M Y'=>date('j M Y'), 'd F Y'=>date('d F Y'),
-	'n/j/Y'=>date('n/j/Y'), 'd.m.Y'=>date('d.m.Y'), 'j. F Y'=>date('j. F Y'), 0=>'Custom'), _c('dateformat'), 0); ?></SELECT>
+ <?php echo selectOptions(array('F j, Y'=>formatTime('F j, Y'), 'M d, Y'=>formatTime('M d, Y'), 'j M Y'=>formatTime('j M Y'), 'd F Y'=>formatTime('d F Y'),
+	'n/j/Y'=>formatTime('n/j/Y'), 'd.m.Y'=>formatTime('d.m.Y'), 'j. F Y'=>formatTime('j. F Y'), 0=>'Custom'), _c('dateformat'), 0); ?>
+ </SELECT>
 </td></tr>
 
 <tr>
-<th>Short Date format:</span></th>
+<th><?php _e('set_shortdate');?>:</span></th>
 <td>
  <input name="dateformatshort" value="<?php echo htmlspecialchars(_c('dateformatshort'));?>">
  <SELECT onChange="if(this.value!=0) this.form.dateformatshort.value=this.value;">
- <?php echo selectOptions(array('M d'=>date('M d'), 'j M'=>date('j M'), 'n/j'=>date('n/j'),	'd.m'=>date('d.m'), 0=>'Custom'), _c('dateformatshort'), 0); ?></SELECT>
+ <?php echo selectOptions(array('M d'=>formatTime('M d'), 'j M'=>formatTime('j M'), 'n/j'=>formatTime('n/j'), 'd.m'=>formatTime('d.m'), 0=>'Custom'), _c('dateformatshort'), 0); ?>
+ </SELECT>
 </td></tr>
 
 <tr>
-<th>Clock format:</span></th>
+<th><?php _e('set_clock');?>:</span></th>
 <td>
- <SELECT name="clock"><?php echo selectOptions(array(12=>'12-hour ('.date('g:i A').')', 24=>'24-hour ('.date('H:i').')'), _c('clock')); ?></SELECT>
+ <SELECT name="clock"><?php echo selectOptions(array(12=>__('set_12hour').' ('.date('g:i A').')', 24=>__('set_24hour').' ('.date('H:i').')'), _c('clock')); ?></SELECT>
 </td></tr>
 
 <tr><td colspan="2" class="form-buttons">
 
-<input type="submit" value="Submit changes">
-<input type="button" value="Cancel" onClick="closeSettings()">
+<input type="submit" value="<?php _e('set_submit');?>">
+<input type="button" value="<?php _e('set_cancel');?>" onClick="closeSettings()">
 
 </td></tr>
 </table>

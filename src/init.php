@@ -55,6 +55,14 @@ function timestampToDatetime($timestamp, $tz)
 {
 	global $lang;
 	$format = Config::get('dateformat') .' '. (Config::get('clock') == 12 ? 'g:i A' : 'H:i');
+	return formatTime($timestamp, $format, $tz);
+}
+
+function formatTime($format, $timestamp=0, $tz=null)
+{
+	global $lang;
+	if($timestamp == 0) $timestamp = time();
+	if(is_null($tz)) $tz = round(date('Z')/60);
 	$newformat = strtr($format, array('F'=>'%1', 'M'=>'%2'));
 	$adate = explode(',', gmdate('n,'.$newformat, $timestamp + $tz*60), 2);
 	$s = $adate[1];

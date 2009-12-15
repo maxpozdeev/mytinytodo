@@ -3,10 +3,11 @@
 /*
 	myTinyTodo language pack
 	Language: English
+	Language Original: English
 	Author: Max Pozdeev
-	Url: http://www.mytinytodo.net
-	AppVersion: v1.3.1
-	Date: 2009-11-22
+	Author Url: http://www.mytinytodo.net
+	AppVersion: v1.3.2
+	Date: 2009-12-15
 */
 
 class Lang extends DefaultLang
@@ -85,6 +86,35 @@ class Lang extends DefaultLang
 		'rss_feed' => "RSS Feed",
 		'feed_title' => "%s",
 		'feed_description' => "New tasks in %s",
+
+		/* Settings */
+		'set_header' => "Settings",
+		'set_title' => "Title",
+		'set_title_descr' => "(specify if you want to change default title)",
+		'set_language' => "Language",
+		'set_protection' => "Password protection",
+		'set_enabled' => "Enabled",
+		'set_disabled' => "Disabled",
+		'set_newpass' => "New password",
+		'set_newpass_descr' => "(leave blank if won't change current password)",
+		'set_smartsyntax' => "Smart syntax",
+		'set_smartsyntax_descr' => "(/priority/ task /tags/)",
+		'set_autotz' => "Automatic timezone",
+		'set_autotz_descr' => "(determines timezone offset of user environment with javascript)",
+		'set_autotag' => "Autotagging",
+		'set_autotag_descr' => "(automatically adds tag of current tag filter to newly created task)",
+		'set_sessions' => "Session handling mechanism",
+		'set_sessions_php' => "PHP",
+		'set_sessions_files' => "Files",
+		'set_firstdayofweek' => "First day of week",
+		'set_duedate' => "Duedate calendar format",
+		'set_date' => "Date format",
+		'set_shortdate' => "Short Date format",
+		'set_clock' => "Clock format",
+		'set_12hour' => "12-hour",
+		'set_24hour' => "24-hour",
+		'set_submit' => "Submit changes",
+		'set_cancel' => "Cancel",
 	);
 }
 
