@@ -36,6 +36,8 @@ class DefaultLang
 		'searching' => "Searching for",
 		'tasks' => "Tasks",
 		'taskdate_inline' => "added at %s",
+		'taskdate_created' => "Date of creation",
+		'taskdate_completed' => "Date of completion",
 		'edit_task' => "Edit Task",
 		'add_task' => "New Task",
 		'priority' => "Priority",

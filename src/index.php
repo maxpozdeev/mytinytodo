@@ -141,12 +141,12 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
 <div id="page_taskedit" style="display:none">
 
 <h3 class="mtt-inadd"><?php _e('add_task');?></h3>
-
-<div id="taskedit-date" class="mtt-inedit">
- <div class="date-created">Created: <span></span></div>
- <div class="date-completed">Completed: <span></span></div>
-</div>
-<h3 class="mtt-inedit"><?php _e('edit_task');?></h3>
+<h3 class="mtt-inedit"><?php _e('edit_task');?>
+ <div id="taskedit-date" class="mtt-inedit">
+  <span class="date-created" title="<?php _e('taskdate_created');?>"><span></span></span>
+  <span class="date-completed" title="<?php _e('taskdate_completed');?>"> / <span></span></span>
+ </div>
+</h3>
 
 <form onSubmit="return saveTask(this)" name="edittask">
 <input type="hidden" name="isadd" value="0">

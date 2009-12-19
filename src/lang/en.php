@@ -7,7 +7,7 @@
 	Author: Max Pozdeev
 	Author Url: http://www.mytinytodo.net
 	AppVersion: v1.3.2
-	Date: 2009-12-15
+	Date: 2009-12-19
 */
 
 class Lang extends DefaultLang
@@ -41,6 +41,8 @@ class Lang extends DefaultLang
 		'searching' => "Searching for",
 		'tasks' => "Tasks",
 		'taskdate_inline' => "added at %s",
+		'taskdate_created' => "Date of creation",
+		'taskdate_completed' => "Date of completion",
 		'edit_task' => "Edit Task",
 		'add_task' => "New Task",
 		'priority' => "Priority",
