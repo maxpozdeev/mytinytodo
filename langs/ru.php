@@ -74,6 +74,7 @@ class Lang extends DefaultLang
 		'action_edit' => "Редактировать",
 		'action_note' => "Заметка",
 		'action_delete' => "Удалить",
+		'action_priority' => "Приоритет",
 		'notes' => "Заметки:",
 		'notes_show' => "Показать",
 		'notes_hide' => "Скрыть",

@@ -74,6 +74,7 @@ class Lang extends DefaultLang
 		'action_edit' => "Edit",
 		'action_note' => "Edit Note",
 		'action_delete' => "Delete",
+		'action_priority' => "Priority",
 		'notes' => "Notes:",
 		'notes_show' => "Show",
 		'notes_hide' => "Hide",

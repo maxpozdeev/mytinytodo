@@ -194,6 +194,8 @@ div.task-note-area textarea { color:#999999; width:100%; display:block; height:6
 .mtt-btnmenu-container.mtt-btnmenu-hasimages li { padding-left:18px; }
 .mtt-btnmenu-container li.mtt-item-checked { background-image:url(images/checkmark.gif); background-position:left center; background-repeat:no-repeat; }
 
+.mtt-menu-has-submenu { margin-right:15px; background:url(images/arrright.gif) no-repeat center right; }
+
 .mtt-settings-table { width:100%; border-collapse:collapse; }
 .mtt-settings-table th, .mtt-settings-table td { border-bottom:1px solid #dedede; padding:8px; vertical-align:top; }
 .mtt-settings-table .form-buttons { border-bottom:none; text-align:center; }

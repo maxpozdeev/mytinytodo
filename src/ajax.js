@@ -579,16 +579,21 @@ function prioClick(prio, el)
 {
 	el.blur();
 	prio = parseInt(prio);
+	$('#priopopup').fadeOut('fast'); //.hide();
+	setTaskPrio(objPrio.taskId, prio);
+}
+
+function setTaskPrio(id, prio)
+{
 	setAjaxErrorTrigger();
-	var nocache = '&rnd='+Math.random();
-	$.getJSON('ajax.php?setPrio='+objPrio.taskId+'&prio='+prio+nocache, function(json){
+	$.getJSON('ajax.php?setPrio='+id+'&prio='+prio+'&rnd='+Math.random(), function(json){
 		resetAjaxErrorTrigger();
 	});
-	taskList[objPrio.taskId].prio = prio;
-	$(objPrio.el).replaceWith(preparePrio(prio, objPrio.taskId));
-	$('#priopopup').fadeOut('fast'); //.hide();
-	if(sortBy != 0) changeTaskOrder(objPrio.taskId);
-	$('#taskrow_'+objPrio.taskId).effect("highlight", {color:theme.editTaskFlashColor}, 'normal');
+	taskList[id].prio = prio;
+	var $t = $('#taskrow_'+id);
+	$t.find('.task-prio').replaceWith(preparePrio(prio, id));
+	if(sortBy != 0) changeTaskOrder(id);
+	$t.effect("highlight", {color:theme.editTaskFlashColor}, 'normal');
 }
 
 function setSort(v, init)
@@ -1130,6 +1135,10 @@ function taskContextClick(el)
 		case 'cmenu_edit': editTask(taskId); break;
 		case 'cmenu_note': toggleTaskNote(taskId); break;
 		case 'cmenu_delete': deleteTask(taskId); break;
+		case 'cmenu_prio_-1': setTaskPrio(taskId, -1); break;
+		case 'cmenu_prio_0': setTaskPrio(taskId, 0); break;
+		case 'cmenu_prio_1': setTaskPrio(taskId, 1); break;
+		case 'cmenu_prio_2': setTaskPrio(taskId, 2); break;
 	}
 }
 
@@ -1146,6 +1155,8 @@ function mttMenu(container, options)
 		var submenu = new mttMenu($(this).attr('submenu'));
 		submenu.$caller = $(this);
 		submenu.parent = menu;
+		if(menu.root) submenu.root = menu.root;	//!! be careful with circular references
+		else submenu.root = menu;
 		menu.submenu = submenu;
 
 		var showTimer, hideTimer;
@@ -1160,11 +1171,16 @@ function mttMenu(container, options)
 				clearTimeout(showTimer);
 				hideTimer = setTimeout(function(){
 					submenu.hide();
-				}, 300);	
+				}, 400);	
 			}
 		);
 
-		submenu.container.find('li').each(function()
+		submenu.container.find('li').click(function()
+		{
+			submenu.root.onclick(this);
+			return false;
+		})
+		.each(function()
 		{
 			$(this).hover(
 				function(){
@@ -1173,7 +1189,7 @@ function mttMenu(container, options)
 				function(){
 					hideTimer = setTimeout(function(){
 						submenu.hide();
-					}, 300);
+					}, 400);
 				}
 			);
 		});
@@ -1186,7 +1202,7 @@ function mttMenu(container, options)
 
 	this.onclick = function(item)
 	{
-		if($(item).is('.mtt-disabled')) return;
+		if($(item).is('.mtt-disabled,.mtt-menu-has-submenu')) return;
 		menu.close();
 		if(this.options.onclick) this.options.onclick(item);
 	}
