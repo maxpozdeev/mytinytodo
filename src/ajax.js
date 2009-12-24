@@ -13,14 +13,10 @@ var objPrio = {};
 var selTask = 0;
 var sortBy = 0;
 var flag = { needAuth:false, isLogged:false, tagsChanged:true, windowTaskEditMoved:false };
-var img = {
-	'note': ['images/page_white_text_add_bw.png','images/page_white_text_add.png'],
-	'edit': ['images/page_white_edit_bw.png','images/page_white_edit.png'],
-	'del': ['images/page_cross_bw.png','images/page_cross.png']
-};
 var taskCnt = { total:0, past: 0, today:0, soon:0 };
 var tmp = {};
 var oBtnMenu = {};
+var cmenu;
 var tabLists = [];
 var curList = 0;
 var tagsList = [];
@@ -66,10 +62,8 @@ function prepareTaskStr(item, noteExp)
 	var id = parseInt(item.id);
 	var prio = parseInt(item.prio);
 	var readOnly = (flag.needAuth && !flag.isLogged) ? true : false;
-	return '<li id="taskrow_'+id+'" class="'+(item.compl?'task-completed ':'')+item.dueClass+'" onDblClick="editTask('+id+')"><div class="task-actions">'+
-		'<a href="#" onClick="return toggleTaskNote('+id+')"><img src="'+img.note[0]+'" onMouseOver="this.src=img.note[1]" onMouseOut="this.src=img.note[0]" title="'+lang.actionNote+'"></a>'+
-		'<a href="#" onClick="return editTask('+id+')"><img src="'+img.edit[0]+'" onMouseOver="this.src=img.edit[1]" onMouseOut="this.src=img.edit[0]" title="'+lang.actionEdit+'"></a>'+
-		'<a href="#" onClick="return deleteTask('+id+')"><img src="'+img.del[0]+'" onMouseOver="this.src=img.del[1]" onMouseOut="this.src=img.del[0]" title="'+lang.actionDelete+'"></a></div>'+
+	return '<li id="taskrow_'+id+'" class="'+(item.compl?'task-completed ':'')+item.dueClass+'" onDblClick="editTask('+id+')">'+
+		'<div class="task-actions"><a href="#" class="taskactionbtn" onClick="return taskContextMenu(this,'+id+')"></a></div>'+
 		'<div class="task-left"><div class="mtt-toggle '+(item.note==''?'invisible':(noteExp?'mtt-toggle-expanded':''))+'" onClick="toggleNote('+id+')"></div>'+
 		'<input type="checkbox" '+(readOnly?'disabled':'')+' onClick="completeTask('+id+',this)" '+(item.compl?'checked':'')+'></div>'+
 		'<div class="task-middle">'+prepareDuedate(item.duedate, item.dueClass, item.dueStr)+
@@ -299,7 +293,7 @@ function showEditForm(isAdd)
 {
 	$('<div id="overlay"></div>').appendTo('body').css('opacity', 0.5).show();
 	//clear selection
-	if(document.selection && document.selection.empty) document.selection.empty();
+	if(document.selection && document.selection.empty && document.selection.createRange().text) document.selection.empty();
 	else if(window.getSelection) window.getSelection().removeAllRanges();
 	if(isAdd) {
 		$('#page_taskedit').removeClass('mtt-inedit').addClass('mtt-inadd');
@@ -724,16 +718,6 @@ function tagCloudClose(e)
 	$('#tagcloud').hide();
 }
 
-function preloadImg()
-{
-	for(var i in img) {
-		for(var ii in img[i]) {
-			var o = new Image();
-			o.src = img[i][ii];
-		}
-	}
-}
-
 function changeTaskCnt(cl, dir)
 {
 	if(!dir) dir = 1;
@@ -1128,4 +1112,129 @@ function publishCurList()
 		if(curList.published) $('#btnPublish').addClass('mtt-item-checked');
 		else $('#btnPublish').removeClass('mtt-item-checked');
 	}, 'json');
+}
+
+function taskContextMenu(el, id)
+{
+	if(!cmenu) cmenu = new mttMenu('taskcontextcontainer', {onclick:taskContextClick});
+	cmenu.tag = id;
+	cmenu.show(el);
+	return false;
+}
+
+function taskContextClick(el)
+{
+	if(!el.id) return;
+	var taskId = cmenu.tag;
+	switch(el.id) {
+		case 'cmenu_edit': editTask(taskId); break;
+		case 'cmenu_note': toggleTaskNote(taskId); break;
+		case 'cmenu_delete': deleteTask(taskId); break;
+	}
+}
+
+function mttMenu(container, options)
+{
+	var menu = this;
+	this.container = $('#'+container);
+	this.menuOpen = false;
+	this.options = options || {};
+
+	//create submenus
+	this.container.find('li.mtt-menu-has-submenu').each(function()
+	{
+		var submenu = new mttMenu($(this).attr('submenu'));
+		submenu.$caller = $(this);
+		submenu.parent = menu;
+		menu.submenu = submenu;
+
+		var showTimer, hideTimer;
+		$(this).hover(
+			function(){ 
+				clearTimeout(hideTimer); 
+				showTimer = setTimeout(function(){
+					submenu.showSub();
+				}, 300);	
+			},
+			function(){ 
+				clearTimeout(showTimer);
+				hideTimer = setTimeout(function(){
+					submenu.hide();
+				}, 300);	
+			}
+		);
+
+		submenu.container.find('li').each(function()
+		{
+			$(this).hover(
+				function(){
+					clearTimeout(hideTimer);
+				},
+				function(){
+					hideTimer = setTimeout(function(){
+						submenu.hide();
+					}, 300);
+				}
+			);
+		});
+	});
+
+	this.container.find('li').click(function(){
+		menu.onclick(this);
+		return false;
+	});
+
+	this.onclick = function(item)
+	{
+		if($(item).is('.mtt-disabled')) return;
+		menu.close();
+		if(this.options.onclick) this.options.onclick(item);
+	}
+
+	this.hide = function()
+	{
+		if(this.submenu) this.submenu.hide();
+		this.container.hide();
+		this.menuOpen = false;
+	}
+
+	this.close = function(event)
+	{
+		if(!this.menuOpen) return;
+		if(event)
+		{
+			var t = event.target;
+			if(t == this.caller) return;
+			while(t.parentNode) {
+				if(t.parentNode == this.caller) return;
+				t = t.parentNode;
+			}
+		}
+		this.hide();
+		$(document).unbind('click.mttmenuclose');
+	}
+
+	this.show = function(caller)
+	{
+		if(this.menuOpen)
+		{
+			this.close();
+			if(this.caller && this.caller == caller) return;
+		}
+		this.caller = caller;
+		$caller = $(caller);
+		var offset = $caller.offset();
+		this.container.css({ position: 'absolute', top: offset.top+caller.offsetHeight-1, left: offset.left , 'min-width': $caller.width() }).show();
+		var menu = this;
+		$(document).bind('click.mttmenuclose', function(e){ menu.close(e) });
+		this.menuOpen = true;
+	}
+
+	this.showSub = function()
+	{
+		var offset = this.$caller.offset();
+		var dy = this.parent.container.offset().top-this.parent.container.find('li:first').offset().top
+		this.container.css({ position: 'absolute', top: offset.top+dy, left: offset.left+this.$caller.outerWidth() /*, 'min-width': this.$caller.outerWidth()*/ }).show();
+		this.menuOpen = true;
+	}
 }

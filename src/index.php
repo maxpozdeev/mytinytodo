@@ -65,7 +65,6 @@ $().ready(function(){
 	}
 	echo "\tloadLists(1, 1);\n";
 ?>
-	preloadImg();
 	$("#duedate").datepicker({dateFormat: '<?php echo $duedateformat; ?>', firstDay: <?php echo Config::get('firstdayofweek'); ?>,
 		showOn: 'button', buttonImage: 'images/calendar.png', buttonImageOnly: true, changeMonth:true,
 		changeYear:true, constrainInput: false, duration:'', nextText:'&gt;', prevText:'&lt;', dayNamesMin:lang.daysMin, 
@@ -211,6 +210,32 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
  <li class="mtt-need-list" onClick="renameCurList()"><?php _e('list_rename');?></li>
  <li class="mtt-need-list" onClick="deleteCurList()"><?php _e('list_delete');?></li>
  <li class="mtt-need-list" id="btnPublish" onClick="publishCurList()"><?php _e('list_publish');?></li>
+</ul>
+</div>
+
+<div id="taskcontextcontainer" class="mtt-btnmenu-container mtt-btnmenu-hasimages" style="display:none">
+<ul>
+ <li id="cmenu_edit"><b>Edit</b></li>
+ <li id="cmenu_note">Edit Note</li>
+<!--
+ <li id="cmenu_prio" class="mtt-menu-has-submenu" submenu="priocontainer">Set Priority...</li>
+ <li id="cmenu_moveto" class="mtt-menu-has-submenu" submenu="priocontainer">Move to...</li>
+-->
+ <li id="cmenu_delete">Delete</li>
+</ul>
+</div>
+
+<div id="priocontainer" class="mtt-btnmenu-container mtt-btnmenu-hasimages" style="display:none">
+<ul>
+ <li id="cmenu_prio_-1">-1</li>
+ <li id="cmenu_prio_0">0</li>
+ <li id="cmenu_prio_1">+1</li>
+ <li id="cmenu_prio_2">+2</li>
+</ul>
+</div>
+
+<div id="listsmenucontainer" class="mtt-btnmenu-container mtt-btnmenu-hasimages" style="display:none">
+<ul>
 </ul>
 </div>
 
