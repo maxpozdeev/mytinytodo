@@ -215,13 +215,13 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
 
 <div id="taskcontextcontainer" class="mtt-btnmenu-container mtt-btnmenu-hasimages" style="display:none">
 <ul>
- <li id="cmenu_edit"><b>Edit</b></li>
- <li id="cmenu_note">Edit Note</li>
+ <li id="cmenu_edit"><b><?php _e('action_edit');?></b></li>
+ <li id="cmenu_note"><?php _e('action_note');?></li>
 <!--
  <li id="cmenu_prio" class="mtt-menu-has-submenu" submenu="priocontainer">Set Priority...</li>
  <li id="cmenu_moveto" class="mtt-menu-has-submenu" submenu="priocontainer">Move to...</li>
 -->
- <li id="cmenu_delete">Delete</li>
+ <li id="cmenu_delete"><?php _e('action_delete');?></li>
 </ul>
 </div>
 

@@ -14,10 +14,7 @@ class Lang extends DefaultLang
 {
 	var $js = array
 	(
-		'actionNote' => "заметка",
-		'actionEdit' => "редактировать",
-		'actionDelete' => "удалить",
-		'confirmDelete' => "Вы уверены?",
+		'confirmDelete' => "Вы действительно хотите удалить задачу?",
 		'actionNoteSave' => "сохранить",
 		'actionNoteCancel' => "отмена",
 		'error' => "Ошибка",
@@ -74,6 +71,9 @@ class Lang extends DefaultLang
 		'f_today' => "Сегодня и завтра",
 		'f_soon' => "Скоро",
 		'tasks_and_compl' => "Задачи + завершенные",
+		'action_edit' => "Редактировать",
+		'action_note' => "Заметка",
+		'action_delete' => "Удалить",
 		'notes' => "Заметки:",
 		'notes_show' => "Показать",
 		'notes_hide' => "Скрыть",
