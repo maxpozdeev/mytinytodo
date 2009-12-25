@@ -219,7 +219,7 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
  <li id="cmenu_note"><?php _e('action_note');?></li>
  <li id="cmenu_prio" class="mtt-menu-has-submenu" submenu="priocontainer"><?php _e('action_priority');?></li>
 <!--
- <li id="cmenu_moveto" class="mtt-menu-has-submenu" submenu="priocontainer">Move to...</li>
+ <li id="cmenu_moveto" class="mtt-menu-has-submenu" submenu="listsmenucontainer">Move to</li>
 -->
  <li id="cmenu_delete"><?php _e('action_delete');?></li>
 </ul>
@@ -227,10 +227,10 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
 
 <div id="priocontainer" class="mtt-btnmenu-container mtt-btnmenu-hasimages" style="display:none">
 <ul>
- <li id="cmenu_prio_-1">&minus;1</li>
- <li id="cmenu_prio_0">&plusmn;0</li>
- <li id="cmenu_prio_1">+1</li>
- <li id="cmenu_prio_2">+2</li>
+ <li id="cmenu_prio:-1">&minus;1</li>
+ <li id="cmenu_prio:0">&plusmn;0</li>
+ <li id="cmenu_prio:1">+1</li>
+ <li id="cmenu_prio:2">+2</li>
 </ul>
 </div>
 

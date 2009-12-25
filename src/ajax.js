@@ -1131,14 +1131,17 @@ function taskContextClick(el)
 {
 	if(!el.id) return;
 	var taskId = cmenu.tag;
-	switch(el.id) {
+	var id = el.id, value;
+	var a = id.split(':');
+	if(a.length == 2) {
+		id = a[0];
+		value = a[1];
+	}
+	switch(id) {
 		case 'cmenu_edit': editTask(taskId); break;
 		case 'cmenu_note': toggleTaskNote(taskId); break;
 		case 'cmenu_delete': deleteTask(taskId); break;
-		case 'cmenu_prio_-1': setTaskPrio(taskId, -1); break;
-		case 'cmenu_prio_0': setTaskPrio(taskId, 0); break;
-		case 'cmenu_prio_1': setTaskPrio(taskId, 1); break;
-		case 'cmenu_prio_2': setTaskPrio(taskId, 2); break;
+		case 'cmenu_prio': setTaskPrio(taskId, parseInt(value)); break;
 	}
 }
 
