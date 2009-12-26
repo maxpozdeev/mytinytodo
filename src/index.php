@@ -204,26 +204,26 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
  <div id="tagcloudcontent"></div>
 </div>
 
-<div id="mylistscontainer" class="mtt-btnmenu-container mtt-btnmenu-hasimages" style="display:none">
+<div id="mylistscontainer" class="mtt-btnmenu-container mtt-menu-has-images" style="display:none">
 <ul>
  <li onClick="addList()"><?php _e('list_new');?></li>
  <li class="mtt-need-list" onClick="renameCurList()"><?php _e('list_rename');?></li>
  <li class="mtt-need-list" onClick="deleteCurList()"><?php _e('list_delete');?></li>
- <li class="mtt-need-list" id="btnPublish" onClick="publishCurList()"><?php _e('list_publish');?></li>
+ <li class="mtt-need-list" id="btnPublish" onClick="publishCurList()"><div class="menu-icon"></div><?php _e('list_publish');?></li>
 </ul>
 </div>
 
-<div id="taskcontextcontainer" class="mtt-btnmenu-container mtt-btnmenu-hasimages" style="display:none">
+<div id="taskcontextcontainer" class="mtt-btnmenu-container mtt-menu-has-images mtt-menu-has-submenu" style="display:none">
 <ul>
  <li id="cmenu_edit"><b><?php _e('action_edit');?></b></li>
  <li id="cmenu_note"><?php _e('action_note');?></li>
- <li id="cmenu_prio" class="mtt-menu-has-submenu" submenu="priocontainer"><?php _e('action_priority');?></li>
- <li id="cmenu_move" class="mtt-menu-has-submenu" submenu="listsmenucontainer"><?php _e('action_move');?></li>
+ <li id="cmenu_prio" class="mtt-menu-indicator" submenu="priocontainer"><div class="submenu-icon"></div><?php _e('action_priority');?></li>
+ <li id="cmenu_move" class="mtt-menu-indicator" submenu="listsmenucontainer"><div class="submenu-icon"></div><?php _e('action_move');?></li>
  <li id="cmenu_delete"><?php _e('action_delete');?></li>
 </ul>
 </div>
 
-<div id="priocontainer" class="mtt-btnmenu-container mtt-btnmenu-hasimages" style="display:none">
+<div id="priocontainer" class="mtt-btnmenu-container mtt-menu-has-images" style="display:none">
 <ul>
  <li id="cmenu_prio:-1">&minus;1</li>
  <li id="cmenu_prio:0">&plusmn;0</li>
@@ -232,7 +232,7 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
 </ul>
 </div>
 
-<div id="listsmenucontainer" class="mtt-btnmenu-container mtt-btnmenu-hasimages" style="display:none">
+<div id="listsmenucontainer" class="mtt-btnmenu-container mtt-menu-has-images" style="display:none">
 <ul>
 </ul>
 </div>

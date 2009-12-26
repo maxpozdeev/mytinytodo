@@ -1162,7 +1162,7 @@ function mttMenu(container, options)
 	this.submenu = [];
 
 	//create submenus
-	this.container.find('li.mtt-menu-has-submenu').each(function()
+	this.container.find('li.mtt-menu-indicator').each(function()
 	{
 		var submenu = new mttMenu($(this).attr('submenu'));
 		submenu.$caller = $(this);
@@ -1212,7 +1212,7 @@ function mttMenu(container, options)
 
 	this.onclick = function(item)
 	{
-		if($(item).is('.mtt-disabled,.mtt-menu-has-submenu')) return;
+		if($(item).is('.mtt-disabled,.mtt-menu-indicator')) return;
 		menu.close();
 		if(this.options.onclick) this.options.onclick(item);
 	}
