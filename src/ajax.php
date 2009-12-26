@@ -356,7 +356,12 @@ elseif(isset($_POST['addList']))
 	$id = $db->last_insert_id();
 	$t['total'] = 1;
 	$r = $db->sqa("SELECT * FROM {$db->prefix}lists WHERE id=$id");
-	$t['list'][] = array('id'=>$r['id'], 'name'=>htmlarray($r['name']));
+	$t['list'][] = array(
+		'id' => $r['id'],
+		'name' => htmlarray($r['name']),
+		'sort' => (int)$r['sorting'],
+		'published' => $r['published'] ? 1 :0,
+	);
 	echo json_encode($t);
 	exit;
 }
@@ -371,7 +376,12 @@ elseif(isset($_POST['renameList']))
 	$db->dq("UPDATE {$db->prefix}lists SET name=? WHERE id=$id", array($name));
 	$t['total'] = $db->affected();
 	$r = $db->sqa("SELECT * FROM {$db->prefix}lists WHERE id=$id");
-	$t['list'][] = array('id'=>$r['id'], 'name'=>htmlarray($r['name']));
+	$t['list'][] = array(
+		'id' => $r['id'],
+		'name' => htmlarray($r['name']),
+		'sort' => (int)$r['sorting'],
+		'published' => $r['published'] ? 1 :0,
+	);
 	echo json_encode($t);
 	exit;
 }
