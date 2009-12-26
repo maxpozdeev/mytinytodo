@@ -87,7 +87,7 @@ li.task-completed .task-actions a { color:#7070ff; }
 li.task-completed  { opacity:0.8; }
 li.task-completed .mtt-toggle { opacity:0.8; }
 
-a.taskactionbtn { text-decoration:none; padding-left:15px; background:url(images/arrbtn_bw.gif) no-repeat bottom left; }
+a.taskactionbtn { display:block; float:right; height:16px; width:16px; text-decoration:none; background:url(images/arrbtn_bw.gif) no-repeat bottom left; }
 li:hover a.taskactionbtn { background-image:url(images/arrbtn.gif); }
 
 #tasklist.filter-past li, #tasklist.filter-today li, #tasklist.filter-soon li { display:none; }
