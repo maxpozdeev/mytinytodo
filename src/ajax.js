@@ -184,6 +184,7 @@ function deleteTask(id)
 	$.getJSON('ajax.php?deleteTask='+id+nocache, function(json){
 		resetAjaxErrorTrigger();
 		if(!parseInt(json.total)) return;
+		taskCnt.total--;
 		$('#total').text( parseInt($('#total').text()) - 1 );
 		var item = json.list[0];
 		taskOrder.splice($.inArray(id,taskOrder), 1);
@@ -212,6 +213,7 @@ function completeTask(id,ch)
 			delete taskList[id];
 			taskOrder.splice($.inArray(id,taskOrder), 1);
 			$('#taskrow_'+item.id).fadeOut('normal', function(){ $(this).remove() });
+			taskCnt.total--;
 			$('#total').html( parseInt($('#total').text())-1 );
 		}
 		else if(filter.compl) {
@@ -1303,6 +1305,8 @@ function moveTaskToList(taskId, listId)
 	$.post('ajax.php?moveTask&rnd='+Math.random(), { id:taskId, from:curList.id, to:listId }, function(json){
 		resetAjaxErrorTrigger();
 		if(!parseInt(json.total)) return;
+		if(changeTaskCnt(taskList[taskId].dueClass, -1)) refreshTaskCnt();
+		taskCnt.total--;
 		delete taskList[taskId];
 		taskOrder.splice($.inArray(taskId,taskOrder), 1);
 		$('#taskrow_'+taskId).fadeOut('normal', function(){ $(this).remove() });
