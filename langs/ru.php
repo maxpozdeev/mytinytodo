@@ -2,12 +2,12 @@
 
 /*
 	myTinyTodo language pack
-	Language: Russian
-	Language Original: Русский
+	Language: Русский
+	Translated: Russian
 	Author: Max Pozdeev
 	Author Url: http://www.mytinytodo.net
 	AppVersion: v1.3.2
-	Date: 2009-12-19
+	Date: 2009-12-26
 */
 
 class Lang extends DefaultLang
@@ -75,6 +75,7 @@ class Lang extends DefaultLang
 		'action_note' => "Заметка",
 		'action_delete' => "Удалить",
 		'action_priority' => "Приоритет",
+		'action_move' => "Переместить в",
 		'notes' => "Заметки:",
 		'notes_show' => "Показать",
 		'notes_hide' => "Скрыть",

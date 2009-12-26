@@ -936,6 +936,7 @@ function loadLists(onInit, updAccess)
 		$('#lists>ul').html(ti);
 		$('#lists').show();
 		if(!flag.needAuth || flag.isLogged || curList) $('#page_tasks').show();
+		doAction('listsLoaded');
 	});
 	$('#page_tasks').hide();
 	if(updAccess) updateAccessStatus();
@@ -954,7 +955,10 @@ function addList()
 		var i = tabLists.length;
 		item.i = i;
 		tabLists[i] = item;
-		if(i > 0) $('#lists>ul>li.mtt-tabs-button').before('<li><a href="#list'+item.id+'" onClick="mttTabSelected(this,'+i+');return false;" title="'+item.name+'">'+item.name+'</a></li>') ;
+		if(i > 0) {
+			$('#lists>ul>li.mtt-tabs-button').before('<li><a href="#list'+item.id+'" onClick="mttTabSelected(this,'+i+');return false;" title="'+item.name+'">'+item.name+'</a></li>') ;
+			doAction('listAdded', {i:i, list:item});
+		}
 		else loadLists();
 	}, 'json');
 }
@@ -974,6 +978,7 @@ function renameCurList()
 		tabLists[curList.i] = item;
 		curList = item;
 		$('#lists>ul>.mtt-tabs-selected>a').attr('title', item.name).html(item.name);
+		doAction('listRenamed', {i:curList.i, list:item});
 	}, 'json');
 }
 
@@ -1142,6 +1147,7 @@ function taskContextClick(el)
 		case 'cmenu_note': toggleTaskNote(taskId); break;
 		case 'cmenu_delete': deleteTask(taskId); break;
 		case 'cmenu_prio': setTaskPrio(taskId, parseInt(value)); break;
+		case 'cmenu_move': moveTaskToList(taskId, value); break;
 	}
 }
 
@@ -1151,6 +1157,7 @@ function mttMenu(container, options)
 	this.container = $('#'+container);
 	this.menuOpen = false;
 	this.options = options || {};
+	this.submenu = [];
 
 	//create submenus
 	this.container.find('li.mtt-menu-has-submenu').each(function()
@@ -1160,7 +1167,7 @@ function mttMenu(container, options)
 		submenu.parent = menu;
 		if(menu.root) submenu.root = menu.root;	//!! be careful with circular references
 		else submenu.root = menu;
-		menu.submenu = submenu;
+		menu.submenu.push(submenu);
 
 		var showTimer, hideTimer;
 		$(this).hover(
@@ -1183,21 +1190,19 @@ function mttMenu(container, options)
 			submenu.root.onclick(this);
 			return false;
 		})
-		.each(function()
-		{
-			$(this).hover(
-				function(){
-					clearTimeout(hideTimer);
-				},
-				function(){
-					hideTimer = setTimeout(function(){
-						submenu.hide();
-					}, 400);
-				}
-			);
-		});
+		.hover(
+			function(){
+				clearTimeout(hideTimer);
+			},
+			function(){
+				hideTimer = setTimeout(function(){
+					submenu.hide();
+				}, 400);
+			}
+		);
 	});
 
+	//if(!this.root)
 	this.container.find('li').click(function(){
 		menu.onclick(this);
 		return false;
@@ -1212,7 +1217,7 @@ function mttMenu(container, options)
 
 	this.hide = function()
 	{
-		if(this.submenu) this.submenu.hide();
+		for(var i in this.submenu) this.submenu[i].hide();
 		this.container.hide();
 		this.menuOpen = false;
 	}
@@ -1256,4 +1261,53 @@ function mttMenu(container, options)
 		this.container.css({ position: 'absolute', top: offset.top+dy, left: offset.left+this.$caller.outerWidth() /*, 'min-width': this.$caller.outerWidth()*/ }).show();
 		this.menuOpen = true;
 	}
+
+	this.destroy = function()
+	{
+		for(var i in this.submenu) {
+			this.submenu[i].destroy();
+			delete this.submenu[i];
+		}
+		this.container.find('li').unbind(); //'click mouseenter mouseleave'
+	}
+
+}
+
+function doAction(action, opts)
+{
+	switch(action) {
+		case 'listsLoaded':
+			if(cmenu) cmenu.destroy();
+			cmenu = null;
+			var s = '';
+			for(var i in tabLists) {
+				s += '<li id="cmenu_move:'+tabLists[i].id+'">'+tabLists[i].name+'</li>';
+			}
+			$('#listsmenucontainer ul').html(s);
+			break;
+		case 'listAdded':
+			if(cmenu) cmenu.destroy();
+			cmenu = null;
+			$('#listsmenucontainer ul').append('<li id="cmenu_move:'+opts.list.id+'">'+opts.list.name+'</li>');
+			break;
+		case 'listRenamed':
+			$('#cmenu_move\\:'+opts.list.id).text(opts.list.name);
+			break;
+	}
+}
+
+function moveTaskToList(taskId, listId)
+{
+	if(curList.id == listId) return;
+	setAjaxErrorTrigger();
+	$.post('ajax.php?moveTask&rnd='+Math.random(), { id:taskId, from:curList.id, to:listId }, function(json){
+		resetAjaxErrorTrigger();
+		if(!parseInt(json.total)) return;
+		delete taskList[taskId];
+		taskOrder.splice($.inArray(taskId,taskOrder), 1);
+		$('#taskrow_'+taskId).fadeOut('normal', function(){ $(this).remove() });
+		$('#total').html( parseInt($('#total').text())-1 );
+	}, 'json');
+	$("#edittags").flushCache();
+	flag.tagsChanged = true;
 }

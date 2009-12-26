@@ -218,9 +218,7 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
  <li id="cmenu_edit"><b><?php _e('action_edit');?></b></li>
  <li id="cmenu_note"><?php _e('action_note');?></li>
  <li id="cmenu_prio" class="mtt-menu-has-submenu" submenu="priocontainer"><?php _e('action_priority');?></li>
-<!--
- <li id="cmenu_moveto" class="mtt-menu-has-submenu" submenu="listsmenucontainer">Move to</li>
--->
+ <li id="cmenu_move" class="mtt-menu-has-submenu" submenu="listsmenucontainer"><?php _e('action_move');?></li>
  <li id="cmenu_delete"><?php _e('action_delete');?></li>
 </ul>
 </div>

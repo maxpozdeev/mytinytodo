@@ -70,6 +70,7 @@ class DefaultLang
 		'action_note' => "Edit Note",
 		'action_delete' => "Delete",
 		'action_priority' => "Priority",
+		'action_move' => "Move to",
 		'notes' => "Notes:",
 		'notes_show' => "Show",
 		'notes_hide' => "Hide",

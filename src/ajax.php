@@ -159,21 +159,10 @@ elseif(isset($_GET['fullNewTask']))
 }
 elseif(isset($_GET['deleteTask']))
 {
-	check_write_access();
 	$id = (int)$_GET['deleteTask'];
-	$tags = get_task_tags($id);
-	$db->ex("BEGIN");
-	if($tags) {
-		$s = implode(',', $tags);
-		$db->ex("DELETE FROM {$db->prefix}tag2task WHERE task_id=$id");
-		$db->ex("UPDATE {$db->prefix}tags SET tags_count=tags_count-1 WHERE id IN ($s)");
-		$db->ex("DELETE FROM {$db->prefix}tags WHERE tags_count < 1");	# slow on large amount of tags
-	}
-	$db->dq("DELETE FROM {$db->prefix}todolist WHERE id=$id");
-	$affected = $db->affected();
-	$db->ex("COMMIT");
+	$deleted = deleteTask($id);
 	$t = array();
-	$t['total'] = $affected;
+	$t['total'] = $deleted;
 	$t['list'][] = array('id'=>$id);
 	echo json_encode($t);
 	exit;
@@ -425,6 +414,16 @@ elseif(isset($_GET['publishList']))
 	echo json_encode(array('total'=>1));
 	exit;
 }
+elseif(isset($_GET['moveTask']))
+{
+	check_write_access();
+	$id = (int)_post('id');
+//	$fromId = (int)_post('from');
+	$toId = (int)_post('to');
+	$r = moveTask($id, $toId);
+	echo json_encode(array('total'=>$r?1:0));
+	exit;
+}
 
 
 ###################################################################################################
@@ -669,6 +668,49 @@ function myExceptionHandler($e)
 	}
 	echo 'Exception: \''. $e->getMessage() .'\' in '. $e->getFile() .':'. $e->getLine();
 	exit;
+}
+
+function deleteTask($id)
+{
+	check_write_access();
+	global $db;
+	$tags = get_task_tags($id);
+	$db->ex("BEGIN");
+	if($tags) {
+		$s = implode(',', $tags);
+		$db->ex("DELETE FROM {$db->prefix}tag2task WHERE task_id=$id");
+		$db->ex("UPDATE {$db->prefix}tags SET tags_count=tags_count-1 WHERE id IN ($s)");
+		$db->ex("DELETE FROM {$db->prefix}tags WHERE tags_count < 1");	# slow on large amount of tags
+	}
+	$db->dq("DELETE FROM {$db->prefix}todolist WHERE id=$id");
+	$affected = $db->affected();
+	$db->ex("COMMIT");
+	return $affected;
+}
+
+function moveTask($id, $listId)
+{
+	check_write_access();
+	global $db;
+	$r = $db->sqa("SELECT * FROM {$db->prefix}todolist WHERE id=?", array($id));
+	if(!$r || $listId == $r['list_id']) return false;
+	if(!$db->sq("SELECT COUNT(*) FROM {$db->prefix}lists WHERE id=?", $listId))
+		return false;
+
+	$ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->prefix}todolist WHERE list_id=? AND compl=?", array($listId, $r['compl']?1:0));
+	$tags = get_task_tags($id);
+	$db->ex("BEGIN");
+	if($tags)
+	{
+		$s = implode(',', $tags);
+		$db->ex("DELETE FROM {$db->prefix}tag2task WHERE task_id=?", $id);
+		$db->ex("UPDATE {$db->prefix}tags SET tags_count=tags_count-1 WHERE id IN ($s)");
+		$db->ex("DELETE FROM {$db->prefix}tags WHERE tags_count < 1");	#slow
+		update_task_tags($id, prepare_tags($r['tags'], $listId));
+	}
+	$db->dq("UPDATE {$db->prefix}todolist SET list_id=?, ow=? WHERE id=?", array($listId, $ow, $id));
+	$db->ex("COMMIT");
+	return true;
 }
 
 ?>

@@ -3,11 +3,11 @@
 /*
 	myTinyTodo language pack
 	Language: English
-	Language Original: English
+	Translated: English
 	Author: Max Pozdeev
 	Author Url: http://www.mytinytodo.net
 	AppVersion: v1.3.2
-	Date: 2009-12-19
+	Date: 2009-12-26
 */
 
 class Lang extends DefaultLang
@@ -75,6 +75,7 @@ class Lang extends DefaultLang
 		'action_note' => "Edit Note",
 		'action_delete' => "Delete",
 		'action_priority' => "Priority",
+		'action_move' => "Move to",
 		'notes' => "Notes:",
 		'notes_show' => "Show",
 		'notes_hide' => "Hide",
