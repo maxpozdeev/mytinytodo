@@ -1250,7 +1250,11 @@ function mttMenu(container, options)
 		this.caller = caller;
 		$caller = $(caller);
 		var offset = $caller.offset();
-		this.container.css({ position: 'absolute', top: offset.top+caller.offsetHeight-1, left: offset.left , 'min-width': $caller.width() }).show();
+		var x = offset.left;
+		if(offset.left + this.container.outerWidth() > $(window).width()) x = $(window).width() - this.container.outerWidth() - 1;
+		var y = offset.top+caller.offsetHeight-1;
+		if(y + this.container.outerHeight() > $(window).height()) y = offset.top - this.container.outerHeight();
+		this.container.css({ position: 'absolute', top: y, left: x /*, 'min-width': $caller.width()*/ }).show();
 		var menu = this;
 		$(document).bind('click.mttmenuclose', function(e){ menu.close(e) });
 		this.menuOpen = true;
@@ -1259,8 +1263,11 @@ function mttMenu(container, options)
 	this.showSub = function()
 	{
 		var offset = this.$caller.offset();
-		var dy = this.parent.container.offset().top-this.parent.container.find('li:first').offset().top
-		this.container.css({ position: 'absolute', top: offset.top+dy, left: offset.left+this.$caller.outerWidth() /*, 'min-width': this.$caller.outerWidth()*/ }).show();
+		var x = offset.left+this.$caller.outerWidth();
+		if(x + this.container.outerWidth() > $(window).width()) x = offset.left - this.container.outerWidth() - 1;
+		var y = offset.top + this.parent.container.offset().top-this.parent.container.find('li:first').offset().top;
+		if(y +  this.container.outerHeight() > $(window).height()) y = $(window).height() - this.container.outerHeight() - 1;
+		this.container.css({ position: 'absolute', top: y, left: x /*, 'min-width': this.$caller.outerWidth()*/ }).show();
 		this.menuOpen = true;
 	}
 

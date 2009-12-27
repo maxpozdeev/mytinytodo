@@ -194,7 +194,10 @@ div.task-note-area textarea { color:#999999; width:100%; display:block; height:6
 .mtt-btnmenu-container.mtt-menu-has-images li { padding-left:18px; }
 li.mtt-item-checked .menu-icon { float:left; width:16px; height:16px; margin-left:-18px; background:url(images/icons.gif) -16px -16px; }
 .mtt-btnmenu-container.mtt-menu-has-submenu li { padding-right:18px; }
-li.mtt-menu-indicator .submenu-icon { float:right; margin-right:-18px; width:16px; height:16px; background:url(images/icons.gif) -32px -16px no-repeat; }
+li.mtt-menu-indicator .submenu-icon {
+	/*float:right; margin-right:-18px;*/ position:absolute; right:2px; /* specially for IE7 */
+	width:16px; height:16px; background:url(images/icons.gif) -32px -16px no-repeat;
+}
 
 .mtt-settings-table { width:100%; border-collapse:collapse; }
 .mtt-settings-table th, .mtt-settings-table td { border-bottom:1px solid #dedede; padding:8px; vertical-align:top; }
