@@ -912,7 +912,7 @@ function loadLists(onInit, updAccess)
 			if(curList.published) $('#btnPublish').addClass('mtt-item-checked');
 			else $('#btnPublish').removeClass('mtt-item-checked');
 			//if(curList.published)
-				$('#rss_icon').show().find('a').attr('href', 'feed.php?list='+curList.id);
+				$('#rss_icon').find('a').attr('href', 'feed.php?list='+curList.id);
 			if(flag.needAuth && !flag.isLogged) $('#bar_public').show();
 		}
 		else {
@@ -920,7 +920,6 @@ function loadLists(onInit, updAccess)
 			$('#lists .mtt-htabs').children().addClass('invisible');
 			$('#page_tasks h3').children().addClass('invisible');
 			$('#mylistscontainer .mtt-need-list').addClass('mtt-disabled');
-			$('#rss_icon').hide();
 			$('#tasklist').html('');
 		}
 		ti += '<li class="mtt-tabs-button menu-owner"><a href="#" id="mylists" onClick="btnMenu(this);return false;"><span><img src="images/arrdown.gif"></span></a></li>';
