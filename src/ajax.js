@@ -62,14 +62,15 @@ function prepareTaskStr(item, noteExp)
 	var id = parseInt(item.id);
 	var prio = parseInt(item.prio);
 	var readOnly = (flag.needAuth && !flag.isLogged) ? true : false;
-	return '<li id="taskrow_'+id+'" class="'+(item.compl?'task-completed ':'')+item.dueClass+'" onDblClick="editTask('+id+')">'+
+	return '<li id="taskrow_'+id+'" class="'+(item.compl?'task-completed ':'')+item.dueClass+(item.note!=''?' task-has-note':'')+
+		(noteExp?' task-expanded':'')+'" onDblClick="editTask('+id+')">'+
 		'<div class="task-actions"><a href="#" class="taskactionbtn" onClick="return taskContextMenu(this,'+id+')"></a></div>'+
-		'<div class="task-left"><div class="mtt-toggle '+(item.note==''?'invisible':(noteExp?'mtt-toggle-expanded':''))+'" onClick="toggleNote('+id+')"></div>'+
+		'<div class="task-left"><div class="task-toggle" onClick="toggleNote('+id+')"></div>'+
 		'<input type="checkbox" '+(readOnly?'disabled':'')+' onClick="completeTask('+id+',this)" '+(item.compl?'checked':'')+'></div>'+
 		'<div class="task-middle">'+prepareDuedate(item.duedate, item.dueClass, item.dueStr)+
-		'<span class="task-through">'+preparePrio(prio,id)+'<span class="task-title">'+prepareHtml(item.title)+'</span>'+
-		prepareTagsStr(item.tags)+'<span class="task-date">'+item.dateInline+'</span></span>'+
-		'<div class="task-note-block '+(item.note!=''&&noteExp?'':'hidden')+'">'+
+		'<div class="task-through">'+preparePrio(prio,id)+'<span class="task-title">'+prepareHtml(item.title)+'</span>'+
+		prepareTagsStr(item.tags)+'<span class="task-date">'+item.dateInline+'</span></div>'+
+		'<div class="task-note-block">'+
 			'<div id="tasknote'+id+'" class="task-note"><span>'+prepareHtml(item.note)+'</span></div>'+
 			'<div id="tasknotearea'+id+'" class="task-note-area"><textarea id="notetext'+id+'"></textarea>'+
 				'<span class="task-note-actions"><a href="#" onClick="return saveTaskNote('+id+')">'+lang.actionNoteSave+
@@ -232,10 +233,9 @@ function toggleTaskNote(id)
 	if($(aArea).css('display') == 'none')
 	{
 		$('#notetext'+id).val(taskList[id].noteText);
-		$('#taskrow_'+id+'>div>div.task-note-block').removeClass('hidden');
-		$(aArea).css('display', 'block');
-		$('#tasknote'+id).css('display', 'none');
-		if(taskList[id].note != '') $('#taskrow_'+id+' .mtt-toggle').addClass('mtt-toggle-expanded');
+		$(aArea).show();
+		$('#tasknote'+id).hide();
+		$('#taskrow_'+id).addClass('task-expanded');
 		$('#notetext'+id).focus();
 	} else {
 		cancelTaskNote(id)
@@ -245,11 +245,9 @@ function toggleTaskNote(id)
 
 function cancelTaskNote(id)
 {
-	$('#tasknotearea'+id).css('display', 'none');
-	$('#tasknote'+id).css('display', 'block');
-	if($('#tasknote'+id).text() == '') {
-		$('#taskrow_'+id+'>div>div.task-note-block').addClass('hidden');
-	}
+	if(taskList[id].note == '') $('#taskrow_'+id).removeClass('task-expanded');
+	$('#tasknotearea'+id).hide();
+	$('#tasknote'+id).show();
 	return false;
 }
 
@@ -264,8 +262,8 @@ function saveTaskNote(id)
 		taskList[id].note = item.note;
 		taskList[id].noteText = item.noteText;
 		$('#tasknote'+item.id+'>span').html(prepareHtml(item.note));
-		if(item.note == '') $('#taskrow_'+id+' .mtt-toggle').removeClass('mtt-toggle-expanded').addClass('invisible');
-		else $('#taskrow_'+id+' .mtt-toggle').addClass('mtt-toggle-expanded').removeClass('invisible');
+		if(item.note == '') $('#taskrow_'+id).removeClass('task-has-note task-expanded');
+		else $('#taskrow_'+id).addClass('task-has-note task-expanded');
 		cancelTaskNote(item.id);
 	}, 'json');
 	return false;
@@ -354,7 +352,7 @@ function saveTask(form)
 		var item = json.list[0];
 		if(!taskList[item.id].compl) changeTaskCnt(taskList[item.id].dueClass, -1);
 		taskList[item.id] = item;
-		var noteExpanded = (item.note != '' && $('#taskrow_'+item.id+' .mtt-toggle').is('.mtt-toggle-expanded')) ? 1 : 0;
+		var noteExpanded = (item.note != '' && $('#taskrow_'+item.id).is('.task-expanded')) ? 1 : 0;
 		$('#taskrow_'+item.id).replaceWith(prepareTaskStr(item, noteExpanded));
 		if(sortBy != 0) changeTaskOrder(item.id);
 		cancelEdit();
@@ -871,10 +869,7 @@ function btnMenuClose(e)
 
 function toggleNote(id)
 {
-	var o = $('#taskrow_'+id+'>div>div.task-note-block');
-	if(o.is('.hidden')) $('#taskrow_'+id+' .mtt-toggle').addClass('mtt-toggle-expanded');
-	else $('#taskrow_'+id+' .mtt-toggle').removeClass('mtt-toggle-expanded');
-	o.toggleClass('hidden');
+	$('#taskrow_'+id).toggleClass('task-expanded');
 }
 
 function toggleAllNotes(show)
@@ -882,14 +877,8 @@ function toggleAllNotes(show)
 	for(var id in taskList)
 	{
 		if(taskList[id].note == '') continue;
-		if(show) {
-			$('#taskrow_'+id+' .mtt-toggle').addClass('mtt-toggle-expanded');
-			$('#taskrow_'+id+'>div>div.task-note-block').removeClass('hidden');
-		}
-		else {
-			$('#taskrow_'+id+' .mtt-toggle').removeClass('mtt-toggle-expanded');
-			$('#taskrow_'+id+'>div>div.task-note-block').addClass('hidden');
-		}
+		if(show) $('#taskrow_'+id).addClass('task-expanded');
+		else $('#taskrow_'+id).removeClass('task-expanded');
 	}
 }
 
