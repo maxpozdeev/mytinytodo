@@ -32,7 +32,7 @@ $dbtype = ($dbclass == 'database_mysql') ? 'mysql' : 'sqlite';
 
 $lastVer = '1.3.1';
 echo '<html><head><meta name="robots" content="noindex,nofollow"></head><body>'; 
-echo "<big><b>myTinyTodo v$lastVer Setup</b></big><br><br>";
+echo "<big><b>myTinyTodo Setup</b></big><br><br>";
 
 # determine current installed version
 $ver = get_ver($db, $dbtype);
@@ -182,7 +182,7 @@ if(!$ver)
 }
 elseif($ver == $lastVer)
 {
-	exitMessage("Installed version (v$ver) does not require database update.");
+	exitMessage("Installed version (DB v$ver) does not require update.");
 }
 else
 {
