@@ -291,10 +291,6 @@ function editTask(id)
 
 function showEditForm(isAdd)
 {
-	$('<div id="overlay"></div>').appendTo('body').css('opacity', 0.5).show();
-	//clear selection
-	if(document.selection && document.selection.empty && document.selection.createRange().text) document.selection.empty();
-	else if(window.getSelection) window.getSelection().removeAllRanges();
 	if(isAdd) {
 		$('#page_taskedit').removeClass('mtt-inedit').addClass('mtt-inadd');
 		document.edittask.isadd.value = 1;
@@ -303,6 +299,17 @@ function showEditForm(isAdd)
 		$('#page_taskedit').removeClass('mtt-inadd').addClass('mtt-inedit');
 		document.edittask.isadd.value = 0;
 	}
+	
+	if(flag.pda) {
+		showhide($('#page_taskedit'), $('#page_tasks'));
+		return;
+	}
+
+	$('<div id="overlay"></div>').appendTo('body').css('opacity', 0.5).show();
+	//clear selection
+	if(document.selection && document.selection.empty && document.selection.createRange().text) document.selection.empty();
+	else if(window.getSelection) window.getSelection().removeAllRanges();
+
 	var w = $('#page_taskedit');
 	if(!flag.windowTaskEditMoved)
 	{
@@ -327,9 +334,14 @@ function showEditForm(isAdd)
 function cancelEdit(e)
 {
 	if(e && e.keyCode != 27) return;
-	$(document).unbind('keydown', cancelEdit);
-	$('#page_taskedit').hide();
-	$('#overlay').remove();
+	if(flag.pda) {
+		showhide($('#page_tasks'), $('#page_taskedit'));
+	} else
+	{
+		$(document).unbind('keydown', cancelEdit);
+		$('#page_taskedit').hide();
+		$('#overlay').remove();
+	}
 	document.edittask.task.value = '';
 	document.edittask.note.value = '';
 	document.edittask.tags.value = '';

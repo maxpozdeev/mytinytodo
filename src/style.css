@@ -111,12 +111,14 @@ li.task-completed .task-note-block .task-note { text-decoration:line-through; }
 .prio-o { background-color:#dedede; }
 .task-prio.prio-o { display:none; } 
 
-.form-row { margin-top:4px; margin-bottom:4px; }
+.form-row { margin-top:8px; }
 .form-row .h { font-weight:bold; color:#333333; }
+.form-row-short-end { clear:both; }
 #overlay { position:fixed; z-index:200; background-color:#111111; display:none; top:0px; left:0px; width:100%; height:100%; }
 #page_taskedit { position:fixed; z-index:201; background-color:#fdfdfd; padding:8px; border:1px solid #cccccc; width:510px; }
 #page_taskedit .form-row .in500 { width:99%; }
 #page_taskedit .form-row textarea.in500 { height:130px; /*resize:none;*/ }
+#page_taskedit .form-row-short { float:left; margin-right:12px; }
 .ui-icon-gripsmall-diagonal-se { background:url(images/icons.gif) 0 -16px; }
 #alltags .tag { font-weight:bold; color:#333333; }
 #alltags .tag:hover { background-color:#999988; color:white; }

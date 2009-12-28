@@ -71,7 +71,9 @@ $().ready(function(){
 		dayNames:lang.daysLong, monthNamesShort:lang.monthsLong });
 <?php if(!isset($_GET['pda'])): ?>
 	$("#page_taskedit").draggable({ handle:'h3', stop: function(e,ui){ flag.windowTaskEditMoved=true; tmp.editformpos=[$(this).css('left'),$(this).css('top')]; } }); 
-	$("#page_taskedit").resizable({ minWidth:$("#page_taskedit").width(), minHeight:$("#page_taskedit").height(), start:function(ui,e){editFormResize(1)}, resize:function(ui,e){editFormResize(0,e)}, stop:function(ui,e){editFormResize(2,e)} });
+	$("#page_taskedit").resizable({ minWidth:$("#page_taskedit").width(), minHeight:220, start:function(ui,e){editFormResize(1)}, resize:function(ui,e){editFormResize(0,e)}, stop:function(ui,e){editFormResize(2,e)} });
+<?php else: ?>
+	flag.pda = true;
 <?php endif; ?>
 
 });
@@ -151,8 +153,9 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
 <form onSubmit="return saveTask(this)" name="edittask">
 <input type="hidden" name="isadd" value="0">
 <input type="hidden" name="id" value="">
-<div class="form-row"><span class="h"><?php _e('priority');?></span> <SELECT name="prio"><option value="2">+2</option><option value="1">+1</option><option value="0" selected>&plusmn;0</option><option value="-1">&minus;1</option></SELECT> 
- &nbsp; <span class="h"><?php _e('due');?> </span> <input name="duedate" id="duedate" value="" class="in100" title="Y-M-D, M/D/Y, D.M.Y, M/D, D.M" autocomplete="off"></div>
+<div class="form-row form-row-short"><span class="h"><?php _e('priority');?></span> <SELECT name="prio"><option value="2">+2</option><option value="1">+1</option><option value="0" selected>&plusmn;0</option><option value="-1">&minus;1</option></SELECT></div>
+<div class="form-row form-row-short"><span class="h"><?php _e('due');?> </span> <input name="duedate" id="duedate" value="" class="in100" title="Y-M-D, M/D/Y, D.M.Y, M/D, D.M" autocomplete="off"></div>
+<div class="form-row-short-end"></div>
 <div class="form-row"><div class="h"><?php _e('task');?></div> <input type="text" name="task" value="" class="in500" maxlength="250"></div>
 <div class="form-row"><div class="h"><?php _e('note');?></div> <textarea name="note" class="in500"></textarea></div>
 <div class="form-row"><div class="h"><?php _e('tags');?></div>
@@ -164,7 +167,7 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
  </tr></table>
 </div>
 <div class="form-row" id="alltags" style="display:none;"><?php _e('alltags');?> <span class="tags-list"></span></div>
-<div class="form-row"><input type="submit" value="<?php _e('save');?>" onClick="this.blur()"> <input type="button" value="<?php _e('cancel');?>" onClick="cancelEdit();this.blur();return false"></div>
+<div class="form-row form-bottom-buttons"><input type="submit" value="<?php _e('save');?>" onClick="this.blur()"> <input type="button" value="<?php _e('cancel');?>" onClick="cancelEdit();this.blur();return false"></div>
 </form>
 
 </div>  <!-- end of page_taskedit -->
