@@ -68,7 +68,7 @@ function prepareTaskStr(item, noteExp)
 		'<div class="task-left"><div class="task-toggle" onClick="toggleNote('+id+')"></div>'+
 		'<input type="checkbox" '+(readOnly?'disabled':'')+' onClick="completeTask('+id+',this)" '+(item.compl?'checked':'')+'></div>'+
 		'<div class="task-middle">'+prepareDuedate(item.duedate, item.dueClass, item.dueStr)+
-		'<div class="task-through">'+preparePrio(prio,id)+'<span class="task-title">'+prepareHtml(item.title)+'</span>'+
+		'<div class="task-through">'+preparePrio(prio,id)+'<span class="task-title">'+prepareHtml(item.title)+'</span> '+
 		prepareTagsStr(item.tags)+'<span class="task-date">'+item.dateInline+'</span></div>'+
 		'<div class="task-note-block">'+
 			'<div id="tasknote'+id+'" class="task-note"><span>'+prepareHtml(item.note)+'</span></div>'+

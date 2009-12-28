@@ -72,7 +72,7 @@ li.task-expanded .task-toggle { background-position:-48px 0; }
 .task-title a { color:#000000; }
 .task-title a:hover { color:#af0000; }
 #page_tasks.readonly #tasklist li .task-actions { display:none; }
-.task-tags { margin-left:4px; padding:0px 2px; }
+.task-tags { padding:0px 2px; }
 .task-tags .tag { font-size:8pt; font-weight:bold; color:#333333; text-decoration:underline;  }
 .task-tags .tag:hover {  }
 .duedate { color:#333333;  border-bottom:1px dotted #333333; padding:0px; padding-left:1px; margin-left:5px; float:right; }
