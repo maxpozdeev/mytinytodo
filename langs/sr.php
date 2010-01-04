@@ -2,32 +2,29 @@
 
 /*
 	myTinyTodo language pack
-	Language: Serbian
+	Language: Српски
+	Translated: Serbian
 	Author: Goran Trajkovic
-	AppVersion: v1.3.0
-	Date: 2009-11-17
+	Author Url: http://www.crelativ.com
+	AppVersion: v1.3.2
+	Date: 2010-01-02
 */
 
 class Lang extends DefaultLang
 {
 	var $js = array
 	(
-		'actionNote' => "промени текст задатка",
-		'actionEdit' => "промени цео задатак",
-		'actionDelete' => "обриши задатак",
-		'taskDate' => array("function(date) { return 'уписан '+date; }"),
 		'confirmDelete' => "Да ли сте сигурни?",
 		'actionNoteSave' => "сними",
 		'actionNoteCancel' => "одустани",
 		'error' => "Грешке у раду програма (кликните да бисте видели детаље)",
 		'denied' => "Немогућ приступ апликацији",
-		'invalidpass' => "Неисправна лозинка?",
-		'readonly' => "само-за-читање",
+		'invalidpass' => "Неисправна лозинка",
 		'tagfilter' => "Категорија: ",
 		'addList' => "Направи нову листу",
-		'renameList' => "Преименуј листу",
-		'deleteList' => "Ова акција ће обрисати текућу листу са свим припадајућим пословима.\\nДа ли сте сигурни?",
-		'settingsSaved' => "Промене у подешавањима су сачуване. Поновно учитавање у току...",
+		'renameList' => "Унесите нови назив листе",
+		'deleteList' => "Брисање текуће листе са свим припадајућим задацима\\nДа ли сте сигурни?",
+		'settingsSaved' => "Промене у подешавањима су сачуване. Поновно учитавање...",
 	);
 
 	var $inc = array
@@ -37,22 +34,26 @@ class Lang extends DefaultLang
 		'htab_search' => "Претрага",
 		'btn_add' => "Упиши",
 		'btn_search' => "Тражи",
-		'advanced_add' => "Напредно додавање (*)",
+		'advanced_add' => "Датаљан упис задатка",
 		'searching' => "Претраживање у току...",
 		'tasks' => "Текући",
+		'taskdate_inline' => "додат у (added at) %s",
+		'taskdate_created' => "Дан и час креирања",
+		'taskdate_completed' => "Дан и час завршетка",
 		'edit_task' => "Измена задатка",
 		'add_task' => "Нови задатак",
 		'priority' => "Приоритет",
 		'task' => "Наслов",
 		'note' => "Опис",
-		'save' => "Сними",
+		'save' => "   Упиши   ",
 		'cancel' => "Одустани",
 		'password' => "Лозинка",
 		'btn_login' => "Пријави се",
 		'a_login' => "Пријављивање",
 		'a_logout' => "Одјави се",
-		'tags' => "Категорија",
-		'tagfilter_cancel' => "искључивање филтра",
+		'public_tasks' => "Јавни задаци",
+		'tags' => "Филтер по категоријама",
+		'tagfilter_cancel' => "искључи филтер",
 		'sortByHand' => "Ручно уређивање задатака",
 		'sortByPriority' => "Уређивање по приоритету",
 		'sortByDueDate' => "Уређивање по датуму обављања",
@@ -61,7 +62,8 @@ class Lang extends DefaultLang
 		'indays' => "за %d дана",
 		'months_short' => array("Jан","Феб","Maр","Aпр","Maј","Jун","Jул","Aвг","Сеп","Oкт","Нов","Дец"),
 		'months_long' => array("Јануар","Фебруар","Март","Април","Maј","Jун","Jул","Aвгуст","Септембар","Oктобар","Новембар","Децембар"),
-		'days_min' => array("Не","По","Ут","Ср","Че","Пе","Су"),
+		'days_min' => array("Нед","Пон","Уто","Сре","Чет","Пет","Суб"),
+		'days_long' => array("Недеља","Понедељак","Уторак","Среда","Четвртак","Петак","Субота"),
 		'today' => "данас",
 		'yesterday' => "јуче",
 		'tomorrow' => "сутра",
@@ -69,19 +71,54 @@ class Lang extends DefaultLang
 		'f_today' => "Данас и сутра",
 		'f_soon' => "Ускоро",
 		'tasks_and_compl' => "Сви",
-		'notes' => "Напомене:",
+		'action_edit' => "Измена задатка",
+		'action_note' => "Промена описа",
+		'action_delete' => "Брисање",
+		'action_priority' => "Промена приоритета",
+		'action_move' => "Премештање у категорију",
+		'notes' => "Опис задатка:",
 		'notes_show' => "прикажи",
 		'notes_hide' => "сакриј",
-		'list_new' => "Нова листа",
-		'list_rename' => "Преименуј",
-		'list_delete' => "Обриши",
-		'alltags' => "Све категорије (тагови):",
-		'alltags_show' => "Прикажи све",
-		'alltags_hide' => "Сакриј све",
+		'list_new' => "<em>Додавање нове листе</em>",
+		'list_rename' => "Преименовање текуће листе",
+		'list_delete' => "Брисање текуће листе",
+		'list_publish' => "Постављање текуће листе за јавну",
+		'alltags' => "Све категорије:",
+		'alltags_show' => "Прикажи категорије",
+		'alltags_hide' => "Сакриј  категорије",
 		'a_settings' => "Подешавања",
 		'rss_feed' => "RSS Feed",
 		'feed_title' => "%s",
-		'feed_description' => "Нови задаци у групи %s",
+		'feed_description' => "Задаци у категорији: %s",	
+
+		/* Подешавања */
+		'set_header' => "Подешавања",
+		'set_title' => "Наслов",
+		'set_title_descr' => "унесите уколико желите да промените подразумевани наслов",
+		'set_language' => "Језик",
+		'set_protection' => "Уптреба лозинке код приступа",
+		'set_enabled' => "Да",
+		'set_disabled' => "Не",
+		'set_newpass' => "Нова лозинка",
+		'set_newpass_descr' => "оставите поље празно ако не желите да промените лозинку",
+		'set_smartsyntax' => "Smart синтакса",
+		'set_smartsyntax_descr' => "(/priority/ task /tags/)",
+		'set_autotz' => "Аутоматско подешавање временске зоне",
+		'set_autotz_descr' => "одређује одступање временске зоне корисничког окружења помоћу Јава скрипта",
+		'set_autotag' => "Аутоматско задавање тагова",
+		'set_autotag_descr' => "код уноса новог задатка аутоматски задаје тага користећи вредност из текућег филтра",
+		'set_sessions' => "Механизам за чување сесија",
+		'set_sessions_php' => "PHP",
+		'set_sessions_files' => "Фајл систем",
+		'set_firstdayofweek' => "Први дан у недељи",
+		'set_duedate' => "Формат за приказивање датума у календару",
+		'set_date' => "Формат за приказ датума задатка",
+		'set_shortdate' => "Кратки формат датума",
+		'set_clock' => "Формат времена часовника",
+		'set_12hour' => "12-часовни",
+		'set_24hour' => "24-часовни",
+		'set_submit' => "   Упиши   ",
+		'set_cancel' => "Одустани",
 	);
 }
 
