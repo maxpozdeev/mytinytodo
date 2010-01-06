@@ -1,0 +1,17 @@
+body { direction:rtl; }
+h2 { float:right; }
+.right { float:left; }
+#loading { float:right; }
+#lists .mtt-tabs { float:right; }
+#rss_icon { float:left; }
+#sort { float:left; margin-left:0px; margin-right:5px; }
+
+.task-actions { float:left; text-align:left; width:15px; }
+.task-left { float:right; }
+.task-toggle { float:right; }
+.task-middle { margin-right:40px; margin-left:25px; }
+.duedate { float:left; margin-left:0; margin-right:5px; }
+#taskedit-date { float:left; }
+#page_taskedit .form-row-short { float:right; margin-left:12px; margin-right:0; }
+.task-prio { float:right; margin-left:4px; margin-right:0; }
+.alltags-cell { padding-left:0; padding-right:5px; }

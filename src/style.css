@@ -16,6 +16,7 @@ a { color:#0000ff; }
 #footer_content a { color:#000000; }
 
 #bar { border-bottom:1px solid #b5d5ff; padding-bottom:5px; height:15px; }
+.right { float:right; }
 .nodecor { text-decoration:none; }
 #bar_logout { display:none; }
 #bar_auth { display:none; }
@@ -46,6 +47,7 @@ a { color:#0000ff; }
 #searchbar { font-size:10pt; font-weight:normal; display:none;  margin-top:5px; }
 #searchbarkeyword { font-weight:bold; }
 
+#msg { float:left; }
 #msg .msg-text {  padding:1px 4px; font-weight:bold; cursor:pointer; }
 #msg .msg-details { padding:1px 4px; background-color:#fff; display:none; max-width:700px;  }
 #msg.mtt-error .msg-text { background-color:#ff3333; }
@@ -53,10 +55,10 @@ a { color:#0000ff; }
 #msg.mtt-info .msg-text { background-color:#EFC300; }
 #msg.mtt-info .msg-details { border:1px solid #EFC300;}
 
-#sort { margin-left:5px; font-size:8pt; font-weight:normal; }
+#sort { margin-left:5px; font-size:8pt; font-weight:normal; float:right; }
 #page_tasks.readonly #sort { display:none; }
 
-.mtt-notes-showhide { font-size:8pt; font-weight:normal; margin-left:5px; }
+.mtt-notes-showhide { font-size:8pt; font-weight:normal; margin-left:2px; margin-right:2px; }
 #rss_icon { float:right;margin-top:4px; }
 
 .task-left { float:left; }
@@ -122,15 +124,16 @@ li.task-completed .task-note-block .task-note { text-decoration:line-through; }
 .ui-icon-gripsmall-diagonal-se { background:url(images/icons.gif) 0 -16px; }
 #alltags .tag { font-weight:bold; color:#333333; }
 #alltags .tag:hover { background-color:#999988; color:white; }
+.alltags-cell { width:1%; white-space:nowrap; padding-left:5px; }
 #page_taskedit.mtt-inadd .mtt-inedit { display:none; }
 #page_taskedit.mtt-inedit .mtt-inadd { display:none; }
 #taskedit-date { font-size:10pt; font-weight:normal; text-align:right; float:right; color:#777; }
 
 /* autocomplete */
-.ac_results { padding: 0px; border: 1px solid #cccccc; background-color: #f0f0f0; overflow: hidden;  z-index: 99999; }
+.ac_results { padding:0px; border:1px solid #cccccc; background-color:#f9f9f9; overflow:hidden; z-index:99999; -moz-box-shadow:1px 2px 5px rgba(0,0,0,0.5); -webkit-box-shadow:1px 2px 5px rgba(0,0,0,0.5); }
 .ac_results ul { width: 100%; list-style-position: outside; list-style: none; padding: 0; margin: 0; }
 .ac_results li { margin: 0px; padding: 2px 5px; cursor: default; display: block; line-height: 16px; overflow: hidden; } 
-.ac_over { background-color: #bbbbbb; color: white; }
+.ac_over { background-color:#316AC5; color:white; }
 
 #priopopup { overflow: hidden; z-index:100; background-color:#f9f9f9; border:1px solid #cccccc; padding:5px; } 
 #priopopup .prio-o { display:inline; }
@@ -139,7 +142,7 @@ li.task-completed .task-note-block .task-note { text-decoration:line-through; }
 #priopopup .prio-neg:hover { border:1px solid #3377ff; }
 #priopopup .prio-pos:hover { border:1px solid #ff3030; }
 
-#tagcloudbtn { margin-left:5px; font-size:8pt; font-weight:normal; border-bottom:1px dashed #ccc; padding:2px; cursor:pointer; -moz-user-select:none; -webkit-user-select: none; }
+#tagcloudbtn { margin-left:2px; margin-right:2px; font-size:8pt; font-weight:normal; border-bottom:1px dashed #ccc; padding:2px; cursor:pointer; -moz-user-select:none; -webkit-user-select: none; }
 #tagcloudbtn:hover { border-bottom:1px solid #bbb; } 
 #tagcloudbtn .tag { font-weight:bold; }
 #tagcloudload { display:none; }

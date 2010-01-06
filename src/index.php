@@ -12,6 +12,8 @@ require_once('./lang/'.Config::get('lang').'.php');
 
 $lang = new Lang();
 
+if($lang->rtl()) Config::set('rtl', 1);
+
 if(Config::get('duedateformat') == 2) $duedateformat = 'm/d/yy';
 elseif(Config::get('duedateformat') == 3) $duedateformat = 'dd.mm.yy';
 elseif(Config::get('duedateformat') == 4) $duedateformat = 'dd/mm/yy';
@@ -35,6 +37,9 @@ function _e($s)
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
 <title><?php echo $title; ?></title>
 <link rel="stylesheet" type="text/css" href="style.css?v=@VERSION" media="all">
+<?php if(Config::get('rtl')): ?>
+<link rel="stylesheet" type="text/css" href="style_rtl.css?v=@VERSION" media="all">
+<?php endif; ?>
 <?php if(isset($_GET['pda'])): ?>
 <meta name="viewport" id="viewport" content="width=device-width">
 <link rel="stylesheet" type="text/css" href="pda.css?v=@VERSION" media="all">
@@ -90,16 +95,16 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
 <div id="loading"><img src="images/loading1.gif"></div>
 
 <div id="bar">
- <div id="msg" style="float:left"><span class="msg-text" onClick="toggleMsgDetails()"></span><div class="msg-details"></div></div>
- <div align="right">
+ <div id="msg"><span class="msg-text" onClick="toggleMsgDetails()"></span><div class="msg-details"></div></div>
+ <div class="right">
  <span class="menu-owner">
    <a href="#settings" onClick="showSettings();return false;"><?php _e('a_settings');?></a>
  </span>
  <span class="bar-delim" style="display:none"> | </span>
  <span id="bar_auth">
   <span id="bar_public" style="display:none"><?php _e('public_tasks');?> |</span>
-  <span id="bar_login"><a href="#" class="nodecor" onClick="showAuth(this);return false;"><u><?php _e('a_login');?></u> <img src="images/arrdown.gif" border=0></a></span>
-  <a href="#" id="bar_logout" onClick="logout();return false"><?php _e('a_logout');?></a>
+  <span id="bar_login"><a href="#login" class="nodecor" onClick="showAuth(this);return false;"><u><?php _e('a_login');?></u> <img src="images/arrdown.gif" border=0></a></span>
+  <a href="#logout" id="bar_logout" onClick="logout();return false"><?php _e('a_logout');?></a>
  </span>
  </div>
 </div>
@@ -126,7 +131,7 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
 </div>
 
 <h3>
-<span id="sort" onClick="btnMenu(this);return false;" style="float:right" class="mtt-btnmenu"><span class="btnstr"></span> <img src="images/arrdown.gif"></span>
+<span id="sort" onClick="btnMenu(this);return false;" class="mtt-btnmenu"><span class="btnstr"></span> <img src="images/arrdown.gif"></span>
 <span id="taskview" onClick="btnMenu(this);return false;" class="mtt-btnmenu"><span class="btnstr"><?php _e('tasks');?></span> (<span id="total">0</span>) &nbsp;<img src="images/arrdown.gif"></span>
 <span id="tagcloudbtn" onClick="showTagCloud(this);"><span class="btnstr"><?php _e('tags');?></span> <img src="images/arrdown.gif"></span>
 <span class="mtt-notes-showhide"><?php _e('notes');?> <a href="#" onClick="toggleAllNotes(1);this.blur();return false;"><?php _e('notes_show');?></a> / <a href="#" onClick="toggleAllNotes(0);this.blur();return false;"><?php _e('notes_hide');?></a></span>
@@ -161,7 +166,7 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
 <div class="form-row"><div class="h"><?php _e('tags');?></div>
  <table cellspacing="0" cellpadding="0" width="100%"><tr>
   <td><input type="text" name="tags" id="edittags" value="" class="in500" maxlength="250"></td>
-  <td width="1%" style="white-space:nowrap; padding-left:5px; text-align:right;">
+  <td class="alltags-cell">
    <a href="#" id="alltags_show" onClick="toggleEditAllTags(1);return false;"><?php _e('alltags_show');?></a>
    <a href="#" id="alltags_hide" onClick="toggleEditAllTags(0);return false;" style="display:none"><?php _e('alltags_hide');?></a></td>
  </tr></table>

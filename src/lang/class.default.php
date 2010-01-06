@@ -6,6 +6,7 @@
 
 class DefaultLang
 {
+	protected $rtl = 0;
 	private $default_js = array
 	(
 		'confirmDelete' => "Are you sure you want to delete the task?",
@@ -150,6 +151,11 @@ class DefaultLang
 		if(isset($this->inc[$key])) return $this->inc[$key];
 		if(isset($this->default_inc[$key])) return $this->default_inc[$key];
 		return $key;
+	}
+
+	function rtl()
+	{
+		return $this->rtl ? 1 : 0;
 	}
 }
 
