@@ -313,20 +313,14 @@ function showEditForm(isAdd)
 	var w = $('#page_taskedit');
 	if(!flag.windowTaskEditMoved)
 	{
-		var x,y;
-		if(document.getElementById('viewport')) {
-			x = Math.floor(Math.min($(window).width(),screen.width)/2 - w.outerWidth()/2);
-			y = Math.floor(Math.min($(window).height(),screen.height)/2 - w.outerHeight()/2);
-		}
-		else {
-			x = Math.floor($(window).width()/2 - w.outerWidth()/2);
-			y = Math.floor($(window).height()/2 - w.outerHeight()/2);
-		}
+		var x = Math.floor($(window).width()/2 - w.outerWidth()/2);
+		var y = Math.floor($(window).height()/2 - w.outerHeight()/2);
 		if(x < 0) x = 0;
 		if(y < 0) y = 0;
 		w.css({left:x, top:y});
 		tmp.editformpos = [x, y];
 	}
+	w.css('max-width', $(window).width() - (w.outerWidth() - w.width()));
 	w.fadeIn('fast');	//.show();
 	$(document).bind('keydown', cancelEdit);
 }
