@@ -12,7 +12,7 @@ h3 { border-bottom:2px solid #B5D5FF; margin-bottom:10px; padding:6px 0; font-si
 a { color:#0000ff; }
 #space { height:30px; }
 #footer { height:30px; margin-top:-30px; }
-#footer_content {  background:url(images/corner_right.gif) no-repeat top right #b5d5ff; padding:5px; font-size:8pt; }
+#footer_content { background-color:#b5d5ff; padding:5px; font-size:8pt; }
 #footer_content a { color:#000000; }
 
 #bar { border-bottom:1px solid #b5d5ff; padding-bottom:5px; height:15px; }

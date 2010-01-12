@@ -1,9 +1,7 @@
 body { margin:0px; }
 h2 { margin:0; margin-bottom:2px; font-size:18px; }
 h3 { margin-bottom:4px; padding:4px 0; }
-#footer { padding:4px; margin-top:8px; }
-#body { margin-left:1px; margin-right:1px; padding:1px; }
-
+#body { margin-left:1px; margin-right:1px; padding:1px; padding-bottom:12px;}
 #bar_login, #bar_logout { padding-right:1px; }
 
 #tabs ul { margin-top:0px; }
