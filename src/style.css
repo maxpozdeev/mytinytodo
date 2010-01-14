@@ -16,7 +16,7 @@ a { color:#0000ff; }
 #footer_content a { color:#000000; }
 
 #bar { border-bottom:1px solid #b5d5ff; padding-bottom:5px; height:15px; }
-.right { float:right; }
+.bar-menu { float:right; }
 .nodecor { text-decoration:none; }
 #bar_logout { display:none; }
 #bar_auth { display:none; }
@@ -41,6 +41,7 @@ a { color:#0000ff; }
 
 #page_tasks.readonly #htab_search a.htab-toggle { color:#444; }
 .mtt-htabs  { clear:both; padding:8px; border-bottom:2px solid #DEDEDE; background:url(images/corner_right.gif) no-repeat top right #ededed; }
+#htab_newtask a>img { border:none; vertical-align:text-top; }
 #loading { float:left; padding-top:5px; background-color:#ffffff; display:none; padding-right:6px;}
 #task, #search { color:#444444; width:300px; }
 .small-bar{ font-size:8pt; color:#999999; font-weight:normal;}
@@ -60,6 +61,7 @@ a { color:#0000ff; }
 
 .mtt-notes-showhide { font-size:8pt; font-weight:normal; margin-left:2px; margin-right:2px; }
 #rss_icon { float:right;margin-top:4px; }
+#rss_icon img { border:none; }
 
 .task-left { float:left; }
 .task-toggle { visibility:hidden; margin-top:2px; cursor:pointer; width:15px; height:15px; float:left; background:url(images/icons.gif) -32px 0 no-repeat; }

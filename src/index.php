@@ -96,7 +96,7 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
 
 <div id="bar">
  <div id="msg"><span class="msg-text" onClick="toggleMsgDetails()"></span><div class="msg-details"></div></div>
- <div class="right">
+ <div class="bar-menu">
  <span class="menu-owner">
    <a href="#settings" onClick="showSettings();return false;"><?php _e('a_settings');?></a>
  </span>
@@ -116,10 +116,10 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
 <div id="lists">
  <ul class="mtt-tabs"></ul>
  <div class="mtt-htabs">
-   <span id="rss_icon"><a href="#" title="<?php _e('rss_feed');?>"><img src="images/feed_bw.png" style="border:none;" onMouseOver="this.src='images/feed.png'" onMouseOut="this.src='images/feed_bw.png'"></a></span>
+   <span id="rss_icon"><a href="#" title="<?php _e('rss_feed');?>"><img src="images/feed_bw.png" onMouseOver="this.src='images/feed.png'" onMouseOut="this.src='images/feed_bw.png'"></a></span>
    <span id="htab_newtask"><?php _e('htab_newtask');?> 
 	<form onSubmit="return submitNewTask(this)"><input type="text" name="task" value="" maxlength="250" id="task"> <input type="submit" value="<?php _e('btn_add');?>"></form>
-	<a href="#" onClick="showEditForm(1);return false;" title="<?php _e('advanced_add');?>"><img src="images/page_white_edit_bw.png" style="border:none;vertical-align:text-top;" onMouseOver="this.src='images/page_white_edit.png'" onMouseOut="this.src='images/page_white_edit_bw.png'"></a>
+	<a href="#" onClick="showEditForm(1);return false;" title="<?php _e('advanced_add');?>"><img src="images/page_white_edit_bw.png" onMouseOver="this.src='images/page_white_edit.png'" onMouseOut="this.src='images/page_white_edit_bw.png'"></a>
 	&nbsp;&nbsp;| <a href="#" class="htab-toggle" onClick="addsearchToggle(1);this.blur();return false;"><?php _e('htab_search');?></a>
    </span>
    <span id="htab_search" style="display:none"><?php _e('htab_search');?>
