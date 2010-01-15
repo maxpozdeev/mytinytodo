@@ -952,7 +952,7 @@ function addList()
 		item.i = i;
 		tabLists[i] = item;
 		if(i > 0) {
-			$('#lists>ul>li.mtt-tabs-button').before('<li><a href="#list'+item.id+'" onClick="mttTabSelected(this,'+i+');return false;" title="'+item.name+'">'+item.name+'</a></li>') ;
+			$('#lists>ul>li.mtt-tabs-button').before('<li><a href="#list'+item.id+'" onClick="mttTabSelected(this,'+i+');return false;" title="'+item.name+'"><span>'+item.name+'</span></a></li>') ;
 			doAction('listAdded', {i:i, list:item});
 		}
 		else loadLists();
