@@ -14,15 +14,7 @@ $lang = new Lang();
 
 if($lang->rtl()) Config::set('rtl', 1);
 
-if(Config::get('duedateformat') == 2) $duedateformat = 'm/d/yy';
-elseif(Config::get('duedateformat') == 3) $duedateformat = 'dd.mm.yy';
-elseif(Config::get('duedateformat') == 4) $duedateformat = 'dd/mm/yy';
-else $duedateformat = 'yy-mm-dd';
-
 if(!is_int(Config::get('firstdayofweek')) || Config::get('firstdayofweek')<0 || Config::get('firstdayofweek')>6) Config::set('firstdayofweek', 1);
-
-if(Config::get('title') != '') $title = htmlarray(Config::get('title'));
-else $title = $lang->get('My Tiny Todolist');
 
 $_mttinfo = array();
 
@@ -49,16 +41,22 @@ function mttinfo($v)
 
 function get_mttinfo($v)
 {
-	global $_mttinfo;
+	global $_mttinfo, $lang;
 	if(isset($_mttinfo[$v])) return $_mttinfo[$v];
 	switch($v)
 	{
-		case 'siteurl':
-			$_mttinfo['siteurl'] = 'http://'.$_SERVER['HTTP_HOST'] .($_SERVER['SERVER_PORT'] != 80 ? ':'.$_SERVER['SERVER_PORT'] : ''). parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-			return $_mttinfo['siteurl'];
+		case 'template_uri':
+			$_mttinfo['template_uri'] = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH). 'themes/'. Config::get('template') . '/';
+			return $_mttinfo['template_uri'];
 		case 'template_url':
 			$_mttinfo['template_url'] = get_mttinfo('siteurl'). 'themes/'. Config::get('template') . '/';
 			return $_mttinfo['template_url'];
+		case 'siteurl':
+			$_mttinfo['siteurl'] = 'http://'.$_SERVER['HTTP_HOST'] .($_SERVER['SERVER_PORT'] != 80 ? ':'.$_SERVER['SERVER_PORT'] : ''). parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+			return $_mttinfo['siteurl'];
+		case 'title':
+			$_mttinfo['title'] = (Config::get('title') != '') ? htmlarray(Config::get('title')) : $lang->get('My Tiny Todolist');
+			return $_mttinfo['title'];
 	}
 }
 

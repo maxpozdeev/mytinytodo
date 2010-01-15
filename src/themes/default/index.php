@@ -1,17 +1,29 @@
+<?php
+
+function datepickerformat()
+{
+	if(Config::get('duedateformat') == 2) $duedateformat = 'm/d/yy';
+	elseif(Config::get('duedateformat') == 3) $duedateformat = 'dd.mm.yy';
+	elseif(Config::get('duedateformat') == 4) $duedateformat = 'dd/mm/yy';
+	else $duedateformat = 'yy-mm-dd';
+	return $duedateformat;
+}
+
+?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <HEAD>
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
-<title><?php echo $title; ?></title>
-<link rel="stylesheet" type="text/css" href="<?php mttinfo('template_url'); ?>style.css?v=@VERSION" media="all">
+<title><?php mttinfo('title'); ?></title>
+<link rel="stylesheet" type="text/css" href="<?php mttinfo('template_uri'); ?>style.css?v=@VERSION" media="all">
 <?php if(Config::get('rtl')): ?>
-<link rel="stylesheet" type="text/css" href="<?php mttinfo('template_url'); ?>style_rtl.css?v=@VERSION" media="all">
+<link rel="stylesheet" type="text/css" href="<?php mttinfo('template_uri'); ?>style_rtl.css?v=@VERSION" media="all">
 <?php endif; ?>
 <?php if(isset($_GET['pda'])): ?>
 <meta name="viewport" id="viewport" content="width=device-width">
-<link rel="stylesheet" type="text/css" href="<?php mttinfo('template_url'); ?>pda.css?v=@VERSION" media="all">
+<link rel="stylesheet" type="text/css" href="<?php mttinfo('template_uri'); ?>pda.css?v=@VERSION" media="all">
 <?php else: ?>
-<link rel="stylesheet" type="text/css" href="<?php mttinfo('template_url'); ?>print.css?v=@VERSION" media="print">
+<link rel="stylesheet" type="text/css" href="<?php mttinfo('template_uri'); ?>print.css?v=@VERSION" media="print">
 <?php endif; ?>
 </HEAD>
 
@@ -37,8 +49,8 @@ $().ready(function(){
 	}
 	echo "\tloadLists(1, 1);\n";
 ?>
-	$("#duedate").datepicker({dateFormat: '<?php echo $duedateformat; ?>', firstDay: <?php echo Config::get('firstdayofweek'); ?>,
-		showOn: 'button', buttonImage: '<?php mttinfo('template_url'); ?>images/calendar.png', buttonImageOnly: true, changeMonth:true,
+	$("#duedate").datepicker({dateFormat: '<?php echo datepickerformat(); ?>', firstDay: <?php echo Config::get('firstdayofweek'); ?>,
+		showOn: 'button', buttonImage: '<?php mttinfo('template_uri'); ?>images/calendar.png', buttonImageOnly: true, changeMonth:true,
 		changeYear:true, constrainInput: false, duration:'', nextText:'&gt;', prevText:'&lt;', dayNamesMin:lang.daysMin, 
 		dayNames:lang.daysLong, monthNamesShort:lang.monthsLong });
 <?php if(!isset($_GET['pda'])): ?>
@@ -57,9 +69,9 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
 <div id="container">
 <div id="body">
 
-<h2><?php echo $title; ?></h2>
+<h2><?php mttinfo('title'); ?></h2>
 
-<div id="loading"><img src="<?php mttinfo('template_url'); ?>images/loading1.gif"></div>
+<div id="loading"><img src="<?php mttinfo('template_uri'); ?>images/loading1.gif"></div>
 
 <div id="bar">
  <div id="msg"><span class="msg-text" onClick="toggleMsgDetails()"></span><div class="msg-details"></div></div>
@@ -70,7 +82,7 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
  <span class="bar-delim" style="display:none"> | </span>
  <span id="bar_auth">
   <span id="bar_public" style="display:none"><?php _e('public_tasks');?> |</span>
-  <span id="bar_login"><a href="#login" class="nodecor" onClick="showAuth(this);return false;"><u><?php _e('a_login');?></u> <img src="<?php mttinfo('template_url'); ?>images/arrdown.gif" border=0></a></span>
+  <span id="bar_login"><a href="#login" class="nodecor" onClick="showAuth(this);return false;"><u><?php _e('a_login');?></u> <img src="<?php mttinfo('template_uri'); ?>images/arrdown.gif" border=0></a></span>
   <a href="#logout" id="bar_logout" onClick="logout();return false"><?php _e('a_logout');?></a>
  </span>
  </div>
@@ -83,10 +95,10 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
 <div id="lists">
  <ul class="mtt-tabs"></ul>
  <div class="mtt-htabs">
-   <span id="rss_icon"><a href="#" title="<?php _e('rss_feed');?>"><img src="<?php mttinfo('template_url'); ?>images/feed_bw.png" onMouseOver="this.src='<?php mttinfo('template_url'); ?>images/feed.png'" onMouseOut="this.src='<?php mttinfo('template_url'); ?>images/feed_bw.png'"></a></span>
+   <span id="rss_icon"><a href="#" title="<?php _e('rss_feed');?>"><img src="<?php mttinfo('template_uri'); ?>images/feed_bw.png" onMouseOver="this.src='<?php mttinfo('template_uri'); ?>images/feed.png'" onMouseOut="this.src='<?php mttinfo('template_uri'); ?>images/feed_bw.png'"></a></span>
    <span id="htab_newtask"><?php _e('htab_newtask');?> 
 	<form onSubmit="return submitNewTask(this)"><input type="text" name="task" value="" maxlength="250" id="task"> <input type="submit" value="<?php _e('btn_add');?>"></form>
-	<a href="#" onClick="showEditForm(1);return false;" title="<?php _e('advanced_add');?>"><img src="<?php mttinfo('template_url'); ?>images/page_white_edit_bw.png" onMouseOver="this.src='<?php mttinfo('template_url'); ?>images/page_white_edit.png'" onMouseOut="this.src='<?php mttinfo('template_url'); ?>images/page_white_edit_bw.png'"></a>
+	<a href="#" onClick="showEditForm(1);return false;" title="<?php _e('advanced_add');?>"><img src="<?php mttinfo('template_uri'); ?>images/page_white_edit_bw.png" onMouseOver="this.src='<?php mttinfo('template_uri'); ?>images/page_white_edit.png'" onMouseOut="this.src='<?php mttinfo('template_uri'); ?>images/page_white_edit_bw.png'"></a>
 	&nbsp;&nbsp;| <a href="#" class="htab-toggle" onClick="addsearchToggle(1);this.blur();return false;"><?php _e('htab_search');?></a>
    </span>
    <span id="htab_search" style="display:none"><?php _e('htab_search');?>
@@ -98,9 +110,9 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
 </div>
 
 <h3>
-<span id="sort" onClick="btnMenu(this);return false;" class="mtt-btnmenu"><span class="btnstr"></span> <img src="<?php mttinfo('template_url'); ?>images/arrdown.gif"></span>
-<span id="taskview" onClick="btnMenu(this);return false;" class="mtt-btnmenu"><span class="btnstr"><?php _e('tasks');?></span> (<span id="total">0</span>) &nbsp;<img src="<?php mttinfo('template_url'); ?>images/arrdown.gif"></span>
-<span id="tagcloudbtn" onClick="showTagCloud(this);"><span class="btnstr"><?php _e('tags');?></span> <img src="<?php mttinfo('template_url'); ?>images/arrdown.gif"></span>
+<span id="sort" onClick="btnMenu(this);return false;" class="mtt-btnmenu"><span class="btnstr"></span> <img src="<?php mttinfo('template_uri'); ?>images/arrdown.gif"></span>
+<span id="taskview" onClick="btnMenu(this);return false;" class="mtt-btnmenu"><span class="btnstr"><?php _e('tasks');?></span> (<span id="total">0</span>) &nbsp;<img src="<?php mttinfo('template_uri'); ?>images/arrdown.gif"></span>
+<span id="tagcloudbtn" onClick="showTagCloud(this);"><span class="btnstr"><?php _e('tags');?></span> <img src="<?php mttinfo('template_uri'); ?>images/arrdown.gif"></span>
 <span class="mtt-notes-showhide"><?php _e('notes');?> <a href="#" onClick="toggleAllNotes(1);this.blur();return false;"><?php _e('notes_show');?></a> / <a href="#" onClick="toggleAllNotes(0);this.blur();return false;"><?php _e('notes_hide');?></a></span>
 </h3>
 
@@ -176,7 +188,7 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
 
 <div id="tagcloud" style="display:none">
  <div id="tagcloudcancel" onClick="cancelTagFilter();tagCloudClose();"><?php _e('tagfilter_cancel');?></div>
- <div id="tagcloudload"><img src="<?php mttinfo('template_url'); ?>images/loading1_24.gif"></div>
+ <div id="tagcloudload"><img src="<?php mttinfo('template_uri'); ?>images/loading1_24.gif"></div>
  <div id="tagcloudcontent"></div>
 </div>
 
