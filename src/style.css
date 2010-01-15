@@ -191,7 +191,11 @@ li.task-completed .task-note-block .task-note { text-decoration:line-through; }
 .mtt-btnmenu { border-bottom:1px dashed #ccc; padding:2px 2px; -moz-user-select:none; -webkit-user-select: none; }
 .mtt-btnmenu:hover { cursor:pointer; border-bottom:1px solid #bbb; }
 
-.mtt-btnmenu-container { overflow: hidden; z-index:100; background-color:#f9f9f9; border:1px solid #cccccc; padding:3px; -moz-box-shadow:1px 2px 5px rgba(0,0,0,0.5); -webkit-box-shadow:1px 2px 5px rgba(0,0,0,0.5); } 
+.mtt-btnmenu-container { 
+	overflow:hidden; z-index:100;
+	background-color:#f9f9f9; border:1px solid #cccccc; padding:3px;
+	-moz-box-shadow:1px 2px 5px rgba(0,0,0,0.5); -webkit-box-shadow:1px 2px 5px rgba(0,0,0,0.5); margin:0px 7px 7px 0px;
+} 
 .mtt-btnmenu-container ul { list-style: none; padding:0; margin:0; }
 .mtt-btnmenu-container li { margin:1px 0px; padding:2px; cursor:pointer; color:#000; white-space:nowrap; }
 .mtt-btnmenu-container li:hover { background-color:#316AC5; color:white; }
