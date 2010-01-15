@@ -928,7 +928,7 @@ function loadLists(onInit, updAccess)
 			$('#mylistscontainer .mtt-need-list').addClass('mtt-disabled');
 			$('#tasklist').html('');
 		}
-		ti += '<li class="mtt-tabs-button menu-owner"><a href="#" id="mylists" onClick="btnMenu(this);return false;"><span><img src="images/arrdown.gif"></span></a></li>';
+		ti += '<li class="mtt-tabs-button menu-owner"><a href="#" id="mylists" onClick="btnMenu(this);return false;"><span></span></a></li>';
 		$('#lists>ul').html(ti);
 		$('#lists').show();
 		if(!flag.needAuth || flag.isLogged || curList) $('#page_tasks').show();

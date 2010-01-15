@@ -79,6 +79,7 @@ class Config
 		'clock' => array('default'=>24, 'type'=>'i', 'options'=>array(12,24)),
 		'dateformat' => array('default'=>'j M Y', 'type'=>'s'),
 		'dateformatshort' => array('default'=>'j M', 'type'=>'s'),
+		'template' => array('default'=>'default', 'type'=>'s'),
 	);
 
 	public static $config;
