@@ -1259,8 +1259,10 @@ function mttMenu(container, options)
 		var offset = this.$caller.offset();
 		var x = offset.left+this.$caller.outerWidth();
 		if(x + this.container.outerWidth(true) > $(window).width() + $(document).scrollLeft()) x = offset.left - this.container.outerWidth() - 1;
+		if(x<0) x=0;
 		var y = offset.top + this.parent.container.offset().top-this.parent.container.find('li:first').offset().top;
 		if(y +  this.container.outerHeight(true) > $(window).height() + $(document).scrollTop()) y = $(window).height() + $(document).scrollTop()- this.container.outerHeight(true) - 1;
+		if(y<0) y=0;
 		this.container.css({ position: 'absolute', top: y, left: x /*, 'min-width': this.$caller.outerWidth()*/ }).show();
 		this.menuOpen = true;
 	}
