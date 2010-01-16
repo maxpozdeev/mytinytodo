@@ -94,7 +94,9 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
 
 <div id="lists">
  <ul class="mtt-tabs"></ul>
- <div class="mtt-htabs">
+</div>
+
+<div id="toolbar" class="mtt-htabs">
    <span id="rss_icon"><a href="#" title="<?php _e('rss_feed');?>"><img src="<?php mttinfo('template_uri'); ?>images/feed_bw.png" onMouseOver="this.src='<?php mttinfo('template_uri'); ?>images/feed.png'" onMouseOut="this.src='<?php mttinfo('template_uri'); ?>images/feed_bw.png'"></a></span>
    <span id="htab_newtask"><?php _e('htab_newtask');?> 
 	<form onSubmit="return submitNewTask(this)"><input type="text" name="task" value="" maxlength="250" id="task"> <input type="submit" value="<?php _e('btn_add');?>"></form>
@@ -106,7 +108,6 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
 	&nbsp;&nbsp;| <a href="#" class="htab-toggle" onClick="addsearchToggle(0);this.blur();return false;"><?php _e('htab_newtask');?></a> 
 	<div id="searchbar"><?php _e('searching');?> <span id="searchbarkeyword"></span></div> 
    </span>
- </div>
 </div>
 
 <h3>

@@ -909,7 +909,7 @@ function loadLists(onInit, updAccess)
 				ti += '<li class="'+(i==0?'mtt-tabs-selected':'')+'"><a href="#list'+item.id+'" onClick="mttTabSelected(this,'+i+');return false;" title="'+item.name+'"><span>'+item.name+'</span></a></li>';
 			});
 			if(!curList) {
-				$('#lists .mtt-htabs').children().removeClass('invisible');
+				$('#toolbar').children().removeClass('invisible');
 				$('#page_tasks h3').children().removeClass('invisible');
 				$('#mylistscontainer .mtt-need-list').removeClass('mtt-disabled');
 			}
@@ -923,7 +923,7 @@ function loadLists(onInit, updAccess)
 		}
 		else {
 			curList = 0;
-			$('#lists .mtt-htabs').children().addClass('invisible');
+			$('#toolbar').children().addClass('invisible');
 			$('#page_tasks h3').children().addClass('invisible');
 			$('#mylistscontainer .mtt-need-list').addClass('mtt-disabled');
 			$('#tasklist').html('');
