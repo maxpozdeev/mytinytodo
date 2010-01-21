@@ -1128,7 +1128,7 @@ function taskContextMenu(el, id)
 	return false;
 }
 
-function taskContextClick(el)
+function taskContextClick(el, menu)
 {
 	if(!el.id) return;
 	var taskId = cmenu.tag;
@@ -1143,7 +1143,9 @@ function taskContextClick(el)
 		case 'cmenu_note': toggleTaskNote(taskId); break;
 		case 'cmenu_delete': deleteTask(taskId); break;
 		case 'cmenu_prio': setTaskPrio(taskId, parseInt(value)); break;
-		case 'cmenu_move': moveTaskToList(taskId, value); break;
+		case 'cmenu_list':
+			if(menu.$caller && menu.$caller.attr('id')=='cmenu_move') moveTaskToList(taskId, value);
+			break;
 	}
 }
 
@@ -1183,7 +1185,7 @@ function mttMenu(container, options)
 
 		submenu.container.find('li').click(function()
 		{
-			submenu.root.onclick(this);
+			submenu.root.onclick(this, submenu);
 			return false;
 		})
 		.hover(
@@ -1200,15 +1202,15 @@ function mttMenu(container, options)
 
 	//if(!this.root)
 	this.container.find('li').click(function(){
-		menu.onclick(this);
+		menu.onclick(this, menu);
 		return false;
 	});
 
-	this.onclick = function(item)
+	this.onclick = function(item, fromMenu)
 	{
 		if($(item).is('.mtt-disabled,.mtt-menu-indicator')) return;
 		menu.close();
-		if(this.options.onclick) this.options.onclick(item);
+		if(this.options.onclick) this.options.onclick(item, fromMenu);
 	}
 
 	this.hide = function()
@@ -1286,17 +1288,17 @@ function doAction(action, opts)
 			cmenu = null;
 			var s = '';
 			for(var i in tabLists) {
-				s += '<li id="cmenu_move:'+tabLists[i].id+'">'+tabLists[i].name+'</li>';
+				s += '<li id="cmenu_list:'+tabLists[i].id+'">'+tabLists[i].name+'</li>';
 			}
 			$('#listsmenucontainer ul').html(s);
 			break;
 		case 'listAdded':
 			if(cmenu) cmenu.destroy();
 			cmenu = null;
-			$('#listsmenucontainer ul').append('<li id="cmenu_move:'+opts.list.id+'">'+opts.list.name+'</li>');
+			$('#listsmenucontainer ul').append('<li id="cmenu_list:'+opts.list.id+'">'+opts.list.name+'</li>');
 			break;
 		case 'listRenamed':
-			$('#cmenu_move\\:'+opts.list.id).text(opts.list.name);
+			$('#cmenu_list\\:'+opts.list.id).text(opts.list.name);
 			break;
 	}
 }
