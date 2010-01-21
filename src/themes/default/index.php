@@ -34,6 +34,7 @@ function datepickerformat()
 <script type="text/javascript" src="ajax.lang.php?v=@VERSION"></script>
 <script type="text/javascript" src="ajax.js?v=@VERSION"></script>
 <script type="text/javascript" src="jquery/jquery.autocomplete.min.js"></script>
+<script type="text/javascript" src="<?php mttinfo('template_uri'); ?>functions.js?v=@VERSION"></script>
 
 <script type="text/javascript">
 $().ready(function(){

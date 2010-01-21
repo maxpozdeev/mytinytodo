@@ -22,6 +22,10 @@ var curList = 0;
 var tagsList = [];
 var page = {cur:'', prev:''};
 
+var mytinytodo = {
+	actions: {}
+};
+
 function loadTasks()
 {
 	if(!curList) return false;
@@ -932,7 +936,7 @@ function loadLists(onInit, updAccess)
 		$('#lists>ul').html(ti);
 		$('#lists').show();
 		if(!flag.needAuth || flag.isLogged || curList) $('#page_tasks').show();
-		doAction('listsLoaded');
+		mytinytodo.doAction('listsLoaded');
 	});
 	$('#page_tasks').hide();
 	if(updAccess) updateAccessStatus();
@@ -953,7 +957,7 @@ function addList()
 		tabLists[i] = item;
 		if(i > 0) {
 			$('#lists>ul>li.mtt-tabs-button').before('<li><a href="#list'+item.id+'" onClick="mttTabSelected(this,'+i+');return false;" title="'+item.name+'"><span>'+item.name+'</span></a></li>') ;
-			doAction('listAdded', {i:i, list:item});
+			mytinytodo.doAction('listAdded', {i:i, list:item});
 		}
 		else loadLists();
 	}, 'json');
@@ -974,7 +978,7 @@ function renameCurList()
 		tabLists[curList.i] = item;
 		curList = item;
 		$('#lists>ul>.mtt-tabs-selected>a').attr('title', item.name).html(item.name);
-		doAction('listRenamed', {i:curList.i, list:item});
+		mytinytodo.doAction('listRenamed', {i:curList.i, list:item});
 	}, 'json');
 }
 
@@ -1280,26 +1284,17 @@ function mttMenu(container, options)
 
 }
 
-function doAction(action, opts)
+mytinytodo.addAction = function(action, proc)
 {
-	switch(action) {
-		case 'listsLoaded':
-			if(cmenu) cmenu.destroy();
-			cmenu = null;
-			var s = '';
-			for(var i in tabLists) {
-				s += '<li id="cmenu_list:'+tabLists[i].id+'">'+tabLists[i].name+'</li>';
-			}
-			$('#listsmenucontainer ul').html(s);
-			break;
-		case 'listAdded':
-			if(cmenu) cmenu.destroy();
-			cmenu = null;
-			$('#listsmenucontainer ul').append('<li id="cmenu_list:'+opts.list.id+'">'+opts.list.name+'</li>');
-			break;
-		case 'listRenamed':
-			$('#cmenu_list\\:'+opts.list.id).text(opts.list.name);
-			break;
+	if(!this.actions[action]) this.actions[action] = new Array();
+	this.actions[action].push(proc);
+}
+
+mytinytodo.doAction = function(action, opts)
+{
+	if(!this.actions[action]) return;
+	for(var i in this.actions[action]) {
+		this.actions[action][i](opts);
 	}
 }
 
