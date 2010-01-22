@@ -205,7 +205,6 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
  <li class="mtt-need-list" onClick="renameCurList()"><?php _e('list_rename');?></li>
  <li class="mtt-need-list" onClick="deleteCurList()"><?php _e('list_delete');?></li>
  <li class="mtt-need-list" id="btnPublish" onClick="publishCurList()"><div class="menu-icon"></div><?php _e('list_publish');?></li>
-<!-- <div id="mylistselect" style="width:100%"></div>-->
 </ul>
 </div>
 
