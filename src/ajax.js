@@ -977,7 +977,7 @@ function renameCurList()
 		item.i = curList.i;
 		tabLists[curList.i] = item;
 		curList = item;
-		$('#lists>ul>.mtt-tabs-selected>a').attr('title', item.name).html(item.name);
+		$('#lists>ul>.mtt-tabs-selected>a').attr('title', item.name).find('span').html(item.name);
 		mytinytodo.doAction('listRenamed', {i:curList.i, list:item});
 	}, 'json');
 }

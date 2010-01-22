@@ -25,9 +25,9 @@ a { color:#0000ff; }
 #authform div.h { font-weight:bold; }
 
 .mtt-tabs { list-style:none; padding:0; margin:0; }
-.mtt-tabs li { margin:1px 3px 0 0; float:left; width:89px; min-width:89px; max-width:199px; border-left:1px solid #ededed; background:#fbfbfb url(images/tab_hover.gif) no-repeat top right; }
-.mtt-tabs a { margin:0; font-size:9pt; font-weight:bold; text-decoration:none; text-align:center; white-space:nowrap; color:#444444; display:block; height:21px; padding:6px 3px 0px 2px; outline:none; vertical-align:top; }
-.mtt-tabs a span { display:block; width:89px; min-width:89px; cursor:pointer; padding:0;}
+.mtt-tabs li { margin:1px 3px 0 0; float:left; max-width:199px; border-left:1px solid #ededed; background:#fbfbfb url(images/tab_hover.gif) no-repeat top right; }
+.mtt-tabs a { margin:0; font-size:9pt; font-weight:bold; text-decoration:none; text-align:center; white-space:nowrap; color:#444444; display:block; height:21px; padding:6px 6px 0px 2px; outline:none; vertical-align:top; }
+.mtt-tabs a span { display:block;  min-width:75px; cursor:pointer; padding:0; overflow:hidden; }
 .mtt-tabs li.mtt-tabs-selected { background:#ededed url(images/corner_right.gif) no-repeat top right; border-left:1px solid #ededed; }
 .mtt-tabs li:hover a { color: #888888; }
 .mtt-tabs li.mtt-tabs-button { width:21px; min-width:21px; }
@@ -37,8 +37,6 @@ a { color:#0000ff; }
 .mtt-tabs.mtt-tabs-only-one li { display:none; }
 .mtt-tabs.mtt-tabs-only-one li.mtt-tabs-selected, .mtt-tabs.mtt-tabs-only-one li.mtt-tabs-button { display:block; }
 #page_tasks.readonly li.mtt-tabs-button { display:none; }
-*>.mtt-tabs li { width:auto; height:auto; }
-*>.mtt-tabs a span { height:auto; width:auto;  }
 
 #page_tasks.readonly #htab_search a.htab-toggle { color:#444; }
 .mtt-htabs  { clear:both; padding:8px; border-bottom:2px solid #DEDEDE; background:url(images/corner_right.gif) no-repeat top right #ededed; }
