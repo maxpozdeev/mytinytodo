@@ -810,10 +810,10 @@ function editFormResize(startstop, event)
 	else  $('#page_taskedit textarea').height(f.height() - tmp.editformdiff);
 }
 
-function mttTabSelected(el, indx)
+function mttTabSelected(id, indx)
 {
-	$(el.parentNode.parentNode).children('.mtt-tabs-selected').removeClass('mtt-tabs-selected');
-	$(el.parentNode).addClass('mtt-tabs-selected');
+	$('#lists .mtt-tabs-selected').removeClass('mtt-tabs-selected');
+	$('#lists li.list-id-'+tabLists[indx].id).addClass('mtt-tabs-selected');
 	if(!tabLists[indx]) return;
 	if(indx != curList.i) {
 		$('#tasklist').html('');
@@ -843,7 +843,7 @@ function btnMenu(el)
 	if(w.css('display') == 'none')
 	{
 		oBtnMenu.h = [];
-		$(w).find('li').each( function(i,o){ 
+		$(w).find('li').each( function(i,o){
 			if(o.onclick) {
 				oBtnMenu.h[i] = o.onclick;
 				$(o).bind("click2", o.onclick);
@@ -853,7 +853,7 @@ function btnMenu(el)
 			}
 		} );
 		var offset = $(el).offset();
-		w.css({ position: 'absolute', top: offset.top+el.offsetHeight-1, left: offset.left , 'min-width': $(el).width() }).show();
+		w.css({ position: 'absolute', top: offset.top+el.offsetHeight-1, left: offset.left , 'min-width': $(el).width(), 'width':w.width() }).show();
 		$(document).bind("click", btnMenuClose);
 	}
 	else {
@@ -910,7 +910,7 @@ function loadLists(onInit, updAccess)
 			$.each(json.list, function(i,item){
 				item.i = i;
 				tabLists[i] = item;
-				ti += '<li class="'+(i==0?'mtt-tabs-selected':'')+'"><a href="#list'+item.id+'" onClick="mttTabSelected(this,'+i+');return false;" title="'+item.name+'"><span>'+item.name+'</span></a></li>';
+				ti += '<li class="'+(i==0?'mtt-tabs-selected':'')+' list-id-'+item.id+'"><a href="#list'+item.id+'" onClick="mttTabSelected('+item.id+','+i+');return false;" title="'+item.name+'"><span>'+item.name+'</span></a></li>';
 			});
 			if(!curList) {
 				$('#toolbar').children().removeClass('invisible');
@@ -935,8 +935,8 @@ function loadLists(onInit, updAccess)
 		ti += '<li class="mtt-tabs-button menu-owner"><a href="#" id="mylists" onClick="btnMenu(this);return false;"><span></span></a></li>';
 		$('#lists>ul').html(ti);
 		$('#lists').show();
-		if(!flag.needAuth || flag.isLogged || curList) $('#page_tasks').show();
 		mytinytodo.doAction('listsLoaded');
+		if(!flag.needAuth || flag.isLogged || curList) $('#page_tasks').show();
 	});
 	$('#page_tasks').hide();
 	if(updAccess) updateAccessStatus();
@@ -956,7 +956,7 @@ function addList()
 		item.i = i;
 		tabLists[i] = item;
 		if(i > 0) {
-			$('#lists>ul>li.mtt-tabs-button').before('<li><a href="#list'+item.id+'" onClick="mttTabSelected(this,'+i+');return false;" title="'+item.name+'"><span>'+item.name+'</span></a></li>') ;
+			$('#lists>ul>li.mtt-tabs-button').before('<li class="'+' list-id-'+item.id+'"><a href="#list'+item.id+'" onClick="mttTabSelected('+item.id+','+i+');return false;" title="'+item.name+'"><span>'+item.name+'</span></a></li>') ;
 			mytinytodo.doAction('listAdded', {i:i, list:item});
 		}
 		else loadLists();
@@ -1315,3 +1315,30 @@ function moveTaskToList(taskId, listId)
 	$("#edittags").flushCache();
 	flag.tagsChanged = true;
 }
+
+function cmenuListsLoaded(opts)
+{
+	if(cmenu) cmenu.destroy();
+	cmenu = null;
+	var s = '';
+	for(var i in tabLists) {
+		s += '<li id="cmenu_list:'+tabLists[i].id+'">'+tabLists[i].name+'</li>';
+	}
+	$('#listsmenucontainer ul').html(s);
+}
+
+function cmenuListAdded(opts)
+{
+	if(cmenu) cmenu.destroy();
+	cmenu = null;
+	$('#listsmenucontainer ul').append('<li id="cmenu_list:'+opts.list.id+'">'+opts.list.name+'</li>');
+}
+
+function cmenuListRenamed(opts)
+{
+	$('#cmenu_list\\:'+opts.list.id).text(opts.list.name);
+}
+
+mytinytodo.addAction('listsLoaded', cmenuListsLoaded);
+mytinytodo.addAction('listAdded', cmenuListAdded);
+mytinytodo.addAction('listRenamed', cmenuListRenamed);

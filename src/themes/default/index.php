@@ -60,6 +60,11 @@ $().ready(function(){
 <?php else: ?>
 	flag.pda = true;
 <?php endif; ?>
+<?php if(isset($_GET['singletab'])): ?>
+	mytinytodo.addAction('listsLoaded', tplSingleTabLoaded);
+	mytinytodo.addAction('listRenamed', tplSingleTabRenamed);
+	mytinytodo.addAction('listAdded', tplSingleTabAdded);
+<?php endif; ?>
 
 });
 $().ajaxSend( function(r,s) {$("#loading").show();} );
@@ -94,7 +99,7 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
 <div id="page_tasks" style="display:none">
 
 <div id="lists">
- <ul class="mtt-tabs"></ul>
+ <ul class="mtt-tabs <?php if(isset($_GET['singletab'])) echo "mtt-tabs-only-one"; ?>"></ul>
 </div>
 
 <div id="toolbar" class="mtt-htabs">
@@ -200,6 +205,7 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
  <li class="mtt-need-list" onClick="renameCurList()"><?php _e('list_rename');?></li>
  <li class="mtt-need-list" onClick="deleteCurList()"><?php _e('list_delete');?></li>
  <li class="mtt-need-list" id="btnPublish" onClick="publishCurList()"><div class="menu-icon"></div><?php _e('list_publish');?></li>
+<!-- <div id="mylistselect" style="width:100%"></div>-->
 </ul>
 </div>
 

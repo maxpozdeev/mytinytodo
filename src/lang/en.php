@@ -3,7 +3,7 @@
 /*
 	myTinyTodo language pack
 	Language: English
-	Translated: English
+	Original name: English
 	Author: Max Pozdeev
 	Author Url: http://www.mytinytodo.net
 	AppVersion: v1.3.2
