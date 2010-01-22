@@ -2,8 +2,8 @@
 
 /*
 	myTinyTodo language pack
-	Language: Српски
-	Translated: Serbian
+	Language: Serbian
+	Original name: Српски
 	Author: Goran Trajkovic
 	Author Url: http://www.crelativ.com
 	AppVersion: v1.3.2

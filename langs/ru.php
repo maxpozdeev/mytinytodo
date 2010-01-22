@@ -2,8 +2,8 @@
 
 /*
 	myTinyTodo language pack
-	Language: Русский
-	Translated: Russian
+	Language: Russian
+	Original name: Русский	
 	Author: Max Pozdeev
 	Author Url: http://www.mytinytodo.net
 	AppVersion: v1.3.2
