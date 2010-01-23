@@ -24,12 +24,7 @@ if(isset($_GET['loadLists']))
 	while($r = $q->fetch_assoc($q))
 	{
 		$t['total']++;
-		$t['list'][] = array(
-			'id' => $r['id'],
-			'name' => htmlarray($r['name']),
-			'sort' => (int)$r['sorting'],
-			'published' => $r['published'] ? 1 :0,
-		);
+		$t['list'][] = prepareList($r);
 	}
 	echo json_encode($t); 
 	exit;
@@ -65,6 +60,10 @@ elseif(isset($_GET['loadTasks']))
 	{
 		$t['total']++;
 		$t['list'][] = prepareTaskRow($r, $tz);
+	}
+	if(_get('setCompl') && have_write_access()) {
+		$bitwise = (_get('compl') == 0) ? 'taskview & ~1' : 'taskview | 1';
+		$db->dq("UPDATE {$db->prefix}lists SET taskview=$bitwise WHERE id=$listId");
 	}
 	echo json_encode($t); 
 	exit;
@@ -356,12 +355,7 @@ elseif(isset($_POST['addList']))
 	$id = $db->last_insert_id();
 	$t['total'] = 1;
 	$r = $db->sqa("SELECT * FROM {$db->prefix}lists WHERE id=$id");
-	$t['list'][] = array(
-		'id' => $r['id'],
-		'name' => htmlarray($r['name']),
-		'sort' => (int)$r['sorting'],
-		'published' => $r['published'] ? 1 :0,
-	);
+	$t['list'][] = prepareList($r);
 	echo json_encode($t);
 	exit;
 }
@@ -376,12 +370,7 @@ elseif(isset($_POST['renameList']))
 	$db->dq("UPDATE {$db->prefix}lists SET name=? WHERE id=$id", array($name));
 	$t['total'] = $db->affected();
 	$r = $db->sqa("SELECT * FROM {$db->prefix}lists WHERE id=$id");
-	$t['list'][] = array(
-		'id' => $r['id'],
-		'name' => htmlarray($r['name']),
-		'sort' => (int)$r['sorting'],
-		'published' => $r['published'] ? 1 :0,
-	);
+	$t['list'][] = prepareList($r);
 	echo json_encode($t);
 	exit;
 }
@@ -476,10 +465,15 @@ function check_read_access($listId = null)
 	exit;
 }
 
+function have_write_access()
+{
+	if(Config::get('password') == '') return true;
+	if(is_logged()) return true;
+}
+
 function check_write_access()
 {
-	if(Config::get('password') == '') return;
-	if(is_logged()) return;
+	if(have_write_access()) return;
 	echo json_encode( array('total'=>0, 'list'=>array(), 'denied'=>1) );
 	exit;
 }
@@ -721,6 +715,19 @@ function moveTask($id, $listId)
 	$db->dq("UPDATE {$db->prefix}todolist SET list_id=?, ow=? WHERE id=?", array($listId, $ow, $id));
 	$db->ex("COMMIT");
 	return true;
+}
+
+function prepareList($row)
+{
+	$taskview = (int)$row['taskview'];
+	return array(
+		'id' => $row['id'],
+		'name' => htmlarray($row['name']),
+		'sort' => (int)$row['sorting'],
+		'published' => $row['published'] ? 1 :0,
+		'showCompl' => $taskview & 1 ? 1 : 0,
+//		'showNotes' => $taskview & 2 ? 1 : 0,
+	);
 }
 
 ?>

@@ -6,8 +6,8 @@
 	Original name: Русский	
 	Author: Max Pozdeev
 	Author Url: http://www.mytinytodo.net
-	AppVersion: v1.3.2
-	Date: 2009-12-26
+	AppVersion: v1.3.3
+	Date: 2010-01-23
 */
 
 class Lang extends DefaultLang
@@ -70,7 +70,6 @@ class Lang extends DefaultLang
 		'f_past' => "Просроченные",
 		'f_today' => "Сегодня и завтра",
 		'f_soon' => "Скоро",
-		'tasks_and_compl' => "Задачи + завершенные",
 		'action_edit' => "Редактировать",
 		'action_note' => "Заметка",
 		'action_delete' => "Удалить",
@@ -80,9 +79,10 @@ class Lang extends DefaultLang
 		'notes_show' => "Показать",
 		'notes_hide' => "Скрыть",
 		'list_new' => "Новый список",
-		'list_rename' => "Переименовать",
-		'list_delete' => "Удалить",
-		'list_publish' => "Опубликовать",
+		'list_rename' => "Переименовать список",
+		'list_delete' => "Удалить список",
+		'list_publish' => "Опубликовать список",
+		'list_showcompleted' => "Показать завершенные задачи",
 		'alltags' => "Все теги:",
 		'alltags_show' => "Показать все",
 		'alltags_hide' => "Скрыть все",

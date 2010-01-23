@@ -26,37 +26,33 @@ var mytinytodo = {
 	actions: {}
 };
 
-function loadTasks()
+function loadTasks(opts)
 {
 	if(!curList) return false;
 	setSort(curList.sort, 1);
+	opts = opts || {};
 	var tz = -1 * (new Date()).getTimezoneOffset();
 	$('#tasklist').html('');
 	setAjaxErrorTrigger();
+	$('#total').html('...');
 	var search = filter.search ? '&s='+encodeURIComponent(filter.search) : '';
 	var tag = filter.tag ? '&t='+encodeURIComponent(filter.tag) : '';
 	var nocache = '&rnd='+Math.random();
-	$.getJSON('ajax.php?loadTasks&list='+curList.id+'&compl='+filter.compl+'&sort='+sortBy+search+tag+'&tz='+tz+nocache, function(json){
+	var setCompl = opts.setCompl != null ? '&setCompl=1' : '';
+	$.getJSON('ajax.php?loadTasks&list='+curList.id+'&compl='+curList.showCompl+'&sort='+sortBy+search+tag+'&tz='+tz+setCompl+nocache, function(json){
 		resetAjaxErrorTrigger();
 		taskList = new Array();
 		taskOrder = new Array();
-		taskCnt.past = taskCnt.today = taskCnt.soon = 0;
-		taskCnt.total = json.total;
+		taskCnt.total = taskCnt.past = taskCnt.today = taskCnt.soon = 0;
 		var tasks = '';
 		$.each(json.list, function(i,item){
 			tasks += prepareTaskStr(item);
 			taskList[item.id] = item;
 			taskOrder.push(parseInt(item.id));
-			if(!item.compl) changeTaskCnt(item.dueClass);
+			changeTaskCnt(item, 1);
 		});
 		refreshTaskCnt();
-		if(filter.due == '') $('#total').html(taskCnt.total);
-		else if(filter.due == 'past') $('#total').html(taskCnt.past);
-		else if(filter.due == 'today') $('#total').html(taskCnt.today);
-		else if(filter.due == 'soon') $('#total').html(taskCnt.soon);
 		$('#tasklist').html(tasks);
-		if(filter.compl) showhide($('#compl_hide'),$('#compl_show'));
-		else showhide($('#compl_show'),$('#compl_hide'));
 		if(json.denied) errorDenied();
 	});
 }
@@ -125,7 +121,8 @@ function submitNewTask(form)
 	$.post('ajax.php?newTask'+nocache, { list:curList.id, title: form.task.value, tz:tz, tag:filter.tag }, function(json){
 		resetAjaxErrorTrigger();
 		if(!parseInt(json.total)) return;
-		$('#total').text( parseInt($('#total').text()) + parseInt(json.total) );
+		$('#total').text( parseInt($('#total').text()) + 1 );
+		taskCnt.total++;
 		form.task.value = '';
 		var item = json.list[0];
 		taskList[item.id] = item;
@@ -133,6 +130,7 @@ function submitNewTask(form)
 		$('#tasklist').append(prepareTaskStr(item));
 		changeTaskOrder(item.id);
 		$('#taskrow_'+item.id).effect("highlight", {color:theme.newTaskFlashColor}, 2000);
+		refreshTaskCnt();
 	}, 'json');
 	flag.tagsChanged = true;
 	return false;
@@ -189,12 +187,11 @@ function deleteTask(id)
 	$.getJSON('ajax.php?deleteTask='+id+nocache, function(json){
 		resetAjaxErrorTrigger();
 		if(!parseInt(json.total)) return;
-		taskCnt.total--;
-		$('#total').text( parseInt($('#total').text()) - 1 );
 		var item = json.list[0];
 		taskOrder.splice($.inArray(id,taskOrder), 1);
 		$('#taskrow_'+item.id).fadeOut('normal', function(){ $(this).remove() });
-		if(!taskList[id].compl && changeTaskCnt(taskList[id].dueClass, -1)) refreshTaskCnt();
+		changeTaskCnt(taskList[id], -1);
+		refreshTaskCnt();
 		delete taskList[id];
 	});
 	flag.tagsChanged = true;
@@ -213,20 +210,19 @@ function completeTask(id,ch)
 		var item = json.list[0];
 		if(item.compl) $('#taskrow_'+id).addClass('task-completed');
 		else $('#taskrow_'+id).removeClass('task-completed');
-		if(changeTaskCnt(taskList[id].dueClass, item.compl?-1:1)) refreshTaskCnt();
-		if(item.compl && !filter.compl) {
+		taskList[id].ow = item.ow;
+		taskList[id].compl = item.compl;
+		changeTaskCnt(taskList[id], 0);
+		if(item.compl && !curList.showCompl) {
 			delete taskList[id];
 			taskOrder.splice($.inArray(id,taskOrder), 1);
 			$('#taskrow_'+item.id).fadeOut('normal', function(){ $(this).remove() });
-			taskCnt.total--;
-			$('#total').html( parseInt($('#total').text())-1 );
 		}
-		else if(filter.compl) {
-			taskList[id].ow = item.ow;
-			taskList[id].compl = item.compl;
+		else if(curList.showCompl) {
 			changeTaskOrder(id);
-			$('#taskrow_'+id).effect("highlight", {color:theme.editTaskFlashColor}, 'normal');
+			$('#taskrow_'+id).effect("highlight", {color:theme.editTaskFlashColor}, 'normal', function(){$(this).css('display','')} );
 		}
+		refreshTaskCnt();
 	});
 	return false;
 }
@@ -360,17 +356,14 @@ function saveTask(form)
 		resetAjaxErrorTrigger();
 		if(!parseInt(json.total)) return;
 		var item = json.list[0];
-		if(!taskList[item.id].compl) changeTaskCnt(taskList[item.id].dueClass, -1);
+		changeTaskCnt(item, 0, taskList[item.id]);
 		taskList[item.id] = item;
 		var noteExpanded = (item.note != '' && $('#taskrow_'+item.id).is('.task-expanded')) ? 1 : 0;
 		$('#taskrow_'+item.id).replaceWith(prepareTaskStr(item, noteExpanded));
 		if(sortBy != 0) changeTaskOrder(item.id);
 		cancelEdit();
-		if(!taskList[item.id].compl) {
-			changeTaskCnt(item.dueClass, 1);
-			refreshTaskCnt();
-		}
-		$('#taskrow_'+item.id).effect("highlight", {color:theme.editTaskFlashColor}, 'normal');
+		refreshTaskCnt();
+		$('#taskrow_'+item.id).effect("highlight", {color:theme.editTaskFlashColor}, 'normal', function(){$(this).css('display','')});
 	}, 'json');
 	$("#edittags").flushCache();
 	flag.tagsChanged = true;
@@ -733,54 +726,45 @@ function tagCloudClose(e)
 	$('#tagcloud').hide();
 }
 
-function changeTaskCnt(cl, dir)
+function changeTaskCnt(task, dir, old)
 {
-	if(!dir) dir = 1;
-	else if(dir > 0) dir = 1;
+	if(dir > 0) dir = 1;
 	else if(dir < 0) dir = -1;
-	if(cl == 'soon') { taskCnt.soon += dir; return true; }
-	else if(cl == 'today') { taskCnt.today += dir; return true; }
-	else if(cl == 'past') { taskCnt.past+= dir; return true; }
+	if(dir == 0 && old != null && task.dueClass != old.dueClass) //on saveTask
+	{
+		if(old.dueClass != '') taskCnt[old.dueClass]--;
+		if(task.dueClass != '') taskCnt[task.dueClass]++;
+	}
+	else if(dir == 0 && old == null) //on comleteTask
+	{
+		if(!curList.showCompl && task.compl) taskCnt.total--;
+		if(task.dueClass != '') taskCnt[task.dueClass] += task.compl ? -1 : 1;
+	}
+	if(dir != 0) {
+		if(task.dueClass != '' && !task.compl) taskCnt[task.dueClass] += dir;
+		taskCnt.total += dir;
+	}
 }
 
 function refreshTaskCnt()
 {
+	$('#cnt_total').text(taskCnt.total);
 	$('#cnt_past').text(taskCnt.past);
 	$('#cnt_today').text(taskCnt.today);
 	$('#cnt_soon').text(taskCnt.soon);
+	if(filter.due == '') $('#total').text(taskCnt.total);
+	else if(taskCnt[filter.due] != null) $('#total').text(taskCnt[filter.due]);
 }
 
-function setTaskview(v, dontLoadTasks)
+function setTaskview(v)
 {
 	if(v == 0)
 	{
-		if(filter.due == '' && filter.compl == 0) return;
+		if(filter.due == '') return;
 		$('#taskview .btnstr').text($('#view_tasks').text());
-		if(filter.due != '') {
-			$('#tasklist').removeClass('filter-'+filter.due);
-			filter.due = '';
-			if(filter.compl == 0) $('#total').text(taskCnt.total);
-		}
-		if(filter.compl != 0) {
-			filter.compl = 0;
-			$('#total').text('...');
-			if(dontLoadTasks==null || !dontLoadTasks) loadTasks();
-		}
-	}
-	else if(v == 1)
-	{
-		if(filter.due == '' && filter.compl == 1) return;
-		$('#taskview .btnstr').text($('#view_compl').text());
-		if(filter.due != '') {
-			$('#tasklist').removeClass('filter-'+filter.due);
-			filter.due = '';
-			if(filter.compl == 1) $('#total').text(taskCnt.total);
-		}
-		if(filter.compl != 1) {
-			filter.compl = 1;
-			$('#total').text('...');
-			loadTasks();
-		}
+		$('#tasklist').removeClass('filter-'+filter.due);
+		filter.due = '';
+		$('#total').text(taskCnt.total);
 	}
 	else if(v=='past' || v=='today' || v=='soon')
 	{
@@ -826,11 +810,13 @@ function mttTabSelected(id, indx)
 			$('#rss_icon').find('a').attr('href', 'feed.php?list='+tabLists[indx].id);
 		if(tabLists[indx].published) $('#btnPublish').addClass('mtt-item-checked');
 		else $('#btnPublish').removeClass('mtt-item-checked');
+		if(tabLists[indx].showCompl) $('#btnShowCompleted').addClass('mtt-item-checked');
+		else $('#btnShowCompleted').removeClass('mtt-item-checked');
 	}
 	curList = tabLists[indx];
 	flag.tagsChanged = true;
 	cancelTagFilter(1);
-	setTaskview(0, 1);
+	setTaskview(0);
 	loadTasks();
 }
 
@@ -921,6 +907,8 @@ function loadLists(onInit, updAccess)
 			loadTasks();
 			if(curList.published) $('#btnPublish').addClass('mtt-item-checked');
 			else $('#btnPublish').removeClass('mtt-item-checked');
+			if(curList.showCompl) $('#btnShowCompleted').addClass('mtt-item-checked');
+			else $('#btnShowCompleted').removeClass('mtt-item-checked');
 			//if(curList.published)
 				$('#rss_icon').find('a').attr('href', 'feed.php?list='+curList.id);
 			if(flag.needAuth && !flag.isLogged) $('#bar_public').show();
@@ -1095,7 +1083,6 @@ function submitFullTask(form)
 	$.post('ajax.php?fullNewTask'+nocache, { list:curList.id, tag:filter.tag, title: form.task.value, note:form.note.value, prio:form.prio.value, tags:form.tags.value, duedate:form.duedate.value }, function(json){
 		resetAjaxErrorTrigger();
 		if(!parseInt(json.total)) return;
-		$('#total').text( parseInt($('#total').text()) + parseInt(json.total) );
 		form.task.value = '';
 		var item = json.list[0];
 		taskList[item.id] = item;
@@ -1104,6 +1091,8 @@ function submitFullTask(form)
 		changeTaskOrder(item.id);
 		cancelEdit();
 		$('#taskrow_'+item.id).effect("highlight", {color:theme.newTaskFlashColor}, 2000);
+		changeTaskCnt(item, 1);
+		refreshTaskCnt();
 	}, 'json');
 	$("#edittags").flushCache();
 	flag.tagsChanged = true;
@@ -1305,12 +1294,11 @@ function moveTaskToList(taskId, listId)
 	$.post('ajax.php?moveTask&rnd='+Math.random(), { id:taskId, from:curList.id, to:listId }, function(json){
 		resetAjaxErrorTrigger();
 		if(!parseInt(json.total)) return;
-		if(changeTaskCnt(taskList[taskId].dueClass, -1)) refreshTaskCnt();
-		taskCnt.total--;
+		changeTaskCnt(taskList[taskId], -1)
 		delete taskList[taskId];
 		taskOrder.splice($.inArray(taskId,taskOrder), 1);
 		$('#taskrow_'+taskId).fadeOut('normal', function(){ $(this).remove() });
-		$('#total').html( parseInt($('#total').text())-1 );
+		refreshTaskCnt();
 	}, 'json');
 	$("#edittags").flushCache();
 	flag.tagsChanged = true;
@@ -1342,3 +1330,12 @@ function cmenuListRenamed(opts)
 mytinytodo.addAction('listsLoaded', cmenuListsLoaded);
 mytinytodo.addAction('listAdded', cmenuListAdded);
 mytinytodo.addAction('listRenamed', cmenuListRenamed);
+
+function showCompletedToggle()
+{
+	var act = curList.showCompl ? 0 : 1;
+	curList.showCompl = tabLists[curList.i].showCompl = act;
+	if(act) $('#btnShowCompleted').addClass('mtt-item-checked');
+	else $('#btnShowCompleted').removeClass('mtt-item-checked');
+	loadTasks({setCompl:1});
+}

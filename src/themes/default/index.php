@@ -177,8 +177,7 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
 
 <div id="taskviewcontainer" class="mtt-btnmenu-container" style="display:none">
 <ul>
- <li onClick="setTaskview(0)"><span id="view_tasks"><?php _e('tasks');?></span></li>
- <li onClick="setTaskview(1)"><span id="view_compl"><?php _e('tasks_and_compl');?></span></li>
+ <li onClick="setTaskview(0)"><span id="view_tasks"><?php _e('tasks');?></span> (<span id="cnt_total">0</span>)</li>
  <li onClick="setTaskview('past')"><span id="view_past"><?php _e('f_past');?></span> (<span id="cnt_past">0</span>)</li>
  <li onClick="setTaskview('today')"><span id="view_today"><?php _e('f_today');?></span> (<span id="cnt_today">0</span>)</li>
  <li onClick="setTaskview('soon')"><span id="view_soon"><?php _e('f_soon');?></span> (<span id="cnt_soon">0</span>)</li>
@@ -205,6 +204,7 @@ $().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
  <li class="mtt-need-list" onClick="renameCurList()"><?php _e('list_rename');?></li>
  <li class="mtt-need-list" onClick="deleteCurList()"><?php _e('list_delete');?></li>
  <li class="mtt-need-list" id="btnPublish" onClick="publishCurList()"><div class="menu-icon"></div><?php _e('list_publish');?></li>
+ <li class="mtt-need-list" id="btnShowCompleted" onClick="showCompletedToggle()"><div class="menu-icon"></div><?php _e('list_showcompleted');?></li>
 </ul>
 </div>
 
