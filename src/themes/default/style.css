@@ -32,7 +32,7 @@ a { color:#0000ff; }
 .mtt-tabs li:hover a { color: #888888; }
 .mtt-tabs li.mtt-tabs-button { width:21px; min-width:21px; }
 .mtt-tabs li.mtt-tabs-button a { padding:6px 0px 0px 0px; }
-.mtt-tabs li.mtt-tabs-button a span { width:21px; min-width:21px; display:block; background:url(images/arrdown.gif) no-repeat bottom; height:12px;  }
+.mtt-tabs li.mtt-tabs-button a span { width:21px; min-width:21px; display:block; background:url(images/arrdown.gif) no-repeat center 4px; height:12px; }
 .mtt-tabs li.mtt-tabs-button:hover a span { opacity:0.5; }
 .mtt-tabs.mtt-tabs-only-one li { display:none; }
 .mtt-tabs.mtt-tabs-only-one li.mtt-tabs-selected, .mtt-tabs.mtt-tabs-only-one li.mtt-tabs-button { display:block; }
