@@ -48,6 +48,7 @@ $().ready(function(){
 		echo "\tflag.needAuth = true;\n";
 		if(is_logged()) echo "\tflag.isLogged = true;\n";
 	}
+	if(Config::get('autotag')) echo "\tflag.autoTag = true;\n";
 	echo "\tloadLists(1, 1);\n";
 ?>
 	$("#duedate").datepicker({dateFormat: '<?php echo datepickerformat(); ?>', firstDay: <?php echo Config::get('firstdayofweek'); ?>,
@@ -64,6 +65,9 @@ $().ready(function(){
 	mytinytodo.addAction('listsLoaded', tplSingleTabLoaded);
 	mytinytodo.addAction('listRenamed', tplSingleTabRenamed);
 	mytinytodo.addAction('listAdded', tplSingleTabAdded);
+<?php endif; ?>
+<?php if(!isset($_GET['singletab']) && !isset($_GET['pda'])): ?>
+	$("#lists ul").sortable({delay:150, update:listOrderChanged, items:'> :not(.mtt-tabs-button)'});
 <?php endif; ?>
 
 });

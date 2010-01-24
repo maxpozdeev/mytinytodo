@@ -12,7 +12,7 @@ var searchTimer;
 var objPrio = {};
 var selTask = 0;
 var sortBy = 0;
-var flag = { needAuth:false, isLogged:false, tagsChanged:true, windowTaskEditMoved:false };
+var flag = { needAuth:false, isLogged:false, tagsChanged:true, windowTaskEditMoved:false, autoTag:true };
 var taskCnt = { total:0, past: 0, today:0, soon:0 };
 var tmp = {};
 var oBtnMenu = {};
@@ -797,7 +797,7 @@ function editFormResize(startstop, event)
 function mttTabSelected(id, indx)
 {
 	$('#lists .mtt-tabs-selected').removeClass('mtt-tabs-selected');
-	$('#lists li.list-id-'+tabLists[indx].id).addClass('mtt-tabs-selected');
+	$('#list_'+tabLists[indx].id).addClass('mtt-tabs-selected');
 	if(!tabLists[indx]) return;
 	if(indx != curList.i) {
 		$('#tasklist').html('');
@@ -896,7 +896,7 @@ function loadLists(onInit, updAccess)
 			$.each(json.list, function(i,item){
 				item.i = i;
 				tabLists[i] = item;
-				ti += '<li class="'+(i==0?'mtt-tabs-selected':'')+' list-id-'+item.id+'"><a href="#list'+item.id+'" onClick="mttTabSelected('+item.id+','+i+');return false;" title="'+item.name+'"><span>'+item.name+'</span></a></li>';
+				ti += '<li id="list_'+item.id+'" class="'+(i==0?'mtt-tabs-selected':'')+'"><a href="#list'+item.id+'" onClick="mttTabSelected('+item.id+','+i+');return false;" title="'+item.name+'"><span>'+item.name+'</span></a></li>';
 			});
 			if(!curList) {
 				$('#toolbar').children().removeClass('invisible');
@@ -944,7 +944,7 @@ function addList()
 		item.i = i;
 		tabLists[i] = item;
 		if(i > 0) {
-			$('#lists>ul>li.mtt-tabs-button').before('<li class="'+' list-id-'+item.id+'"><a href="#list'+item.id+'" onClick="mttTabSelected('+item.id+','+i+');return false;" title="'+item.name+'"><span>'+item.name+'</span></a></li>') ;
+			$('#lists>ul>li.mtt-tabs-button').before('<li id="list_'+item.id+'"><a href="#list'+item.id+'" onClick="mttTabSelected('+item.id+','+i+');return false;" title="'+item.name+'"><span>'+item.name+'</span></a></li>') ;
 			mytinytodo.doAction('listAdded', {i:i, list:item});
 		}
 		else loadLists();
@@ -1338,4 +1338,12 @@ function showCompletedToggle()
 	if(act) $('#btnShowCompleted').addClass('mtt-item-checked');
 	else $('#btnShowCompleted').removeClass('mtt-item-checked');
 	loadTasks({setCompl:1});
+}
+
+function listOrderChanged(event, ui)
+{
+	var order = $(this).sortable("serialize");
+	$.post('ajax.php?changeListOrder'+'&rnd='+Math.random(), order, function(json){
+	   resetAjaxErrorTrigger();
+	}, 'json');
 }

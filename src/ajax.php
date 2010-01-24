@@ -20,7 +20,7 @@ if(isset($_GET['loadLists']))
 	else $sqlWhere = '';
 	$t = array();
 	$t['total'] = 0;
-	$q = $db->dq("SELECT * FROM {$db->prefix}lists $sqlWhere ORDER BY id ASC");
+	$q = $db->dq("SELECT * FROM {$db->prefix}lists $sqlWhere ORDER BY ow ASC, id ASC");
 	while($r = $q->fetch_assoc($q))
 	{
 		$t['total']++;
@@ -423,7 +423,29 @@ elseif(isset($_GET['moveTask']))
 	echo json_encode(array('total'=>$r?1:0));
 	exit;
 }
-
+elseif(isset($_GET['changeListOrder']))
+{
+	check_write_access();
+	stop_gpc($_POST);
+	$order = (array)_post('list');
+	$t = array();
+	$t['total'] = 0;
+	if($order)
+	{
+		$a = array();
+		$setCase = '';
+		foreach($order as $ow=>$id) {
+			$id = (int)$id;
+			$a[] = $id;
+			$setCase .= "WHEN id=$id THEN $ow\n";
+		}
+		$ids = implode($a, ',');
+		$db->dq("UPDATE {$db->prefix}lists SET ow = CASE\n $setCase END WHERE id IN ($ids)");
+		$t['total'] = 1;
+	}
+	echo json_encode($t);
+	exit;
+}
 
 ###################################################################################################
 
