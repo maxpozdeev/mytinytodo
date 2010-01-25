@@ -55,9 +55,6 @@ a { color:#0000ff; }
 #msg.mtt-info .msg-text { background-color:#EFC300; }
 #msg.mtt-info .msg-details { border:1px solid #EFC300;}
 
-#sort { margin-left:5px; font-size:8pt; font-weight:normal; float:right; }
-#page_tasks.readonly #sort { display:none; }
-
 .mtt-notes-showhide { font-size:8pt; font-weight:normal; margin-left:2px; margin-right:2px; }
 #rss_icon { float:right;margin-top:4px; }
 #rss_icon img { border:none; }

@@ -11,7 +11,6 @@ var sortOrder; //save task order before dragging
 var searchTimer;
 var objPrio = {};
 var selTask = 0;
-var sortBy = 0;
 var flag = { needAuth:false, isLogged:false, tagsChanged:true, windowTaskEditMoved:false, autoTag:true };
 var taskCnt = { total:0, past: 0, today:0, soon:0 };
 var tmp = {};
@@ -75,7 +74,7 @@ function loadTasks(opts)
 	var tag = filter.tag ? '&t='+encodeURIComponent(filter.tag) : '';
 	var nocache = '&rnd='+Math.random();
 	var setCompl = opts.setCompl != null ? '&setCompl=1' : '';
-	$.getJSON('ajax.php?loadTasks&list='+curList.id+'&compl='+curList.showCompl+'&sort='+sortBy+search+tag+'&tz='+tz+setCompl+nocache, function(json){
+	$.getJSON('ajax.php?loadTasks&list='+curList.id+'&compl='+curList.showCompl+'&sort='+curList.sort+search+tag+'&tz='+tz+setCompl+nocache, function(json){
 		taskList = new Array();
 		taskOrder = new Array();
 		taskCnt.total = taskCnt.past = taskCnt.today = taskCnt.soon = 0;
@@ -368,7 +367,7 @@ function saveTask(form)
 		taskList[item.id] = item;
 		var noteExpanded = (item.note != '' && $('#taskrow_'+item.id).is('.task-expanded')) ? 1 : 0;
 		$('#taskrow_'+item.id).replaceWith(prepareTaskStr(item, noteExpanded));
-		if(sortBy != 0) changeTaskOrder(item.id);
+		if(curList.sort != 0) changeTaskOrder(item.id);
 		cancelEdit();
 		refreshTaskCnt();
 		$('#taskrow_'+item.id).effect("highlight", {color:theme.editTaskFlashColor}, 'normal', function(){$(this).css('display','')});
@@ -595,31 +594,30 @@ function setTaskPrio(id, prio)
 	taskList[id].prio = prio;
 	var $t = $('#taskrow_'+id);
 	$t.find('.task-prio').replaceWith(preparePrio(prio, id));
-	if(sortBy != 0) changeTaskOrder(id);
+	if(curList.sort != 0) changeTaskOrder(id);
 	$t.effect("highlight", {color:theme.editTaskFlashColor}, 'normal');
 }
 
 function setSort(v, init)
 {
-	if(v == 0) $('#sort>.btnstr').text($('#sortByHand').text());
-	else if(v == 1) $('#sort>.btnstr').text($('#sortByPrio').text());
-	else if(v == 2) $('#sort>.btnstr').text($('#sortByDueDate').text());
+	$('#mylistscontainer .sort-item').removeClass('mtt-item-checked');
+	if(v == 0) $('#sortByHand').addClass('mtt-item-checked');
+	else if(v == 1) $('#sortByPrio').addClass('mtt-item-checked');
+	else if(v == 2) $('#sortByDueDate').addClass('mtt-item-checked');
 	else return;
 
 	if(flag.needAuth && !flag.isLogged) {
 		$("#tasklist").sortable('disable');
 		return;
 	}
-	sortBy = v;
-	if(sortBy==0) $("#tasklist").sortable('enable');
+	curList.sort = v;
+	if(v == 0) $("#tasklist").sortable('enable');
 	else $("#tasklist").sortable('disable');
 	
 	if(!init)
 	{
-		curList.sort = sortBy;
 		changeTaskOrder();
-		var nocache = '&rnd='+Math.random();
-		$.post('ajax.php?setSort'+nocache, { list:curList.id, sort:sortBy }, function(json){
+		$.post('ajax.php?setSort'+'&rnd='+Math.random(), { list:curList.id, sort:curList.sort }, function(json){
 		}, 'json');
 	}
 }
@@ -636,17 +634,17 @@ function changeTaskOrder(id)
 	id = parseInt(id);
 	if(taskOrder.length < 2) return;
 	var oldOrder = taskOrder.slice();
-	if(sortBy == 0) taskOrder.sort( function(a,b){ 
+	if(curList.sort == 0) taskOrder.sort( function(a,b){ 
 			if(taskList[a].compl != taskList[b].compl) return taskList[a].compl-taskList[b].compl;
 			return taskList[a].ow-taskList[b].ow
 		});
-	else if(sortBy == 1) taskOrder.sort( function(a,b){
+	else if(curList.sort == 1) taskOrder.sort( function(a,b){
 			if(taskList[a].compl != taskList[b].compl) return taskList[a].compl-taskList[b].compl;
 			if(taskList[a].prio != taskList[b].prio) return taskList[b].prio-taskList[a].prio;
 			if(taskList[a].dueInt != taskList[b].dueInt) return taskList[a].dueInt-taskList[b].dueInt;
 			return taskList[a].ow-taskList[b].ow; 
 		});
-	else if(sortBy == 2) taskOrder.sort( function(a,b){
+	else if(curList.sort == 2) taskOrder.sort( function(a,b){
 			if(taskList[a].compl != taskList[b].compl) return taskList[a].compl-taskList[b].compl;
 			if(taskList[a].dueInt != taskList[b].dueInt) return taskList[a].dueInt-taskList[b].dueInt;
 			if(taskList[a].prio != taskList[b].prio) return taskList[b].prio-taskList[a].prio;

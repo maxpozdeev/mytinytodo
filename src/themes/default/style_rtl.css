@@ -4,7 +4,6 @@ h2 { float:right; }
 #loading { float:right; }
 #lists .mtt-tabs { float:right; }
 #rss_icon { float:left; }
-#sort { float:left; margin-left:0px; margin-right:5px; }
 .mtt-tabs li { float:right; margin:1px 0 0 3px; border-left:none; border-right:1px solid #ededed; background:#fbfbfb url(images/tab_hover.gif) no-repeat top left; }
 .mtt-tabs li.mtt-tabs-selected { border-left:none; border-right:1px solid #ededed;  background:#ededed url(images/corner_left.gif) no-repeat top left; }
 .mtt-htabs { background:url(images/corner_left.gif) no-repeat top left #ededed; }

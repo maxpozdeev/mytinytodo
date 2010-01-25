@@ -118,7 +118,6 @@ $().ready(function(){
 </div>
 
 <h3>
-<span id="sort" onClick="btnMenu(this);return false;" class="mtt-btnmenu"><span class="btnstr"></span> <img src="<?php mttinfo('template_uri'); ?>images/arrdown.gif"></span>
 <span id="taskview" onClick="btnMenu(this);return false;" class="mtt-btnmenu"><span class="btnstr"><?php _e('tasks');?></span> (<span id="total">0</span>) &nbsp;<img src="<?php mttinfo('template_uri'); ?>images/arrdown.gif"></span>
 <span id="tagcloudbtn" onClick="showTagCloud(this);"><span class="btnstr"><?php _e('tags');?></span> <img src="<?php mttinfo('template_uri'); ?>images/arrdown.gif"></span>
 <span class="mtt-notes-showhide"><?php _e('notes');?> <a href="#" onClick="toggleAllNotes(1);this.blur();return false;"><?php _e('notes_show');?></a> / <a href="#" onClick="toggleAllNotes(0);this.blur();return false;"><?php _e('notes_hide');?></a></span>
@@ -185,14 +184,6 @@ $().ready(function(){
 </ul>
 </div>
 
-<div id="sortcontainer" class="mtt-btnmenu-container" style="display:none">
-<ul>
- <li id="sortByHand" onClick="setSort(0)"><?php _e('sortByHand');?></li>
- <li id="sortByPrio" onClick="setSort(1)"><?php _e('sortByPriority');?></li>
- <li id="sortByDueDate" onClick="setSort(2)"><?php _e('sortByDueDate');?></li>
-</ul>
-</div>
-
 <div id="tagcloud" style="display:none">
  <div id="tagcloudcancel" onClick="cancelTagFilter();tagCloudClose();"><?php _e('tagfilter_cancel');?></div>
  <div id="tagcloudload"><img src="<?php mttinfo('template_uri'); ?>images/loading1_24.gif"></div>
@@ -206,6 +197,10 @@ $().ready(function(){
  <li class="mtt-need-list" onClick="deleteCurList()"><?php _e('list_delete');?></li>
  <li class="mtt-need-list" id="btnPublish" onClick="publishCurList()"><div class="menu-icon"></div><?php _e('list_publish');?></li>
  <li class="mtt-need-list" id="btnShowCompleted" onClick="showCompletedToggle()"><div class="menu-icon"></div><?php _e('list_showcompleted');?></li>
+ <li class="mtt-btnmenu-delimiter"></li>
+ <li class="mtt-need-list sort-item" id="sortByHand" onClick="setSort(0)"><div class="menu-icon"></div><?php _e('sortByHand');?></li>
+ <li class="mtt-need-list sort-item" id="sortByPrio" onClick="setSort(1)"><div class="menu-icon"></div><?php _e('sortByPriority');?></li>
+ <li class="mtt-need-list sort-item" id="sortByDueDate" onClick="setSort(2)"><div class="menu-icon"></div><?php _e('sortByDueDate');?></li>
 </ul>
 </div>
 

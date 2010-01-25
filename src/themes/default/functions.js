@@ -3,8 +3,8 @@
 function tplSingleTabLoaded()
 {
 	var $lc = $('#mylistscontainer');
-	if($lc.find('.mtt-btnmenu-delimiter').length == 0) {
-		$lc.find('ul').append('<li class="mtt-btnmenu-delimiter"></li>');
+	if($lc.find('.list-block-delimiter').length == 0) {
+		$lc.find('ul').append('<li class="mtt-btnmenu-delimiter list-block-delimiter"></li>');
 	} else {
 		$lc.find('.list-ref').remove();
 	}
@@ -12,7 +12,7 @@ function tplSingleTabLoaded()
 	for(var i in tabLists) {
 		ti += '<li class="list-ref '+(i==0?'mtt-item-checked':'')+' list-id-'+tabLists[i].id+'" onClick="tplTabMenuSelect('+tabLists[i].id+','+i+');"><div class="menu-icon"></div><a href="#list'+tabLists[i].id+'" onClick="return false">'+tabLists[i].name+'</a></li>';
 	}
-	$lc.find('.mtt-btnmenu-delimiter').after(ti);
+	$lc.find('.list-block-delimiter').after(ti);
 }
 
 function tplSingleTabRenamed(opts)
