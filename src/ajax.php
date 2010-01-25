@@ -446,6 +446,24 @@ elseif(isset($_GET['changeListOrder']))
 	echo json_encode($t);
 	exit;
 }
+elseif(isset($_GET['parseTaskStr']))
+{
+	check_write_access();
+	stop_gpc($_POST);
+	$t = array(
+		'title' => trim(_post('title')),
+		'prio' => 0,
+		'tags' => ''
+	);
+	if(Config::get('smartsyntax') != 0 && (false !== $a = parse_smartsyntax($t['title'])))
+	{
+		$t['title'] = $a['title'];
+		$t['prio'] = $a['prio'];
+		$t['tags'] = $a['tags'];
+	}
+	echo json_encode($t);
+	exit;
+}
 
 ###################################################################################################
 

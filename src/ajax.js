@@ -67,14 +67,13 @@ function loadTasks(opts)
 	if(!curList) return false;
 	setSort(curList.sort, 1);
 	opts = opts || {};
-	var tz = -1 * (new Date()).getTimezoneOffset();
 	$('#tasklist').html('');
 	$('#total').html('...');
 	var search = filter.search ? '&s='+encodeURIComponent(filter.search) : '';
 	var tag = filter.tag ? '&t='+encodeURIComponent(filter.tag) : '';
 	var nocache = '&rnd='+Math.random();
 	var setCompl = opts.setCompl != null ? '&setCompl=1' : '';
-	$.getJSON('ajax.php?loadTasks&list='+curList.id+'&compl='+curList.showCompl+'&sort='+curList.sort+search+tag+'&tz='+tz+setCompl+nocache, function(json){
+	$.getJSON('ajax.php?loadTasks&list='+curList.id+'&compl='+curList.showCompl+'&sort='+curList.sort+search+tag+'&tz='+tz()+setCompl+nocache, function(json){
 		taskList = new Array();
 		taskOrder = new Array();
 		taskCnt.total = taskCnt.past = taskCnt.today = taskCnt.soon = 0;
@@ -149,9 +148,8 @@ function prepareDuedate(duedate, c, s)
 function submitNewTask(form)
 {
 	if(form.task.value == '') return false;
-	var tz = -1 * (new Date()).getTimezoneOffset();
 	var nocache = '&rnd='+Math.random();
-	$.post('ajax.php?newTask'+nocache, { list:curList.id, title: form.task.value, tz:tz, tag:filter.tag }, function(json){
+	$.post('ajax.php?newTask'+nocache, { list:curList.id, title: form.task.value, tz:tz(), tag:filter.tag }, function(json){
 		if(!parseInt(json.total)) return;
 		$('#total').text( parseInt($('#total').text()) + 1 );
 		taskCnt.total++;
@@ -287,10 +285,7 @@ function editTask(id)
 	document.edittask.id.value = item.id;
 	document.edittask.tags.value = item.tags.split(',').join(', ');
 	document.edittask.duedate.value = item.duedate;
-	var sel = document.edittask.prio;
-	for(var i=0; i<sel.length; i++) {
-		if(sel.options[i].value == item.prio) sel.options[i].selected = true;
-	}
+	document.edittask.prio.value = item.prio;
 	$('#taskedit-date .date-created>span').text(item.date);
 	if(item.compl) $('#taskedit-date .date-completed').show().find('span').text(item.dateCompleted);
 	else $('#taskedit-date .date-completed').hide();
@@ -300,9 +295,20 @@ function editTask(id)
 
 function showEditForm(isAdd)
 {
-	if(isAdd) {
+	if(isAdd)
+	{
 		$('#page_taskedit').removeClass('mtt-inedit').addClass('mtt-inadd');
 		document.edittask.isadd.value = 1;
+		if($('#task').val() != '')
+		{
+			$.post('ajax.php?parseTaskStr'+'&rnd='+Math.random(), { list:curList.id, title: $('#task').val(), tz:tz(), tag:filter.tag }, function(json){
+				if(!json) return;
+				document.edittask.task.value = json.title
+				document.edittask.tags.value = json.tags;
+				document.edittask.prio.value = json.prio;
+				$('#task').val('');
+			}, 'json');
+		}
 	}
 	else {
 		$('#page_taskedit').removeClass('mtt-inadd').addClass('mtt-inedit');
@@ -358,9 +364,8 @@ function saveTask(form)
 {
 	if(flag.needAuth && !flag.isLogged) return false;
 	if(form.isadd.value != 0) return submitFullTask(form);
-	var tz = -1 * (new Date()).getTimezoneOffset();
 	var nocache = '&rnd='+Math.random();
-	$.post('ajax.php?editTask='+form.id.value+nocache, { list:curList.id, tz:tz, title: form.task.value, note:form.note.value, prio:form.prio.value, tags:form.tags.value, duedate:form.duedate.value }, function(json){
+	$.post('ajax.php?editTask='+form.id.value+nocache, { list:curList.id, tz:tz(), title: form.task.value, note:form.note.value, prio:form.prio.value, tags:form.tags.value, duedate:form.duedate.value }, function(json){
 		if(!parseInt(json.total)) return;
 		var item = json.list[0];
 		changeTaskCnt(item, 0, taskList[item.id]);
@@ -1307,4 +1312,9 @@ function actionListSelected(list)
 	else $('#btnPublish').removeClass('mtt-item-checked');
 	if(list.showCompl) $('#btnShowCompleted').addClass('mtt-item-checked');
 	else $('#btnShowCompleted').removeClass('mtt-item-checked');
+}
+
+function tz()
+{
+	return -1 * (new Date()).getTimezoneOffset();
 }
