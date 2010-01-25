@@ -60,6 +60,7 @@ $().ajaxError(function(event, request, settings){
 mytinytodo.addAction('listRenamed', cmenuListRenamed);
 mytinytodo.addAction('listsLoaded', cmenuListsLoaded);
 mytinytodo.addAction('listAdded', cmenuListAdded);
+mytinytodo.addAction('listSelected', actionListSelected);
 
 
 function loadTasks(opts)
@@ -803,10 +804,7 @@ function mttTabSelected(id, indx)
 		}
 		//if(tabLists[indx].published)
 			$('#rss_icon').find('a').attr('href', 'feed.php?list='+tabLists[indx].id);
-		if(tabLists[indx].published) $('#btnPublish').addClass('mtt-item-checked');
-		else $('#btnPublish').removeClass('mtt-item-checked');
-		if(tabLists[indx].showCompl) $('#btnShowCompleted').addClass('mtt-item-checked');
-		else $('#btnShowCompleted').removeClass('mtt-item-checked');
+		mytinytodo.doAction('listSelected', tabLists[indx]);
 	}
 	curList = tabLists[indx];
 	flag.tagsChanged = true;
@@ -898,12 +896,9 @@ function loadLists(onInit, updAccess)
 			}
 			curList = tabLists[0];
 			loadTasks();
-			if(curList.published) $('#btnPublish').addClass('mtt-item-checked');
-			else $('#btnPublish').removeClass('mtt-item-checked');
-			if(curList.showCompl) $('#btnShowCompleted').addClass('mtt-item-checked');
-			else $('#btnShowCompleted').removeClass('mtt-item-checked');
 			//if(curList.published)
 				$('#rss_icon').find('a').attr('href', 'feed.php?list='+curList.id);
+			mytinytodo.doAction('listSelected', curList);
 			if(flag.needAuth && !flag.isLogged) $('#bar_public').show();
 		}
 		else {
@@ -936,7 +931,7 @@ function addList()
 		tabLists[i] = item;
 		if(i > 0) {
 			$('#lists>ul>li.mtt-tabs-button').before('<li id="list_'+item.id+'"><a href="#list'+item.id+'" onClick="mttTabSelected('+item.id+','+i+');return false;" title="'+item.name+'"><span>'+item.name+'</span></a></li>') ;
-			mytinytodo.doAction('listAdded', {i:i, list:item});
+			mytinytodo.doAction('listAdded', item);
 		}
 		else loadLists();
 	}, 'json');
@@ -955,7 +950,7 @@ function renameCurList()
 		tabLists[curList.i] = item;
 		curList = item;
 		$('#lists>ul>.mtt-tabs-selected>a').attr('title', item.name).find('span').html(item.name);
-		mytinytodo.doAction('listRenamed', {i:curList.i, list:item});
+		mytinytodo.doAction('listRenamed', item);
 	}, 'json');
 }
 
@@ -1269,7 +1264,7 @@ function moveTaskToList(taskId, listId)
 	flag.tagsChanged = true;
 }
 
-function cmenuListsLoaded(opts)
+function cmenuListsLoaded()
 {
 	if(cmenu) cmenu.destroy();
 	cmenu = null;
@@ -1280,16 +1275,16 @@ function cmenuListsLoaded(opts)
 	$('#listsmenucontainer ul').html(s);
 }
 
-function cmenuListAdded(opts)
+function cmenuListAdded(list)
 {
 	if(cmenu) cmenu.destroy();
 	cmenu = null;
-	$('#listsmenucontainer ul').append('<li id="cmenu_list:'+opts.list.id+'">'+opts.list.name+'</li>');
+	$('#listsmenucontainer ul').append('<li id="cmenu_list:'+list.id+'">'+list.name+'</li>');
 }
 
-function cmenuListRenamed(opts)
+function cmenuListRenamed(list)
 {
-	$('#cmenu_list\\:'+opts.list.id).text(opts.list.name);
+	$('#cmenu_list\\:'+list.id).text(list.name);
 }
 
 function showCompletedToggle()
@@ -1306,4 +1301,12 @@ function listOrderChanged(event, ui)
 	var order = $(this).sortable("serialize");
 	$.post('ajax.php?changeListOrder'+'&rnd='+Math.random(), order, function(json){
 	}, 'json');
+}
+
+function actionListSelected(list)
+{
+	if(list.published) $('#btnPublish').addClass('mtt-item-checked');
+	else $('#btnPublish').removeClass('mtt-item-checked');
+	if(list.showCompl) $('#btnShowCompleted').addClass('mtt-item-checked');
+	else $('#btnShowCompleted').removeClass('mtt-item-checked');
 }
