@@ -69,10 +69,7 @@ $().ready(function(){
 <?php if(!isset($_GET['singletab']) && !isset($_GET['pda'])): ?>
 	$("#lists ul").sortable({delay:150, update:listOrderChanged, items:'> :not(.mtt-tabs-button)'});
 <?php endif; ?>
-
 });
-$().ajaxSend( function(r,s) {$("#loading").show();} );
-$().ajaxStop( function(r,s) {$("#loading").fadeOut();} );
 </script>
 
 <div id="wrapper">

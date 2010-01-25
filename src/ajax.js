@@ -23,8 +23,44 @@ var tagsList = [];
 var page = {cur:'', prev:''};
 
 var mytinytodo = {
-	actions: {}
+	actions: {},
+
+	addAction: function(action, proc)
+	{
+		if(!this.actions[action]) this.actions[action] = new Array();
+		this.actions[action].push(proc);
+	},
+
+	doAction: function(action, opts)
+	{
+		if(!this.actions[action]) return;
+		for(var i in this.actions[action]) {
+			this.actions[action][i](opts);
+		}
+	}
 };
+
+$().ajaxSend(function(r,s){
+	$("#msg").hide().removeClass('mtt-error mtt-info');
+	$("#loading").show();
+});
+
+$().ajaxStop(function(r,s){
+	$("#loading").fadeOut();
+});
+
+$().ajaxError(function(event, request, settings){
+	var errtxt;
+	if(request.status == 0) errtxt = 'Bad connection';
+	else if(request.status != 200) errtxt = 'HTTP: '+request.status+'/'+request.statusText;
+	else errtxt = request.responseText;
+	flashError(lang.error, errtxt); 
+});
+
+mytinytodo.addAction('listRenamed', cmenuListRenamed);
+mytinytodo.addAction('listsLoaded', cmenuListsLoaded);
+mytinytodo.addAction('listAdded', cmenuListAdded);
+
 
 function loadTasks(opts)
 {
@@ -33,14 +69,12 @@ function loadTasks(opts)
 	opts = opts || {};
 	var tz = -1 * (new Date()).getTimezoneOffset();
 	$('#tasklist').html('');
-	setAjaxErrorTrigger();
 	$('#total').html('...');
 	var search = filter.search ? '&s='+encodeURIComponent(filter.search) : '';
 	var tag = filter.tag ? '&t='+encodeURIComponent(filter.tag) : '';
 	var nocache = '&rnd='+Math.random();
 	var setCompl = opts.setCompl != null ? '&setCompl=1' : '';
 	$.getJSON('ajax.php?loadTasks&list='+curList.id+'&compl='+curList.showCompl+'&sort='+sortBy+search+tag+'&tz='+tz+setCompl+nocache, function(json){
-		resetAjaxErrorTrigger();
 		taskList = new Array();
 		taskOrder = new Array();
 		taskCnt.total = taskCnt.past = taskCnt.today = taskCnt.soon = 0;
@@ -116,10 +150,8 @@ function submitNewTask(form)
 {
 	if(form.task.value == '') return false;
 	var tz = -1 * (new Date()).getTimezoneOffset();
-	setAjaxErrorTrigger()
 	var nocache = '&rnd='+Math.random();
 	$.post('ajax.php?newTask'+nocache, { list:curList.id, title: form.task.value, tz:tz, tag:filter.tag }, function(json){
-		resetAjaxErrorTrigger();
 		if(!parseInt(json.total)) return;
 		$('#total').text( parseInt($('#total').text()) + 1 );
 		taskCnt.total++;
@@ -134,18 +166,6 @@ function submitNewTask(form)
 	}, 'json');
 	flag.tagsChanged = true;
 	return false;
-}
-
-function setAjaxErrorTrigger()
-{
-	resetAjaxErrorTrigger();
-	$("#msg").ajaxError(function(event, request, settings){
-		var errtxt;
-		if(request.status == 0) errtxt = 'Bad connection';
-		else if(request.status != 200) errtxt = 'HTTP: '+request.status+'/'+request.statusText;
-		else errtxt = request.responseText;
-		flashError(lang.error, errtxt);
-	});
 }
 
 function flashError(str, details)
@@ -172,20 +192,13 @@ function toggleMsgDetails()
 	else el.hide()
 }
 
-function resetAjaxErrorTrigger()
-{
-	$("#msg").hide().removeClass('mtt-error mtt-info').unbind('ajaxError');
-}
-
 function deleteTask(id)
 {
 	if(!confirm(lang.confirmDelete)) {
 		return false;
 	}
-	setAjaxErrorTrigger()
 	var nocache = '&rnd='+Math.random();
 	$.getJSON('ajax.php?deleteTask='+id+nocache, function(json){
-		resetAjaxErrorTrigger();
 		if(!parseInt(json.total)) return;
 		var item = json.list[0];
 		taskOrder.splice($.inArray(id,taskOrder), 1);
@@ -202,10 +215,8 @@ function completeTask(id,ch)
 {
 	var compl = 0;
 	if(ch.checked) compl = 1;
-	setAjaxErrorTrigger();
 	var nocache = '&rnd='+Math.random();
 	$.getJSON('ajax.php?completeTask='+id+'&compl='+compl+nocache, function(json){
-		resetAjaxErrorTrigger();
 		if(!parseInt(json.total)) return;
 		var item = json.list[0];
 		if(item.compl) $('#taskrow_'+id).addClass('task-completed');
@@ -253,10 +264,8 @@ function cancelTaskNote(id)
 
 function saveTaskNote(id)
 {
-	setAjaxErrorTrigger()
 	var nocache = '&rnd='+Math.random();
 	$.post('ajax.php?editNote='+id+nocache, {note: $('#notetext'+id).val()}, function(json){
-		resetAjaxErrorTrigger();
 		if(!parseInt(json.total)) return;
 		var item = json.list[0];
 		taskList[id].note = item.note;
@@ -350,10 +359,8 @@ function saveTask(form)
 	if(flag.needAuth && !flag.isLogged) return false;
 	if(form.isadd.value != 0) return submitFullTask(form);
 	var tz = -1 * (new Date()).getTimezoneOffset();
-	setAjaxErrorTrigger();
 	var nocache = '&rnd='+Math.random();
 	$.post('ajax.php?editTask='+form.id.value+nocache, { list:curList.id, tz:tz, title: form.task.value, note:form.note.value, prio:form.prio.value, tags:form.tags.value, duedate:form.duedate.value }, function(json){
-		resetAjaxErrorTrigger();
 		if(!parseInt(json.total)) return;
 		var item = json.list[0];
 		changeTaskCnt(item, 0, taskList[item.id]);
@@ -416,10 +423,8 @@ function orderChanged(event,ui)
 			taskList[a[1]].ow += diff;
 		}
 	}
-	setAjaxErrorTrigger();
 	var nocache = '&rnd='+Math.random();
 	$.post('ajax.php?changeOrder'+nocache, { order: s }, function(json){
-		resetAjaxErrorTrigger();
 	}, 'json');
 }
 
@@ -481,9 +486,7 @@ function updateAccessStatus()
 
 function doAuth(form)
 {
-	setAjaxErrorTrigger();
 	$.post('ajax.php?rnd='+Math.random(), { login:1, password: form.password.value }, function(json){
-		resetAjaxErrorTrigger();
 		form.password.value = '';
 		if(json.logged)
 		{
@@ -500,9 +503,7 @@ function doAuth(form)
 
 function logout()
 {
-	setAjaxErrorTrigger();
 	$.post('ajax.php?rnd='+Math.random(), { logout:1 }, function(json){
-		resetAjaxErrorTrigger();
 		flag.isLogged = false;
 		loadLists(0,1);
 	}, 'json');
@@ -588,9 +589,7 @@ function prioClick(prio, el)
 
 function setTaskPrio(id, prio)
 {
-	setAjaxErrorTrigger();
 	$.getJSON('ajax.php?setPrio='+id+'&prio='+prio+'&rnd='+Math.random(), function(json){
-		resetAjaxErrorTrigger();
 	});
 	taskList[id].prio = prio;
 	var $t = $('#taskrow_'+id);
@@ -618,10 +617,8 @@ function setSort(v, init)
 	{
 		curList.sort = sortBy;
 		changeTaskOrder();
-		setAjaxErrorTrigger()
 		var nocache = '&rnd='+Math.random();
 		$.post('ajax.php?setSort'+nocache, { list:curList.id, sort:sortBy }, function(json){
-			resetAjaxErrorTrigger();
 		}, 'json');
 	}
 }
@@ -677,9 +674,7 @@ function changeTaskOrder(id)
 
 function loadTags(callback)
 {
-	setAjaxErrorTrigger();
 	$.getJSON('ajax.php?tagCloud&list='+curList.id+'&rnd='+Math.random(), function(json){
-		resetAjaxErrorTrigger();
 		if(!parseInt(json.total)) tagsList = [];
 		else tagsList = json.cloud;
 		var cloud = '';
@@ -885,10 +880,8 @@ function loadLists(onInit, updAccess)
 		$('#searchbarkeyword').text('');
 		$('#searchbar').hide();
 	}
-	setAjaxErrorTrigger();
 	var nocache = '&rnd='+Math.random();
 	$.getJSON('ajax.php?loadLists'+nocache, function(json){
-		resetAjaxErrorTrigger();
 		tabLists = new Array();
 		var ti = '';
 		if(parseInt(json.total))
@@ -934,10 +927,8 @@ function addList()
 {
 	var r = prompt(lang.addList, lang.addListDefault);
 	if(r == null) return;
-	setAjaxErrorTrigger()
 	var nocache = '&rnd='+Math.random();
 	$.post('ajax.php?'+nocache, { addList:1, name:r }, function(json){
-		resetAjaxErrorTrigger();
 		if(!parseInt(json.total)) return;
 		var item = json.list[0];
 		var i = tabLists.length;
@@ -956,10 +947,8 @@ function renameCurList()
 	if(!curList) return;
 	var r = prompt(lang.renameList, dehtml(curList.name));
 	if(r == null || r == '') return;
-	setAjaxErrorTrigger()
 	var nocache = '&rnd='+Math.random();
 	$.post('ajax.php?'+nocache, { renameList:1, id:curList.id, name:r }, function(json){
-		resetAjaxErrorTrigger();
 		if(!parseInt(json.total)) return;
 		var item = json.list[0];
 		item.i = curList.i;
@@ -975,9 +964,7 @@ function deleteCurList()
 	if(!curList) return false;
 	var r = confirm(lang.deleteList);
 	if(!r) return;
-	setAjaxErrorTrigger()
 	$.post('ajax.php?'+'&rnd='+Math.random(), { deleteList:1, id:curList.id }, function(json){
-		resetAjaxErrorTrigger();
 		if(!parseInt(json.total)) return;
 		loadLists();
 	}, 'json');
@@ -1056,7 +1043,7 @@ function closeSettings()
 	showhide($('#page_tasks'), $('#page_ajax').removeClass('mtt-page-settings'));
 	page.prev = page.cur;
 	page.cur = '';
-	resetAjaxErrorTrigger();
+//	$("#msg").hide();
 }
 
 function saveSettings(frm)
@@ -1065,9 +1052,7 @@ function saveSettings(frm)
 	var params = { save:'ajax' };
 	$(frm).find("input:text,input:checked,select,:password").filter(":enabled").each(function() { params[this.name || '__'] = this.value; }); 
 	$(frm).find(":submit").attr('disabled','disabled').blur();
-	setAjaxErrorTrigger();
 	$.post('settings.php?'+'&rnd='+Math.random(), params, function(json){
-		resetAjaxErrorTrigger();
 		if(json.saved) {
 			flashInfo(lang.settingsSaved);
 			setTimeout('window.location.reload();', 1000);
@@ -1078,10 +1063,8 @@ function saveSettings(frm)
 function submitFullTask(form)
 {
 	if(flag.needAuth && !flag.isLogged) return false;
-	setAjaxErrorTrigger();
 	var nocache = '&rnd='+Math.random();
 	$.post('ajax.php?fullNewTask'+nocache, { list:curList.id, tag:filter.tag, title: form.task.value, note:form.note.value, prio:form.prio.value, tags:form.tags.value, duedate:form.duedate.value }, function(json){
-		resetAjaxErrorTrigger();
 		if(!parseInt(json.total)) return;
 		form.task.value = '';
 		var item = json.list[0];
@@ -1102,10 +1085,8 @@ function submitFullTask(form)
 function publishCurList()
 {
 	if(!curList) return false;
-	setAjaxErrorTrigger();
 	var nocache = '&rnd='+Math.random();
 	$.post('ajax.php?publishList'+nocache, { list:curList.id, publish:curList.published?0:1 }, function(json){
-		resetAjaxErrorTrigger();
 		if(!parseInt(json.total)) return;
 		curList.published = curList.published?0:1;
 		if(curList.published) $('#btnPublish').addClass('mtt-item-checked');
@@ -1273,26 +1254,10 @@ function mttMenu(container, options)
 
 }
 
-mytinytodo.addAction = function(action, proc)
-{
-	if(!this.actions[action]) this.actions[action] = new Array();
-	this.actions[action].push(proc);
-}
-
-mytinytodo.doAction = function(action, opts)
-{
-	if(!this.actions[action]) return;
-	for(var i in this.actions[action]) {
-		this.actions[action][i](opts);
-	}
-}
-
 function moveTaskToList(taskId, listId)
 {
 	if(curList.id == listId) return;
-	setAjaxErrorTrigger();
 	$.post('ajax.php?moveTask&rnd='+Math.random(), { id:taskId, from:curList.id, to:listId }, function(json){
-		resetAjaxErrorTrigger();
 		if(!parseInt(json.total)) return;
 		changeTaskCnt(taskList[taskId], -1)
 		delete taskList[taskId];
@@ -1327,10 +1292,6 @@ function cmenuListRenamed(opts)
 	$('#cmenu_list\\:'+opts.list.id).text(opts.list.name);
 }
 
-mytinytodo.addAction('listsLoaded', cmenuListsLoaded);
-mytinytodo.addAction('listAdded', cmenuListAdded);
-mytinytodo.addAction('listRenamed', cmenuListRenamed);
-
 function showCompletedToggle()
 {
 	var act = curList.showCompl ? 0 : 1;
@@ -1344,6 +1305,5 @@ function listOrderChanged(event, ui)
 {
 	var order = $(this).sortable("serialize");
 	$.post('ajax.php?changeListOrder'+'&rnd='+Math.random(), order, function(json){
-	   resetAjaxErrorTrigger();
 	}, 'json');
 }
