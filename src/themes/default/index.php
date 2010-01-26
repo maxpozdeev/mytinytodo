@@ -216,10 +216,10 @@ $().ready(function(){
 
 <div id="priocontainer" class="mtt-btnmenu-container mtt-menu-has-images" style="display:none">
 <ul>
- <li id="cmenu_prio:-1">&minus;1</li>
- <li id="cmenu_prio:0">&plusmn;0</li>
- <li id="cmenu_prio:1">+1</li>
  <li id="cmenu_prio:2">+2</li>
+ <li id="cmenu_prio:1">+1</li>
+ <li id="cmenu_prio:0">&plusmn;0</li>
+ <li id="cmenu_prio:-1">&minus;1</li>
 </ul>
 </div>
 
