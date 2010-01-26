@@ -901,7 +901,6 @@ function loadLists(onInit, updAccess)
 			loadTasks();
 			//if(curList.published)
 				$('#rss_icon').find('a').attr('href', 'feed.php?list='+curList.id);
-			mytinytodo.doAction('listSelected', curList);
 			if(flag.needAuth && !flag.isLogged) $('#bar_public').show();
 		}
 		else {
@@ -915,6 +914,7 @@ function loadLists(onInit, updAccess)
 		$('#lists>ul').html(ti);
 		$('#lists').show();
 		mytinytodo.doAction('listsLoaded');
+		if(curList) mytinytodo.doAction('listSelected', curList);
 		if(!flag.needAuth || flag.isLogged || curList) $('#page_tasks').show();
 	});
 	$('#page_tasks').hide();
@@ -1312,6 +1312,8 @@ function actionListSelected(list)
 	else $('#btnPublish').removeClass('mtt-item-checked');
 	if(list.showCompl) $('#btnShowCompleted').addClass('mtt-item-checked');
 	else $('#btnShowCompleted').removeClass('mtt-item-checked');
+	$('#listsmenucontainer li').removeClass('mtt-disabled');
+	$('#cmenu_list\\:'+list.id).addClass('mtt-disabled');
 }
 
 function tz()
