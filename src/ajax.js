@@ -23,6 +23,7 @@ var page = {cur:'', prev:''};
 
 var mytinytodo = {
 	actions: {},
+	menus: {},
 
 	addAction: function(action, proc)
 	{
@@ -910,7 +911,7 @@ function loadLists(onInit, updAccess)
 			$('#mylistscontainer .mtt-need-list').addClass('mtt-disabled');
 			$('#tasklist').html('');
 		}
-		ti += '<li class="mtt-tabs-button menu-owner"><a href="#" id="mylists" onClick="btnMenu(this);return false;"><span></span></a></li>';
+		ti += '<li class="mtt-tabs-button menu-owner"><a href="#" onClick="listMenu(this);return false;"><span></span></a></li>';
 		$('#lists>ul').html(ti);
 		$('#lists').show();
 		mytinytodo.doAction('listsLoaded');
@@ -1215,14 +1216,17 @@ function mttMenu(container, options)
 			this.close();
 			if(this.caller && this.caller == caller) return;
 		}
+		$(document).triggerHandler('click.mttmenuclose'); //close any other open menu
 		this.caller = caller;
 		$caller = $(caller);
 		var offset = $caller.offset();
 		var x2 = $(window).width() + $(document).scrollLeft() - this.container.outerWidth(true) - 1;
 		var x = offset.left < x2 ? offset.left : x2;
+		if(x<0) x=0;
 		var y = offset.top+caller.offsetHeight-1;
 		if(y + this.container.outerHeight(true) > $(window).height() + $(document).scrollTop()) y = offset.top - this.container.outerHeight();
-		this.container.css({ position: 'absolute', top: y, left: x /*, 'min-width': $caller.width()*/ }).show();
+		if(y<0) y=0;
+		this.container.css({ position: 'absolute', top: y, left: x, width:this.container.width() /*, 'min-width': $caller.width()*/ }).show();
 		var menu = this;
 		$(document).bind('click.mttmenuclose', function(e){ menu.close(e) });
 		this.menuOpen = true;
@@ -1319,4 +1323,25 @@ function actionListSelected(list)
 function tz()
 {
 	return -1 * (new Date()).getTimezoneOffset();
+}
+
+function listMenu(el)
+{
+	if(!mytinytodo.menus.listMenu) mytinytodo.menus.listMenu = new mttMenu('mylistscontainer', {onclick:listMenuClick});
+	mytinytodo.menus.listMenu.show(el);
+}
+
+function listMenuClick(el, menu)
+{
+	if(!el.id) return;
+	switch(el.id) {
+		case 'btnAddList': addList(); break;
+		case 'btnRenameList': renameCurList(); break;
+		case 'btnDeleteList': deleteCurList(); break;
+		case 'btnPublish': publishCurList(); break;
+		case 'btnShowCompleted': showCompletedToggle(); break;
+		case 'sortByHand': setSort(0); break;
+		case 'sortByPrio': setSort(1); break;
+		case 'sortByDueDate': setSort(2); break;
+	}
 }

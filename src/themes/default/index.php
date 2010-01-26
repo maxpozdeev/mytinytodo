@@ -192,15 +192,15 @@ $().ready(function(){
 
 <div id="mylistscontainer" class="mtt-btnmenu-container mtt-menu-has-images" style="display:none">
 <ul>
- <li onClick="addList()"><?php _e('list_new');?></li>
- <li class="mtt-need-list" onClick="renameCurList()"><?php _e('list_rename');?></li>
- <li class="mtt-need-list" onClick="deleteCurList()"><?php _e('list_delete');?></li>
- <li class="mtt-need-list" id="btnPublish" onClick="publishCurList()"><div class="menu-icon"></div><?php _e('list_publish');?></li>
- <li class="mtt-need-list" id="btnShowCompleted" onClick="showCompletedToggle()"><div class="menu-icon"></div><?php _e('list_showcompleted');?></li>
+ <li id="btnAddList"><?php _e('list_new');?></li>
+ <li class="mtt-need-list" id="btnRenameList"><?php _e('list_rename');?></li>
+ <li class="mtt-need-list" id="btnDeleteList"><?php _e('list_delete');?></li>
+ <li class="mtt-need-list" id="btnPublish"><div class="menu-icon"></div><?php _e('list_publish');?></li>
+ <li class="mtt-need-list" id="btnShowCompleted"><div class="menu-icon"></div><?php _e('list_showcompleted');?></li>
  <li class="mtt-btnmenu-delimiter"></li>
- <li class="mtt-need-list sort-item" id="sortByHand" onClick="setSort(0)"><div class="menu-icon"></div><?php _e('sortByHand');?></li>
- <li class="mtt-need-list sort-item" id="sortByPrio" onClick="setSort(1)"><div class="menu-icon"></div><?php _e('sortByPriority');?></li>
- <li class="mtt-need-list sort-item" id="sortByDueDate" onClick="setSort(2)"><div class="menu-icon"></div><?php _e('sortByDueDate');?></li>
+ <li class="mtt-need-list sort-item" id="sortByHand"><div class="menu-icon"></div><?php _e('sortByHand');?></li>
+ <li class="mtt-need-list sort-item" id="sortByPrio"><div class="menu-icon"></div><?php _e('sortByPriority');?></li>
+ <li class="mtt-need-list sort-item" id="sortByDueDate"><div class="menu-icon"></div><?php _e('sortByDueDate');?></li>
 </ul>
 </div>
 
