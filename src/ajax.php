@@ -351,7 +351,8 @@ elseif(isset($_POST['addList']))
 	$t = array();
 	$t['total'] = 0;
 	$name = str_replace(array('"',"'",'<','>','&'),array('','','','',''),trim(_post('name')));
-	$db->dq("INSERT INTO {$db->prefix}lists (name) VALUES (?)", array($name));
+	$ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->prefix}lists");
+	$db->dq("INSERT INTO {$db->prefix}lists (name,ow) VALUES (?,?)", array($name,$ow));
 	$id = $db->last_insert_id();
 	$t['total'] = 1;
 	$r = $db->sqa("SELECT * FROM {$db->prefix}lists WHERE id=$id");
