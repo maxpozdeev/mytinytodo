@@ -891,7 +891,9 @@ function loadLists(onInit, updAccess)
 			$.each(json.list, function(i,item){
 				item.i = i;
 				tabLists[i] = item;
-				ti += '<li id="list_'+item.id+'" class="'+(i==0?'mtt-tabs-selected':'')+'"><a href="#list'+item.id+'" onClick="mttTabSelected('+item.id+','+i+');return false;" title="'+item.name+'"><span>'+item.name+'</span></a></li>';
+				ti += '<li id="list_'+item.id+'" class="'+(i==0?'mtt-tabs-selected':'')+'">'+
+					'<a href="#list'+item.id+'" title="'+item.name+'" onClick="mttTabSelected('+item.id+','+i+');return false;"><span>'+item.name+'</span>'+
+					'<div class="list-action" onClick="listMenu(this,'+i+');return stopBubble(arguments[0]);"></div></a></li>';
 			});
 			if(!curList) {
 				$('#toolbar').children().removeClass('invisible');
@@ -911,8 +913,7 @@ function loadLists(onInit, updAccess)
 			$('#mylistscontainer .mtt-need-list').addClass('mtt-disabled');
 			$('#tasklist').html('');
 		}
-		ti += '<li class="mtt-tabs-button menu-owner"><a href="#" onClick="listMenu(this);return false;"><span></span></a></li>';
-		$('#lists>ul').html(ti);
+		$('#lists ul').html(ti);
 		$('#lists').show();
 		mytinytodo.doAction('listsLoaded');
 		if(curList) mytinytodo.doAction('listSelected', curList);
@@ -934,7 +935,9 @@ function addList()
 		item.i = i;
 		tabLists[i] = item;
 		if(i > 0) {
-			$('#lists>ul>li.mtt-tabs-button').before('<li id="list_'+item.id+'"><a href="#list'+item.id+'" onClick="mttTabSelected('+item.id+','+i+');return false;" title="'+item.name+'"><span>'+item.name+'</span></a></li>') ;
+			$('#lists ul').append('<li id="list_'+item.id+'">'+
+					'<a href="#list'+item.id+'" title="'+item.name+'" onClick="mttTabSelected('+item.id+','+i+');return false;"><span>'+item.name+'</span>'+
+					'<div class="list-action" onClick="listMenu(this,'+i+');return stopBubble(arguments[0]);"></div></a></li>');
 			mytinytodo.doAction('listAdded', item);
 		}
 		else loadLists();
@@ -953,7 +956,7 @@ function renameCurList()
 		item.i = curList.i;
 		tabLists[curList.i] = item;
 		curList = item;
-		$('#lists>ul>.mtt-tabs-selected>a').attr('title', item.name).find('span').html(item.name);
+		$('#lists ul>.mtt-tabs-selected>a').attr('title', item.name).find('span').html(item.name);
 		mytinytodo.doAction('listRenamed', item);
 	}, 'json');
 }
@@ -1344,4 +1347,12 @@ function listMenuClick(el, menu)
 		case 'sortByPrio': setSort(1); break;
 		case 'sortByDueDate': setSort(2); break;
 	}
+}
+
+function stopBubble(e)
+{
+	if(!e) e = window.event;
+	e.cancelBubble = true;
+	if(e.stopPropagation) e.stopPropagation();
+	return false;
 }

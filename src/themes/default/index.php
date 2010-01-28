@@ -67,7 +67,7 @@ $().ready(function(){
 	mytinytodo.addAction('listAdded', tplSingleTabAdded);
 <?php endif; ?>
 <?php if(!isset($_GET['singletab']) && !isset($_GET['pda'])): ?>
-	$("#lists ul").sortable({delay:150, update:listOrderChanged, items:'> :not(.mtt-tabs-button)'});
+	$("#lists ul").sortable({delay:150, update:listOrderChanged});
 <?php endif; ?>
 });
 </script>
@@ -101,6 +101,7 @@ $().ready(function(){
 
 <div id="lists">
  <ul class="mtt-tabs <?php if(isset($_GET['singletab'])) echo "mtt-tabs-only-one"; ?>"></ul>
+ <div class="mtt-tabs-add-button" onClick="addList();return false;" title="<?php _e('list_new'); ?>"><span>+</span></div>
 </div>
 
 <div id="toolbar" class="mtt-htabs">
@@ -192,7 +193,6 @@ $().ready(function(){
 
 <div id="mylistscontainer" class="mtt-btnmenu-container mtt-menu-has-images" style="display:none">
 <ul>
- <li id="btnAddList"><?php _e('list_new');?></li>
  <li class="mtt-need-list" id="btnRenameList"><?php _e('list_rename');?></li>
  <li class="mtt-need-list" id="btnDeleteList"><?php _e('list_delete');?></li>
  <li class="mtt-need-list" id="btnPublish"><div class="menu-icon"></div><?php _e('list_publish');?></li>

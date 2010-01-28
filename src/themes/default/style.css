@@ -26,17 +26,24 @@ a { color:#0000ff; }
 
 .mtt-tabs { list-style:none; padding:0; margin:0; }
 .mtt-tabs li { margin:1px 3px 0 0; float:left; max-width:199px; border-left:1px solid #ededed; background:#fbfbfb url(images/tab_hover.gif) no-repeat top right; }
-.mtt-tabs a { margin:0; font-size:9pt; font-weight:bold; text-decoration:none; text-align:center; white-space:nowrap; color:#444444; display:block; height:21px; padding:6px 6px 0px 2px; outline:none; vertical-align:top; }
-.mtt-tabs a span { display:block;  min-width:75px; cursor:pointer; padding:0; overflow:hidden; }
+.mtt-tabs a { position:relative; margin:0; font-size:9pt; font-weight:bold; text-decoration:none; text-align:center; white-space:nowrap; color:#444444; display:block; height:21px; padding:6px 6px 0px 2px; outline:none; vertical-align:top; }
+.mtt-tabs a span { display:block; min-width:75px; cursor:pointer; padding:0; overflow:hidden; }
+.mtt-tabs .list-action { display:none; float:left; position:absolute; top:6px; right:5px; width:15px; height:15px; background:#fff url(images/icons.gif) 0 0 no-repeat; }
+.mtt-tabs .list-action:hover { background-position:-16px 0; cursor:pointer; }
+.mtt-tabs li.mtt-tabs-selected span { margin-right:16px; }
+.mtt-tabs li.mtt-tabs-selected .list-action { display:block; }
 .mtt-tabs li.mtt-tabs-selected { background:#ededed url(images/corner_right.gif) no-repeat top right; border-left:1px solid #ededed; }
 .mtt-tabs li:hover a { color: #888888; }
-.mtt-tabs li.mtt-tabs-button { width:21px; min-width:21px; }
-.mtt-tabs li.mtt-tabs-button a { padding:6px 0px 0px 0px; }
-.mtt-tabs li.mtt-tabs-button a span { width:21px; min-width:21px; display:block; background:url(images/arrdown.gif) no-repeat center 4px; height:12px; }
-.mtt-tabs li.mtt-tabs-button:hover a span { opacity:0.5; }
 .mtt-tabs.mtt-tabs-only-one li { display:none; }
-.mtt-tabs.mtt-tabs-only-one li.mtt-tabs-selected, .mtt-tabs.mtt-tabs-only-one li.mtt-tabs-button { display:block; }
-#page_tasks.readonly li.mtt-tabs-button { display:none; }
+.mtt-tabs.mtt-tabs-only-one li.mtt-tabs-selected { display:block; }
+#page_tasks.readonly .list-action { display:none; }
+#page_tasks.readonly li.mtt-tabs-selected span { margin-right:0; }
+
+.mtt-tabs-add-button { float:left; margin-top:1px; padding:6px 2px 0px 2px; font-size:9pt; width:16px; border-left:1px solid #ededed; background:#fbfbfb url(images/tab_hover.gif) no-repeat top right; }
+.mtt-tabs-add-button:hover { cursor:pointer; }
+.mtt-tabs-add-button span { display:block; height:21px; text-align:center; font-weight:bold; color:#444444; }
+.mtt-tabs-add-button:hover span {color: #888888; }
+#page_tasks.readonly .mtt-tabs-add-button { display:none; }
 
 #page_tasks.readonly #htab_search a.htab-toggle { color:#444; }
 .mtt-htabs  { clear:both; padding:8px; border-bottom:2px solid #DEDEDE; background:url(images/corner_right.gif) no-repeat top right #ededed; }
