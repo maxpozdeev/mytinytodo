@@ -15,14 +15,14 @@ function tplSingleTabLoaded()
 	$lc.find('.list-block-delimiter').after(ti);
 }
 
-function tplSingleTabRenamed(opts)
+function tplSingleTabRenamed(list)
 {
-	$('#mylistscontainer li.list-id-'+opts.list.id).find('a').html(opts.list.name);
+	$('#mylistscontainer li.list-id-'+list.id).find('a').html(list.name);
 }
 
-function tplSingleTabAdded(opts)
+function tplSingleTabAdded(list)
 {
-	$('#mylistscontainer ul').append('<li class="list-ref list-id-'+opts.list.id+'" onClick="tplTabMenuSelect('+opts.list.id+','+opts.list.i+');"><div class="menu-icon"></div><a href="#list'+opts.list.id+'" onClick="return false">'+opts.list.name+'</a></li>');
+	$('#mylistscontainer ul').append('<li class="list-ref list-id-'+list.id+'" onClick="tplTabMenuSelect('+list.id+','+list.i+');"><div class="menu-icon"></div><a href="#list'+list.id+'" onClick="return false">'+list.name+'</a></li>');
 }
 
 function tplTabMenuSelect(id, indx)
