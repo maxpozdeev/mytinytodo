@@ -1159,21 +1159,22 @@ function mttMenu(container, options)
 			}
 		);
 
-		submenu.container.find('li').click(function()
-		{
-			submenu.root.onclick(this, submenu);
-			return false;
-		})
-		.hover(
+		submenu.container.hover(
 			function(){
 				clearTimeout(hideTimer);
+				submenu.$caller.addClass('mtt-menu-item-active');
 			},
 			function(){
 				hideTimer = setTimeout(function(){
 					submenu.hide();
 				}, 400);
+				submenu.$caller.removeClass('mtt-menu-item-active');
 			}
-		);
+		)
+		.find('li').click(function(){
+			submenu.root.onclick(this, submenu);
+			return false;
+		});
 	});
 
 	//if(!this.root)

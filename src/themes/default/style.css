@@ -201,7 +201,7 @@ li.task-completed .task-note-block .task-note { text-decoration:line-through; }
 } 
 .mtt-btnmenu-container ul { list-style: none; padding:0; margin:0; }
 .mtt-btnmenu-container li { margin:1px 0px; padding:2px 3px; cursor:pointer; color:#000; white-space:nowrap; }
-.mtt-btnmenu-container li:hover { background-color:#316AC5; color:white; }
+.mtt-btnmenu-container li:hover, .mtt-btnmenu-container li.mtt-menu-item-active { background-color:#316AC5; color:white; }
 .mtt-btnmenu-container li.mtt-disabled { color:#ACA899; }
 .mtt-btnmenu-container a { display:block; text-decoration:none; outline:none; color:#000; }
 .mtt-btnmenu-container li:hover a { color:white; }
