@@ -41,8 +41,8 @@ a { color:#0000ff; }
 
 .mtt-tabs-add-button { float:left; margin-top:1px; padding:6px 2px 0px 2px; font-size:9pt; width:16px; border-left:1px solid #ededed; background:#fbfbfb url(images/tab_hover.gif) no-repeat top right; }
 .mtt-tabs-add-button:hover { cursor:pointer; }
-.mtt-tabs-add-button span { display:block; height:21px; text-align:center; font-weight:bold; color:#444444; }
-.mtt-tabs-add-button:hover span {color: #888888; }
+.mtt-tabs-add-button span { display:block; height:21px; background:url(images/bullet_plus.png) 0 0 no-repeat; }
+.mtt-tabs-add-button:hover span { background-position:-16px 0; }
 #page_tasks.readonly .mtt-tabs-add-button { display:none; }
 
 #page_tasks.readonly #htab_search a.htab-toggle { color:#444; }

@@ -101,7 +101,7 @@ $().ready(function(){
 
 <div id="lists">
  <ul class="mtt-tabs <?php if(isset($_GET['singletab'])) echo "mtt-tabs-only-one"; ?>"></ul>
- <div class="mtt-tabs-add-button" onClick="addList();return false;" title="<?php _e('list_new'); ?>"><span>+</span></div>
+ <div class="mtt-tabs-add-button" onClick="addList();return false;" title="<?php _e('list_new'); ?>"><span></span></div>
 </div>
 
 <div id="toolbar" class="mtt-htabs">
