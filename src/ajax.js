@@ -1209,6 +1209,7 @@ function mttMenu(container, options)
 			}
 		}
 		this.hide();
+		$(this.caller).removeClass('mtt-menu-button-active');
 		$(document).unbind('click.mttmenuclose');
 	}
 
@@ -1222,6 +1223,7 @@ function mttMenu(container, options)
 		$(document).triggerHandler('click.mttmenuclose'); //close any other open menu
 		this.caller = caller;
 		$caller = $(caller);
+		$caller.addClass('mtt-menu-button-active');
 		var offset = $caller.offset();
 		var x2 = $(window).width() + $(document).scrollLeft() - this.container.outerWidth(true) - 1;
 		var x = offset.left < x2 ? offset.left : x2;

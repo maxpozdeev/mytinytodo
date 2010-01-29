@@ -29,7 +29,7 @@ a { color:#0000ff; }
 .mtt-tabs a { position:relative; margin:0; font-size:9pt; font-weight:bold; text-decoration:none; text-align:center; white-space:nowrap; color:#444444; display:block; height:21px; padding:6px 6px 0px 2px; outline:none; vertical-align:top; }
 .mtt-tabs a span { display:block; min-width:75px; cursor:pointer; padding:0; overflow:hidden; }
 .mtt-tabs .list-action { display:none; float:left; position:absolute; top:6px; right:5px; width:15px; height:15px; background:#fff url(images/icons.gif) 0 0 no-repeat; }
-.mtt-tabs .list-action:hover { background-position:-16px 0; cursor:pointer; }
+.mtt-tabs .list-action:hover, .mtt-tabs .list-action.mtt-menu-button-active { background-position:-16px 0; cursor:pointer; }
 .mtt-tabs li.mtt-tabs-selected span { margin-right:16px; }
 .mtt-tabs li.mtt-tabs-selected .list-action { display:block; }
 .mtt-tabs li.mtt-tabs-selected { background:#ededed url(images/corner_right.gif) no-repeat top right; border-left:1px solid #ededed; }
@@ -93,7 +93,7 @@ li.task-completed  { opacity:0.8; }
 li.task-completed .task-toggle { opacity:0.8; }
 
 a.taskactionbtn { display:block; float:right; height:15px; width:15px; text-decoration:none; background:url(images/icons.gif) 0 0 no-repeat; }
-li:hover a.taskactionbtn { background-position:-16px 0; }
+li:hover a.taskactionbtn, a.taskactionbtn.mtt-menu-button-active { background-position:-16px 0; }
 
 #tasklist.filter-past li, #tasklist.filter-today li, #tasklist.filter-soon li { display:none; }
 #tasklist.filter-past li.past, #tasklist.filter-today li.today, #tasklist.filter-soon li.soon { display:block; }
