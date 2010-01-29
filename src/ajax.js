@@ -1132,55 +1132,54 @@ function mttMenu(container, options)
 	this.menuOpen = false;
 	this.options = options || {};
 	this.submenu = [];
+	this.curSubmenu = null;
+	this.showTimer = null;
 
-	//create submenus
-	this.container.find('li.mtt-menu-indicator').each(function()
-	{
-		var submenu = new mttMenu($(this).attr('submenu'));
-		submenu.$caller = $(this);
-		submenu.parent = menu;
-		if(menu.root) submenu.root = menu.root;	//!! be careful with circular references
-		else submenu.root = menu;
-		menu.submenu.push(submenu);
-
-		var showTimer, hideTimer;
-		$(this).hover(
-			function(){ 
-				clearTimeout(hideTimer); 
-				showTimer = setTimeout(function(){
-					submenu.showSub();
-				}, 300);	
-			},
-			function(){ 
-				clearTimeout(showTimer);
-				hideTimer = setTimeout(function(){
-					submenu.hide();
-				}, 400);	
-			}
-		);
-
-		submenu.container.hover(
-			function(){
-				clearTimeout(hideTimer);
-				submenu.$caller.addClass('mtt-menu-item-active');
-			},
-			function(){
-				hideTimer = setTimeout(function(){
-					submenu.hide();
-				}, 400);
-				submenu.$caller.removeClass('mtt-menu-item-active');
-			}
-		)
-		.find('li').click(function(){
-			submenu.root.onclick(this, submenu);
-			return false;
-		});
-	});
-
-	//if(!this.root)
 	this.container.find('li').click(function(){
 		menu.onclick(this, menu);
 		return false;
+	})
+	.each(function(){
+
+		var submenu = 0;
+		if($(this).is('.mtt-menu-indicator'))
+		{
+			submenu = new mttMenu($(this).attr('submenu'));
+			submenu.$caller = $(this);
+			submenu.parent = menu;
+			if(menu.root) submenu.root = menu.root;	//!! be careful with circular references
+			else submenu.root = menu;
+			menu.submenu.push(submenu);
+
+			submenu.container.find('li').click(function(){
+				submenu.root.onclick(this, submenu);
+				return false;
+			});
+		}
+
+		$(this).hover(
+			function(){
+				if(!$(this).is('.mtt-menu-item-active')) menu.container.find('li').removeClass('mtt-menu-item-active');
+				clearTimeout(menu.showTimer);
+				if(menu.curSubmenu && menu.curSubmenu.menuOpen && menu.curSubmenu != submenu)
+				{
+					menu.container.find('li').removeClass('mtt-menu-item-active');
+					var curSubmenu = menu.curSubmenu;
+					hideTimer = setTimeout(function(){
+						curSubmenu.hide();
+					}, 400);
+				}
+
+				if(!submenu || menu.curSubmenu == submenu && menu.curSubmenu.menuOpen) return;
+				menu.curSubmenu = submenu;
+				menu.showTimer = setTimeout(function(){
+					submenu.showSub();
+				}, 300);
+				$(this).addClass('mtt-menu-item-active');
+			},
+			null
+		);
+
 	});
 
 	this.onclick = function(item, fromMenu)
@@ -1194,6 +1193,7 @@ function mttMenu(container, options)
 	{
 		for(var i in this.submenu) this.submenu[i].hide();
 		this.container.hide();
+		this.container.find('li').removeClass('mtt-menu-item-active');
 		this.menuOpen = false;
 	}
 
@@ -1247,7 +1247,7 @@ function mttMenu(container, options)
 		var y = offset.top + this.parent.container.offset().top-this.parent.container.find('li:first').offset().top;
 		if(y +  this.container.outerHeight(true) > $(window).height() + $(document).scrollTop()) y = $(window).height() + $(document).scrollTop()- this.container.outerHeight(true) - 1;
 		if(y<0) y=0;
-		this.container.css({ position: 'absolute', top: y, left: x /*, 'min-width': this.$caller.outerWidth()*/ }).show();
+		this.container.css({ position: 'absolute', top: y, left: x, width:this.container.width() /*, 'min-width': this.$caller.outerWidth()*/ }).show();
 		this.menuOpen = true;
 	}
 
