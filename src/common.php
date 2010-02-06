@@ -140,4 +140,13 @@ function formatDate3($format, $ay, $am, $ad, $lang)
 	return strtr($format, array('Y'=>$Y, 'F'=>$F, 'M'=>$M, 'n'=>$n, 'm'=>$m, 'd'=>$d, 'j'=>$j));
 }
 
+function url_dir($url)
+{
+	$p = parse_url($url, PHP_URL_PATH);
+	if($p == '') return '/';
+	if(substr($p,-1) == '/') return $p;
+	if(false !== $pos = strrpos($p,'/')) return substr($p,0,$pos+1);
+	return '/';
+}
+
 ?>

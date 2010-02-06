@@ -46,13 +46,13 @@ function get_mttinfo($v)
 	switch($v)
 	{
 		case 'template_uri':
-			$_mttinfo['template_uri'] = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH). 'themes/'. Config::get('template') . '/';
+			$_mttinfo['template_uri'] = url_dir($_SERVER['REQUEST_URI']). 'themes/'. Config::get('template') . '/';
 			return $_mttinfo['template_uri'];
 		case 'template_url':
-			$_mttinfo['template_url'] = get_mttinfo('siteurl'). 'themes/'. Config::get('template') . '/';
+			$_mttinfo['template_url'] = get_mttinfo('url'). 'themes/'. Config::get('template') . '/';
 			return $_mttinfo['template_url'];
-		case 'siteurl':
-			$_mttinfo['siteurl'] = 'http://'.$_SERVER['HTTP_HOST'] .($_SERVER['SERVER_PORT'] != 80 ? ':'.$_SERVER['SERVER_PORT'] : ''). parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+		case 'url':
+			$_mttinfo['siteurl'] = 'http://'.$_SERVER['HTTP_HOST'] .($_SERVER['SERVER_PORT'] != 80 ? ':'.$_SERVER['SERVER_PORT'] : ''). url_dir($_SERVER['REQUEST_URI']);
 			return $_mttinfo['siteurl'];
 		case 'title':
 			$_mttinfo['title'] = (Config::get('title') != '') ? htmlarray(Config::get('title')) : $lang->get('My Tiny Todolist');
