@@ -52,8 +52,8 @@ function get_mttinfo($v)
 			$_mttinfo['template_url'] = get_mttinfo('url'). 'themes/'. Config::get('template') . '/';
 			return $_mttinfo['template_url'];
 		case 'url':
-			$_mttinfo['siteurl'] = 'http://'.$_SERVER['HTTP_HOST'] .($_SERVER['SERVER_PORT'] != 80 ? ':'.$_SERVER['SERVER_PORT'] : ''). url_dir($_SERVER['REQUEST_URI']);
-			return $_mttinfo['siteurl'];
+			$_mttinfo['url'] = 'http://'.$_SERVER['HTTP_HOST'] .($_SERVER['SERVER_PORT'] != 80 ? ':'.$_SERVER['SERVER_PORT'] : ''). url_dir($_SERVER['REQUEST_URI']);
+			return $_mttinfo['url'];
 		case 'title':
 			$_mttinfo['title'] = (Config::get('title') != '') ? htmlarray(Config::get('title')) : $lang->get('My Tiny Todolist');
 			return $_mttinfo['title'];
