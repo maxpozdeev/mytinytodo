@@ -6,7 +6,9 @@
 
 class DefaultLang
 {
+	protected static $instance;
 	protected $rtl = 0;
+
 	private $default_js = array
 	(
 		'confirmDelete' => "Are you sure you want to delete the task?",
@@ -156,6 +158,16 @@ class DefaultLang
 	function rtl()
 	{
 		return $this->rtl ? 1 : 0;
+	}
+
+	public static function instance()
+	{
+        if (!isset(self::$instance)) {
+			//$c = __CLASS__;
+			$c = 'Lang';
+			self::$instance = new $c;
+        }
+		return self::$instance;	
 	}
 }
 

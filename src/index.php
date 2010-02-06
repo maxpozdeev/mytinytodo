@@ -5,12 +5,9 @@
 	Licensed under the GNU GPL v3 license. See file COPYRIGHT for details.
 */
 
+require_once('./init.php');
 
-require_once('init.php');
-require_once('./lang/class.default.php');
-require_once('./lang/'.Config::get('lang').'.php');
-
-$lang = new Lang();
+$lang = Lang::instance();
 
 if($lang->rtl()) Config::set('rtl', 1);
 
@@ -18,7 +15,7 @@ if(!is_int(Config::get('firstdayofweek')) || Config::get('firstdayofweek')<0 || 
 
 $_mttinfo = array();
 
-define('TEMPLATEPATH', './themes/'.Config::get('template').'/');
+define('TEMPLATEPATH', MTTPATH. 'themes/'.Config::get('template').'/');
 
 require(TEMPLATEPATH. 'index.php');
 

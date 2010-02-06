@@ -116,7 +116,7 @@ class Config
 				$s .= "\$config['$param'] = '".str_replace(array("\\","'"),array("\\\\","\\'"),$val)."';\n";
 			}
 		}
-		$f = fopen('./db/config.php', 'w');
+		$f = fopen(MTTPATH. 'db/config.php', 'w');
 		if($f === false) throw new Exception("Error while saving config file");
 		fwrite($f, "<?php\n\$config = array();\n$s?>");
 		fclose($f);

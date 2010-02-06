@@ -8,9 +8,8 @@
 
 $dontStartSession = 1;
 require_once('./init.php');
-require_once('./lang/class.default.php');
-require_once('./lang/'.Config::get('lang').'.php'); 
-$lang = new Lang(); 
+
+$lang = Lang::instance();
 
 $listId = (int)_get('list');
 

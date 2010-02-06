@@ -10,9 +10,8 @@ set_error_handler('myErrorHandler');
 set_exception_handler('myExceptionHandler');
 
 require_once('./init.php');
-require_once('./lang/class.default.php');
-require_once('./lang/'.Config::get('lang').'.php');
-$lang = new Lang();
+
+$lang = Lang::instance();
 
 if(isset($_GET['loadLists']))
 {

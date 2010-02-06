@@ -1,7 +1,9 @@
 <?php
 
-require_once('common.php');
-require_once('./db/config.php');
+if(!defined('MTTPATH')) define('MTTPATH', dirname(__FILE__) .'/');
+
+require_once(MTTPATH. 'common.php');
+require_once(MTTPATH. 'db/config.php');
 
 ini_set('display_errors', 'On');
 
@@ -12,7 +14,7 @@ unset($config);
 # MySQL Database Connection
 if(Config::get('db') == 'mysql')
 {
-	require_once('class.db.mysql.php');
+	require_once(MTTPATH. 'class.db.mysql.php');
 	$db = new Database_Mysql;
 	$db->connect(Config::get('mysql.host'), Config::get('mysql.user'), Config::get('mysql.password'), Config::get('mysql.db'));
 	$db->dq("SET NAMES utf8");
@@ -21,19 +23,21 @@ if(Config::get('db') == 'mysql')
 # SQLite3 (pdo_sqlite)
 else
 {
-	require_once('class.db.sqlite3.php');
+	require_once(MTTPATH. 'class.db.sqlite3.php');
 	$db = new Database_Sqlite3;
-	$db->connect('./db/todolist.db');
+	$db->connect(MTTPATH. 'db/todolist.db');
 }
 $db->prefix = Config::get('prefix');
 
+require_once(MTTPATH. 'lang/class.default.php');
+require_once(MTTPATH. 'lang/'.Config::get('lang').'.php');
 
 $needAuth = (Config::get('password') != '') ? 1 : 0;
 if($needAuth && !isset($dontStartSession))
 {
 	if(Config::get('session') == 'files')
 	{
-		session_save_path(realpath('./tmp/sessions/'));
+		session_save_path(MTTPATH. 'tmp/sessions/');
 		ini_set('session.gc_maxlifetime', '1209600'); # 14 days session file minimum lifetime
 		ini_set('session.gc_probability', 1);
 		ini_set('session.gc_divisor', 10);

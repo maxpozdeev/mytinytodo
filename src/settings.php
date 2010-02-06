@@ -8,9 +8,7 @@
 
 require_once('./init.php');
 
-require_once('./lang/class.default.php');
-require_once('./lang/'.Config::get('lang').'.php');
-$lang = new Lang();
+$lang = Lang::instance();
 
 if($needAuth && !is_logged())
 {
@@ -62,7 +60,7 @@ function __($s)
 
 function getLangs()
 {
-    if (!$h = opendir('./lang')) return false;
+    if (!$h = opendir(MTTPATH. 'lang')) return false;
     $a = array();
     while(false !== ($file = readdir($h)))
 	{
