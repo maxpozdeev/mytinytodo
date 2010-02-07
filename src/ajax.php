@@ -281,7 +281,7 @@ elseif(isset($_POST['login']))
 }
 elseif(isset($_POST['logout']))
 {
-	$_SESSION = array();
+	unset($_SESSION['logged']);
 	$t = array('logged' => 0);
 	echo json_encode($t);
 	exit;

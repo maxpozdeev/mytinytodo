@@ -24,6 +24,7 @@ var page = {cur:'', prev:''};
 var mytinytodo = {
 	actions: {},
 	menus: {},
+	mttUrl: '',
 
 	addAction: function(action, proc)
 	{
@@ -74,7 +75,7 @@ function loadTasks(opts)
 	var tag = filter.tag ? '&t='+encodeURIComponent(filter.tag) : '';
 	var nocache = '&rnd='+Math.random();
 	var setCompl = opts.setCompl != null ? '&setCompl=1' : '';
-	$.getJSON('ajax.php?loadTasks&list='+curList.id+'&compl='+curList.showCompl+'&sort='+curList.sort+search+tag+'&tz='+tz()+setCompl+nocache, function(json){
+	$.getJSON(mytinytodo.mttUrl+'ajax.php?loadTasks&list='+curList.id+'&compl='+curList.showCompl+'&sort='+curList.sort+search+tag+'&tz='+tz()+setCompl+nocache, function(json){
 		taskList = new Array();
 		taskOrder = new Array();
 		taskCnt.total = taskCnt.past = taskCnt.today = taskCnt.soon = 0;
@@ -150,7 +151,7 @@ function submitNewTask(form)
 {
 	if(form.task.value == '') return false;
 	var nocache = '&rnd='+Math.random();
-	$.post('ajax.php?newTask'+nocache, { list:curList.id, title: form.task.value, tz:tz(), tag:filter.tag }, function(json){
+	$.post(mytinytodo.mttUrl+'ajax.php?newTask'+nocache, { list:curList.id, title: form.task.value, tz:tz(), tag:filter.tag }, function(json){
 		if(!parseInt(json.total)) return;
 		$('#total').text( parseInt($('#total').text()) + 1 );
 		taskCnt.total++;
@@ -197,7 +198,7 @@ function deleteTask(id)
 		return false;
 	}
 	var nocache = '&rnd='+Math.random();
-	$.getJSON('ajax.php?deleteTask='+id+nocache, function(json){
+	$.getJSON(mytinytodo.mttUrl+'ajax.php?deleteTask='+id+nocache, function(json){
 		if(!parseInt(json.total)) return;
 		var item = json.list[0];
 		taskOrder.splice($.inArray(id,taskOrder), 1);
@@ -215,7 +216,7 @@ function completeTask(id,ch)
 	var compl = 0;
 	if(ch.checked) compl = 1;
 	var nocache = '&rnd='+Math.random();
-	$.getJSON('ajax.php?completeTask='+id+'&compl='+compl+nocache, function(json){
+	$.getJSON(mytinytodo.mttUrl+'ajax.php?completeTask='+id+'&compl='+compl+nocache, function(json){
 		if(!parseInt(json.total)) return;
 		var item = json.list[0];
 		if(item.compl) $('#taskrow_'+id).addClass('task-completed');
@@ -264,7 +265,7 @@ function cancelTaskNote(id)
 function saveTaskNote(id)
 {
 	var nocache = '&rnd='+Math.random();
-	$.post('ajax.php?editNote='+id+nocache, {note: $('#notetext'+id).val()}, function(json){
+	$.post(mytinytodo.mttUrl+'ajax.php?editNote='+id+nocache, {note: $('#notetext'+id).val()}, function(json){
 		if(!parseInt(json.total)) return;
 		var item = json.list[0];
 		taskList[id].note = item.note;
@@ -302,7 +303,7 @@ function showEditForm(isAdd)
 		document.edittask.isadd.value = 1;
 		if($('#task').val() != '')
 		{
-			$.post('ajax.php?parseTaskStr'+'&rnd='+Math.random(), { list:curList.id, title: $('#task').val(), tz:tz(), tag:filter.tag }, function(json){
+			$.post(mytinytodo.mttUrl+'ajax.php?parseTaskStr'+'&rnd='+Math.random(), { list:curList.id, title: $('#task').val(), tz:tz(), tag:filter.tag }, function(json){
 				if(!json) return;
 				document.edittask.task.value = json.title
 				document.edittask.tags.value = json.tags;
@@ -366,7 +367,7 @@ function saveTask(form)
 	if(flag.needAuth && !flag.isLogged) return false;
 	if(form.isadd.value != 0) return submitFullTask(form);
 	var nocache = '&rnd='+Math.random();
-	$.post('ajax.php?editTask='+form.id.value+nocache, { list:curList.id, tz:tz(), title: form.task.value, note:form.note.value, prio:form.prio.value, tags:form.tags.value, duedate:form.duedate.value }, function(json){
+	$.post(mytinytodo.mttUrl+'ajax.php?editTask='+form.id.value+nocache, { list:curList.id, tz:tz(), title: form.task.value, note:form.note.value, prio:form.prio.value, tags:form.tags.value, duedate:form.duedate.value }, function(json){
 		if(!parseInt(json.total)) return;
 		var item = json.list[0];
 		changeTaskCnt(item, 0, taskList[item.id]);
@@ -430,7 +431,7 @@ function orderChanged(event,ui)
 		}
 	}
 	var nocache = '&rnd='+Math.random();
-	$.post('ajax.php?changeOrder'+nocache, { order: s }, function(json){
+	$.post(mytinytodo.mttUrl+'ajax.php?changeOrder'+nocache, { order: s }, function(json){
 	}, 'json');
 }
 
@@ -492,7 +493,7 @@ function updateAccessStatus()
 
 function doAuth(form)
 {
-	$.post('ajax.php?rnd='+Math.random(), { login:1, password: form.password.value }, function(json){
+	$.post(mytinytodo.mttUrl+'ajax.php?rnd='+Math.random(), { login:1, password: form.password.value }, function(json){
 		form.password.value = '';
 		if(json.logged)
 		{
@@ -509,7 +510,7 @@ function doAuth(form)
 
 function logout()
 {
-	$.post('ajax.php?rnd='+Math.random(), { logout:1 }, function(json){
+	$.post(mytinytodo.mttUrl+'ajax.php?rnd='+Math.random(), { logout:1 }, function(json){
 		flag.isLogged = false;
 		loadLists(0,1);
 	}, 'json');
@@ -595,7 +596,7 @@ function prioClick(prio, el)
 
 function setTaskPrio(id, prio)
 {
-	$.getJSON('ajax.php?setPrio='+id+'&prio='+prio+'&rnd='+Math.random(), function(json){
+	$.getJSON(mytinytodo.mttUrl+'ajax.php?setPrio='+id+'&prio='+prio+'&rnd='+Math.random(), function(json){
 	});
 	taskList[id].prio = prio;
 	var $t = $('#taskrow_'+id);
@@ -623,7 +624,7 @@ function setSort(v, init)
 	if(!init)
 	{
 		changeTaskOrder();
-		$.post('ajax.php?setSort'+'&rnd='+Math.random(), { list:curList.id, sort:curList.sort }, function(json){
+		$.post(mytinytodo.mttUrl+'ajax.php?setSort'+'&rnd='+Math.random(), { list:curList.id, sort:curList.sort }, function(json){
 		}, 'json');
 	}
 }
@@ -679,7 +680,7 @@ function changeTaskOrder(id)
 
 function loadTags(callback)
 {
-	$.getJSON('ajax.php?tagCloud&list='+curList.id+'&rnd='+Math.random(), function(json){
+	$.getJSON(mytinytodo.mttUrl+'ajax.php?tagCloud&list='+curList.id+'&rnd='+Math.random(), function(json){
 		if(!parseInt(json.total)) tagsList = [];
 		else tagsList = json.cloud;
 		var cloud = '';
@@ -807,7 +808,7 @@ function mttTabSelected(id, indx)
 			$('#searchbar').hide();
 		}
 		//if(tabLists[indx].published)
-			$('#rss_icon').find('a').attr('href', 'feed.php?list='+tabLists[indx].id);
+			$('#rss_icon').find('a').attr('href', mytinytodo.mttUrl+'feed.php?list='+tabLists[indx].id);
 		mytinytodo.doAction('listSelected', tabLists[indx]);
 	}
 	curList = tabLists[indx];
@@ -883,7 +884,7 @@ function loadLists(onInit, updAccess)
 		$('#searchbar').hide();
 	}
 	var nocache = '&rnd='+Math.random();
-	$.getJSON('ajax.php?loadLists'+nocache, function(json){
+	$.getJSON(mytinytodo.mttUrl+'ajax.php?loadLists'+nocache, function(json){
 		tabLists = new Array();
 		var ti = '';
 		if(parseInt(json.total))
@@ -903,7 +904,7 @@ function loadLists(onInit, updAccess)
 			curList = tabLists[0];
 			loadTasks();
 			//if(curList.published)
-				$('#rss_icon').find('a').attr('href', 'feed.php?list='+curList.id);
+				$('#rss_icon').find('a').attr('href', mytinytodo.mttUrl+'feed.php?list='+curList.id);
 			if(flag.needAuth && !flag.isLogged) $('#bar_public').show();
 		}
 		else {
@@ -928,7 +929,7 @@ function addList()
 	var r = prompt(lang.addList, lang.addListDefault);
 	if(r == null) return;
 	var nocache = '&rnd='+Math.random();
-	$.post('ajax.php?'+nocache, { addList:1, name:r }, function(json){
+	$.post(mytinytodo.mttUrl+'ajax.php?'+nocache, { addList:1, name:r }, function(json){
 		if(!parseInt(json.total)) return;
 		var item = json.list[0];
 		var i = tabLists.length;
@@ -950,7 +951,7 @@ function renameCurList()
 	var r = prompt(lang.renameList, dehtml(curList.name));
 	if(r == null || r == '') return;
 	var nocache = '&rnd='+Math.random();
-	$.post('ajax.php?'+nocache, { renameList:1, id:curList.id, name:r }, function(json){
+	$.post(mytinytodo.mttUrl+'ajax.php?'+nocache, { renameList:1, id:curList.id, name:r }, function(json){
 		if(!parseInt(json.total)) return;
 		var item = json.list[0];
 		item.i = curList.i;
@@ -966,7 +967,7 @@ function deleteCurList()
 	if(!curList) return false;
 	var r = confirm(lang.deleteList);
 	if(!r) return;
-	$.post('ajax.php?'+'&rnd='+Math.random(), { deleteList:1, id:curList.id }, function(json){
+	$.post(mytinytodo.mttUrl+'ajax.php?'+'&rnd='+Math.random(), { deleteList:1, id:curList.id }, function(json){
 		if(!parseInt(json.total)) return;
 		loadLists();
 	}, 'json');
@@ -1033,7 +1034,7 @@ function addEditTag(tag)
 function showSettings()
 {
 	if(page.cur == 'settings') return false;
-	$('#page_ajax').load('settings.php?ajax=yes',null,function(){ 
+	$('#page_ajax').load(mytinytodo.mttUrl+'settings.php?ajax=yes',null,function(){ 
 		showhide($('#page_ajax').addClass('mtt-page-settings'), $('#page_tasks'));
 		page.prev = page.cur;
 		page.cur = 'settings';
@@ -1054,7 +1055,7 @@ function saveSettings(frm)
 	var params = { save:'ajax' };
 	$(frm).find("input:text,input:checked,select,:password").filter(":enabled").each(function() { params[this.name || '__'] = this.value; }); 
 	$(frm).find(":submit").attr('disabled','disabled').blur();
-	$.post('settings.php?'+'&rnd='+Math.random(), params, function(json){
+	$.post(mytinytodo.mttUrl+'settings.php?'+'&rnd='+Math.random(), params, function(json){
 		if(json.saved) {
 			flashInfo(lang.settingsSaved);
 			setTimeout('window.location.reload();', 1000);
@@ -1066,7 +1067,7 @@ function submitFullTask(form)
 {
 	if(flag.needAuth && !flag.isLogged) return false;
 	var nocache = '&rnd='+Math.random();
-	$.post('ajax.php?fullNewTask'+nocache, { list:curList.id, tag:filter.tag, title: form.task.value, note:form.note.value, prio:form.prio.value, tags:form.tags.value, duedate:form.duedate.value }, function(json){
+	$.post(mytinytodo.mttUrl+'ajax.php?fullNewTask'+nocache, { list:curList.id, tag:filter.tag, title: form.task.value, note:form.note.value, prio:form.prio.value, tags:form.tags.value, duedate:form.duedate.value }, function(json){
 		if(!parseInt(json.total)) return;
 		form.task.value = '';
 		var item = json.list[0];
@@ -1088,7 +1089,7 @@ function publishCurList()
 {
 	if(!curList) return false;
 	var nocache = '&rnd='+Math.random();
-	$.post('ajax.php?publishList'+nocache, { list:curList.id, publish:curList.published?0:1 }, function(json){
+	$.post(mytinytodo.mttUrl+'ajax.php?publishList'+nocache, { list:curList.id, publish:curList.published?0:1 }, function(json){
 		if(!parseInt(json.total)) return;
 		curList.published = curList.published?0:1;
 		if(curList.published) $('#btnPublish').addClass('mtt-item-checked');
@@ -1265,7 +1266,7 @@ function mttMenu(container, options)
 function moveTaskToList(taskId, listId)
 {
 	if(curList.id == listId) return;
-	$.post('ajax.php?moveTask&rnd='+Math.random(), { id:taskId, from:curList.id, to:listId }, function(json){
+	$.post(mytinytodo.mttUrl+'ajax.php?moveTask&rnd='+Math.random(), { id:taskId, from:curList.id, to:listId }, function(json){
 		if(!parseInt(json.total)) return;
 		changeTaskCnt(taskList[taskId], -1)
 		delete taskList[taskId];
@@ -1312,7 +1313,7 @@ function showCompletedToggle()
 function listOrderChanged(event, ui)
 {
 	var order = $(this).sortable("serialize");
-	$.post('ajax.php?changeListOrder'+'&rnd='+Math.random(), order, function(json){
+	$.post(mytinytodo.mttUrl+'ajax.php?changeListOrder'+'&rnd='+Math.random(), order, function(json){
 	}, 'json');
 }
 

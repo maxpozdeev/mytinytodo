@@ -45,7 +45,8 @@ if($needAuth && !isset($dontStartSession))
 
 	ini_set('session.use_cookies', true);
 	ini_set('session.use_only_cookies', true);
-	session_set_cookie_params(1209600, substr($_SERVER['REQUEST_URI'], 0, strrpos($_SERVER['REQUEST_URI'], '/') + 1)); #14 days session cookie lifetime
+	session_set_cookie_params(1209600, url_dir(Config::get('url')=='' ? $_SERVER['REQUEST_URI'] : Config::get('url'))); # 14 days session cookie lifetime
+	session_name('mtt-session');
 	session_start();
 }
 
@@ -57,14 +58,13 @@ function is_logged()
 
 function timestampToDatetime($timestamp, $tz)
 {
-	global $lang;
 	$format = Config::get('dateformat') .' '. (Config::get('clock') == 12 ? 'g:i A' : 'H:i');
 	return formatTime($format, $timestamp, $tz);
 }
 
 function formatTime($format, $timestamp=0, $tz=null)
 {
-	global $lang;
+	$lang = Lang::instance();
 	if($timestamp == 0) $timestamp = time();
 	if(is_null($tz)) $tz = round(date('Z')/60);
 	$newformat = strtr($format, array('F'=>'%1', 'M'=>'%2'));

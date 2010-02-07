@@ -42,15 +42,18 @@ function get_mttinfo($v)
 	if(isset($_mttinfo[$v])) return $_mttinfo[$v];
 	switch($v)
 	{
-		case 'template_uri':
-			$_mttinfo['template_uri'] = url_dir($_SERVER['REQUEST_URI']). 'themes/'. Config::get('template') . '/';
-			return $_mttinfo['template_uri'];
 		case 'template_url':
-			$_mttinfo['template_url'] = get_mttinfo('url'). 'themes/'. Config::get('template') . '/';
+			$_mttinfo['template_url'] = get_mttinfo('mtt_url'). 'themes/'. Config::get('template') . '/';
 			return $_mttinfo['template_url'];
 		case 'url':
-			$_mttinfo['url'] = 'http://'.$_SERVER['HTTP_HOST'] .($_SERVER['SERVER_PORT'] != 80 ? ':'.$_SERVER['SERVER_PORT'] : ''). url_dir($_SERVER['REQUEST_URI']);
+			$_mttinfo['url'] = Config::get('url');
+			if($_mttinfo['url'] == '')
+				$_mttinfo['url'] = 'http://'.$_SERVER['HTTP_HOST'] .($_SERVER['SERVER_PORT'] != 80 ? ':'.$_SERVER['SERVER_PORT'] : ''). parse_url($url, PHP_URL_PATH);
 			return $_mttinfo['url'];
+		case 'mtt_url':
+			$_mttinfo['mtt_url'] = Config::get('mtt_url');
+			if($_mttinfo['mtt_url'] == '') $_mttinfo['mtt_url'] = url_dir($_SERVER['REQUEST_URI']);
+			return $_mttinfo['mtt_url'];
 		case 'title':
 			$_mttinfo['title'] = (Config::get('title') != '') ? htmlarray(Config::get('title')) : $lang->get('My Tiny Todolist');
 			return $_mttinfo['title'];
