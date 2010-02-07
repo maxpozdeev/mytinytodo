@@ -32,7 +32,7 @@ $dbtype = ($dbclass == 'database_mysql') ? 'mysql' : 'sqlite';
 
 $lastVer = '1.3.1';
 echo '<html><head><meta name="robots" content="noindex,nofollow"></head><body>'; 
-echo "<big><b>myTinyTodo v@VERSION Setup</b></big><br><br>";
+echo "<big><b>myTinyTodo @VERSION Setup</b></big><br><br>";
 
 # determine current installed version
 $ver = get_ver($db, $dbtype);
@@ -187,7 +187,7 @@ elseif($ver == $lastVer)
 else
 {
 	if(!in_array($ver, array('1.1','1.2','1.3.0'))) {
-		exitMessage("Can not update database. Unsupported version (v$ver).");
+		exitMessage("Can not update. Unsupported database version ($ver).");
 	}
 	if(!isset($_POST['update'])) {
 		exitMessage("Update database v$ver
