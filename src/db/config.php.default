@@ -15,6 +15,12 @@ $config['mysql.password'] = "";
 # Tables prefix
 $config['prefix'] = "mtt_";
 
+# These two parameters are used when mytinytodo index.php called not from installation directory
+# 'url' - URL where index.php is called from (ex.: http://site.com/todo.php)
+# 'mtt_url' - directory URL where mytinytodo is installed (with trailing slash) (ex.: http://site.com/lib/mytinytodo/)
+$config['url'] = '';
+$config['mtt_url'] = ''; 
+
 # Language pack
 $config['lang'] = "en";
 
