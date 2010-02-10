@@ -99,7 +99,7 @@ $().ready(function(){
 
 <br clear="all">
 
-<div id="page_tasks" style="display:none">
+<div id="page_tasks" style="display:none" class="<?php if(Config::get('showdate')) echo "show-inline-date"; ?>">
 
 <div id="lists">
  <ul class="mtt-tabs <?php if(isset($_GET['singletab'])) echo "mtt-tabs-only-one"; ?>"></ul>

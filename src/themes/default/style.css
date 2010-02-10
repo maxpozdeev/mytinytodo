@@ -76,6 +76,7 @@ li.task-expanded .task-toggle { background-position:-48px 0; }
 #tasklist li:hover { background-color:#f6f6f6; }
 .task-actions { float:right; width:25px; text-align:right; }
 .task-date { color:#999999; font-size:8pt; margin-left:4px; display:none; }
+.show-inline-date .task-date { display:inline; }
 .task-title a { color:#000000; }
 .task-title a:hover { color:#af0000; }
 #page_tasks.readonly #tasklist li .task-actions { display:none; }

@@ -117,6 +117,7 @@ class DefaultLang
 		'set_24hour' => "24-hour",
 		'set_submit' => "Submit changes",
 		'set_cancel' => "Cancel",
+		'set_showdate' => "Show task date in list",
 	);
 
 	var $js = array();

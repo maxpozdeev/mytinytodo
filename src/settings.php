@@ -34,6 +34,7 @@ if(isset($_POST['save']))
 	Config::set('dateformat', _post('dateformat'));
 	Config::set('dateformatshort', _post('dateformatshort'));
 	Config::set('title', trim(_post('title')));
+	Config::set('showdate', (int)_post('showdate'));
 	Config::save();
 	$t['saved'] = 1;
 	echo json_encode($t);
@@ -125,26 +126,26 @@ function selectOptions($a, $value, $default=null)
 </td></tr>
 
 <tr>
-<th><?php _e('set_sessions');?>:</span></th>
+<th><?php _e('set_sessions');?>:</th>
 <td>
  <label><input type="radio" name="session" value="default" <?php if(_c('session')=='default') echo "checked"; ?>><?php _e('set_sessions_php');?></label> <br>
  <label><input type="radio" name="session" value="files" <?php if(_c('session')=='files') echo "checked"; ?>><?php _e('set_sessions_files');?></label> <span class="descr">(&lt;mytinytodo_dir&gt;/tmp/sessions)</span>
 </td></tr>
 
 <tr>
-<th><?php _e('set_firstdayofweek');?>:</span></th>
+<th><?php _e('set_firstdayofweek');?>:</th>
 <td>
  <SELECT name="firstdayofweek"><?php echo selectOptions(__('days_long'), _c('firstdayofweek')); ?></SELECT>
 </td></tr>
 
 <tr>
-<th><?php _e('set_duedate');?>:</span></th>
+<th><?php _e('set_duedate');?>:</th>
 <td>
  <SELECT name="duedateformat"><?php echo selectOptions(array(1=>'yyyy-mm-dd ('.date('Y-m-d').')', 2=>'m/d/yyyy ('.date('n/j/Y').')', 3=>'dd.mm.yyyy ('.date('d.m.Y').')', 4=>'dd/mm/yyyy ('.date('d/m/Y').')'), _c('duedateformat')); ?></SELECT>
 </td></tr>
 
 <tr>
-<th><?php _e('set_date');?>:</span></th>
+<th><?php _e('set_date');?>:</th>
 <td>
  <input name="dateformat" value="<?php echo htmlspecialchars(_c('dateformat'));?>">
  <SELECT onChange="if(this.value!=0) this.form.dateformat.value=this.value;">
@@ -154,7 +155,7 @@ function selectOptions($a, $value, $default=null)
 </td></tr>
 
 <tr>
-<th><?php _e('set_shortdate');?>:</span></th>
+<th><?php _e('set_shortdate');?>:</th>
 <td>
  <input name="dateformatshort" value="<?php echo htmlspecialchars(_c('dateformatshort'));?>">
  <SELECT onChange="if(this.value!=0) this.form.dateformatshort.value=this.value;">
@@ -163,10 +164,18 @@ function selectOptions($a, $value, $default=null)
 </td></tr>
 
 <tr>
-<th><?php _e('set_clock');?>:</span></th>
+<th><?php _e('set_clock');?>:</th>
 <td>
  <SELECT name="clock"><?php echo selectOptions(array(12=>__('set_12hour').' ('.date('g:i A').')', 24=>__('set_24hour').' ('.date('H:i').')'), _c('clock')); ?></SELECT>
 </td></tr>
+
+<tr>
+<th><?php _e('set_showdate');?>:</th>
+<td>
+ <label><input type="radio" name="showdate" value="1" <?php if(_c('showdate')) echo "checked"; ?>><?php _e('set_enabled');?></label> <br>
+ <label><input type="radio" name="showdate" value="0" <?php if(!_c('showdate')) echo "checked"; ?>><?php _e('set_disabled');?></label>
+</td>
+</tr>
 
 <tr><td colspan="2" class="form-buttons">
 

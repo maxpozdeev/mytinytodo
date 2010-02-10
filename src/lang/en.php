@@ -6,8 +6,8 @@
 	Original name: English
 	Author: Max Pozdeev
 	Author Url: http://www.mytinytodo.net
-	AppVersion: v1.3.3
-	Date: 2010-01-23
+	AppVersion: v1.3.4
+	Date: 2010-02-10
 */
 
 class Lang extends DefaultLang
@@ -119,6 +119,7 @@ class Lang extends DefaultLang
 		'set_24hour' => "24-hour",
 		'set_submit' => "Submit changes",
 		'set_cancel' => "Cancel",
+		'set_showdate' => "Show task date in list",
 	);
 }
 

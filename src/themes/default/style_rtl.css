@@ -12,6 +12,7 @@ h2 { float:right; }
 .task-left { float:right; }
 .task-toggle { float:right; }
 .task-middle { margin-right:40px; margin-left:25px; }
+.task-date { margin-right:4px; }
 .duedate { float:left; margin-left:0; margin-right:5px; }
 #taskedit-date { float:left; }
 #page_taskedit .form-row-short { float:right; margin-left:12px; margin-right:0; }

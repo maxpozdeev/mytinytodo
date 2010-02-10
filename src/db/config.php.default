@@ -51,4 +51,7 @@ $config['clock'] = 24;
 $config['dateformat'] = 'j M Y';
 $config['dateformatshort'] = 'j M';
 
+# Show task date in list
+$config['showdate'] = 0;
+
 ?>
