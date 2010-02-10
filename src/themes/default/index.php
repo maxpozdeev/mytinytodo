@@ -174,8 +174,10 @@ $().ready(function(){
 </div>
 
 <div id="priopopup" style="display:none">
-<span class="prio-neg" onClick="prioClick(-1,this)">&minus;1</span> <span class="prio-o" onClick="prioClick(0,this)">&plusmn;0</span>
-<span class="prio-pos" onClick="prioClick(1,this)">+1</span> <span class="prio-pos" onClick="prioClick(2,this)">+2</span>
+ <span class="prio-neg prio-neg-1" onClick="prioClick(-1,this)">&minus;1</span>
+ <span class="prio-zero" onClick="prioClick(0,this)">&plusmn;0</span>
+ <span class="prio-pos prio-pos-1" onClick="prioClick(1,this)">+1</span>
+ <span class="prio-pos prio-pos-2" onClick="prioClick(2,this)">+2</span>
 </div>
 
 <div id="taskviewcontainer" class="mtt-btnmenu-container" style="display:none">

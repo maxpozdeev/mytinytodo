@@ -137,9 +137,9 @@ function prepareHtml(s)
 function preparePrio(prio,id)
 {
 	var cl =''; var v = '';
-	if(prio < 0) { cl = 'prio-neg'; v = '&minus;'+Math.abs(prio); }
-	else if(prio > 0) { cl = 'prio-pos'; v = '+'+prio; }
-	else { cl = 'prio-o'; v = '&plusmn;0'; }
+	if(prio < 0) { cl = 'prio-neg prio-neg-'+Math.abs(prio); v = '&minus;'+Math.abs(prio); }
+	else if(prio > 0) { cl = 'prio-pos prio-pos-'+prio; v = '+'+prio; }
+	else { cl = 'prio-zero'; v = '&plusmn;0'; }
 	return '<span class="task-prio '+cl+'" onMouseOver="prioPopup(1,this,'+id+')" onMouseOut="prioPopup(0,this)">'+v+'</span>';
 }
 

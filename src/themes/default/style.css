@@ -114,9 +114,10 @@ li.task-completed .task-note-block .task-note { text-decoration:line-through; }
 
 .task-prio { padding-left:2px; padding-right:2px; margin-left:0px; margin-right:4px; cursor:default; }
 .prio-neg { background-color:#3377ff; color:#ffffff; }
-.prio-pos { background-color:#ff3030; color:#ffffff;  }
-.prio-o { background-color:#dedede; }
-.task-prio.prio-o { display:none; } 
+.prio-pos { background-color:#ff3333; color:#ffffff; }
+.prio-pos-1 { background-color:#ff7700; color:#ffffff; }
+.prio-zero { /*background-color:#dedede;*/ }
+.task-prio.prio-zero { display:none; } 
 
 .form-row { margin-top:8px; }
 .form-row .h { font-weight:bold; color:#333333; }
@@ -141,11 +142,11 @@ li.task-completed .task-note-block .task-note { text-decoration:line-through; }
 .ac_over { background-color:#316AC5; color:white; }
 
 #priopopup { overflow: hidden; z-index:100; background-color:#f9f9f9; border:1px solid #cccccc; padding:5px; } 
-#priopopup .prio-o { display:inline; }
 #priopopup span { cursor:pointer; border:1px solid #f9f9f9; }
-#priopopup .prio-o:hover { border:1px solid #dedede; }
-#priopopup .prio-neg:hover { border:1px solid #3377ff; }
-#priopopup .prio-pos:hover { border:1px solid #ff3030; }
+#priopopup .prio-zero:hover { border-color:#dedede; }
+#priopopup .prio-neg:hover { border-color:#3377ff; }
+#priopopup .prio-pos:hover { border-color:#ff3333; }
+#priopopup .prio-pos-1:hover { border-color:#ff7700; }
 
 #tagcloudbtn { margin-left:2px; margin-right:2px; font-size:8pt; font-weight:normal; border-bottom:1px dashed #ccc; padding:2px; cursor:pointer; -moz-user-select:none; -webkit-user-select: none; }
 #tagcloudbtn:hover { border-bottom:1px solid #bbb; } 
