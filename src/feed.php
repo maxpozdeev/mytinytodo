@@ -37,8 +37,10 @@ while($r = $q->fetch_assoc($q))
 		$a[] = $lang->get('due'). ": ".formatDate3(Config::get('dateformat'), (int)$ad[0], (int)$ad[1], (int)$ad[2], $lang);
 	}
 	if($r['tags'] != '') $a[] = $lang->get('tags'). ": ". str_replace(',', ', ', $r['tags']);
-	$r['_descr'] = nl2br($r['note']). ($a && $r['note']!='' ? "<br><br>" : "").  implode("<br>", $a);
-	$data[] = htmlarray($r);
+	$r['title'] = strip_tags($r['title']);
+	$r['note'] = escapeTags($r['note']);
+	$r['_descr'] = nl2br($r['note']). ($a && $r['note']!='' ? "<br/><br/>" : "").  implode("<br/>", htmlarray($a));
+	$data[] = $r;
 }
 
 printRss($listData, $data);
@@ -58,10 +60,10 @@ function printRss($listData, $data)
 		$d = gmdate('r', $v['d_created']);
 		$guid = $listData['id'].'-'.$v['id'].'-'.$v['d_created'];
 
-		$s .= "<item>\n<title>$v[title]</title>\n".
+		$s .= "<item>\n<title><![CDATA[". str_replace("]]>", "]]]]><![CDATA[>", $v['title']). "]]></title>\n".
 			"<link>$link</link>\n".
 			"<pubDate>$d</pubDate>\n".
-			"<description>$v[_descr]</description>\n".
+			"<description><![CDATA[". $v['_descr']. "]]></description>\n".
 			"<guid isPermaLink=\"false\">$guid</guid>\n".
 			"</item>\n";
 	}

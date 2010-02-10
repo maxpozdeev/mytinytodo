@@ -188,7 +188,7 @@ elseif(isset($_GET['editNote']))
 	$db->dq("UPDATE {$db->prefix}todolist SET note=? WHERE id=$id", $note);
 	$t = array();
 	$t['total'] = 1;
-	$t['list'][] = array('id'=>$id, 'note'=>nl2br(htmlarray($note)), 'noteText'=>(string)$note);
+	$t['list'][] = array('id'=>$id, 'note'=>nl2br(escapeTags($note)), 'noteText'=>(string)$note);
 	echo json_encode($t);
 	exit;
 }
@@ -474,13 +474,13 @@ function prepareTaskRow($r, $tz)
 	$dCreated = timestampToDatetime($r['d_created'], $tz);
 	return array(
 		'id' => $r['id'],
-		'title' => htmlarray($r['title']),
+		'title' => escapeTags($r['title']),
 		'date' => htmlarray($dCreated),
 		'dateInline' => htmlarray(sprintf($lang->get('taskdate_inline'), $dCreated)),
 		'dateCompleted' => htmlarray(timestampToDatetime($r['d_completed'], $tz)),
 		'compl' => (int)$r['compl'],
 		'prio' => $r['prio'],
-		'note' => nl2br(htmlarray($r['note'])),
+		'note' => nl2br(escapeTags($r['note'])),
 		'noteText' => (string)$r['note'],
 		'ow' => (int)$r['ow'],
 		'tags' => htmlarray($r['tags']),
