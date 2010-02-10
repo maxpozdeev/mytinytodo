@@ -2,7 +2,7 @@
 
 /*
 	This file is part of myTinyTodo.
-	(C) Copyright 2009 Max Pozdeev <maxpozdeev@gmail.com>
+	(C) Copyright 2009-2010 Max Pozdeev <maxpozdeev@gmail.com>
 	Licensed under the GNU GPL v3 license. See file COPYRIGHT for details.
 */
 
@@ -44,18 +44,6 @@ if(isset($_POST['save']))
 function _c($key)
 {
 	return Config::get($key);
-}
-
-function _e($s)
-{
-	global $lang;
-	echo $lang->get($s);
-}
-
-function __($s)
-{
-	global $lang;
-	return $lang->get($s);
 }
 
 function getLangs()

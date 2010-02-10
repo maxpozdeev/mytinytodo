@@ -50,6 +50,7 @@ $().ready(function(){
 		if(is_logged()) echo "\tflag.isLogged = true;\n";
 	}
 	if(Config::get('autotag')) echo "\tflag.autoTag = true;\n";
+	if(isset($_GET['list'])) echo "\tmytinytodo.setOptions({openList:". (int)$_GET['list']. "});\n";
 	echo "\tloadLists(1, 1);\n";
 ?>
 	$("#duedate").datepicker({dateFormat: '<?php echo datepickerformat(); ?>', firstDay: <?php echo Config::get('firstdayofweek'); ?>,

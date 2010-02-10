@@ -1,3 +1,9 @@
+/*
+	This file is part of myTinyTodo.
+	(C) Copyright 2009-2010 Max Pozdeev <maxpozdeev@gmail.com>
+	Licensed under the GNU GPL v3 license. See file COPYRIGHT for details.
+*/
+
 theme = {
 	newTaskFlashColor: '#ffffaa',
 	editTaskFlashColor: '#bbffaa',
@@ -25,6 +31,9 @@ var mytinytodo = {
 	actions: {},
 	menus: {},
 	mttUrl: '',
+	options: {
+		openList: 0
+	},
 
 	addAction: function(action, proc)
 	{
@@ -38,6 +47,10 @@ var mytinytodo = {
 		for(var i in this.actions[action]) {
 			this.actions[action][i](opts);
 		}
+	},
+
+	setOptions: function(opts) {
+		jQuery.extend(this.options, opts);
 	}
 };
 
@@ -878,6 +891,7 @@ function toggleAllNotes(show)
 
 function loadLists(onInit, updAccess)
 {
+	if(updAccess) mytinytodo.parseAnchor();
 	if(filter.search != '') {
 		filter.search = '';
 		$('#searchbarkeyword').text('');
@@ -889,11 +903,20 @@ function loadLists(onInit, updAccess)
 		var ti = '';
 		if(parseInt(json.total))
 		{
+			var openIdx = 0;
+			if(mytinytodo.options.openList) {
+				for(var i in json.list) {
+					if(mytinytodo.options.openList == json.list[i].id) {
+						openIdx = i;
+						break;
+					}
+				}
+			}
 			$.each(json.list, function(i,item){
 				item.i = i;
 				tabLists[i] = item;
-				ti += '<li id="list_'+item.id+'" class="'+(i==0?'mtt-tabs-selected':'')+'">'+
-					'<a href="#list'+item.id+'" title="'+item.name+'" onClick="mttTabSelected('+item.id+','+i+');return false;"><span>'+item.name+'</span>'+
+				ti += '<li id="list_'+item.id+'" class="'+(i==openIdx?'mtt-tabs-selected':'')+'">'+
+					'<a href="#list/'+item.id+'" title="'+item.name+'" onClick="mttTabSelected('+item.id+','+i+');return false;"><span>'+item.name+'</span>'+
 					'<div class="list-action" onClick="listMenu(this,'+i+');return stopBubble(arguments[0]);"></div></a></li>';
 			});
 			if(!curList) {
@@ -901,7 +924,7 @@ function loadLists(onInit, updAccess)
 				$('#page_tasks h3').children().removeClass('invisible');
 				$('#mylistscontainer .mtt-need-list').removeClass('mtt-disabled');
 			}
-			curList = tabLists[0];
+			curList = tabLists[openIdx];
 			loadTasks();
 			//if(curList.published)
 				$('#rss_icon').find('a').attr('href', mytinytodo.mttUrl+'feed.php?list='+curList.id);
@@ -914,6 +937,7 @@ function loadLists(onInit, updAccess)
 			$('#mylistscontainer .mtt-need-list').addClass('mtt-disabled');
 			$('#tasklist').html('');
 		}
+		mytinytodo.options.openList = 0;
 		$('#lists ul').html(ti);
 		$('#lists').show();
 		mytinytodo.doAction('listsLoaded');
@@ -937,7 +961,7 @@ function addList()
 		tabLists[i] = item;
 		if(i > 0) {
 			$('#lists ul').append('<li id="list_'+item.id+'">'+
-					'<a href="#list'+item.id+'" title="'+item.name+'" onClick="mttTabSelected('+item.id+','+i+');return false;"><span>'+item.name+'</span>'+
+					'<a href="#list/'+item.id+'" title="'+item.name+'" onClick="mttTabSelected('+item.id+','+i+');return false;"><span>'+item.name+'</span>'+
 					'<div class="list-action" onClick="listMenu(this,'+i+');return stopBubble(arguments[0]);"></div></a></li>');
 			mytinytodo.doAction('listAdded', item);
 		}
@@ -1359,4 +1383,15 @@ function stopBubble(e)
 	e.cancelBubble = true;
 	if(e.stopPropagation) e.stopPropagation();
 	return false;
+}
+
+mytinytodo.parseAnchor = function()
+{
+	if(location.hash == '') return false;
+	var h = location.hash.substr(1);
+	var a = h.split("/");
+	if(a.length < 2) return false;
+	if(a[0] == 'list' && a[1].match(/^\d+$/)) {
+		this.options.openList = a[1];
+	}
 }

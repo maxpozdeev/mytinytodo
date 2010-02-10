@@ -2,7 +2,7 @@
 
 /*
 	This file is part of myTinyTodo.
-	(C) Copyright 2009 Max Pozdeev <maxpozdeev@gmail.com>
+	(C) Copyright 2009-2010 Max Pozdeev <maxpozdeev@gmail.com>
 	Licensed under the GNU GPL v3 license. See file COPYRIGHT for details.
 */
 
@@ -46,7 +46,7 @@ printRss($listData, $data);
 
 function printRss($listData, $data)
 {
-	$link = htmlarray('http://'. $_SERVER['HTTP_HOST']. substr($_SERVER['REQUEST_URI'], 0, strrpos($_SERVER['REQUEST_URI'], '/') + 1));
+	$link = get_mttinfo('url'). "?list=". $listData['id'];
 	$buildDate = gmdate('r');
 
 	$s = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<rss version=\"2.0\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\">\n<channel>\n".
