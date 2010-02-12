@@ -22,6 +22,7 @@ class DefaultLang
 		'addListDefault' => "Todo",
 		'renameList' => "Rename list",
 		'deleteList' => "This will delete current list with all tasks in it.\\nAre you sure?",
+		'clearCompleted' => "This will delete all completed tasks in the list.\\nAre you sure?",
 		'settingsSaved' => "Settings saved. Reloading...",
 	);
 
@@ -81,6 +82,7 @@ class DefaultLang
 		'list_delete' => "Delete list",
 		'list_publish' => "Publish list",
 		'list_showcompleted' => "Show completed tasks",
+		'list_clearcompleted' => "Clear completed tasks",
 		'alltags' => "All tags:",
 		'alltags_show' => "Show all",
 		'alltags_hide' => "Hide all",

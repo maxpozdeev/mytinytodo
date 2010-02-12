@@ -7,7 +7,7 @@
 	Author: Max Pozdeev
 	Author Url: http://www.mytinytodo.net
 	AppVersion: v1.3.4
-	Date: 2010-02-10
+	Date: 2010-02-12
 */
 
 class Lang extends DefaultLang
@@ -24,6 +24,7 @@ class Lang extends DefaultLang
 		'addList' => "Новый список",
 		'renameList' => "Переименовать список",
 		'deleteList' => "Вы действительно хотите удалить этот список со всеми задачами?",
+		'clearCompleted' => "Удалить все выполненные задачи из списка?",		
 		'settingsSaved' => "Настройки сохранены. Перезагрузка...",
 	);
 
@@ -83,6 +84,7 @@ class Lang extends DefaultLang
 		'list_delete' => "Удалить список",
 		'list_publish' => "Опубликовать список",
 		'list_showcompleted' => "Показать завершенные задачи",
+		'list_clearcompleted' => "Удалить завершенные задачи",
 		'alltags' => "Все теги:",
 		'alltags_show' => "Показать все",
 		'alltags_hide' => "Скрыть все",

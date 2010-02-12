@@ -464,6 +464,33 @@ elseif(isset($_GET['parseTaskStr']))
 	echo json_encode($t);
 	exit;
 }
+elseif(isset($_GET['clearCompletedInList']))
+{
+	check_write_access();
+	stop_gpc($_POST);
+	$t = array();
+	$t['total'] = 0;
+	$listId = (int)_post('list');
+	$setCase = '';
+	$aId = array();
+	$q = $db->dq("SELECT tag_id,COUNT(task_id) FROM {$db->prefix}tag2task INNER JOIN {$db->prefix}todolist ON task_id=id WHERE list_id=$listId AND compl=1 GROUP BY tag_id");
+	while($r = $q->fetch_row()) {
+		$aId[] = $r[0];
+		$setCase .= "WHEN id=$r[0] THEN $r[1]\n";	
+	}
+	$db->ex("BEGIN");
+	if($aId) {
+		$ids = implode(',', $aId);
+		$db->ex("UPDATE {$db->prefix}tags SET tags_count=tags_count - CASE\n $setCase END WHERE id IN ($ids)");
+		$db->ex("DELETE FROM {$db->prefix}tag2task WHERE task_id IN (SELECT id FROM {$db->prefix}todolist WHERE list_id=$listId AND compl=1)");
+	}
+	$db->ex("DELETE FROM {$db->prefix}todolist WHERE list_id=$listId and compl=1");
+	$t['total'] = $db->affected();
+	$db->ex("DELETE FROM {$db->prefix}tags WHERE tags_count < 1");
+	$db->ex("COMMIT");
+	echo json_encode($t);
+	exit;
+}
 
 ###################################################################################################
 

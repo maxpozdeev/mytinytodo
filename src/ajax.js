@@ -995,7 +995,6 @@ function deleteCurList()
 		if(!parseInt(json.total)) return;
 		loadLists();
 	}, 'json');
-
 }
 
 function addsearchToggle(toSearch)
@@ -1371,6 +1370,7 @@ function listMenuClick(el, menu)
 		case 'btnDeleteList': deleteCurList(); break;
 		case 'btnPublish': publishCurList(); break;
 		case 'btnShowCompleted': showCompletedToggle(); break;
+		case 'btnClearCompleted': clearCompleted(); break;
 		case 'sortByHand': setSort(0); break;
 		case 'sortByPrio': setSort(1); break;
 		case 'sortByDueDate': setSort(2); break;
@@ -1394,4 +1394,16 @@ mytinytodo.parseAnchor = function()
 	if(a[0] == 'list' && a[1].match(/^\d+$/)) {
 		this.options.openList = a[1];
 	}
+}
+
+function clearCompleted()
+{
+	if(!curList) return false;
+	var r = confirm(lang.clearCompleted);
+	if(!r) return;
+	$.post(mytinytodo.mttUrl+'ajax.php?clearCompletedInList', { list:curList.id }, function(json){
+		if(!parseInt(json.total)) return;
+		flag.tagsChanged = true;
+		if(curList.showCompl) loadTasks();
+	}, 'json');	
 }

@@ -199,6 +199,8 @@ $().ready(function(){
 <ul>
  <li class="mtt-need-list" id="btnRenameList"><?php _e('list_rename');?></li>
  <li class="mtt-need-list" id="btnDeleteList"><?php _e('list_delete');?></li>
+ <li class="mtt-need-list" id="btnClearCompleted"><?php _e('list_clearcompleted');?></li>
+ <li class="mtt-btnmenu-delimiter"></li>
  <li class="mtt-need-list" id="btnPublish"><div class="menu-icon"></div><?php _e('list_publish');?></li>
  <li class="mtt-need-list" id="btnShowCompleted"><div class="menu-icon"></div><?php _e('list_showcompleted');?></li>
  <li class="mtt-btnmenu-delimiter"></li>
