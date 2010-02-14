@@ -6,8 +6,9 @@
 	Original name: Français
 	Author: Olivier Gaillot
 	Author Url: http://www.t1bis.com
-	AppVersion: v1.3.2
-	Date: 2010-01-20
+	AppVersion: v1.3.3
+	Date: 2010-02-12
+	Modified by: Alexis Degrugillier	
 */
 
 class Lang extends DefaultLang
@@ -70,7 +71,6 @@ class Lang extends DefaultLang
 		'f_past' => "En retard",
 		'f_today' => "Aujourd'hui et demain",
 		'f_soon' => "Bient&ocirc;t",
-		'tasks_and_compl' => "T&acirc;ches + termin&eacute;es",
 		'action_edit' => "&Eacute;diter",
 		'action_note' => "&Eacute;diter note",
 		'action_delete' => "Supprimer",
@@ -83,6 +83,7 @@ class Lang extends DefaultLang
 		'list_rename' => "Renommer liste",
 		'list_delete' => "Supprimer liste",
 		'list_publish' => "Publier liste",
+		'list_showcompleted' => "Afficher les t&acirc;ches termin&eacute;es",
 		'alltags' => "Tous les tags :",
 		'alltags_show' => "Voir tous",
 		'alltags_hide' => "Cacher tous",
