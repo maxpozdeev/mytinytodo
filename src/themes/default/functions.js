@@ -10,7 +10,7 @@ function tplSingleTabLoaded()
 	}
 	var ti = '';
 	for(var i in tabLists) {
-		ti += '<li class="list-ref '+(i==0?'mtt-item-checked':'')+' list-id-'+tabLists[i].id+'" onClick="tplTabMenuSelect('+tabLists[i].id+','+i+');"><div class="menu-icon"></div><a href="#list'+tabLists[i].id+'" onClick="return false">'+tabLists[i].name+'</a></li>';
+		ti += '<li class="list-ref '+(i==0?'mtt-item-checked':'')+' list-id-'+tabLists[i].id+'" onClick="tplTabMenuSelect('+tabLists[i].id+','+i+');"><div class="menu-icon"></div><a href="#list/'+tabLists[i].id+'" onClick="return false">'+tabLists[i].name+'</a></li>';
 	}
 	$lc.find('.list-block-delimiter').after(ti);
 }
@@ -22,7 +22,7 @@ function tplSingleTabRenamed(list)
 
 function tplSingleTabAdded(list)
 {
-	$('#mylistscontainer ul').append('<li class="list-ref list-id-'+list.id+'" onClick="tplTabMenuSelect('+list.id+','+list.i+');"><div class="menu-icon"></div><a href="#list'+list.id+'" onClick="return false">'+list.name+'</a></li>');
+	$('#mylistscontainer ul').append('<li class="list-ref list-id-'+list.id+'" onClick="tplTabMenuSelect('+list.id+','+list.i+');"><div class="menu-icon"></div><a href="#list/'+list.id+'" onClick="return false">'+list.name+'</a></li>');
 }
 
 function tplTabMenuSelect(id, indx)
