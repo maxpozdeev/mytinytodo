@@ -121,6 +121,7 @@ class Lang extends DefaultLang
 		'set_24hour' => "24-часовой",
 		'set_submit' => "Сохранить изменения",
 		'set_cancel' => "Отмена",
+		'set_showdate' => "Показывать дату создания задачи",
 	);
 }
 
