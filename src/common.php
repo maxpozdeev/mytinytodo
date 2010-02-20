@@ -145,6 +145,7 @@ function formatDate3($format, $ay, $am, $ad, $lang)
 
 function url_dir($url)
 {
+	if(false !== $p = strpos($url, '?')) $url = substr($url,0,$p); # to avoid parse errors on strange query strings
 	$p = parse_url($url, PHP_URL_PATH);
 	if($p == '') return '/';
 	if(substr($p,-1) == '/') return $p;
