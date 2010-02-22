@@ -3,45 +3,44 @@
 /*
 	myTinyTodo language pack
 	Language: Brazilian Portuguese
-	Author: Raphael Guimarães
-	E-Mail:
-	Url:
-	AppVersion: v1.3.0
-	Date: 2009-11-09
+	Original name: Português (do Brasil)
+	Author: Vitor Micillo Junior
+	Author Url:
+	AppVersion: v1.3.4
+	Date: 2010-02-22
 */
 
 class Lang extends DefaultLang
 {
 	var $js = array
 	(
-		'actionNote' => "nota",
-		'actionEdit' => "modificar",
-		'actionDelete' => "deletar",
-		'taskDate' => array("function(date) { return 'added at '+date; }"),
-		'confirmDelete' => "você tem certeza?",
+		'confirmDelete' => "Deletar esta tarefa?",
 		'actionNoteSave' => "salvar",
 		'actionNoteCancel' => "cancelar",
-		'error' => "Ocorreu algum erro (clique para detalhes)",
+		'error' => "Erro (ver detalhes)",
 		'denied' => "Acesso negado",
-		'invalidpass' => "Password errado",
-		'readonly' => "Somente leitura",
+		'invalidpass' => "Senha errada",
 		'tagfilter' => "Título:",
-		'addList' => "Criar nova list",
+		'addList' => "Criar nova lista",
 		'renameList' => "Renomear lista",
-		'deleteList' => "Isso deletará essa lista com todas as tarefas nela.\\nVocê tem certeza?",
-		'settingsSaved' => "Preferencias salvas. Recarregando...",
+		'deleteList' => "Deletar toda lista de tarefas.\\nTem certeza?",
+		'clearCompleted' => "Deletar todas as tarefas completas na lista.\\nTem certeza",
+		'settingsSaved' => "Configurações salvas. Recarregando...",
 	);
 
 	var $inc = array
 	(
 		'My Tiny Todolist' => "Minha lista de tarefas",
 		'htab_newtask' => "Nova tarefa",
-		'htab_search' => "Procurar",
+		'htab_search' => "Pesquisar",
 		'btn_add' => "Adicionar",
-		'btn_search' => "Procurar",
-		'advanced_add' => "Avaçado",
-		'searching' => "Procurar por",
+		'btn_search' => "Pesquisar",
+		'advanced_add' => "Avançado",
+		'searching' => "Pesquisar por",
 		'tasks' => "Tarefas",
+		'taskdate_inline' => "adicionada em %s",
+		'taskdate_created' => "Data da criação",
+		'taskdate_completed' => "Data da conclusão",
 		'edit_task' => "Editar Tarefa",
 		'add_task' => "Nova Tarefa",
 		'priority' => "Prioridade",
@@ -53,37 +52,76 @@ class Lang extends DefaultLang
 		'btn_login' => "Login",
 		'a_login' => "Login",
 		'a_logout' => "Sair",
-		'tags' => "Títulos",
+		'public_tasks' => "Tarefa Pública",
+		'tags' => "Tags",
 		'tagfilter_cancel' => "cancelar filtro",
 		'sortByHand' => "Ordenar manualmente",
 		'sortByPriority' => "Ordenar por prioridade",
 		'sortByDueDate' => "Ordenar por data de vencimento",
 		'due' => "Prazo",
 		'daysago' => "%d dias atrás",
-		'indays' => "em %d dias",
+		'indays' => "in %d dias",
 		'months_short' => array("Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"),
 		'months_long' => array("Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"),
 		'days_min' => array("Dom","Seg","Ter","Qua","Qui","Sex","Sab"),
+		'days_long' => array("Domingo","Segunda","Terça","Quarta","Quinta","Sexta","Sabado"),
 		'today' => "hoje",
 		'yesterday' => "ontem",
 		'tomorrow' => "amanhã",
-		'f_past' => "Vencido",
-		'f_today' => "Hoje e amanhã",
+		'f_past' => "Vencidas",
+		'f_today' => "Hoje e Amanhã",
 		'f_soon' => "Breve",
-		'tasks_and_compl' => "Tarefas + completas",
+		'action_edit' => "Editar",
+		'action_note' => "Editar Nota",
+		'action_delete' => "Deletar",
+		'action_priority' => "Prioridade",
+		'action_move' => "Mover para",
 		'notes' => "Notas:",
 		'notes_show' => "Mostrar",
 		'notes_hide' => "Esconder",
 		'list_new' => "Nova lista",
-		'list_rename' => "Renomear",
-		'list_delete' => "Deletar",
+		'list_rename' => "Renomear lista",
+		'list_delete' => "Deletar lista",
+		'list_publish' => "Publicar lista",
+		'list_showcompleted' => "Mostrar tarefas completas",
+		'list_clearcompleted' => "Limpar tarefas completas",
 		'alltags' => "Todos os títulos:",
 		'alltags_show' => "Mostrar todos",
-		'alltags_hide' => "Esconder todos",
-		'a_settings' => "Preferências",
+		'alltags_hide' => "Esconder todas",
+		'a_settings' => "Configurações",
 		'rss_feed' => "RSS Feed",
 		'feed_title' => "%s",
-		'feed_description' => "Nova tarefa em %s",
+		'feed_description' => "Nova tarefa in %s",
+
+		/* Settings */
+		'set_header' => "Configurações",
+		'set_title' => "Título",
+		'set_title_descr' => "(especifique se você deseja alterar o título padrão)",
+		'set_language' => "Idíoma",
+		'set_protection' => "Proteção por Senha",
+		'set_enabled' => "Habilitar",
+		'set_disabled' => "Desabilitar",
+		'set_newpass' => "Nova senha",
+		'set_newpass_descr' => "(deixe em branco se não vai alterar a senha atual)",
+		'set_smartsyntax' => "Smart syntax",
+		'set_smartsyntax_descr' => "(/prioridade/ tarefa /tags/)",
+		'set_autotz' => "Timezone Automática",
+		'set_autotz_descr' => "(determinar timezone offset of user environment with javascript)",
+		'set_autotag' => "Autotagging",
+		'set_autotag_descr' => "(automatically adds tag of current tag filter to newly created task)",
+		'set_sessions' => "Mecanismo de manipulação de sessões",
+		'set_sessions_php' => "PHP",
+		'set_sessions_files' => "Arquivos",
+		'set_firstdayofweek' => "Primeiro dia da semana",
+		'set_duedate' => "Formato da data do calendário",
+		'set_date' => "Formato da data",
+		'set_shortdate' => "Formato de data abreviada",
+		'set_clock' => "Formato do relogio",
+		'set_12hour' => "12-horas",
+		'set_24hour' => "24-horas",
+		'set_submit' => "Salvar",
+		'set_cancel' => "Cancelar",
+		'set_showdate' => "Mostrar a data na lista de tarefas",
 	);
 }
 
