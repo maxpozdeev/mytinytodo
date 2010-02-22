@@ -87,7 +87,7 @@ class Config
 
 	public static $config;
 
-	public function loadConfig($config)
+	public static function loadConfig($config)
 	{
 		self::$config = $config;
 	}
