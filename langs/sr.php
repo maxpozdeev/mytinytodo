@@ -6,8 +6,8 @@
 	Original name: Српски
 	Author: Goran Trajkovic
 	Author Url: http://www.crelativ.com
-	AppVersion: v1.3.2
-	Date: 2010-01-02
+	AppVersion: v1.3.4
+	Date: 2010-02-21
 */
 
 class Lang extends DefaultLang
@@ -24,6 +24,7 @@ class Lang extends DefaultLang
 		'addList' => "Направи нову листу",
 		'renameList' => "Унесите нови назив листе",
 		'deleteList' => "Брисање текуће листе са свим припадајућим задацима\\nДа ли сте сигурни?",
+		'clearCompleted' => "Брисање свих завршених задатака у листи\\nДа ли сте сигурни?",
 		'settingsSaved' => "Промене у подешавањима су сачуване. Поновно учитавање...",
 	);
 
@@ -70,7 +71,6 @@ class Lang extends DefaultLang
 		'f_past' => "Пробивени",
 		'f_today' => "Данас и сутра",
 		'f_soon' => "Ускоро",
-		'tasks_and_compl' => "Сви",
 		'action_edit' => "Измена задатка",
 		'action_note' => "Промена описа",
 		'action_delete' => "Брисање",
@@ -83,6 +83,8 @@ class Lang extends DefaultLang
 		'list_rename' => "Преименовање текуће листе",
 		'list_delete' => "Брисање текуће листе",
 		'list_publish' => "Постављање текуће листе за јавну",
+		'list_showcompleted' => "Приказ завршених задатака",
+		'list_clearcompleted' => "Брисање завршених задатака",
 		'alltags' => "Све категорије:",
 		'alltags_show' => "Прикажи категорије",
 		'alltags_hide' => "Сакриј  категорије",
@@ -90,6 +92,7 @@ class Lang extends DefaultLang
 		'rss_feed' => "RSS Feed",
 		'feed_title' => "%s",
 		'feed_description' => "Задаци у категорији: %s",	
+
 
 		/* Подешавања */
 		'set_header' => "Подешавања",
@@ -119,6 +122,7 @@ class Lang extends DefaultLang
 		'set_24hour' => "24-часовни",
 		'set_submit' => "   Упиши   ",
 		'set_cancel' => "Одустани",
+		'set_showdate' => "Прикажи датум задатка у листи",
 	);
 }
 
