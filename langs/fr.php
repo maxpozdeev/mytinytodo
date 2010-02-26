@@ -6,9 +6,9 @@
 	Original name: Français
 	Author: Olivier Gaillot
 	Author Url: http://www.t1bis.com
-	AppVersion: v1.3.3
-	Date: 2010-02-12
-	Modified by: Alexis Degrugillier	
+	AppVersion: v1.3.4
+	Date: 2010-02-24
+	Modified by: Alexis Degrugillier, Pierre Lemay
 */
 
 class Lang extends DefaultLang
@@ -25,6 +25,7 @@ class Lang extends DefaultLang
 		'addList' => "Cr\u00E9er une nouvelle liste",
 		'renameList' => "Renommer la liste",
 		'deleteList' => "Vous allez supprimer une liste et toutes les t\u00E2ches incluses.\\n\u00EAtes vous s\u00FBr ?",
+		'clearCompleted' => "Vous allez supprimer toutes les t\u00E2ches compl\u00E9t\u00E9es de la liste.\\n\u00EAtes vous s\u00FBr ?",
 		'settingsSaved' => "Param\u00E8tres enregistr\u00E9s. Chargement en cours...",
 	);
 
@@ -84,6 +85,7 @@ class Lang extends DefaultLang
 		'list_delete' => "Supprimer liste",
 		'list_publish' => "Publier liste",
 		'list_showcompleted' => "Afficher les t&acirc;ches termin&eacute;es",
+		'list_clearcompleted' => "Afficher les t&acirc;ches compl&eacute;t&eacute;es",
 		'alltags' => "Tous les tags :",
 		'alltags_show' => "Voir tous",
 		'alltags_hide' => "Cacher tous",
@@ -120,6 +122,7 @@ class Lang extends DefaultLang
 		'set_24hour' => "24 heures",
 		'set_submit' => "Enregistrer les modifications",
 		'set_cancel' => "Annuler",
+		'set_showdate' => "Afficher la date des t&acirc;ches",
 	);
 }
 
