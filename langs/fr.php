@@ -7,7 +7,7 @@
 	Author: Olivier Gaillot
 	Author Url: http://www.t1bis.com
 	AppVersion: v1.3.4
-	Date: 2010-03-12
+	Date: 2010-03-19
 	Modified by: Alexis Degrugillier, Pierre Lemay
 */
 
@@ -85,7 +85,7 @@ class Lang extends DefaultLang
 		'list_delete' => "Supprimer liste",
 		'list_publish' => "Publier liste",
 		'list_showcompleted' => "Afficher les tâches terminées",
-		'list_clearcompleted' => "Afficher les tâches complétées",
+		'list_clearcompleted' => "Effacer les tâches complétées",
 		'alltags' => "Tous les tags :",
 		'alltags_show' => "Voir tous",
 		'alltags_hide' => "Cacher tous",
