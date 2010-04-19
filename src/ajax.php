@@ -172,10 +172,13 @@ elseif(isset($_GET['completeTask']))
 	$compl = _get('compl') ? 1 : 0;
 	if($compl) 	$ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->prefix}todolist WHERE compl=1");
 	else $ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->prefix}todolist WHERE compl=0");
-	$db->dq("UPDATE {$db->prefix}todolist SET compl=$compl,ow=$ow,d_completed=? WHERE id=$id", array($compl?time():0 ));
+	$dateCompleted = $compl ? time() : 0;
+	$db->dq("UPDATE {$db->prefix}todolist SET compl=$compl,ow=$ow,d_completed=? WHERE id=$id", array($dateCompleted));
+	$tz = (int)_get('tz');
+	if(Config::get('autotz')==0 || $tz<-720 || $tz>720 || $tz%30!=0) $tz = round(date('Z')/60);
 	$t = array();
 	$t['total'] = 1;
-	$t['list'][] = array('id'=>$id, 'compl'=>$compl, 'ow'=>$ow);
+	$t['list'][] = array('id'=>$id, 'compl'=>$compl, 'ow'=>$ow, 'dateCompleted'=>$dateCompleted?htmlarray(timestampToDatetime($dateCompleted, $tz)):'');
 	echo json_encode($t);
 	exit;
 }
@@ -504,7 +507,7 @@ function prepareTaskRow($r, $tz)
 		'title' => escapeTags($r['title']),
 		'date' => htmlarray($dCreated),
 		'dateInline' => htmlarray(sprintf($lang->get('taskdate_inline'), $dCreated)),
-		'dateCompleted' => htmlarray(timestampToDatetime($r['d_completed'], $tz)),
+		'dateCompleted' => $r['d_completed'] ? htmlarray(timestampToDatetime($r['d_completed'], $tz)) : '',
 		'compl' => (int)$r['compl'],
 		'prio' => $r['prio'],
 		'note' => nl2br(escapeTags($r['note'])),

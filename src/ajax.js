@@ -229,13 +229,14 @@ function completeTask(id,ch)
 	var compl = 0;
 	if(ch.checked) compl = 1;
 	var nocache = '&rnd='+Math.random();
-	$.getJSON(mytinytodo.mttUrl+'ajax.php?completeTask='+id+'&compl='+compl+nocache, function(json){
+	$.getJSON(mytinytodo.mttUrl+'ajax.php?completeTask='+id+'&compl='+compl+'&tz='+tz()+nocache, function(json){
 		if(!parseInt(json.total)) return;
 		var item = json.list[0];
 		if(item.compl) $('#taskrow_'+id).addClass('task-completed');
 		else $('#taskrow_'+id).removeClass('task-completed');
 		taskList[id].ow = item.ow;
 		taskList[id].compl = item.compl;
+		taskList[id].dateCompleted = item.dateCompleted;
 		changeTaskCnt(taskList[id], 0);
 		if(item.compl && !curList.showCompl) {
 			delete taskList[id];
