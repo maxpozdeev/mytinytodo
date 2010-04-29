@@ -2,7 +2,7 @@
 
 /*
 	This file is part of myTinyTodo.
-	(C) Copyright 2009 Max Pozdeev <maxpozdeev@gmail.com>
+	(C) Copyright 2009-2010 Max Pozdeev <maxpozdeev@gmail.com>
 	Licensed under the GNU GPL v3 license. See file COPYRIGHT for details.
 */ 
 
@@ -170,8 +170,9 @@ elseif(isset($_GET['completeTask']))
 	check_write_access();
 	$id = (int)$_GET['completeTask'];
 	$compl = _get('compl') ? 1 : 0;
-	if($compl) 	$ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->prefix}todolist WHERE compl=1");
-	else $ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->prefix}todolist WHERE compl=0");
+	$listId = (int)$db->sq("SELECT list_id FROM {$db->prefix}todolist WHERE id=$id");
+	if($compl) 	$ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->prefix}todolist WHERE list_id=$listId AND compl=1");
+	else $ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->prefix}todolist WHERE list_id=$listId AND compl=0");
 	$dateCompleted = $compl ? time() : 0;
 	$db->dq("UPDATE {$db->prefix}todolist SET compl=$compl,ow=$ow,d_completed=? WHERE id=$id", array($dateCompleted));
 	$tz = (int)_get('tz');
