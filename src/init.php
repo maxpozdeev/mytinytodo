@@ -26,11 +26,15 @@ if(Config::get('db') == 'mysql')
 }
 
 # SQLite3 (pdo_sqlite)
-else
+elseif(Config::get('db') == 'sqlite')
 {
 	require_once(MTTPATH. 'class.db.sqlite3.php');
 	$db = new Database_Sqlite3;
 	$db->connect(MTTPATH. 'db/todolist.db');
+}
+else {
+	# It seems not installed
+	die("Not installed. Run <a href=setup.php>setup.php</a> first.");
 }
 $db->prefix = Config::get('prefix');
 

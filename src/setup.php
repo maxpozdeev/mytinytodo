@@ -2,7 +2,7 @@
 
 /*
 	This file is part of myTinyTodo.
-	(C) Copyright 2009 Max Pozdeev <maxpozdeev@gmail.com>
+	(C) Copyright 2009-2010 Max Pozdeev <maxpozdeev@gmail.com>
 	Licensed under the GNU GPL v3 license. See file COPYRIGHT for details.
 */
 
@@ -22,13 +22,25 @@ if(!isset($config['db']))
 	if(isset($config['allow']) && $config['allow'] == 'read') $config['allowread'] = 1;
 }
 
-require_once('./init.php');
-if($needAuth && !is_logged())
+if($config['db'] != '') 
 {
-	die("Access denied!<br> Disable password protection or Log in.");
+	require_once('./init.php');
+	if($needAuth && !is_logged())
+	{
+		die("Access denied!<br> Disable password protection or Log in.");
+	}
+	$dbtype = (strtolower(get_class($db)) == 'database_mysql') ? 'mysql' : 'sqlite';
 }
-$dbclass = strtolower(get_class($db));
-$dbtype = ($dbclass == 'database_mysql') ? 'mysql' : 'sqlite';
+else
+{
+	if(!defined('MTTPATH')) define('MTTPATH', dirname(__FILE__) .'/');
+	require_once(MTTPATH. 'common.php');
+	Config::loadConfig($config);
+	unset($config); 
+
+	$db = 0;
+	$dbtype = '';
+}
 
 $lastVer = '1.3.1';
 echo '<html><head><meta name="robots" content="noindex,nofollow"></head><body>'; 
@@ -49,23 +61,28 @@ if(!$ver)
 <tr><td>Database:</td><td><input name=mysql_db value=mytinytodo></td></tr>
 <tr><td>User:</td><td><input name=mysql_user value=user></td></tr>
 <tr><td>Password:</td><td><input type=password name=mysql_password></td></tr>
+<tr><td>Table prefix:</td><td><input name=prefix value=\"mtt_\"></td></tr>
 </table><br><input type=submit value=' Next '></form>");
 	}
 	elseif(isset($_POST['installdb']))
 	{
 		# Save configuration
 		$dbtype = ($_POST['installdb'] == 'mysql') ? 'mysql' : 'sqlite';
-		$config['db'] = $dbtype;
+		Config::set('db', $dbtype);
 		if($dbtype == 'mysql') {
-			$config['mysql.host'] = _post('mysql_host');
-			$config['mysql.db'] = _post('mysql_db');
-			$config['mysql.user'] = _post('mysql_user');
-			$config['mysql.password'] = _post('mysql_password');
+			Config::set('mysql.host', _post('mysql_host'));
+			Config::set('mysql.db', _post('mysql_db'));
+			Config::set('mysql.user', _post('mysql_user'));
+			Config::set('mysql.password', _post('mysql_password'));
+			Config::set('prefix', trim(_post('prefix')));
 		}
 		if(!testConnect($error)) {
 			exitMessage("Database connection error: $error");
 		}
-		Config::save($config);
+		if(!is_writable('./db/config.php')) {
+			exitMessage("Config file ('db/config.php') is not writable.");
+		}
+		Config::save();
 		exitMessage("This will create myTinyTodo database <form method=post><input type=hidden name=install value=1><input type=submit value=' Install '></form>");
 	}
 
@@ -219,6 +236,7 @@ printFooter();
 
 function get_ver($db, $dbtype)
 {
+	if(!$db || $dbtype == '') return '';
 	if(!$db->table_exists($db->prefix.'todolist')) return '';
 	$v = '1.0';
 	if(!$db->table_exists($db->prefix.'tags')) return $v;
@@ -273,17 +291,23 @@ function has_field_mysql($db, $table, $field)
 
 function testConnect(&$error)
 {
-	global $config;
-	try {
-		if($config['db'] == 'mysql')
+	try
+	{
+		if(Config::get('db') == 'mysql')
 		{
-			require_once('class.db.mysql.php');
+			require_once(MTTPATH. 'class.db.mysql.php');
 			$db = new Database_Mysql;
-			$db->connect($config['mysql.host'], $config['mysql.user'], $config['mysql.password'], $config['mysql.db']);
+			$db->connect(Config::get('mysql.host'), Config::get('mysql.user'), Config::get('mysql.password'), Config::get('mysql.db'));
 		} else
 		{
-			if(false === $f = @fopen('./db/todolist.db', 'a+')) throw new Exception("database file is not readable/writable");
+			if(false === $f = @fopen(MTTPATH. 'db/todolist.db', 'a+')) throw new Exception("database file is not readable/writable");
 			else fclose($f);
+
+			if(!is_writable(MTTPATH. 'db/')) throw new Exception("database directory ('db') is not writable");
+
+			require_once(MTTPATH. 'class.db.sqlite3.php');
+			$db = new Database_Sqlite3;
+			$db->connect(MTTPATH. 'db/todolist.db');
 		}
 	} catch(Exception $e) {
 		$error = $e->getMessage();
@@ -358,8 +382,7 @@ function update_task_tags($id, $tag_ids)
 function update_12_13($db, $dbtype)
 {
 	# update config
-	global $config;
-	Config::save($config);
+	Config::save();
 
 	# and then db
 	$db->ex("BEGIN");
@@ -514,14 +537,13 @@ function update_130_131($db, $dbtype)
 		$db->ex("DROP TABLE todolist_backup");
 	}
 
-	global $config;
 	$sort = 0;
 	if(isset($_COOKIE['sort']) && $_COOKIE['sort'] != ''){
 		$sort = (int)$_COOKIE['sort'];
 		if($sort < 0 || $sort > 2) $sort = 0;
 	}
 
-	if($config['password'] != '' && $config['allowread']) $published = 1;
+	if(Config::get('password') != '' && Config::get('allowread')) $published = 1;
 	else $published = 0;
 
 	$db->ex("UPDATE lists SET d_created=?, sorting=?, published=?", array(time(), $sort, $published));

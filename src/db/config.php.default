@@ -4,7 +4,7 @@
 $config = array();
 
 # Database type: sqlite or mysql
-$config['db'] = 'sqlite';
+$config['db'] = '';
 
 # Specify these settings if you selected above to use Mysql
 $config['mysql.host'] = "localhost";
