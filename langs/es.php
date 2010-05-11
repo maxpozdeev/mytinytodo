@@ -4,10 +4,10 @@
 	myTinyTodo language pack
 	Language: Spanish
 	Original name: Español
-	Author: Sandro Jurado
-	Author Url: http://www.alianzalima.com
-	AppVersion: v1.3.2
-	Date: 2010-01-21
+	Author: Sandro Jurado && Antonio Garcia Marin
+	Author Url: http://www.alianzalima.com && antoniogarciamarin@gmail.com
+	AppVersion: v1.3.4
+	Date: 2010-05-09
 */
 
 class Lang extends DefaultLang
@@ -24,6 +24,7 @@ class Lang extends DefaultLang
 		'addList' => "Crear lista",
 		'renameList' => "Renombrar lista",
 		'deleteList' => "Esto eliminará la lista actual, así como las tareas que contenga. \\n¿Estás seguro?",
+		'clearCompleted' => "Esto eliminará todas las tareas completadas en la lista.\\n?Estás seguro?",
 		'settingsSaved' => "Configuración guardada. Recargando...",
 	);
 
@@ -70,7 +71,6 @@ class Lang extends DefaultLang
 		'f_past' => "Atrasado",
 		'f_today' => "Hoy y mañana",
 		'f_soon' => "pronto",
-		'tasks_and_compl' => "Tareas + completadas",
 		'action_edit' => "Editar",
 		'action_note' => "Editar Nota",
 		'action_delete' => "Borrar",
@@ -83,6 +83,8 @@ class Lang extends DefaultLang
 		'list_rename' => "Renombrar lista",
 		'list_delete' => "Borrar lista",
 		'list_publish' => "Publicar lista",
+		'list_showcompleted' => "Mostrar tareas completadas",
+		'list_clearcompleted' => "Borrar tareas completadas",
 		'alltags' => "Todas las etiquetas:",
 		'alltags_show' => "Mostrar todas",
 		'alltags_hide' => "Ocultar todas",
@@ -119,6 +121,7 @@ class Lang extends DefaultLang
 		'set_24hour' => "24-horas",
 		'set_submit' => "Enviar cambios",
 		'set_cancel' => "Cancelar",
+		'set_showdate' => "Mostrar fecha de la tarea en la lista",
 	);
 }
 
