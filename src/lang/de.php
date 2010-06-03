@@ -6,26 +6,27 @@
 	Original name: Deutsch
 	Author: Sebastian
 	Author Url:
-	AppVersion: v1.3.4
-	Date: 2010-02-26
+	AppVersion: v1.3.5
+	Date: 2010-05-23
+	Modified by: Pascal
 */
 
 class Lang extends DefaultLang
 {
 	var $js = array
 	(
-		'confirmDelete' => "Willst du die Aufgabe wirklich löschen?",
+		'confirmDelete' => "Willst Du die Aufgabe wirklich löschen?",
 		'actionNoteSave' => "speichern",
 		'actionNoteCancel' => "abbrechen",
-		'error' => "Fehler aufgetreten (click für Details)",
+		'error' => "Fehler aufgetreten (für Details klicken)",
 		'denied' => "Zugriff verweigert",
 		'invalidpass' => "Falsches Passwort",
 		'tagfilter' => "Schlagwort:",
 		'addList' => "Neue Liste anlegen",
 		'renameList' => "Liste umbenennen",
-		'deleteList' => "This will delete current list with all tasks in it.\\nAre you sure?",
-		'clearCompleted' => "Löscht die aktuelle Liste mit allen darin enthaltenen Aufgaben.\\nBist du sicher?",
-		'settingsSaved' => "Einstellugnen gespeichert. Aktualisierung...",
+		'deleteList' => "Die Liste wird mit allen Aufgaben gelöscht.\\nBist Du sicher?",
+		'clearCompleted' => "Alle abgeschlossenen Aufgaben dieser Liste werden gelöscht.\\nBist Du sicher?",
+		'settingsSaved' => "Einstellungen gespeichert. Aktualisierung...",
 	);
 
 	var $inc = array
