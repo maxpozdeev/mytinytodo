@@ -147,8 +147,17 @@ class DefaultLang
 		$t = array();
 		foreach($this->get('months_long') as $v) { $t[] = '"'.str_replace('"','\\"',$v).'"'; }
 		$a[] = "monthsLong: [". implode(',', $t). "]";
-		$a[] = "tags: \"". str_replace('"','\\"',$this->get('tags')). "\"";
+		$a[] = $this->_2js('tags');
+		$a[] = $this->_2js('tasks');
+		$a[] = $this->_2js('f_past');
+		$a[] = $this->_2js('f_today');
+		$a[] = $this->_2js('f_soon');
 		return "lang = {\n". implode(",\n", $a). "\n};";
+	}
+
+	function _2js($v)
+	{
+		return "$v: \"". str_replace('"','\\"',$this->get($v)). "\"";
 	}
 
 	function get($key)

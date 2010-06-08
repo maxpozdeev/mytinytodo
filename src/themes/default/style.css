@@ -1,3 +1,10 @@
+/*
+	This file is part of myTinyTodo. 
+	Copyright 2009-2010 Max Pozdeev <maxpozdeev@gmail.com>
+*/
+
+/*	default style	*/
+
 body, td, th, input,textarea,select { font-family: arial; font-size:10pt; } 
 html { height:100%; }
 body { margin:0px; padding:0px;  height:100%; min-height:100%; background-color:#fff; }
@@ -28,8 +35,8 @@ a { color:#0000ff; }
 .mtt-tabs li { margin:1px 3px 0 0; float:left; max-width:199px; border-left:1px solid #ededed; background:#fbfbfb url(images/tab_hover.gif) no-repeat top right; }
 .mtt-tabs a { position:relative; margin:0; font-size:9pt; font-weight:bold; text-decoration:none; text-align:center; white-space:nowrap; color:#444444; display:block; height:21px; padding:6px 6px 0px 2px; outline:none; vertical-align:top; }
 .mtt-tabs a span { display:block; min-width:75px; cursor:pointer; padding:0; overflow:hidden; }
-.mtt-tabs .list-action { display:none; float:left; position:absolute; top:6px; right:5px; width:15px; height:15px; background:#fff url(images/icons.gif) 0 0 no-repeat; }
-.mtt-tabs .list-action:hover, .mtt-tabs .list-action.mtt-menu-button-active { background-position:-16px 0; cursor:pointer; }
+.mtt-tabs .list-action { display:none; float:left; position:absolute; top:6px; right:5px; width:15px; height:15px; background:transparent url(images/icons.gif) 0 0 no-repeat; cursor:pointer; }
+.mtt-tabs .list-action:hover, .mtt-tabs .list-action.mtt-menu-button-active { background-position:-16px 0; } 
 .mtt-tabs li.mtt-tabs-selected span { margin-right:16px; }
 .mtt-tabs li.mtt-tabs-selected .list-action { display:block; }
 .mtt-tabs li.mtt-tabs-selected { background:#ededed url(images/corner_right.gif) no-repeat top right; border-left:1px solid #ededed; }
@@ -45,14 +52,23 @@ a { color:#0000ff; }
 .mtt-tabs-add-button:hover span { background-position:-16px 0; }
 #page_tasks.readonly .mtt-tabs-add-button { display:none; }
 
+.mtt-img-button { width:16px; height:16px; padding:2px; border:1px solid transparent; }
+.mtt-img-button:hover { border:1px solid #ccc; -moz-border-radius:3px; -webkit-border-radius:3px; }
+.mtt-img-button span { display:inline-block; width:16px; height:16px; }
+
+.arrdown { display:inline-block; height:7px; width:9px; background:url(images/arrdown.gif); }
+.arrdown2 { display:inline-block; height:7px; width:7px; background:url(images/arrdown2.gif); }
+
 #page_tasks.readonly #htab_search a.htab-toggle { color:#444; }
 .mtt-htabs  { clear:both; padding:8px; border-bottom:2px solid #DEDEDE; background:url(images/corner_right.gif) no-repeat top right #ededed; }
 #htab_newtask a>img { border:none; vertical-align:text-top; }
-#loading { float:left; padding-top:5px; background-color:#ffffff; display:none; padding-right:6px;}
+#loading { float:left; padding-top:5px; background-color:#ffffff; display:none; padding-right:6px; width:16px; height:16px; background:url(images/loading1.gif) no-repeat; }
 #task, #search { color:#444444; width:300px; }
 .small-bar{ font-size:8pt; color:#999999; font-weight:normal;}
 #searchbar { font-size:10pt; font-weight:normal; display:none;  margin-top:5px; }
 #searchbarkeyword { font-weight:bold; }
+#newtask_adv span { position:relative; top:3px; background:url(images/buttons.png) 0 -48px no-repeat; }
+#newtask_adv:hover span { background-position:-16px -48px; } 
 
 #msg { float:left; }
 #msg .msg-text {  padding:1px 4px; font-weight:bold; cursor:pointer; }
@@ -63,8 +79,13 @@ a { color:#0000ff; }
 #msg.mtt-info .msg-details { border:1px solid #EFC300;}
 
 .mtt-notes-showhide { font-size:8pt; font-weight:normal; margin-left:2px; margin-right:2px; }
+.mtt-notes-showhide a { text-decoration:none; border-bottom:1px dotted; }
 #rss_icon { float:right;margin-top:4px; }
 #rss_icon img { border:none; }
+
+#tag_filters { font-size:8pt; font-weight:normal; }
+.tag-filter { margin-left:3px; margin-right:3px; }
+.tag-filter-close { cursor:pointer; position:relative; top:2px; margin-left:3px; display:inline-block; width:10px; height:10px; background:url(images/closetag.gif) 0 0 no-repeat; }
 
 .task-left { float:left; }
 .task-toggle { visibility:hidden; margin-top:2px; cursor:pointer; width:15px; height:15px; float:left; background:url(images/icons.gif) -32px 0 no-repeat; }
@@ -93,6 +114,7 @@ li.task-completed .task-title a { color:#777777; }
 #tasklist li.task-completed .duedate { color:#777777; border-color:#777777; }
 li.task-completed  { opacity:0.8; }
 li.task-completed .task-toggle { opacity:0.8; }
+li.not-preview-tag  { opacity:0.1; }
 
 a.taskactionbtn { display:block; float:right; height:15px; width:15px; text-decoration:none; background:url(images/icons.gif) 0 0 no-repeat; }
 li:hover a.taskactionbtn, a.taskactionbtn.mtt-menu-button-active { background-position:-16px 0; }
@@ -150,9 +172,7 @@ li.task-completed .task-note-block .task-note { text-decoration:line-through; }
 #priopopup .prio-pos:hover { border-color:#ff3333; }
 #priopopup .prio-pos-1:hover { border-color:#ff7700; }
 
-#tagcloudbtn { margin-left:2px; margin-right:2px; font-size:8pt; font-weight:normal; border-bottom:1px dashed #ccc; padding:2px; cursor:pointer; -moz-user-select:none; -webkit-user-select: none; }
-#tagcloudbtn:hover { border-bottom:1px solid #bbb; } 
-#tagcloudbtn .tag { font-weight:bold; }
+#tagcloudbtn { margin-right:2px; font-size:8pt; font-weight:normal; padding:2px; float:right; }
 #tagcloudload { display:none; }
 #tagcloud { overflow: hidden; z-index:100; background-color:#f9f9f9; border:1px solid #cccccc; padding:5px; width:400px; text-align:center; -moz-box-shadow:1px 2px 5px rgba(0,0,0,0.5); -webkit-box-shadow:1px 2px 5px rgba(0,0,0,0.5); } 
 #tagcloud .tag { margin:1px 0px; padding:2px; line-height:140%; color:black; }
@@ -167,8 +187,12 @@ li.task-completed .task-note-block .task-note { text-decoration:line-through; }
 #tagcloud .w7 { font-size:150%; }
 #tagcloud .w8 { font-size:160%; }
 #tagcloud .w9 { font-size:170%; }
-#tagcloudcancel { border:1px solid #cccccc; padding:2px; margin-bottom:4px; cursor:pointer; background-color:#fdfdfd; }
-#tagcloudcancel:hover { border-color:#aaaaaa; }
+
+#tagcloudcancel { float:right; }
+#tagcloudcancel span { background:url(images/buttons.png) 0 -32px no-repeat; }
+#tagcloudcancel span:hover { background-position:-16px -32px; }
+
+#tagcloudload { height:24px; background:url(images/loading1_24.gif) center no-repeat; }
 
 #taskview { padding:1px 2px; }
 
@@ -193,6 +217,16 @@ li.task-completed .task-note-block .task-note { text-decoration:line-through; }
 .ui-resizable-s { cursor:s-resize; height:7px; width:100%; bottom:-5px; left:0px; }
 .ui-resizable-e { cursor:e-resize; width:7px; right:-5px; top:0px; height:100%; }
 .ui-resizable-se { cursor:se-resize; width:12px; height:12px; right:1px; bottom:1px; }
+
+.mtt-menu-button {
+ -moz-user-select:none; -webkit-user-select: none;
+ cursor:pointer;
+ border:1px solid transparent;
+}
+.mtt-menu-button:hover, .mtt-menu-button.mtt-menu-button-active { 
+ border:1px solid #ccc; -moz-border-radius:3px; -webkit-border-radius:3px;
+}
+
 
 .mtt-btnmenu { border-bottom:1px dashed #ccc; padding:2px 2px; -moz-user-select:none; -webkit-user-select: none; }
 .mtt-btnmenu:hover { cursor:pointer; border-bottom:1px solid #bbb; }

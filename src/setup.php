@@ -42,7 +42,7 @@ else
 	$dbtype = '';
 }
 
-$lastVer = '1.3.1';
+$lastVer = '1.4';
 echo '<html><head><meta name="robots" content="noindex,nofollow"></head><body>'; 
 echo "<big><b>myTinyTodo @VERSION Setup</b></big><br><br>";
 
@@ -91,40 +91,6 @@ if(!$ver)
 	{
 		try
 		{
-			$db->ex(
-"CREATE TABLE {$db->prefix}todolist (
- `id` INT UNSIGNED NOT NULL auto_increment,
- `list_id` INT UNSIGNED NOT NULL default 0,
- `d_created` INT UNSIGNED NOT NULL default 0,	/* time() timestamp */
- `d_completed` INT UNSIGNED NOT NULL default 0,	/* time() timestamp */
- `compl` TINYINT UNSIGNED NOT NULL default 0,
- `title` VARCHAR(250) NOT NULL,
- `note` TEXT,
- `prio` TINYINT NOT NULL default 0,			/* priority -,0,+ */
- `ow` INT NOT NULL default 0,				/* order weight */
- `tags` VARCHAR(250) NOT NULL default '',	/* denormalization - for fast access to task tags */
- `duedate` DATE default NULL,
-  PRIMARY KEY(`id`),
-  KEY(`list_id`)
-) CHARSET=utf8 ");
-
-			$db->ex(
-"CREATE TABLE {$db->prefix}tags (
- `id` INT UNSIGNED NOT NULL auto_increment,
- `name` VARCHAR(50) NOT NULL,
- `tags_count` INT default 0,
- `list_id` INT UNSIGNED NOT NULL default 0,
- PRIMARY KEY(`id`),
- UNIQUE KEY `listid_nmae` (`list_id`,`name`)
-) CHARSET=utf8 ");
-
-			$db->ex(
-"CREATE TABLE {$db->prefix}tag2task (
- `tag_id` INT UNSIGNED NOT NULL,
- `task_id` INT UNSIGNED NOT NULL,
- KEY(`tag_id`),
- KEY(`task_id`)
-) CHARSET=utf8 ");
 
 			$db->ex(
 "CREATE TABLE {$db->prefix}lists (
@@ -138,6 +104,46 @@ if(!$ver)
  PRIMARY KEY(`id`)
 ) CHARSET=utf8 ");
 
+
+			$db->ex(
+"CREATE TABLE {$db->prefix}todolist (
+ `id` INT UNSIGNED NOT NULL auto_increment,
+ `list_id` INT UNSIGNED NOT NULL default 0,
+ `d_created` INT UNSIGNED NOT NULL default 0,	/* time() timestamp */
+ `d_completed` INT UNSIGNED NOT NULL default 0,	/* time() timestamp */
+ `compl` TINYINT UNSIGNED NOT NULL default 0,
+ `title` VARCHAR(250) NOT NULL,
+ `note` TEXT,
+ `prio` TINYINT NOT NULL default 0,			/* priority -,0,+ */
+ `ow` INT NOT NULL default 0,				/* order weight */
+ `tags` VARCHAR(600) NOT NULL default '',	/* for fast access to task tags */
+ `tags_ids` VARCHAR(250) NOT NULL default '', /* no more than 22 tags (x11 chars) */
+ `duedate` DATE default NULL,
+  PRIMARY KEY(`id`),
+  KEY(`list_id`)
+) CHARSET=utf8 ");
+
+
+			$db->ex(
+"CREATE TABLE {$db->prefix}tags (
+ `id` INT UNSIGNED NOT NULL auto_increment,
+ `name` VARCHAR(50) NOT NULL,
+ PRIMARY KEY(`id`),
+ UNIQUE KEY `name` (`name`)
+) CHARSET=utf8 ");
+
+
+			$db->ex(
+"CREATE TABLE {$db->prefix}tag2task (
+ `tag_id` INT UNSIGNED NOT NULL,
+ `task_id` INT UNSIGNED NOT NULL,
+ `list_id` INT UNSIGNED NOT NULL,
+ KEY(`tag_id`),
+ KEY(`task_id`),
+ KEY(`list_id`)		/* for tagcloud */
+) CHARSET=utf8 ");
+
+
 		} catch (Exception $e) {
 			exitMessage("<b>Error:</b> ". htmlarray($e->getMessage()));
 		}
@@ -146,38 +152,6 @@ if(!$ver)
 	{
 		try
 		{
-			$db->ex(
-"CREATE TABLE {$db->prefix}todolist (
- id INTEGER PRIMARY KEY,
- list_id INTEGER UNSIGNED NOT NULL default 0,
- d_created INTEGER UNSIGNED NOT NULL default 0,
- d_completed INTEGER UNSIGNED NOT NULL default 0,
- compl TINYINT UNSIGNED NOT NULL default 0,
- title VARCHAR(250) NOT NULL,
- note TEXT,
- prio TINYINT NOT NULL default 0,
- ow INTEGER NOT NULL default 0,
- tags VARCHAR(250) NOT NULL default '',
- duedate DATE default NULL
-) ");
-			$db->ex("CREATE INDEX list_id ON {$db->prefix}todolist (list_id)");
-
-			$db->ex(
-"CREATE TABLE {$db->prefix}tags (
- id INTEGER PRIMARY KEY,
- name VARCHAR(50) NOT NULL,
- tags_count INTEGER default 0,
- list_id INTEGER UNSIGNED NOT NULL default 0
-) ");
-			$db->ex("CREATE UNIQUE INDEX tags_listid_name ON {$db->prefix}tags (list_id,name COLLATE NOCASE)");
-
-			$db->ex(
-"CREATE TABLE {$db->prefix}tag2task (
- tag_id INTEGER NOT NULL,
- task_id INTEGER NOT NULL
-) ");
-			$db->ex("CREATE INDEX tag_id ON {$db->prefix}tag2task (tag_id)");
-			$db->ex("CREATE INDEX task_id ON {$db->prefix}tag2task (task_id)");
 
 			$db->ex(
 "CREATE TABLE {$db->prefix}lists (
@@ -189,6 +163,43 @@ if(!$ver)
  published TINYINT UNSIGNED NOT NULL default 0,
  taskview INTEGER UNSIGNED NOT NULL default 0
 ) ");
+
+
+			$db->ex(
+"CREATE TABLE {$db->prefix}todolist (
+ id INTEGER PRIMARY KEY,
+ list_id INTEGER UNSIGNED NOT NULL default 0,
+ d_created INTEGER UNSIGNED NOT NULL default 0,
+ d_completed INTEGER UNSIGNED NOT NULL default 0,
+ compl TINYINT UNSIGNED NOT NULL default 0,
+ title VARCHAR(250) NOT NULL,
+ note TEXT,
+ prio TINYINT NOT NULL default 0,
+ ow INTEGER NOT NULL default 0,
+ tags VARCHAR(500) NOT NULL default '',
+ tags_ids VARCHAR(250) NOT NULL default '',
+ duedate DATE default NULL
+) ");
+			$db->ex("CREATE INDEX list_id ON {$db->prefix}todolist (list_id)");
+
+
+			$db->ex(
+"CREATE TABLE {$db->prefix}tags (
+ id INTEGER PRIMARY KEY AUTOINCREMENT,
+ name VARCHAR(50) NOT NULL COLLATE NOCASE
+) ");
+			$db->ex("CREATE UNIQUE INDEX tags_name ON {$db->prefix}tags (name COLLATE NOCASE)");
+
+
+			$db->ex(
+"CREATE TABLE {$db->prefix}tag2task (
+ tag_id INTEGER NOT NULL,
+ task_id INTEGER NOT NULL,
+ list_id INTEGER NOT NULL
+) ");
+			$db->ex("CREATE INDEX tag2task_tag_id ON {$db->prefix}tag2task (tag_id)");
+			$db->ex("CREATE INDEX tag2task_task_id ON {$db->prefix}tag2task (task_id)");
+			$db->ex("CREATE INDEX tag2task_list_id ON {$db->prefix}tag2task (list_id)");	/* for tagcloud */
 
 		} catch (Exception $e) {
 			exitMessage("<b>Error:</b> ". htmlarray($e->getMessage()));
@@ -440,7 +451,6 @@ function createDefaultList($db)
 	$db->ex("INSERT INTO {$db->prefix}lists (name,d_created) VALUES (?,?)", array('Todo', time()));
 
 	$db->ex("UPDATE {$db->prefix}todolist SET list_id=1");
-	$db->ex("UPDATE {$db->prefix}tags SET list_id=1");
 }
 
 ### end 1.2-1.3 #####
