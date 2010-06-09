@@ -9,15 +9,23 @@
  *
  * Revision: $Id: jquery.autocomplete.js 15 2009-08-22 10:30:27Z joern.zaefferer $
  */
+ 
+/*
+ * Changes for myTinyTodo, www.mytinytodo.net
+ * Copyright (c) 2010 Max Pozdeev
+ * Dual licensed under the MIT and GPL licenses
+ */
 
 ;(function($) {
 	
 $.fn.extend({
 	autocomplete: function(urlOrData, options) {
 		var isUrl = typeof urlOrData == "string";
+		var isFunc = typeof urlOrData == "function";
 		options = $.extend({}, $.Autocompleter.defaults, {
 			url: isUrl ? urlOrData : null,
-			data: isUrl ? null : urlOrData,
+			data: !isUrl && !isFunc ? urlOrData : null,
+			func: isFunc ? urlOrData : null,
 			delay: isUrl ? $.Autocompleter.defaults.delay : 10,
 			max: options && !options.scroll ? 10 : 150
 		}, options);
@@ -348,8 +356,31 @@ $.Autocompleter = function(input, options) {
 		// recieve the cached data
 		if (data && data.length) {
 			success(term, data);
+		}
+		// if function was supplied
+		else if(options.func)
+		{
+			var extraParams = {
+				timestamp: +new Date()
+			};
+			$.each(options.extraParams, function(key, param) {
+				extraParams[key] = typeof param == "function" ? param() : param;
+			});
+
+			options.func({
+				data: $.extend({
+					q: lastWord(term),
+					limit: options.max
+				}, extraParams)},
+				function(data){
+					var parsed = options.parse && options.parse(data) || parse(data);
+					cache.add(term, parsed)
+					success(term, parsed);
+				}
+			);
+		}
 		// if an AJAX url has been supplied, try loading the data now
-		} else if( (typeof options.url == "string") && (options.url.length > 0) ){
+		else if( (typeof options.url == "string") && (options.url.length > 0) ){
 			
 			var extraParams = {
 				timestamp: +new Date()
@@ -465,7 +496,7 @@ $.Autocompleter.Cache = function(options) {
 			nullData = 0;
 
 		// no url was specified, we need to adjust the cache length to make sure it fits the local data store
-		if( !options.url ) options.cacheLength = 1;
+		if( !options.url && !options.func ) options.cacheLength = 1;
 		
 		// track all options for minChars = 0
 		stMatchSets[""] = [];
@@ -529,7 +560,7 @@ $.Autocompleter.Cache = function(options) {
 			 * if dealing w/local data and matchContains than we must make sure
 			 * to loop through all the data collections looking for matches
 			 */
-			if( !options.url && options.matchContains ){
+			if( (!options.url && !options.func) && options.matchContains ){
 				// track all matches
 				var csub = [];
 				// loop through all the data grids for matches
@@ -619,7 +650,7 @@ $.Autocompleter.Select = function (options, input, select, config) {
 	
 	function target(event) {
 		var element = event.target;
-		while(element && element.tagName != "LI")
+		while(element && element.tagName.toUpperCase() != "LI")
 			element = element.parentNode;
 		// more fun with IE, sometimes event.target is empty, just ignore it then
 		if(!element)
