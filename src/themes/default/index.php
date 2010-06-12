@@ -1,21 +1,7 @@
-<?php
-
-function datepickerformat()
-{
-	if(Config::get('duedateformat') == 2) $duedateformat = 'm/d/yy';
-	elseif(Config::get('duedateformat') == 3) $duedateformat = 'dd.mm.yy';
-	elseif(Config::get('duedateformat') == 4) $duedateformat = 'dd/mm/yy';
-	else $duedateformat = 'yy-mm-dd';
-	return $duedateformat;
-}
-
-header('Content-type: application/xhtml+xml');
-echo '<?xml version="1.0" encoding="UTF-8"?>';
-?>
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title><?php mttinfo('title'); ?></title>
 <link rel="stylesheet" type="text/css" href="<?php mttinfo('template_url'); ?>style.css?v=@VERSION" media="all" />
 <?php if(Config::get('rtl')): ?>
@@ -45,51 +31,15 @@ $().ready(function(){
 	mytinytodo.templateUrl = "<?php mttinfo('template_url'); ?>";
 	mytinytodo.db = new mytinytodoStorageAjax(mytinytodo);
 	mytinytodo.init({
+		needAuth: <?php echo $needAuth ? "true" : "false"; ?>,
+		isLogged: <?php echo ($needAuth && is_logged()) ? "true" : "false"; ?>,
 		showdate: <?php echo Config::get('showdate') ? "true" : "false"; ?>,
 		singletab: <?php echo isset($_GET['singletab']) ? "true" : "false"; ?>,
-		needAuth: <?php echo $needAuth ? "true" : "false"; ?>,
-		isLogged: <?php echo ($needAuth && is_logged()) ? "true" : "false"; ?>
-		
+		duedateformat: <?php echo (int)Config::get('duedateformat'); ?>,
+		autotag: <?php echo Config::get('autotag') ? "true" : "false"; ?>
+		<?php if(isset($_GET['list'])) echo ",openList: ". (int)$_GET['list']; ?>
 	}, lang).loadLists(1);
 });
-
-/*
-$().ready(function(){
-	mytinytodo.mttUrl = "<?php mttinfo('mtt_url'); ?>";
-	$("#tasklist").sortable({cancel:'span,input,a,textarea', delay: 150, update:orderChanged, start:sortStart, items:'> :not(.task-completed)'});
-	$("#tasklist").bind("click", tasklistClick);
-	$("#edittags").autocomplete('ajax.php?suggestTags', {scroll: false, multiple: true, selectFirst:false, max:8, extraParams:{list:function(){return curList.id}}});
-	$("#priopopup").mouseleave(function(){$(this).hide()});
-<?php
-	if($needAuth)
-	{
-		echo "\tflag.needAuth = true;\n";
-		if(is_logged()) echo "\tflag.isLogged = true;\n";
-	}
-	if(Config::get('autotag')) echo "\tflag.autoTag = true;\n";
-	if(isset($_GET['list'])) echo "\tmytinytodo.setOptions({openList:". (int)$_GET['list']. "});\n";
-	echo "\tloadLists(1, 1);\n";
-?>
-	$("#duedate").datepicker({dateFormat: '<?php echo datepickerformat(); ?>', firstDay: <?php echo Config::get('firstdayofweek'); ?>,
-		showOn: 'button', buttonImage: '<?php mttinfo('template_url'); ?>images/calendar.png', buttonImageOnly: true, changeMonth:true,
-		changeYear:true, constrainInput: false, duration:'', nextText:'&gt;', prevText:'&lt;', dayNamesMin:lang.daysMin, 
-		dayNames:lang.daysLong, monthNamesShort:lang.monthsLong });
-<?php if(!isset($_GET['pda'])): ?>
-	$("#page_taskedit").draggable({ handle:'h3', stop: function(e,ui){ flag.windowTaskEditMoved=true; tmp.editformpos=[$(this).css('left'),$(this).css('top')]; } }); 
-	$("#page_taskedit").resizable({ minWidth:$("#page_taskedit").width(), minHeight:220, start:function(ui,e){editFormResize(1)}, resize:function(ui,e){editFormResize(0,e)}, stop:function(ui,e){editFormResize(2,e)} });
-<?php else: ?>
-	flag.pda = true;
-<?php endif; ?>
-<?php if(isset($_GET['singletab'])): ?>
-	mytinytodo.addAction('listsLoaded', tplSingleTabLoaded);
-	mytinytodo.addAction('listRenamed', tplSingleTabRenamed);
-	mytinytodo.addAction('listAdded', tplSingleTabAdded);
-<?php endif; ?>
-<?php if(!isset($_GET['singletab']) && !isset($_GET['pda'])): ?>
-	$("#lists ul").sortable({delay:150, update:listOrderChanged});
-<?php endif; ?>
-});
-*/
 </script>
 
 <div id="wrapper">
@@ -121,9 +71,50 @@ $().ready(function(){
 
 <div id="lists">
  <ul class="mtt-tabs"></ul>
- <div class="mtt-tabs-add-button" title="<?php _e('list_new'); ?>"><span></span></div>
+ <!--<div class="mtt-tabs-add-button" title="<?php _e('list_new'); ?>"><span></span></div>-->
+
+ <div id="tabs_buttons">
+  <div class="mtt-tabs-add-button mtt-tabs-button" title="<?php _e('list_new'); ?>"><span></span></div>
+  <div class="mtt-tabs-search-button mtt-tabs-button" title="<?php _e('htab_search'); ?>"><span></span></div>
+  <div class="mtt-tabs-select-button mtt-tabs-button" title="<?php _e('list_select'); ?>"><span></span></div>
+ </div>
+
 </div>
 
+
+
+<div id="toolbar" class="mtt-htabs">
+
+<span id="htab_newtask">
+ <form id="newtask_form" method="post">
+  <table cellspacing="0" cellpadding="0"><tr>
+   <td class="flex-cell"><input type="text" name="task" value="" maxlength="250" id="task" /></td>
+   <td class="flex-cell-companion">
+    <input type="submit" value="<?php _e('btn_add');?>" />
+    <a href="#" id="newtask_adv" class="mtt-img-button" title="<?php _e('advanced_add');?>"><span></span></a>
+   </td>
+  </tr></table>
+ </form>
+</span>
+ 
+<span id="htab_search" style="display:none">
+ <a href="#" id="search_close" class="mtt-img-button" title=""><span></span></a>
+
+ <form id="search_form" method="post">
+  <table cellspacing="0" cellpadding="0"><tr>
+   <td class="flex-cell"><input type="text" name="search" value="" maxlength="250" id="search" autocomplete="off" /></td>
+   <td class="flex-cell-companion">
+    <input type="submit" value="<?php _e('btn_search');?>" />
+    <!--<a href="#" id="search_close" class="mtt-img-button" title=""></a>-->
+   </td>
+  </tr></table>
+ </form>
+ <div id="searchbar"><?php _e('searching');?> <span id="searchbarkeyword"></span></div> 
+</span>
+
+</div>
+
+<!--
 <div id="toolbar" class="mtt-htabs">
    <span id="rss_icon"><a href="#" title="<?php _e('rss_feed');?>"><img src="<?php mttinfo('template_url'); ?>images/feed_bw.png" onmouseover="this.src='<?php mttinfo('template_url'); ?>images/feed.png'" onmouseout="this.src='<?php mttinfo('template_url'); ?>images/feed_bw.png'" /></a></span>
 
@@ -139,6 +130,7 @@ $().ready(function(){
 	<div id="searchbar"><?php _e('searching');?> <span id="searchbarkeyword"></span></div> 
    </span>
 </div>
+-->
 
 <h3>
 <span id="taskview" class="mtt-menu-button"><span class="btnstr"><?php _e('tasks');?></span> (<span id="total">0</span>) <span class="arrdown"></span></span>
@@ -264,6 +256,11 @@ $().ready(function(){
 </div>
 
 <div id="listsmenucontainer" class="mtt-btnmenu-container mtt-menu-has-images" style="display:none">
+<ul>
+</ul>
+</div>
+
+<div id="slmenucontainer" class="mtt-btnmenu-container mtt-menu-has-images" style="display:none">
 <ul>
 </ul>
 </div>

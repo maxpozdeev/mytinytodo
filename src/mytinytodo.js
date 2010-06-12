@@ -12,7 +12,7 @@ var sortOrder; //save task order before dragging
 var searchTimer;
 var objPrio = {};
 var selTask = 0;
-var flag = { needAuth:false, isLogged:false, tagsChanged:true, windowTaskEditMoved:false, autoTag:true };
+var flag = { needAuth:false, isLogged:false, tagsChanged:true, windowTaskEditMoved:false };
 var taskCnt = { total:0, past: 0, today:0, soon:0 };
 var tmp = {};
 var cmenu;
@@ -114,6 +114,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 
 		$('#search_close').click(function(){
 			addsearchToggle(0);
+			return false;
 		});
 
 		$('#search').keyup(timerSearch);
