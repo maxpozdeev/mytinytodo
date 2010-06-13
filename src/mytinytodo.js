@@ -905,11 +905,11 @@ function deleteTask(id)
 	_mtt.db.request('deleteTask', {id:id}, function(json){
 		if(!parseInt(json.total)) return;
 		var item = json.list[0];
-		taskOrder.splice($.inArray(id,taskOrder), 1);
+		taskOrder.splice($.inArray(item.id,taskOrder), 1);
 		$('#taskrow_'+item.id).fadeOut('normal', function(){ $(this).remove() });
-		changeTaskCnt(taskList[id], -1);
+		changeTaskCnt(taskList[item.id], -1);
 		refreshTaskCnt();
-		delete taskList[id];
+		delete taskList[item.id];
 	});
 	flag.tagsChanged = true;
 	return false;
