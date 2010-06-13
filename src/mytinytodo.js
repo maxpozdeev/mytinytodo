@@ -1764,7 +1764,7 @@ function showAuth(el)
 
 function doAuth(form)
 {
-	$.post(mytinytodo.mttUrl+'ajax.php?rnd='+Math.random(), { login:1, password: form.password.value }, function(json){
+	$.post(mytinytodo.mttUrl+'ajax.php?login', { login:1, password: form.password.value }, function(json){
 		form.password.value = '';
 		if(json.logged)
 		{
@@ -1781,7 +1781,7 @@ function doAuth(form)
 
 function logout()
 {
-	$.post(mytinytodo.mttUrl+'ajax.php?rnd='+Math.random(), { logout:1 }, function(json){
+	$.post(mytinytodo.mttUrl+'ajax.php?logout', { logout:1 }, function(json){
 		flag.isLogged = false;
 		_mtt.loadLists(1);
 	}, 'json');

@@ -173,7 +173,7 @@ elseif(isset($_GET['fullNewTask']))
 }
 elseif(isset($_GET['deleteTask']))
 {
-	$id = (int)$_GET['deleteTask'];
+	$id = (int)_post('id');
 	$deleted = deleteTask($id);
 	$t = array();
 	$t['total'] = $deleted;
@@ -184,14 +184,14 @@ elseif(isset($_GET['deleteTask']))
 elseif(isset($_GET['completeTask']))
 {
 	check_write_access();
-	$id = (int)$_GET['completeTask'];
-	$compl = _get('compl') ? 1 : 0;
+	$id = (int)_post('id');
+	$compl = _post('compl') ? 1 : 0;
 	$listId = (int)$db->sq("SELECT list_id FROM {$db->prefix}todolist WHERE id=$id");
 	if($compl) 	$ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->prefix}todolist WHERE list_id=$listId AND compl=1");
 	else $ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->prefix}todolist WHERE list_id=$listId AND compl=0");
 	$dateCompleted = $compl ? time() : 0;
 	$db->dq("UPDATE {$db->prefix}todolist SET compl=$compl,ow=$ow,d_completed=? WHERE id=$id", array($dateCompleted));
-	$tz = (int)_get('tz');
+	$tz = (int)_post('tz');
 	if(Config::get('autotz')==0 || $tz<-720 || $tz>720 || $tz%30!=0) $tz = round(date('Z')/60);
 	$t = array();
 	$t['total'] = 1;
@@ -202,7 +202,7 @@ elseif(isset($_GET['completeTask']))
 elseif(isset($_GET['editNote']))
 {
 	check_write_access();
-	$id = (int)$_GET['editNote'];
+	$id = (int)_post('id');
 	stop_gpc($_POST);
 	$note = str_replace("\r\n", "\n", trim(_post('note')));
 	$db->dq("UPDATE {$db->prefix}todolist SET note=? WHERE id=$id", $note);
@@ -215,7 +215,7 @@ elseif(isset($_GET['editNote']))
 elseif(isset($_GET['editTask']))
 {
 	check_write_access();
-	$id = (int)$_GET['editTask'];
+	$id = (int)_post('id');
 	stop_gpc($_POST);
 	$listId = (int)_post('list');
 	$title = trim(_post('title'));
@@ -369,7 +369,7 @@ elseif(isset($_GET['tagCloud']))
 	echo json_encode($t);
 	exit;
 }
-elseif(isset($_POST['addList']))
+elseif(isset($_GET['addList']))
 {
 	check_write_access();
 	stop_gpc($_POST);
@@ -385,13 +385,13 @@ elseif(isset($_POST['addList']))
 	echo json_encode($t);
 	exit;
 }
-elseif(isset($_POST['renameList']))
+elseif(isset($_GET['renameList']))
 {
 	check_write_access();
 	stop_gpc($_POST);
 	$t = array();
 	$t['total'] = 0;
-	$id = (int)_post('id');
+	$id = (int)_post('list');
 	$name = str_replace(array('"',"'",'<','>','&'),array('','','','',''),trim(_post('name')));
 	$db->dq("UPDATE {$db->prefix}lists SET name=? WHERE id=$id", array($name));
 	$t['total'] = $db->affected();
@@ -400,13 +400,13 @@ elseif(isset($_POST['renameList']))
 	echo json_encode($t);
 	exit;
 }
-elseif(isset($_POST['deleteList']))
+elseif(isset($_GET['deleteList']))
 {
 	check_write_access();
 	stop_gpc($_POST);
 	$t = array();
 	$t['total'] = 0;
-	$id = (int)_post('id');
+	$id = (int)_post('list');
 	$db->ex("BEGIN");
 	$db->ex("DELETE FROM {$db->prefix}lists WHERE id=$id");
 	$t['total'] = $db->affected();

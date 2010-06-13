@@ -56,14 +56,14 @@ mytinytodoStorageAjax.prototype =
 
 	newTask: function(params, callback)
 	{
-		$.post(this.mtt.mttUrl+'ajax.php?newTask'+'&rnd='+Math.random(),
+		$.post(this.mtt.mttUrl+'ajax.php?newTask',
 			{ list:params.list, title: params.title, tz:params.tz, tag:params.tag }, callback, 'json');
 	},
 	
 
 	fullNewTask: function(params, callback)
 	{
-		$.post(this.mtt.mttUrl+'ajax.php?fullNewTask'+'&rnd='+Math.random(),
+		$.post(this.mtt.mttUrl+'ajax.php?fullNewTask',
 			{ list:params.list, tz:params.tz, title:params.title, note:params.note, prio:params.prio, tags:params.tags, duedate:params.duedate },
 			callback, 'json');
 	},
@@ -71,27 +71,27 @@ mytinytodoStorageAjax.prototype =
 
 	editTask: function(params, callback)
 	{
-		$.post(this.mtt.mttUrl+'ajax.php?editTask='+params.id+'&rnd='+Math.random(),
-			{ list:params.list, tz:params.tz, title:params.title, note:params.note, prio:params.prio, tags:params.tags, duedate:params.duedate },
+		$.post(this.mtt.mttUrl+'ajax.php?editTask='+params.id,
+			{ id:params.id, list:params.list, tz:params.tz, title:params.title, note:params.note, prio:params.prio, tags:params.tags, duedate:params.duedate },
 			callback, 'json');
 	},
 
 
 	editNote: function(params, callback)
 	{
-		$.post(this.mtt.mttUrl+'ajax.php?editNote='+params.id+'&rnd='+Math.random(), {note: params.note}, callback, 'json');
+		$.post(this.mtt.mttUrl+'ajax.php?editNote='+params.id, {id:params.id, note: params.note}, callback, 'json');
 	},
 
 
 	completeTask: function(params, callback)
 	{
-		$.getJSON(this.mtt.mttUrl+'ajax.php?completeTask='+params.id+'&compl='+params.compl+'&tz='+params.tz+'&rnd='+Math.random(), callback);
+		$.post(this.mtt.mttUrl+'ajax.php?completeTask='+params.id, { id:params.id, compl:params.compl, tz:params.tz }, callback, 'json');
 	},
 
 
 	deleteTask: function(params, callback)
 	{
-		$.getJSON(this.mtt.mttUrl+'ajax.php?deleteTask='+params.id+'&rnd='+Math.random(), callback);
+		$.post(this.mtt.mttUrl+'ajax.php?deleteTask='+params.id, { id:params.id }, callback, 'json');
 	},
 
 
@@ -103,7 +103,7 @@ mytinytodoStorageAjax.prototype =
 	
 	setSort: function(params, callback)
 	{
-		$.post(this.mtt.mttUrl+'ajax.php?setSort'+'&rnd='+Math.random(), { list:params.list, sort:params.sort }, callback, 'json');
+		$.post(this.mtt.mttUrl+'ajax.php?setSort', { list:params.list, sort:params.sort }, callback, 'json');
 	},
 
 	changeOrder: function(params, callback)
@@ -129,18 +129,18 @@ mytinytodoStorageAjax.prototype =
 	// Lists
 	addList: function(params, callback)
 	{
-		$.post(this.mtt.mttUrl+'ajax.php', { addList:1, name:params.name }, callback, 'json'); 
+		$.post(this.mtt.mttUrl+'ajax.php?addList', { name:params.name }, callback, 'json'); 
 
 	},
 
 	renameList:  function(params, callback)
 	{
-		$.post(this.mtt.mttUrl+'ajax.php', { renameList:1, id:params.list, name:params.name }, callback, 'json');
+		$.post(this.mtt.mttUrl+'ajax.php?renameList', { list:params.list, name:params.name }, callback, 'json');
 	},
 
 	deleteList: function(params, callback)
 	{
-		$.post(this.mtt.mttUrl+'ajax.php', { deleteList:1, id:params.list }, callback, 'json');
+		$.post(this.mtt.mttUrl+'ajax.php?deleteList', { list:params.list }, callback, 'json');
 	},
 
 	publishList: function(params, callback)
