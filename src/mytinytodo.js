@@ -236,18 +236,18 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			var li = findParentNode(this, 'LI');
 			if(li && li.id) {
 				var id = li.id.split('_',2)[1];
-				if(id) editTask(id);
+				if(id) editTask(parseInt(id));
 			}
 		});
 
 		$('#tasklist .taskactionbtn').live('click', function(){
-			var id = getLiTaskId(this);
+			var id = parseInt(getLiTaskId(this));
 			if(id) taskContextMenu(this, id);
 			return false;
 		});
 
 		$('#tasklist input[type=checkbox]').live('click', function(){
-			var id = getLiTaskId(this);
+			var id = parseInt(getLiTaskId(this));
 			if(id) completeTask(id, this);
 			//return false;
 		});
@@ -264,20 +264,20 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		});
 
 		$('#tasklist .task-prio').live('mouseover mouseout', function(event){
-			var id = getLiTaskId(this);
+			var id = parseInt(getLiTaskId(this));
 			if(!id) return;
 			if(event.type == 'mouseover') prioPopup(1, this, id);
 			else prioPopup(0, this);
 		});
 
 		$('#tasklist .mtt-action-note-cancel').live('click', function(){
-			var id = getLiTaskId(this);
+			var id = parseInt(getLiTaskId(this));
 			if(id) cancelTaskNote(id);
 			return false;
 		});
 
 		$('#tasklist .mtt-action-note-save').live('click', function(){
-			var id = getLiTaskId(this);
+			var id = parseInt(getLiTaskId(this));
 			if(id) saveTaskNote(id);
 			return false;
 		});
@@ -905,11 +905,11 @@ function deleteTask(id)
 	_mtt.db.request('deleteTask', {id:id}, function(json){
 		if(!parseInt(json.total)) return;
 		var item = json.list[0];
-		taskOrder.splice($.inArray(item.id,taskOrder), 1);
-		$('#taskrow_'+item.id).fadeOut('normal', function(){ $(this).remove() });
-		changeTaskCnt(taskList[item.id], -1);
+		taskOrder.splice($.inArray(id,taskOrder), 1);
+		$('#taskrow_'+id).fadeOut('normal', function(){ $(this).remove() });
+		changeTaskCnt(taskList[id], -1);
 		refreshTaskCnt();
-		delete taskList[item.id];
+		delete taskList[id];
 	});
 	flag.tagsChanged = true;
 	return false;
@@ -932,10 +932,10 @@ function completeTask(id, ch)
 		if(item.compl && !curList.showCompl) {
 			delete taskList[id];
 			taskOrder.splice($.inArray(id,taskOrder), 1);
-			$('#taskrow_'+item.id).fadeOut('normal', function(){ $(this).remove() });
+			$('#taskrow_'+id).fadeOut('normal', function(){ $(this).remove() });
 		}
 		else if(curList.showCompl) {
-			$('#taskrow_'+item.id).fadeOut('fast', function(){
+			$('#taskrow_'+id).fadeOut('fast', function(){
 				changeTaskOrder(id);
 				$(this).effect("highlight", {color:_mtt.theme.editTaskFlashColor}, 'normal', function(){$(this).css('display','')});
 			});
@@ -976,10 +976,10 @@ function saveTaskNote(id)
 		var item = json.list[0];
 		taskList[id].note = item.note;
 		taskList[id].noteText = item.noteText;
-		$('#tasknote'+item.id+'>span').html(prepareHtml(item.note));
+		$('#tasknote'+id+'>span').html(prepareHtml(item.note));
 		if(item.note == '') $('#taskrow_'+id).removeClass('task-has-note task-expanded');
 		else $('#taskrow_'+id).addClass('task-has-note task-expanded');
-		cancelTaskNote(item.id);
+		cancelTaskNote(id);
 	});
 	return false;
 };
@@ -1473,7 +1473,7 @@ function taskContextMenu(el, id)
 function taskContextClick(el, menu)
 {
 	if(!el.id) return;
-	var taskId = cmenu.tag;
+	var taskId = parseInt(cmenu.tag);
 	var id = el.id, value;
 	var a = id.split(':');
 	if(a.length == 2) {
