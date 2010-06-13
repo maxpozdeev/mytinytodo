@@ -12,7 +12,7 @@ var sortOrder; //save task order before dragging
 var searchTimer;
 var objPrio = {};
 var selTask = 0;
-var flag = { needAuth:false, isLogged:false, tagsChanged:true, windowTaskEditMoved:false };
+var flag = { needAuth:false, isLogged:false, tagsChanged:true, windowTaskEditMoved:false, readOnly:false };
 var taskCnt = { total:0, past: 0, today:0, soon:0 };
 var tmp = {};
 var cmenu;
@@ -585,12 +585,11 @@ function prepareTaskStr(item, noteExp)
 {
 	var id = item.id;
 	var prio = item.prio;
-	var readOnly = false; //port: (flag.needAuth && !flag.isLogged) ? true : false;
 	return '<li id="taskrow_'+id+'" class="'+(item.compl?'task-completed ':'')+item.dueClass+(item.note!=''?' task-has-note':'')+(noteExp?' task-expanded':'')+
 		prepareTagsClass(item.tags_ids) + '">'+
 		'<div class="task-actions"><a href="#" class="taskactionbtn"></a></div>'+"\n"+
 		'<div class="task-left"><div class="task-toggle"></div>'+
-		'<input type="checkbox" '+(readOnly?'disabled="disabled"':'')+(item.compl?'checked="checked"':'')+'/></div>'+"\n"+
+		'<input type="checkbox" '+(flag.readOnly?'disabled="disabled"':'')+(item.compl?'checked="checked"':'')+'/></div>'+"\n"+
 		'<div class="task-middle">'+prepareDuedate(item.duedate, item.dueClass, item.dueStr)+"\n"+
 		'<div class="task-through">'+preparePrio(prio,id)+'<span class="task-title">'+prepareHtml(item.title)+'</span> '+"\n"+
 		prepareTagsStr(item)+'<span class="task-date">'+item.dateInline+'</span></div>'+
@@ -1165,8 +1164,6 @@ function loadTags(callback)
 
 function cancelTagFilter(tagId, dontLoadTasks)
 {
-//	$('#tagcloudbtn>.btnstr').text(_mtt.lang.get('tags'));
-
 	if(tagId && _mtt.tagFilter[tagId])
 	{
 		delete _mtt.tagFilter[tagId];
@@ -1199,8 +1196,6 @@ function addFilterTag(tag, tagId)
 
 	loadTasks();
 	$('#tag_filters').append('<span class="tag-filter tag-id-'+tagId+'"><b>'+_mtt.lang.get('tagfilter')+'</b> '+tag+'<span class="tag-filter-close" tagid="'+tagId+'"></span></span>');
-
-//	$('#tagcloudbtn>.btnstr').html(_mtt.lang.get('tagfilter') + ' <span class="tag">'+tag+'</span>');
 };
 
 function addsearchToggle(toSearch)
@@ -1212,8 +1207,8 @@ function addsearchToggle(toSearch)
 	}
 	else
 	{
-//port:		if(flag.needAuth && !flag.isLogged) return false;
-		showhide($('#htab_newtask'), $('#htab_search'));
+		if(flag.readOnly) $('#htab_search').hide();
+		else showhide($('#htab_newtask'), $('#htab_search'));
 
 		// reload tasks when we return to task tab (from search tab)
 		if(filter.search != '') {
@@ -1733,11 +1728,13 @@ function updateAccessStatus()
 		}
 	}
 	if(flag.needAuth && !flag.isLogged) {
+		flag.readOnly = true;
 		$("#bar_public").show();
 		$('#page_tasks').addClass('readonly')
 		addsearchToggle(1);
 	}
 	else {
+		flag.readOnly = false;
 		$('#page_tasks').removeClass('readonly')
 		$("#bar_public").hide();
 		addsearchToggle(0);
