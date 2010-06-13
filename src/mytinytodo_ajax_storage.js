@@ -26,7 +26,7 @@ mytinytodoStorageAjax.prototype =
 
 		this[action](params, function(json){
 			if(json.denied) mtt.errorDenied();
-			callback.call(mtt, json)
+			if(callback) callback.call(mtt, json)
 		});
 	},
 
