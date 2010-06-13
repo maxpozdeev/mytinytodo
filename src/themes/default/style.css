@@ -66,8 +66,8 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
  padding-right:2px;
  border:1px solid #ededed;
  border-bottom:none;
- -moz-border-radius-topleft:5px; -webkit-border-radius-topleft:5px;
- -moz-border-radius-topright:5px; -webkit-border-radius-topright:5px;
+ -moz-border-radius-topleft:5px; -webkit-border-top-left-radius:5px; border-top-left-radius:5px;
+ -moz-border-radius-topright:5px; -webkit-border-top-right-radius:5px; border-top-right-radius:5px;
 }
 
 .mtt-tabs-button {
@@ -85,7 +85,7 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 }
 
 .mtt-tabs-button:hover, .mtt-tabs-button.mtt-menu-button-active {
- border:1px solid #ccc; -moz-border-radius:3px; -webkit-border-radius:3px;
+ border:1px solid #ccc; -moz-border-radius:3px; -webkit-border-radius:3px; border-radius:3px;
 }
 
 .mtt-tabs-add-button>span { background:url(images/buttons.png) 0 0 no-repeat; }
@@ -98,13 +98,12 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 .mtt-htabs  { clear:both; padding:8px; border-bottom:2px solid #DEDEDE; background:#ededed; }
 
 .mtt-img-button { width:16px; height:16px; padding:2px; border:1px solid transparent; }
-.mtt-img-button:hover { border:1px solid #ccc; -moz-border-radius:3px; -webkit-border-radius:3px; }
+.mtt-img-button:hover { border:1px solid #ccc; -moz-border-radius:3px; -webkit-border-radius:3px; border-radius:3px; }
 .mtt-img-button span { display:inline-block; width:16px; height:16px; }
 
 #newtask_adv span { position:relative; top:3px; background:url(images/buttons.png) 0 -48px no-repeat; }
 #newtask_adv:hover span { background-position:-16px -48px; } 
-#search_close { float:right; margin-left:2px; position:relative; top:1px;}
-#search_close span { background:url(images/buttons.png) 0 -32px no-repeat; }
+#search_close span { position:relative; top:3px; background:url(images/buttons.png) 0 -32px no-repeat; }
 #search_close:hover span { background-position:-16px -32px; }
 #rss_icon { float:right;margin-top:4px; }
 #rss_icon img { border:none; }
@@ -112,18 +111,21 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 .arrdown { display:inline-block; height:7px; width:9px; background:url(images/arrdown.gif); }
 .arrdown2 { display:inline-block; height:7px; width:7px; background:url(images/arrdown2.gif); }
 
-#task { color:#444444; width:100%; max-width:350px; }
-#newtask_form table { max-width:400px; }
-#newtask_form .flex-cell-companion { padding-left:2px; }
-#search_form table { max-width:350px; }
-#search_form .flex-cell-companion { padding-left:2px; }
+.flex-cell { padding-right:6px; }
+.flex-cell input { width:100%; padding:2px; border:1px inset #f0f0f0; } 
+.flex-cell-companion { white-space:nowrap; }
 
-#search { color:#444444; width:100%; max-width:300px; 
+#newtask_form .flex-cell { width:350px }
+#search_form .flex-cell { width:250px; }
+#newtask_form .flex-cell-companion, #search_form .flex-cell-companion { padding-left:2px; }
+
+#task { color:#444444; width:100%; }
+#search {
+ color:#444444;
  background:#fff url(images/magnifier.png) no-repeat 2px 2px;
- text-indent:18px;
- border:1px inset #f0f0f0;
- padding:2px;
+ padding-left:20px; /* text-indent:18px here is not working in webkit */
 }
+#search_form .flex-cell { padding-right:24px; } /* padding 6px + 18px indent (20px-2px) */
 .small-bar{ font-size:8pt; color:#999999; font-weight:normal;}
 #searchbar { font-size:10pt; font-weight:normal; display:none;  margin-top:5px; }
 #searchbarkeyword { font-weight:bold; }
@@ -278,7 +280,7 @@ li.task-completed .task-note-block .task-note { text-decoration:line-through; }
  border:1px solid transparent;
 }
 .mtt-menu-button:hover, .mtt-menu-button.mtt-menu-button-active { 
- border:1px solid #ccc; -moz-border-radius:3px; -webkit-border-radius:3px;
+ border:1px solid #ccc; -moz-border-radius:3px; -webkit-border-radius:3px; border-radius:3px;
 }
 
 .mtt-btnmenu-container { 
@@ -300,9 +302,6 @@ li.mtt-menu-indicator .submenu-icon {
 	/*float:right; margin-right:-18px;*/ position:absolute; right:2px; /* specially for IE7 */
 	width:16px; height:16px; background:url(images/icons.gif) -32px -16px no-repeat;
 }
-
-.flex-cell { width:99%; /*padding-left:3px;*/ padding-right:6px; white-space:nowrap; }
-.flex-cell-companion { width:1%; white-space:nowrap; }
 
 .mtt-settings-table { width:100%; border-collapse:collapse; }
 .mtt-settings-table th, .mtt-settings-table td { border-bottom:1px solid #dedede; padding:8px; vertical-align:top; }

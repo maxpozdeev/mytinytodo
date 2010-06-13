@@ -71,8 +71,6 @@ $().ready(function(){
 
 <div id="lists">
  <ul class="mtt-tabs"></ul>
- <!--<div class="mtt-tabs-add-button" title="<?php _e('list_new'); ?>"><span></span></div>-->
-
  <div id="tabs_buttons">
   <div class="mtt-tabs-add-button mtt-tabs-button" title="<?php _e('list_new'); ?>"><span></span></div>
   <div class="mtt-tabs-search-button mtt-tabs-button" title="<?php _e('htab_search'); ?>"><span></span></div>
@@ -98,14 +96,12 @@ $().ready(function(){
 </span>
  
 <span id="htab_search" style="display:none">
- <a href="#" id="search_close" class="mtt-img-button" title=""><span></span></a>
-
  <form id="search_form" method="post">
   <table cellspacing="0" cellpadding="0"><tr>
    <td class="flex-cell"><input type="text" name="search" value="" maxlength="250" id="search" autocomplete="off" /></td>
    <td class="flex-cell-companion">
     <input type="submit" value="<?php _e('btn_search');?>" />
-    <!--<a href="#" id="search_close" class="mtt-img-button" title=""></a>-->
+    <a href="#" id="search_close" class="mtt-img-button" title=""><span></span></a>
    </td>
   </tr></table>
  </form>
@@ -114,23 +110,6 @@ $().ready(function(){
 
 </div>
 
-<!--
-<div id="toolbar" class="mtt-htabs">
-   <span id="rss_icon"><a href="#" title="<?php _e('rss_feed');?>"><img src="<?php mttinfo('template_url'); ?>images/feed_bw.png" onmouseover="this.src='<?php mttinfo('template_url'); ?>images/feed.png'" onmouseout="this.src='<?php mttinfo('template_url'); ?>images/feed_bw.png'" /></a></span>
-
-   <span id="htab_newtask"><?php _e('htab_newtask');?> 
-	<form id="newtask_form" method="post"><input type="text" name="task" value="" maxlength="250" id="task" /> <input type="submit" value="<?php _e('btn_add');?>" /></form>
-	<a href="#" id="newtask_adv" class="mtt-img-button" title="<?php _e('advanced_add');?>"><span></span></a>
-	&nbsp;&nbsp;| <a href="#" class="htab-toggle"><?php _e('htab_search');?></a>
-   </span>
-
-   <span id="htab_search" style="display:none"><?php _e('htab_search');?>
-	<form><input type="text" name="search" value="" maxlength="250" id="search" onkeyup="timerSearch()" autocomplete="off" /> <input type="submit" value="<?php _e('btn_search');?>" /></form>
-	&nbsp;&nbsp;| <a href="#" class="htab-toggle" onclick="addsearchToggle(0);this.blur();return false;"><?php _e('htab_newtask');?></a> 
-	<div id="searchbar"><?php _e('searching');?> <span id="searchbarkeyword"></span></div> 
-   </span>
-</div>
--->
 
 <h3>
 <span id="taskview" class="mtt-menu-button"><span class="btnstr"><?php _e('tasks');?></span> (<span id="total">0</span>) <span class="arrdown"></span></span>
