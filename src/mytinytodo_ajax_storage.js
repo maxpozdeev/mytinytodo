@@ -24,7 +24,10 @@ mytinytodoStorageAjax.prototype =
 	{
 		if(!this[action]) throw "Unknown storage action: "+action;
 
-		this[action](params, callback);
+		this[action](params, function(json){
+			if(json.denied) mtt.errorDenied();
+			callback.call(mtt, json)
+		});
 	},
 
 
@@ -142,10 +145,7 @@ mytinytodoStorageAjax.prototype =
 
 	publishList: function(params, callback)
 	{
-		$.post(this.mtt.mttUrl+'ajax.php?publishList', { list:params.list, publish:params.publish }, function(json){
-			if(json.denied) mtt.errorDenied();
-			callback.call(mtt, json)
-		}, 'json');
+		$.post(this.mtt.mttUrl+'ajax.php?publishList', { list:params.list, publish:params.publish },  callback, 'json');
 	},
 
 	changeListOrder: function(params, callback)

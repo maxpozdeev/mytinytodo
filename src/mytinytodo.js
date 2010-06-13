@@ -577,7 +577,6 @@ function loadTasks(opts)
 		});
 		refreshTaskCnt();
 		$('#tasklist').html(tasks);
-//port:	if(json.denied) errorDenied();
 	});
 };
 
