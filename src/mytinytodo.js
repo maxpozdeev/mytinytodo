@@ -590,9 +590,11 @@ function prepareTaskStr(item, noteExp)
 		'<div class="task-actions"><a href="#" class="taskactionbtn"></a></div>'+"\n"+
 		'<div class="task-left"><div class="task-toggle"></div>'+
 		'<input type="checkbox" '+(flag.readOnly?'disabled="disabled"':'')+(item.compl?'checked="checked"':'')+'/></div>'+"\n"+
-		'<div class="task-middle">'+prepareDuedate(item.duedate, item.dueClass, item.dueStr)+"\n"+
-		'<div class="task-through">'+preparePrio(prio,id)+'<span class="task-title">'+prepareHtml(item.title)+'</span> '+"\n"+
-		prepareTagsStr(item)+'<span class="task-date">'+item.dateInline+'</span></div>'+
+		'<div class="task-middle"><div class="task-middle-right">'+prepareDuedate(item)+
+		'<span class="task-date-completed" title="'+item.dateCompletedInlineTitle+'">'+item.dateCompletedInline+'</span></div>'+"\n"+
+		'<div class="task-through"><span class="task-date" title="'+item.dateInlineTitle+'">'+item.dateInline+'</span>'+preparePrio(prio,id)+
+		'<span class="task-title">'+prepareHtml(item.title)+'</span> '+"\n"+
+		prepareTagsStr(item)+'</div>'+
 		'<div class="task-note-block">'+
 			'<div id="tasknote'+id+'" class="task-note"><span>'+prepareHtml(item.note)+'</span></div>'+
 			'<div id="tasknotearea'+id+'" class="task-note-area"><textarea id="notetext'+id+'"></textarea>'+
@@ -642,10 +644,10 @@ function prepareTagsClass(ids)
 	return ' '+a.join(' ');
 };
 
-function prepareDuedate(duedate, c, s)
+function prepareDuedate(item)
 {
-	if(!duedate) return '';
-	return '<span class="duedate" title="'+duedate+'">'+s+'</span>';
+	if(!item.duedate) return '';
+	return '<span class="duedate" title="'+item.dueTitle+'"><span class="duedate-arrow">→</span> '+item.dueStr+'</span>';
 };
 
 

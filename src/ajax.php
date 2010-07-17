@@ -510,13 +510,22 @@ function prepareTaskRow($r, $tz)
 {
 	global $lang;
 	$dueA = prepare_duedate($r['duedate'], $tz);
+	$formatCreatedInline = $formatCompletedInline = 'M d';
+	if(date('Y') != date('Y',$r['d_created'])) $formatCreatedInline = 'M Y';
+	if($r['d_completed'] && date('Y') != date('Y',$r['d_completed'])) $formatCompletedInline = 'M Y';
+
 	$dCreated = timestampToDatetime($r['d_created'], $tz);
+	$dCompleted = $r['d_completed'] ? timestampToDatetime($r['d_completed'], $tz) : '';
+
 	return array(
 		'id' => $r['id'],
 		'title' => escapeTags($r['title']),
 		'date' => htmlarray($dCreated),
-		'dateInline' => htmlarray(sprintf($lang->get('taskdate_inline'), $dCreated)),
-		'dateCompleted' => $r['d_completed'] ? htmlarray(timestampToDatetime($r['d_completed'], $tz)) : '',
+		'dateInline' => htmlarray(formatTime($formatCreatedInline, $r['d_created'], $tz)),
+		'dateInlineTitle' => htmlarray(sprintf($lang->get('taskdate_inline_created'), $dCreated)),
+		'dateCompleted' => htmlarray($dCompleted),
+		'dateCompletedInline' => $r['d_completed'] ? htmlarray(formatTime($formatCompletedInline, $r['d_completed'], $tz)) : '',
+		'dateCompletedInlineTitle' => htmlarray(sprintf($lang->get('taskdate_inline_completed'), $dCompleted)),
 		'compl' => (int)$r['compl'],
 		'prio' => $r['prio'],
 		'note' => nl2br(escapeTags($r['note'])),
@@ -526,8 +535,9 @@ function prepareTaskRow($r, $tz)
 		'tags_ids' => htmlarray($r['tags_ids']),
 		'duedate' => $dueA['formatted'],
 		'dueClass' => $dueA['class'],
-		'dueStr' => htmlarray($dueA['str']),
+		'dueStr' => htmlarray($r['compl'] && $dueA['timestamp'] ? formatTime($formatCompletedInline, $dueA['timestamp'], $tz) : $dueA['str']),
 		'dueInt' => date2int($r['duedate']),
+		'dueTitle' => htmlarray(sprintf($lang->get('taskdate_inline_duedate'), $dueA['formatted'])),
 	);
 }
 
@@ -704,12 +714,13 @@ function prepare_duedate($duedate, $tz)
 {
 	global $lang;
 
-	$a = array( 'class'=>'', 'str'=>'', 'formatted'=>'' );
+	$a = array( 'class'=>'', 'str'=>'', 'formatted'=>'', 'timestamp'=>0 );
 	if($duedate == '') {
 		return $a;
 	}
 	$ad = explode('-', $duedate);
 	$at = explode('-', gmdate('Y-m-d', time() + $tz*60));
+	$a['timestamp'] = gmmktime(0,0,0,$ad[1],$ad[2],$ad[0]) + $tz*60;
 	$diff = mktime(0,0,0,$ad[1],$ad[2],$ad[0]) - mktime(0,0,0,$at[1],$at[2],$at[0]);
 
 	if($diff < -604800 && $ad[0] == $at[0])	{ $a['class'] = 'past'; $a['str'] = formatDate3(Config::get('dateformatshort'), (int)$ad[0], (int)$ad[1], (int)$ad[2], $lang); }
