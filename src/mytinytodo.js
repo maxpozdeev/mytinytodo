@@ -36,11 +36,11 @@ var mytinytodo = window.mytinytodo = _mtt = {
 	options: {
 		openList: 0,
 		modalEdit: true,	//how to show the edit/add task form 
-		singletab: false,
+		singletab: false
 	},
 
 	timers: {
-		previewtag: 0,
+		previewtag: 0
 	},
 		
 	tagFilter: [],
