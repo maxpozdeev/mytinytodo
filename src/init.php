@@ -115,7 +115,7 @@ function mttinfo($v)
 
 function get_mttinfo($v)
 {
-	global $_mttinfo, $lang;
+	global $_mttinfo;
 	if(isset($_mttinfo[$v])) return $_mttinfo[$v];
 	switch($v)
 	{
@@ -133,7 +133,7 @@ function get_mttinfo($v)
 			if($_mttinfo['mtt_url'] == '') $_mttinfo['mtt_url'] = url_dir(isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : $_SERVER['SCRIPT_NAME']);
 			return $_mttinfo['mtt_url'];
 		case 'title':
-			$_mttinfo['title'] = (Config::get('title') != '') ? htmlarray(Config::get('title')) : $lang->get('My Tiny Todolist');
+			$_mttinfo['title'] = (Config::get('title') != '') ? htmlarray(Config::get('title')) : __('My Tiny Todolist');
 			return $_mttinfo['title'];
 	}
 }
