@@ -125,11 +125,12 @@ function get_mttinfo($v)
 		case 'url':
 			$_mttinfo['url'] = Config::get('url');
 			if($_mttinfo['url'] == '')
-				$_mttinfo['url'] = 'http://'.$_SERVER['HTTP_HOST'] .($_SERVER['SERVER_PORT'] != 80 ? ':'.$_SERVER['SERVER_PORT'] : ''). url_dir($_SERVER['REQUEST_URI']);
+				$_mttinfo['url'] = 'http://'.$_SERVER['HTTP_HOST'] .($_SERVER['SERVER_PORT'] != 80 ? ':'.$_SERVER['SERVER_PORT'] : '').
+									url_dir(isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : $_SERVER['SCRIPT_NAME']);
 			return $_mttinfo['url'];
 		case 'mtt_url':
 			$_mttinfo['mtt_url'] = Config::get('mtt_url');
-			if($_mttinfo['mtt_url'] == '') $_mttinfo['mtt_url'] = url_dir($_SERVER['REQUEST_URI']);
+			if($_mttinfo['mtt_url'] == '') $_mttinfo['mtt_url'] = url_dir(isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : $_SERVER['SCRIPT_NAME']);
 			return $_mttinfo['mtt_url'];
 		case 'title':
 			$_mttinfo['title'] = (Config::get('title') != '') ? htmlarray(Config::get('title')) : $lang->get('My Tiny Todolist');
