@@ -43,7 +43,7 @@ else
 }
 
 $lastVer = '1.3.1';
-echo '<html><head><meta name="robots" content="noindex,nofollow"></head><body>'; 
+echo '<html><head><meta name="robots" content="noindex,nofollow"><title>myTinyTodo @VERSION Setup</title></head><body>'; 
 echo "<big><b>myTinyTodo @VERSION Setup</b></big><br><br>";
 
 # determine current installed version
@@ -55,14 +55,14 @@ if(!$ver)
 	if(!isset($_POST['installdb']) && !isset($_POST['install']))
 	{
 		exitMessage("<form method=post>Select database type to use:<br><br>
-<label><input type=radio name=installdb value=sqlite checked>SQLite</label><br><br>
-<label><input type=radio name=installdb value=mysql>MySQL</label><br>
-<table style=\"margin-left:30px\"><tr><td>Host:</td><td><input name=mysql_host value=localhost></td></tr>
+<label><input type=radio name=installdb value=sqlite checked=checked onclick=\"document.getElementById('mysqlsettings').style.display='none'\">SQLite</label><br><br>
+<label><input type=radio name=installdb value=mysql onclick=\"document.getElementById('mysqlsettings').style.display=''\">MySQL</label><br>
+<div id='mysqlsettings' style='display:none; margin-left:30px;'><br><table><tr><td>Host:</td><td><input name=mysql_host value=localhost></td></tr>
 <tr><td>Database:</td><td><input name=mysql_db value=mytinytodo></td></tr>
 <tr><td>User:</td><td><input name=mysql_user value=user></td></tr>
 <tr><td>Password:</td><td><input type=password name=mysql_password></td></tr>
 <tr><td>Table prefix:</td><td><input name=prefix value=\"mtt_\"></td></tr>
-</table><br><input type=submit value=' Next '></form>");
+</table></div><br><input type=submit value=' Next '></form>");
 	}
 	elseif(isset($_POST['installdb']))
 	{
