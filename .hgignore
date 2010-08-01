@@ -3,3 +3,4 @@ syntax: glob
 src/db/todolist.db
 src/tmp/sessions/sess*
 src/db/config.php
+.DS_Store
