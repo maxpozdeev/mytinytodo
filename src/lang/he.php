@@ -12,6 +12,7 @@
 
 class Lang extends DefaultLang
 {
+	var $rtl = 1;
 	var $js = array
 	(
 		'confirmDelete' => "האם אתה בטוח למחוק את המשימה?",
