@@ -2,7 +2,7 @@
 
 /*
 	myTinyTodo language pack
-	Language: Brazilian Portuguese
+	Language: Portuguese (Brazilian)
 	Original name: Português (do Brasil)
 	Author: Vitor Micillo Junior
 	Author Url:

@@ -4,8 +4,9 @@
 	myTinyTodo language pack
 	Language: Spanish
 	Original name: Español
-	Author: Sandro Jurado && Antonio Garcia Marin
-	Author Url: http://www.alianzalima.com && antoniogarciamarin@gmail.com
+	Author: Sandro Jurado
+	Author Url:
+	Modified by: Antonio Garcia Marin <antoniogarciamarin@gmail.com>
 	AppVersion: v1.3.4
 	Date: 2010-05-09
 */

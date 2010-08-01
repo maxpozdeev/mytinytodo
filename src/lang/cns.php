@@ -2,10 +2,11 @@
 
 /*
 	myTinyTodo language pack
-	Language: Simple Chinese 
-	Author: heraldboy@gmail.com
-	Url:
-	AppVersion: v1.3.1
+	Language: Chinese Simplified
+	Original name: 中文 (简体)	
+	Author: heraldboy
+	Author Email: heraldboy@gmail.com
+	AppVersion: v1.3
 	Date: 2009-11-29
 */
 
