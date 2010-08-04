@@ -125,6 +125,11 @@ mytinytodoStorageAjax.prototype =
 		$.post(this.mtt.mttUrl+'ajax.php?moveTask', { id:params.id, from:params.from, to:params.to }, callback, 'json');
 	},
 
+	parseTaskStr: function(params, callback)
+	{
+		$.post(this.mtt.mttUrl+'ajax.php?parseTaskStr', { list:params.list, title:params.title, tz:params.tz, tag:params.tag }, callback, 'json');
+	},
+	
 
 	// Lists
 	addList: function(params, callback)
