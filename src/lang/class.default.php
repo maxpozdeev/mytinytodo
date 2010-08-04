@@ -86,6 +86,7 @@ class DefaultLang
 		'list_showcompleted' => "Show completed tasks",
 		'list_clearcompleted' => "Clear completed tasks",
 		'list_select' => "Select list",
+		'list_exportcsv' => "Export to CSV",
 		'alltags' => "All tags:",
 		'alltags_show' => "Show all",
 		'alltags_hide' => "Hide all",

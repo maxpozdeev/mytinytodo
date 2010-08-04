@@ -891,6 +891,7 @@ function listMenuClick(el, menu)
 		case 'btnRenameList': renameCurList(); break;
 		case 'btnDeleteList': deleteCurList(); break;
 		case 'btnPublish': publishCurList(); break;
+		case 'btnExportCSV': exportCurListToCSV(); break;
 		case 'btnShowCompleted': showCompletedToggle(); break;
 		case 'btnClearCompleted': clearCompleted(); break;
 		case 'sortByHand': setSort(0); break;
@@ -1679,6 +1680,12 @@ function slmenuSelect(el, menu)
 	return false;
 };
 
+
+function exportCurListToCSV()
+{
+	if(!curList) return;
+	window.location.href = _mtt.mttUrl + 'export.php?list='+curList.id +'&format=csv';
+};
 
 /*
 	Errors and Info messages
