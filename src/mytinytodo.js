@@ -36,7 +36,8 @@ var mytinytodo = window.mytinytodo = _mtt = {
 	options: {
 		openList: 0,
 		modalEdit: true,	//how to show the edit/add task form 
-		singletab: false
+		singletab: false,
+		autotag: false
 	},
 
 	timers: {
@@ -1012,12 +1013,13 @@ function showEditForm(isAdd)
 	{
 		$('#page_taskedit').removeClass('mtt-inedit').addClass('mtt-inadd');
 		form.isadd.value = 1;
+		if(_mtt.options.autotag) form.tags.value = filter.tag;
 		if($('#task').val() != '')
 		{
 			_mtt.db.request('parseTaskStr', { list:curList.id, title:$('#task').val(), tz:tz(), tag:filter.tag }, function(json){
 				if(!json) return;
 				form.task.value = json.title
-				form.tags.value = json.tags;
+				form.tags.value = (form.tags.value != '') ? form.tags.value +', '+ json.tags : json.tags;
 				form.prio.value = json.prio;
 				$('#task').val('');
 
@@ -1195,10 +1197,11 @@ function addFilterTag(tag, tagId)
 	for(var i in _mtt.tagFilter) {
 		a.push(_mtt.tagFilter[i]);
 	}
-	filter.tag = a.join(',');
+	filter.tag = a.join(', ');
 
 	loadTasks();
-	$('#tag_filters').append('<span class="tag-filter tag-id-'+tagId+'"><b>'+_mtt.lang.get('tagfilter')+'</b> '+tag+'<span class="tag-filter-close" tagid="'+tagId+'"></span></span>');
+	$('#tag_filters').append('<span class="tag-filter tag-id-'+tagId+'"><b>'+
+		_mtt.lang.get('tagfilter')+'</b> '+tag+'<span class="tag-filter-close" tagid="'+tagId+'"></span></span>');
 };
 
 function addsearchToggle(toSearch)
