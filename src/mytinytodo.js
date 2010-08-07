@@ -16,7 +16,19 @@ var flag = { needAuth:false, isLogged:false, tagsChanged:true, windowTaskEditMov
 var taskCnt = { total:0, past: 0, today:0, soon:0 };
 var tmp = {};
 var cmenu;
-var tabLists = [];
+var tabLists = {
+	_lists: {},
+	_length: 0,
+	_order: [],
+	clear: function(){ this._lists = {}; this._length = 0; this._order = []; },
+	length: function(){ return this._length; },
+	exists: function(id){ if(this._lists[id]) return true; else return false; },
+	add: function(list){ this._lists[list.id] = list; this._length++; this._order.push(list.id); },
+	replace: function(list){ this._lists[list.id] = list; },
+	get: function(id){ return this._lists[id]; },
+	getAll: function(){ var r = []; for(var i in this._order) { r.push(this._lists[this._order[i]]); }; return r; },
+	reorder: function(order){ this._order = order; }
+};
 var curList = 0;
 var tagsList = [];
 var page = {cur:'', prev:''};
@@ -372,16 +384,22 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		});
 
 
-		this.addAction('listRenamed', cmenuListRenamed);
-		this.addAction('listsLoaded', cmenuListsLoaded);
-		this.addAction('listAdded', cmenuListAdded);
-		this.addAction('listSelected', actionListSelected);
+		// tab menu
+		this.addAction('listSelected', tabmenuOnListSelected);
+
+		// task context menu
+		this.addAction('listsLoaded', cmenuOnListsLoaded);
+		this.addAction('listRenamed', cmenuOnListRenamed);
+		this.addAction('listAdded', cmenuOnListAdded);
+		this.addAction('listSelected', cmenuOnListSelected);
+		this.addAction('listOrderChanged', cmenuOnListOrderChanged);
 
 		// select list menu
-		this.addAction('listsLoaded', slmenuTabsLoaded);
-		this.addAction('listRenamed', slmenuTabRenamed);
-		this.addAction('listAdded', slmenuTabAdded);
-		this.addAction('listSelected', slmenuTabSelected);
+		this.addAction('listsLoaded', slmenuOnListsLoaded);
+		this.addAction('listRenamed', slmenuOnListRenamed);
+		this.addAction('listAdded', slmenuOnListAdded);
+		this.addAction('listSelected', slmenuOnListSelected);
+		this.addAction('listOrderChanged', slmenuOnListsLoaded);
 
 		return this;
 	},
@@ -418,7 +436,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		}
 		$('#page_tasks').hide();
 		
-		tabLists.length = 0;	//empty an array
+		tabLists.clear();
 		
 		this.db.loadLists(null, function(res)
 		{
@@ -437,7 +455,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 				}
 				
 				$.each(res.list, function(i,item){
-					tabLists[item.id] = item;
+					tabLists.add(item);
 					ti += '<li id="list_'+item.id+'" class="mtt-tab '+(item.id==openId?'mtt-tabs-selected':'')+'">'+
 						'<a href="#" title="'+item.name+'"><span>'+item.name+'</span>'+
 						'<div class="list-action"></div></a></li>';
@@ -450,7 +468,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 					$('#mylistscontainer .mtt-need-list').removeClass('mtt-disabled');
 				}
 
-				curList = tabLists[openId];
+				curList = tabLists.get(openId);
 				loadTasks();
 			}
 			else
@@ -498,8 +516,8 @@ function addList()
 	_mtt.db.request('addList', {name:r}, function(json){
 		if(!parseInt(json.total)) return;
 		var item = json.list[0];
-		var i = tabLists.length;
-		tabLists[item.id] = item;
+		var i = tabLists.length();
+		tabLists.add(item);
 		if(i > 0) {
 			$('#lists ul').append('<li id="list_'+item.id+'" class="mtt-tab">'+
 					'<a href="#" title="'+item.name+'"><span>'+item.name+'</span>'+
@@ -519,7 +537,8 @@ function renameCurList()
 	_mtt.db.request('renameList', {list:curList.id, name:r}, function(json){
 		if(!parseInt(json.total)) return;
 		var item = json.list[0];
-		tabLists[curList.id] = curList = item;
+		curList = item;
+		tabLists.replace(item); 
 		$('#lists ul>.mtt-tabs-selected>a').attr('title', item.name).find('span').html(item.name);
 		mytinytodo.doAction('listRenamed', item);
 	});
@@ -853,8 +872,7 @@ function tabSelected(elementOrId)
 		if(!id) return;
 		id = parseInt(id.split('_', 2)[1]);
 	}
-	if(!id) return;
-	if(!tabLists[id]) return;
+	if(!tabLists.exists(id)) return;
 	$('#lists .mtt-tabs-selected').removeClass('mtt-tabs-selected');
 	$('#list_'+id).addClass('mtt-tabs-selected');
 	if(curList.id != id)
@@ -867,9 +885,9 @@ function tabSelected(elementOrId)
 		}
 		//if(tabLists[indx].published)
 //port:		$('#rss_icon').find('a').attr('href', mytinytodo.mttUrl+'feed.php?list='+tabLists[indx].id);
-		mytinytodo.doAction('listSelected', tabLists[id]);
+		mytinytodo.doAction('listSelected', tabLists.get(id));
 	}
-	curList = tabLists[id];
+	curList = tabLists.get(id);
 	flag.tagsChanged = true;
 	cancelTagFilter(0, 1);
 	setTaskview(0);
@@ -1515,37 +1533,49 @@ function moveTaskToList(taskId, listId)
 };
 
 
-function cmenuListsLoaded()
+function cmenuOnListsLoaded()
 {
 	if(cmenu) cmenu.destroy();
 	cmenu = null;
 	var s = '';
-	for(var i in tabLists) {
-		s += '<li id="cmenu_list:'+tabLists[i].id+'">'+tabLists[i].name+'</li>';
+	var all = tabLists.getAll();
+	for(var i in all) {
+		s += '<li id="cmenu_list:'+all[i].id+'">'+all[i].name+'</li>';
 	}
 	$('#listsmenucontainer ul').html(s);
 };
 
-function cmenuListAdded(list)
+function cmenuOnListAdded(list)
 {
 	if(cmenu) cmenu.destroy();
 	cmenu = null;
 	$('#listsmenucontainer ul').append('<li id="cmenu_list:'+list.id+'">'+list.name+'</li>');
 };
 
-function cmenuListRenamed(list)
+function cmenuOnListRenamed(list)
 {
 	$('#cmenu_list\\:'+list.id).text(list.name);
 };
 
-function actionListSelected(list)
+function cmenuOnListSelected(list)
+{
+	$('#listsmenucontainer li').removeClass('mtt-disabled');
+	$('#cmenu_list\\:'+list.id).addClass('mtt-disabled');
+};
+
+function cmenuOnListOrderChanged()
+{
+	cmenuOnListsLoaded();
+	$('#cmenu_list\\:'+curList.id).addClass('mtt-disabled');
+};
+
+
+function tabmenuOnListSelected(list)
 {
 	if(list.published) $('#btnPublish').addClass('mtt-item-checked');
 	else $('#btnPublish').removeClass('mtt-item-checked');
 	if(list.showCompl) $('#btnShowCompleted').addClass('mtt-item-checked');
 	else $('#btnShowCompleted').removeClass('mtt-item-checked');
-	$('#listsmenucontainer li').removeClass('mtt-disabled');
-	$('#cmenu_list\\:'+list.id).addClass('mtt-disabled');
 };
 
 
@@ -1556,13 +1586,15 @@ function listOrderChanged(event, ui)
 	for(var i in a) {
 		order.push(a[i].split('_')[1]);
 	}
+	tabLists.reorder(order);
 	_mtt.db.request('changeListOrder', {order:order});
+	_mtt.doAction('listOrderChanged', {order:order});
 };
 
 function showCompletedToggle()
 {
 	var act = curList.showCompl ? 0 : 1;
-	curList.showCompl = tabLists[curList.id].showCompl = act;
+	curList.showCompl = tabLists.get(curList.id).showCompl = act;
 	if(act) $('#btnShowCompleted').addClass('mtt-item-checked');
 	else $('#btnShowCompleted').removeClass('mtt-item-checked');
 	loadTasks({setCompl:1});
@@ -1633,7 +1665,7 @@ function dehtml(str)
 };
 
 
-function slmenuTabsLoaded()
+function slmenuOnListsLoaded()
 {
 	if(_mtt.menus.selectlist) {
 		_mtt.menus.selectlist.destroy();
@@ -1641,18 +1673,19 @@ function slmenuTabsLoaded()
 	}
 
 	var s = '';
-	for(var i in tabLists) {
-		s += '<li id="slmenu_list:'+tabLists[i].id+'" class="'+(tabLists[i].id==curList.id?'mtt-item-checked':'')+' list-id-'+tabLists[i].id+'"><div class="menu-icon"></div><a href="#list/'+tabLists[i].id+'">'+tabLists[i].name+'</a></li>';
+	var all = tabLists.getAll();
+	for(var i in all) {
+		s += '<li id="slmenu_list:'+all[i].id+'" class="'+(all[i].id==curList.id?'mtt-item-checked':'')+' list-id-'+all[i].id+'"><div class="menu-icon"></div><a href="#list/'+all[i].id+'">'+all[i].name+'</a></li>';
 	}
 	$('#slmenucontainer ul').html(s);
 };
 
-function slmenuTabRenamed(list)
+function slmenuOnListRenamed(list)
 {
 	$('#slmenucontainer li.list-id-'+list.id).find('a').html(list.name);
 };
 
-function slmenuTabAdded(list)
+function slmenuOnListAdded(list)
 {
 	if(_mtt.menus.selectlist) {
 		_mtt.menus.selectlist.destroy();
@@ -1661,7 +1694,7 @@ function slmenuTabAdded(list)
 	$('#slmenucontainer ul').append('<li id="slmenu_list:'+list.id+'" class="list-id-'+list.id+'"><div class="menu-icon"></div><a href="#list/'+list.id+'">'+list.name+'</a></li>');
 };
 
-function slmenuTabSelected(list)
+function slmenuOnListSelected(list)
 {
 	$('#slmenucontainer li').removeClass('mtt-item-checked');
 	$('#slmenucontainer li.list-id-'+list.id).addClass('mtt-item-checked');
