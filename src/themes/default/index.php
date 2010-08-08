@@ -184,7 +184,7 @@ $().ready(function(){
  <span class="prio-pos prio-pos-2">+2</span>
 </div>
 
-<div id="taskviewcontainer" class="mtt-btnmenu-container" style="display:none">
+<div id="taskviewcontainer" class="mtt-menu-container" style="display:none">
 <ul>
  <li id="view_tasks"><?php _e('tasks');?> (<span id="cnt_total">0</span>)</li>
  <li id="view_past"><?php _e('f_past');?> (<span id="cnt_past">0</span>)</li>
@@ -200,23 +200,23 @@ $().ready(function(){
 </div>
 
 
-<div id="mylistscontainer" class="mtt-btnmenu-container mtt-menu-has-images" style="display:none">
+<div id="mylistscontainer" class="mtt-menu-container" style="display:none">
 <ul>
  <li class="mtt-need-list" id="btnRenameList"><?php _e('list_rename');?></li>
  <li class="mtt-need-list" id="btnDeleteList"><?php _e('list_delete');?></li>
  <li class="mtt-need-list" id="btnClearCompleted"><?php _e('list_clearcompleted');?></li>
  <li class="mtt-need-list" id="btnExportCSV"><?php _e('list_exportcsv');?></li>
- <li class="mtt-btnmenu-delimiter"></li>
+ <li class="mtt-menu-delimiter"></li>
  <li class="mtt-need-list" id="btnPublish"><div class="menu-icon"></div><?php _e('list_publish');?></li>
  <li class="mtt-need-list" id="btnShowCompleted"><div class="menu-icon"></div><?php _e('list_showcompleted');?></li>
- <li class="mtt-btnmenu-delimiter"></li>
+ <li class="mtt-menu-delimiter"></li>
  <li class="mtt-need-list sort-item" id="sortByHand"><div class="menu-icon"></div><?php _e('sortByHand');?></li>
  <li class="mtt-need-list sort-item" id="sortByPrio"><div class="menu-icon"></div><?php _e('sortByPriority');?></li>
  <li class="mtt-need-list sort-item" id="sortByDueDate"><div class="menu-icon"></div><?php _e('sortByDueDate');?></li>
 </ul>
 </div>
 
-<div id="taskcontextcontainer" class="mtt-btnmenu-container mtt-menu-has-images mtt-menu-has-submenu" style="display:none">
+<div id="taskcontextcontainer" class="mtt-menu-container" style="display:none">
 <ul>
  <li id="cmenu_edit"><b><?php _e('action_edit');?></b></li>
  <li id="cmenu_note"><?php _e('action_note');?></li>
@@ -226,7 +226,7 @@ $().ready(function(){
 </ul>
 </div>
 
-<div id="priocontainer" class="mtt-btnmenu-container mtt-menu-has-images" style="display:none">
+<div id="priocontainer" class="mtt-menu-container" style="display:none">
 <ul>
  <li id="cmenu_prio:2">+2</li>
  <li id="cmenu_prio:1">+1</li>
@@ -235,12 +235,12 @@ $().ready(function(){
 </ul>
 </div>
 
-<div id="listsmenucontainer" class="mtt-btnmenu-container mtt-menu-has-images" style="display:none">
+<div id="listsmenucontainer" class="mtt-menu-container" style="display:none">
 <ul>
 </ul>
 </div>
 
-<div id="slmenucontainer" class="mtt-btnmenu-container mtt-menu-has-images" style="display:none">
+<div id="slmenucontainer" class="mtt-menu-container" style="display:none">
 <ul>
 </ul>
 </div>

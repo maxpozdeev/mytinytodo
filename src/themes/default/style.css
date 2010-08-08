@@ -289,21 +289,21 @@ li.task-completed .task-note-block .task-note { text-decoration:line-through; }
  border:1px solid #ccc; -moz-border-radius:3px; -webkit-border-radius:3px; border-radius:3px;
 }
 
-.mtt-btnmenu-container { 
+.mtt-menu-container { 
 	overflow:hidden; z-index:100;
 	background-color:#f9f9f9; border:1px solid #cccccc; padding:2px;
-	-moz-box-shadow:1px 2px 5px rgba(0,0,0,0.5); -webkit-box-shadow:1px 2px 5px rgba(0,0,0,0.5); margin:0px 7px 7px 0px;
+	-moz-box-shadow:1px 2px 5px rgba(0,0,0,0.5); -webkit-box-shadow:1px 2px 5px rgba(0,0,0,0.5); box-shadow:1px 2px 5px rgba(0,0,0,0.5); 
+	-moz-border-radius:5px; -webkit-border-radius:5px; border-radius:5px;
+	margin:0px 7px 7px 0px; /* for shadows */
 } 
-.mtt-btnmenu-container ul { list-style: none; padding:0; margin:0; }
-.mtt-btnmenu-container li { margin:1px 0px; padding:2px 3px; cursor:pointer; color:#000; white-space:nowrap; }
-.mtt-btnmenu-container li:hover, .mtt-btnmenu-container li.mtt-menu-item-active { background-color:#316AC5; color:white; }
-.mtt-btnmenu-container li.mtt-disabled { color:#ACA899; }
-.mtt-btnmenu-container a { display:block; text-decoration:none; outline:none; color:#000; }
-.mtt-btnmenu-container li:hover a { color:white; }
-.mtt-btnmenu-container.mtt-menu-has-images li { padding-left:18px; }
-.mtt-btnmenu-container li.mtt-btnmenu-delimiter { height:0px; line-height:0; border-bottom:1px solid #cccccc; margin:2px -1px; padding:0px; font-size:0px; }
+.mtt-menu-container ul { list-style: none; padding:0; margin:0; }
+.mtt-menu-container li { margin:1px 0px; padding:2px 3px; cursor:default; color:#000; white-space:nowrap; padding-left:18px; padding-right:18px; }
+.mtt-menu-container li:hover, .mtt-menu-container li.mtt-menu-item-active { background-color:#316AC5; color:white; }
+.mtt-menu-container li.mtt-disabled { color:#ACA899; }
+.mtt-menu-container a { display:block; text-decoration:none; outline:none; color:#000; }
+.mtt-menu-container li:hover a { color:white; }
+.mtt-menu-container li.mtt-menu-delimiter { height:0px; line-height:0; border-bottom:1px solid #cccccc; margin:2px -1px; padding:0px; font-size:0px; }
 li.mtt-item-checked .menu-icon { float:left; width:16px; height:16px; margin-left:-18px; background:url(images/icons.gif) -16px -16px; }
-.mtt-btnmenu-container.mtt-menu-has-submenu li { padding-right:18px; }
 li.mtt-menu-indicator .submenu-icon {
 	/*float:right; margin-right:-18px;*/ position:absolute; right:2px; /* specially for IE7 */
 	width:16px; height:16px; background:url(images/icons.gif) -32px -16px no-repeat;
