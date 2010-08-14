@@ -44,9 +44,9 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 #msg.mtt-info .msg-details { border:1px solid #EFC300;}
 
 .mtt-tabs { list-style:none; padding:0; margin:0; }
-.mtt-tabs li { margin:1px 3px 0 0; float:left; max-width:199px; border-left:1px solid #ededed; background:#fbfbfb url(images/tab_hover.gif) no-repeat top right; }
+.mtt-tabs li { margin:1px 3px 0 0; float:left; border-left:1px solid #ededed; background:#fbfbfb url(images/tab_hover.gif) no-repeat top right; }
 .mtt-tabs a { position:relative; margin:0; font-size:9pt; font-weight:bold; text-decoration:none; text-align:center; white-space:nowrap; color:#444444; display:block; height:21px; padding:6px 6px 0px 2px; outline:none; vertical-align:top; }
-.mtt-tabs a span { display:inline-block; min-width:75px; cursor:pointer; padding:0; overflow:hidden; }
+.mtt-tabs a span { display:inline-block; min-width:75px; max-width:195px; cursor:pointer; padding:0; overflow:hidden; }
 .mtt-tabs .list-action { display:none; float:left; position:absolute; top:6px; right:5px; width:15px; height:15px; background:transparent url(images/icons.gif) 0 0 no-repeat; cursor:pointer; }
 .mtt-tabs .list-action:hover, .mtt-tabs .list-action.mtt-menu-button-active { background-position:-16px 0; } 
 .mtt-tabs li.mtt-tabs-selected span { margin-right:16px; }
