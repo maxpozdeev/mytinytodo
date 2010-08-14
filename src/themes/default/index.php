@@ -20,8 +20,8 @@
 <script type="text/javascript" src="<?php mttinfo('mtt_url'); ?>jquery/jquery-1.4.2.min.js"></script>
 <script type="text/javascript" src="<?php mttinfo('mtt_url'); ?>jquery/jquery-ui-1.7.2.custom.min.js"></script>
 <script type="text/javascript" src="<?php mttinfo('mtt_url'); ?>jquery/jquery.autocomplete-1.1.js"></script>
-<script type="text/javascript" src="<?php mttinfo('mtt_url'); ?>ajax.lang.php?v=@VERSION"></script>
 <script type="text/javascript" src="<?php mttinfo('mtt_url'); ?>mytinytodo.js?v=@VERSION"></script>
+<script type="text/javascript" src="<?php mttinfo('mtt_url'); ?>mytinytodo_lang.php?v=@VERSION"></script>
 <script type="text/javascript" src="<?php mttinfo('mtt_url'); ?>mytinytodo_ajax_storage.js?v=@VERSION"></script>
 <script type="text/javascript" src="<?php mttinfo('template_url'); ?>functions.js?v=@VERSION"></script>
 
@@ -38,7 +38,7 @@ $().ready(function(){
 		duedateformat: <?php echo (int)Config::get('duedateformat'); ?>,
 		autotag: <?php echo Config::get('autotag') ? "true" : "false"; ?>
 		<?php if(isset($_GET['list'])) echo ",openList: ". (int)$_GET['list']; ?>
-	}, lang).loadLists(1);
+	}).loadLists(1);
 });
 </script>
 

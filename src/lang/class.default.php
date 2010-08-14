@@ -156,7 +156,7 @@ class DefaultLang
 		$a[] = $this->_2js('f_past');
 		$a[] = $this->_2js('f_today');
 		$a[] = $this->_2js('f_soon');
-		return "lang = {\n". implode(",\n", $a). "\n};";
+		return "{\n". implode(",\n", $a). "\n}";
 	}
 
 	function _2js($v)

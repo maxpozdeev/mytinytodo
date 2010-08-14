@@ -71,7 +71,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			else return v;
 		},
 		
-		initArrays: function(lang)
+		init: function(lang)
 		{
 			this.__lang = lang;
 			this.daysMin = this.__lang.daysMin;
@@ -89,8 +89,6 @@ var mytinytodo = window.mytinytodo = _mtt = {
 
 		flag.needAuth = options.needAuth ? true : false;
 		flag.isLogged = options.isLogged ? true : false;
-
-		this.lang.initArrays(lang);
 
 		if(this.options.showdate) $('#page_tasks').addClass('show-inline-date');
 		if(this.options.singletab) $('#lists .mtt-tabs').addClass('mtt-tabs-only-one');
