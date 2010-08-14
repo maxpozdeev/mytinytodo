@@ -33,7 +33,7 @@ elseif(isset($_GET['loadTasks']))
 	stop_gpc($_GET);
 	$listId = (int)_get('list');
 	check_read_access($listId);
-	$sqlWhere = ' AND todolist.list_id='. $listId;
+	$sqlWhere = " AND {$db->prefix}todolist.list_id=". $listId;
 	if(_get('compl') == 0) $sqlWhere .= ' AND compl=0';
 	$inner = '';
 	
@@ -113,7 +113,8 @@ elseif(isset($_GET['newTask']))
 	if(Config::get('autotz')==0 || $tz<-720 || $tz>720 || $tz%30!=0 ) $tz = round(date('Z')/60);
 	$ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->prefix}todolist WHERE list_id=$listId AND compl=0");
 	$db->ex("BEGIN");
-	$db->dq("INSERT INTO {$db->prefix}todolist (list_id,title,d_created,ow,prio) VALUES (?,?,?,?,?)", array($listId, $title, time(), $ow, $prio));
+	$db->dq("INSERT INTO {$db->prefix}todolist (uuid,list_id,title,d_created,d_edited,ow,prio) VALUES (?,?,?,?,?,?,?)",
+				array(generateUUID(), $listId, $title, time(), time(), $ow, $prio) );
 	$id = $db->last_insert_id();
 	if($tags != '')
 	{
@@ -152,9 +153,9 @@ elseif(isset($_GET['fullNewTask']))
 	$tz = (int)_post('tz');
 	if( Config::get('autotz')==0 || $tz<-720 || $tz>720 || $tz%30!=0 ) $tz = round(date('Z')/60);
 	$ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->prefix}todolist WHERE list_id=$listId AND compl=0");
-	if(is_null($duedate)) $duedate = 'NULL'; else $duedate = $db->quote($duedate);
 	$db->ex("BEGIN");
-	$db->dq("INSERT INTO {$db->prefix}todolist (list_id,title,d_created,ow,prio,note,duedate) VALUES($listId,?,?,$ow,$prio,?,$duedate)", array($title,time(),$note));
+	$db->dq("INSERT INTO {$db->prefix}todolist (uuid,list_id,title,d_created,d_edited,ow,prio,note,duedate) VALUES(?,?,?,?,?,?,?,?,?)",
+				array(generateUUID(), $listId, $title, time(), time(), $ow, $prio, $note, $duedate) );
 	$id = $db->last_insert_id();
 	if($tags != '')
 	{
@@ -190,7 +191,8 @@ elseif(isset($_GET['completeTask']))
 	if($compl) 	$ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->prefix}todolist WHERE list_id=$listId AND compl=1");
 	else $ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->prefix}todolist WHERE list_id=$listId AND compl=0");
 	$dateCompleted = $compl ? time() : 0;
-	$db->dq("UPDATE {$db->prefix}todolist SET compl=$compl,ow=$ow,d_completed=? WHERE id=$id", array($dateCompleted));
+	$db->dq("UPDATE {$db->prefix}todolist SET compl=$compl,ow=$ow,d_completed=?,d_edited=? WHERE id=$id",
+				array($dateCompleted, time()) );
 	$tz = (int)_post('tz');
 	if(Config::get('autotz')==0 || $tz<-720 || $tz>720 || $tz%30!=0) $tz = round(date('Z')/60);
 	$t = array();
@@ -205,7 +207,7 @@ elseif(isset($_GET['editNote']))
 	$id = (int)_post('id');
 	stop_gpc($_POST);
 	$note = str_replace("\r\n", "\n", trim(_post('note')));
-	$db->dq("UPDATE {$db->prefix}todolist SET note=? WHERE id=$id", $note);
+	$db->dq("UPDATE {$db->prefix}todolist SET note=?,d_edited=? WHERE id=$id", array($note, time()) );
 	$t = array();
 	$t['total'] = 1;
 	$t['list'][] = array('id'=>$id, 'note'=>nl2br(escapeTags($note)), 'noteText'=>(string)$note);
@@ -241,9 +243,8 @@ elseif(isset($_GET['editTask']))
 		$tags_ids = implode(',',$aTags['ids']);
 		addTaskTags($id, $aTags['ids'], $listId);
 	}
-	if(is_null($duedate)) $duedate = 'NULL'; else $duedate = $db->quote($duedate);
-	$db->dq("UPDATE {$db->prefix}todolist SET title=?,note=?,prio=?,tags=?,tags_ids=?,duedate=$duedate WHERE id=$id",
-			array($title,$note,$prio,$tags,$tags_ids) );
+	$db->dq("UPDATE {$db->prefix}todolist SET title=?,note=?,prio=?,tags=?,tags_ids=?,duedate=?,d_edited=? WHERE id=$id",
+			array($title, $note, $prio, $tags, $tags_ids, $duedate, time()) );
 	$db->ex("COMMIT");
 	$r = $db->sqa("SELECT * FROM {$db->prefix}todolist WHERE id=$id");
 	if($r) {
@@ -271,7 +272,7 @@ elseif(isset($_GET['changeOrder']))
 		foreach($ad as $diff=>$ids) {
 			if($diff >=0) $set = "ow=ow+".$diff;
 			else $set = "ow=ow-".abs($diff);
-			$db->dq("UPDATE {$db->prefix}todolist SET $set WHERE id IN (".implode(',',$ids).")");
+			$db->dq("UPDATE {$db->prefix}todolist SET $set,d_edited=? WHERE id IN (".implode(',',$ids).")", array(time()) );
 		}
 		$db->ex("COMMIT");
 		$t['total'] = 1;
@@ -327,7 +328,7 @@ elseif(isset($_GET['setPrio']))
 	$prio = (int)_get('prio');
 	if($prio < -1) $prio = -1;
 	elseif($prio > 2) $prio = 2;
-	$db->ex("UPDATE {$db->prefix}todolist SET prio=$prio WHERE id=$id");
+	$db->ex("UPDATE {$db->prefix}todolist SET prio=$prio,d_edited=? WHERE id=$id", array(time()) );
 	$t = array();
 	$t['total'] = 1;
 	$t['list'][] = array('id'=>$id, 'prio'=>$prio);
@@ -377,7 +378,8 @@ elseif(isset($_GET['addList']))
 	$t['total'] = 0;
 	$name = str_replace(array('"',"'",'<','>','&'),array('','','','',''),trim(_post('name')));
 	$ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->prefix}lists");
-	$db->dq("INSERT INTO {$db->prefix}lists (name,ow) VALUES (?,?)", array($name,$ow));
+	$db->dq("INSERT INTO {$db->prefix}lists (uuid,name,ow,d_created,d_edited) VALUES (?,?,?,?,?)",
+				array(generateUUID(), $name, $ow, time(), time()) );
 	$id = $db->last_insert_id();
 	$t['total'] = 1;
 	$r = $db->sqa("SELECT * FROM {$db->prefix}lists WHERE id=$id");
@@ -393,7 +395,7 @@ elseif(isset($_GET['renameList']))
 	$t['total'] = 0;
 	$id = (int)_post('list');
 	$name = str_replace(array('"',"'",'<','>','&'),array('','','','',''),trim(_post('name')));
-	$db->dq("UPDATE {$db->prefix}lists SET name=? WHERE id=$id", array($name));
+	$db->dq("UPDATE {$db->prefix}lists SET name=?,d_edited=? WHERE id=$id", array($name, time()) );
 	$t['total'] = $db->affected();
 	$r = $db->sqa("SELECT * FROM {$db->prefix}lists WHERE id=$id");
 	$t['list'][] = prepareList($r);
@@ -424,7 +426,7 @@ elseif(isset($_GET['setSort']))
 	$listId = (int)_post('list');
 	$sort = (int)_post('sort');
 	if($sort < 0 || $sort > 2) $sort = 0;
-	$db->ex("UPDATE {$db->prefix}lists SET sorting=$sort WHERE id=$listId");
+	$db->ex("UPDATE {$db->prefix}lists SET sorting=$sort,d_edited=? WHERE id=$listId", array(time()));
 	echo json_encode(array('total'=>1));
 	exit;
 }
@@ -433,7 +435,7 @@ elseif(isset($_GET['publishList']))
 	check_write_access();
 	$listId = (int)_post('list');
 	$publish = (int)_post('publish');
-	$db->ex("UPDATE {$db->prefix}lists SET published=? WHERE id=$listId", array($publish ? 1 : 0));
+	$db->ex("UPDATE {$db->prefix}lists SET published=?,d_created=? WHERE id=$listId", array($publish ? 1 : 0, time()));
 	echo json_encode(array('total'=>1));
 	exit;
 }
@@ -464,7 +466,8 @@ elseif(isset($_GET['changeListOrder']))
 			$setCase .= "WHEN id=$id THEN $ow\n";
 		}
 		$ids = implode($a, ',');
-		$db->dq("UPDATE {$db->prefix}lists SET ow = CASE\n $setCase END WHERE id IN ($ids)");
+		$db->dq("UPDATE {$db->prefix}lists SET d_edited=?, ow = CASE\n $setCase END WHERE id IN ($ids)",
+					array(time()) );
 		$t['total'] = 1;
 	}
 	echo json_encode($t);
@@ -593,7 +596,7 @@ function prepareTags($tagsStr)
 	$aTags = array('tags'=>array(), 'ids'=>array());
 	foreach($tags as $tag)
 	{
-		$tag = str_replace(array('"',"'",'<','>','&','/','\\'),array('','','','','','',''),trim($tag));
+		$tag = str_replace(array('"',"'",'<','>','&','/','\\','^'),'',trim($tag));
 		if($tag == '') continue;
 
 		$aTag = getOrCreateTag($tag);
@@ -640,7 +643,7 @@ function addTaskTags($taskId, $tagIds, $listId)
 	if(!$tagIds) return;
 	foreach($tagIds as $tagId)
 	{
-		$db->ex("INSERT INTO tag2task (task_id,tag_id,list_id) VALUES (?,?,?)", array($taskId,$tagId,$listId));
+		$db->ex("INSERT INTO {$db->prefix}tag2task (task_id,tag_id,list_id) VALUES (?,?,?)", array($taskId,$tagId,$listId));
 	}
 }
 
@@ -777,7 +780,8 @@ function myErrorHandler($errno, $errstr, $errfile, $errline)
 function myExceptionHandler($e)
 {
 	if(-1 == $e->getCode()) {
-		echo $e->getMessage(); exit;
+		echo $e->getMessage()."\n". $e->getTraceAsString();
+		exit;
 	}
 	echo 'Exception: \''. $e->getMessage() .'\' in '. $e->getFile() .':'. $e->getLine(); //."\n". $e->getTraceAsString();
 	exit;
@@ -813,7 +817,7 @@ function moveTask($id, $listId)
 	
 	$db->ex("BEGIN");
 	$db->ex("UPDATE {$db->prefix}tag2task SET list_id=? WHERE task_id=?", array($listId, $id));
-	$db->dq("UPDATE {$db->prefix}todolist SET list_id=?, ow=? WHERE id=?", array($listId, $ow, $id));
+	$db->dq("UPDATE {$db->prefix}todolist SET list_id=?, ow=?, d_edited=? WHERE id=?", array($listId, $ow, time(), $id));
 	$db->ex("COMMIT");
 	return true;
 }

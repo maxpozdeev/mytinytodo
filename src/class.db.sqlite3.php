@@ -119,7 +119,7 @@ class Database_Sqlite3
 			}
 			$query = "";
 			for($i=0; $i<sizeof($m)-1; $i++) {
-				$query .= $m[$i]. $this->quote($p[$i]);
+				$query .= $m[$i]. (is_null($p[$i]) ? 'NULL' : $this->quote($p[$i]));
 			}
 			$query .= $m[$i];
 		}
