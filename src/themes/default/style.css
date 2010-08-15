@@ -164,7 +164,7 @@ li.task-completed .duedate { /*font-size:8pt;*/ display:none; }
 #tasklist li.today .duedate { color:#FF0000; border-color:#FF0000; } 
 #tasklist li.past .duedate { color:#A52A2A;  border-color:#A52A2A; } 
 li.task-completed .task-through { text-decoration:line-through; color:#777777; }
-li.task-completed .task-middle-right { text-decoration:line-through; color:#777777; }
+li.task-completed .task-middle-right { color:#777777; }
 li.task-completed .task-title a { color:#777777; }
 #tasklist li.task-completed .duedate { color:#777777; border-color:#777777; }
 li.task-completed  { opacity:0.8; }
