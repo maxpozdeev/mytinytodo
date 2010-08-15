@@ -206,6 +206,7 @@ $().ready(function(){
  <li class="mtt-need-list" id="btnDeleteList"><?php _e('list_delete');?></li>
  <li class="mtt-need-list" id="btnClearCompleted"><?php _e('list_clearcompleted');?></li>
  <li class="mtt-need-list" id="btnExportCSV"><?php _e('list_exportcsv');?></li>
+ <li class="mtt-need-list" id="btnRssFeed"><div class="menu-icon"></div><?php _e('list_rssfeed');?></li>
  <li class="mtt-menu-delimiter"></li>
  <li class="mtt-need-list" id="btnPublish"><div class="menu-icon"></div><?php _e('list_publish');?></li>
  <li class="mtt-need-list" id="btnShowCompleted"><div class="menu-icon"></div><?php _e('list_showcompleted');?></li>

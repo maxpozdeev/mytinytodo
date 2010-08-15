@@ -560,8 +560,14 @@ function publishCurList()
 	_mtt.db.request('publishList', { list:curList.id, publish:curList.published?0:1 }, function(json){
 		if(!parseInt(json.total)) return;
 		curList.published = curList.published?0:1;
-		if(curList.published) $('#btnPublish').addClass('mtt-item-checked');
-		else $('#btnPublish').removeClass('mtt-item-checked');
+		if(curList.published) {
+			$('#btnPublish').addClass('mtt-item-checked');
+			$('#btnRssFeed').removeClass('mtt-disabled');
+		}
+		else {
+			$('#btnPublish').removeClass('mtt-item-checked');
+			$('#btnRssFeed').addClass('mtt-disabled');
+		}
 	});
 };
 
@@ -881,8 +887,6 @@ function tabSelected(elementOrId)
 			$('#searchbarkeyword').text('');
 			$('#searchbar').hide();
 		}
-		//if(tabLists[indx].published)
-//port:		$('#rss_icon').find('a').attr('href', mytinytodo.mttUrl+'feed.php?list='+tabLists[indx].id);
 		mytinytodo.doAction('listSelected', tabLists.get(id));
 	}
 	curList = tabLists.get(id);
@@ -909,6 +913,7 @@ function listMenuClick(el, menu)
 		case 'btnDeleteList': deleteCurList(); break;
 		case 'btnPublish': publishCurList(); break;
 		case 'btnExportCSV': exportCurListToCSV(); break;
+		case 'btnRssFeed': feedCurList(); break;
 		case 'btnShowCompleted': showCompletedToggle(); break;
 		case 'btnClearCompleted': clearCompleted(); break;
 		case 'sortByHand': setSort(0); break;
@@ -1570,8 +1575,14 @@ function cmenuOnListOrderChanged()
 
 function tabmenuOnListSelected(list)
 {
-	if(list.published) $('#btnPublish').addClass('mtt-item-checked');
-	else $('#btnPublish').removeClass('mtt-item-checked');
+	if(list.published) {
+		$('#btnPublish').addClass('mtt-item-checked');
+		$('#btnRssFeed').removeClass('mtt-disabled');
+	}
+	else {
+		$('#btnPublish').removeClass('mtt-item-checked');
+		$('#btnRssFeed').addClass('mtt-disabled');
+	}
 	if(list.showCompl) $('#btnShowCompleted').addClass('mtt-item-checked');
 	else $('#btnShowCompleted').removeClass('mtt-item-checked');
 };
@@ -1720,6 +1731,13 @@ function exportCurListToCSV()
 	if(!curList) return;
 	window.location.href = _mtt.mttUrl + 'export.php?list='+curList.id +'&format=csv';
 };
+
+function feedCurList()
+{
+	if(!curList) return;
+	window.location.href = _mtt.mttUrl + 'feed.php?list='+curList.id;
+}
+
 
 /*
 	Errors and Info messages
