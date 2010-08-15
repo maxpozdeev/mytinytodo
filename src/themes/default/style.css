@@ -291,23 +291,32 @@ li.task-completed .task-note-block .task-note { text-decoration:line-through; }
 
 .mtt-menu-container { 
 	overflow:hidden; z-index:100;
-	background-color:#f9f9f9; border:1px solid #cccccc; padding:2px;
+	background-color:#f9f9f9; border:1px solid #cccccc; padding:2px 0px;
 	-moz-box-shadow:1px 2px 5px rgba(0,0,0,0.5); -webkit-box-shadow:1px 2px 5px rgba(0,0,0,0.5); box-shadow:1px 2px 5px rgba(0,0,0,0.5); 
 	-moz-border-radius:5px; -webkit-border-radius:5px; border-radius:5px;
 	margin:0px 7px 7px 0px; /* for shadows */
 } 
 .mtt-menu-container ul { list-style: none; padding:0; margin:0; }
-.mtt-menu-container li { margin:1px 0px; padding:2px 3px; cursor:default; color:#000; white-space:nowrap; padding-left:18px; padding-right:18px; }
-.mtt-menu-container li:hover, .mtt-menu-container li.mtt-menu-item-active { background-color:#316AC5; color:white; }
+.mtt-menu-container li { margin:1px 0px; cursor:default; color:#000; white-space:nowrap; padding-left:24px; padding-right:18px; line-height:20px; }
+.mtt-menu-container li:hover, .mtt-menu-container li.mtt-menu-item-active { 
+ background-color:#316AC5;
+ color:white; 
+ background:-moz-linear-gradient(#5373fc,  #3157f4);
+ background:-webkit-gradient(linear, left top, left bottom, from(#5373fc), to(#3157f4));
+}
 .mtt-menu-container li.mtt-disabled { color:#ACA899; }
-.mtt-menu-container a { display:block; text-decoration:none; outline:none; color:#000; }
+.mtt-menu-container a { display:block; cursor:default; text-decoration:none; outline:none; color:#000; }
 .mtt-menu-container li:hover a { color:white; }
 .mtt-menu-container li.mtt-menu-delimiter { height:0px; line-height:0; border-bottom:1px solid #cccccc; margin:2px -1px; padding:0px; font-size:0px; }
-li.mtt-item-checked .menu-icon { float:left; width:16px; height:16px; margin-left:-18px; background:url(images/icons.gif) -16px -16px; }
+.mtt-menu-container .menu-icon { float:left; width:16px; height:16px; margin-left:-20px; margin-top:2px; }
+li.mtt-item-checked .menu-icon { background:url(images/icons.gif) -16px -16px; }
 li.mtt-menu-indicator .submenu-icon {
-	/*float:right; margin-right:-18px;*/ position:absolute; right:2px; /* specially for IE7 */
+	/*float:right; margin-right:-18px;*/ position:absolute; right:2px; margin-top:2px; /* specially for IE7 */
 	width:16px; height:16px; background:url(images/icons.gif) -32px -16px no-repeat;
 }
+
+#btnRssFeed .menu-icon { background:url(images/feed.png); }
+#btnRssFeed.mtt-disabled .menu-icon { background:url(images/feed_bw.png); }
 
 .mtt-settings-table { width:100%; border-collapse:collapse; }
 .mtt-settings-table th, .mtt-settings-table td { border-bottom:1px solid #dedede; padding:8px; vertical-align:top; }
