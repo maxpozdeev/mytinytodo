@@ -21,12 +21,27 @@ if(!$listData) {
 	die("No such list");
 }
 
-$listData['_feed_title'] = sprintf($lang->get('feed_title'), $listData['name']);
-$listData['_feed_descr'] = sprintf($lang->get('feed_description'), $listData['name']);
+$feedType = _get('feed');
+$sqlWhere = '';
+if($feedType == 'completed') {
+    $listData['_uid_field'] = 'd_completed';
+    $listData['_feed_descr'] = $lang->get('feed_completed_tasks');
+    $sqlWhere = 'AND compl=1';
+}
+elseif($feedType == 'modified') {
+    $listData['_uid_field'] = 'd_edited';
+    $listData['_feed_descr'] = $lang->get('feed_modified_tasks');
+}
+else {
+    $listData['_uid_field'] = 'd_created';
+    $listData['_feed_descr'] = $lang->get('feed_new_tasks');
+}
+
+$listData['_feed_title'] = sprintf($lang->get('feed_title'), $listData['name']) . ' - '. $listData['_feed_descr'];
 htmlarray_ref($listData);
 
 $data = array();
-$q = $db->dq("SELECT * FROM {$db->prefix}todolist WHERE list_id=$listId ORDER BY d_created DESC LIMIT 100");
+$q = $db->dq("SELECT * FROM {$db->prefix}todolist WHERE list_id=$listId $sqlWhere ORDER BY ". $listData['_uid_field'] ." DESC LIMIT 100");
 while($r = $q->fetch_assoc($q)) 
 {
 	if($r['prio'] > 0) $r['prio'] = '+'.$r['prio'];
@@ -57,8 +72,8 @@ function printRss($listData, $data)
 
 	foreach($data as $v)
 	{
-		$d = gmdate('r', $v['d_created']);
-		$guid = $listData['id'].'-'.$v['id'].'-'.$v['d_created'];
+		$d = gmdate('r', $v[$listData['_uid_field']]);
+		$guid = $listData['id'].'-'.$v['id'].'-'.$v[$listData['_uid_field']];
 
 		$s .= "<item>\n<title><![CDATA[". str_replace("]]>", "]]]]><![CDATA[>", $v['title']). "]]></title>\n".
 			"<link>$link</link>\n".

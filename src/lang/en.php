@@ -97,7 +97,9 @@ class Lang extends DefaultLang
 		'a_settings' => "Settings",
 		'rss_feed' => "RSS Feed",
 		'feed_title' => "%s",
-		'feed_description' => "New tasks in %s",
+		'feed_completed_tasks' => "Completed tasks",
+		'feed_modified_tasks' => "Modified tasks",
+		'feed_new_tasks' => "New tasks",
 
 		/* Settings */
 		'set_header' => "Settings",
