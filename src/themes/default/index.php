@@ -127,13 +127,13 @@ $().ready(function(){
 
 <div id="page_taskedit" style="display:none">
 
+<div><a href="#" class="mtt-back-button"><?php _e('go_back');?></a></div>
+
 <h3 class="mtt-inadd"><?php _e('add_task');?></h3>
-<h3 class="mtt-inedit">
+<h3 class="mtt-inedit"><?php _e('edit_task');?>
  <div id="taskedit-date" class="mtt-inedit">
-  <span class="date-created" title="<?php _e('taskdate_created');?>"><span></span></span>
-  <span class="date-completed" title="<?php _e('taskdate_completed');?>"> / <span></span></span>
+  (<span class="date-created" title="<?php _e('taskdate_created');?>"><span></span></span><span class="date-completed" title="<?php _e('taskdate_completed');?>"> &mdash; <span></span></span>)
  </div>
- <?php _e('edit_task');?>
 </h3>
 
 <form id="taskedit_form" name="edittask" method="post">
@@ -162,7 +162,8 @@ $().ready(function(){
 </div>
 <div class="form-row" id="alltags" style="display:none;"><?php _e('alltags');?> <span class="tags-list"></span></div>
 <div class="form-row form-bottom-buttons">
- <input type="submit" value="<?php _e('save');?>" /> <input type="button" id="mtt_edit_cancel" value="<?php _e('cancel');?>" />
+ <input type="submit" value="<?php _e('save');?>" /> 
+ <input type="button" id="mtt_edit_cancel" class="mtt-back-button" value="<?php _e('cancel');?>" />
 </div>
 </form>
 

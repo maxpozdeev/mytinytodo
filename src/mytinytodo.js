@@ -14,7 +14,6 @@ var objPrio = {};
 var selTask = 0;
 var flag = { needAuth:false, isLogged:false, tagsChanged:true, windowTaskEditMoved:false, readOnly:false };
 var taskCnt = { total:0, past: 0, today:0, soon:0 };
-var tmp = {};
 var cmenu;
 var tabLists = {
 	_lists: {},
@@ -46,7 +45,6 @@ var mytinytodo = window.mytinytodo = _mtt = {
 	templateUrl: '',
 	options: {
 		openList: 0,
-		modalEdit: true,	//how to show the edit/add task form 
 		singletab: false,
 		autotag: false
 	},
@@ -80,11 +78,9 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		}
 	},
 
-	page: { 
-		current: '',
-		currentClass: '',
-		prev: '',
-		prevClass: 0
+	pages: { 
+		current: { page:'tasks', class:'' },
+		prev: []
 	},
 
 	// procs
@@ -224,17 +220,14 @@ var mytinytodo = window.mytinytodo = _mtt = {
 
 
 		// edit form handlers
-		$('#mtt_edit_cancel').click(function(){
-			cancelEdit();
-			this.blur();
-		});
-
 		$('#alltags_show').click(function(){
 			toggleEditAllTags(1);
+			return false;
 		});
 
 		$('#alltags_hide').click(function(){
 			toggleEditAllTags(0);
+			return false;
 		});
 
 		$('#taskedit_form').submit(function(){
@@ -327,14 +320,6 @@ var mytinytodo = window.mytinytodo = _mtt = {
 
 		$("#edittags").autocomplete('ajax.php?suggestTags', {scroll: false, multiple: true, selectFirst:false, max:8, extraParams:{list:function(){return curList.id}}});
 
-		if(this.options.modalEdit)
-		{
-			$("#page_taskedit")
-				.addClass('modal')
-				.draggable({ handle:'h3', stop: function(e,ui){ flag.windowTaskEditMoved=true; tmp.editformpos=[$(this).css('left'),$(this).css('top')]; } })
-				.resizable({ minWidth:$("#page_taskedit").width(), minHeight:220, start:function(ui,e){editFormResize(1)}, resize:function(ui,e){editFormResize(0,e)}, stop:function(ui,e){editFormResize(2,e)} });
-		}
-
 
 		// AJAX Errors
 		$('#msg').ajaxSend(function(r,s){
@@ -385,7 +370,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			return false;
 		});
 		
-		$(".mtt-back-button").live('click', function(){ _mtt.pageBack(); return false; } );
+		$(".mtt-back-button").live('click', function(){ _mtt.pageBack(); this.blur(); return false; } );
 
 
 		// tab menu
@@ -512,19 +497,18 @@ var mytinytodo = window.mytinytodo = _mtt = {
 	
 	pageSet: function(page, pageClass)
 	{
-		this.page.prev = this.page.current;
-		this.page.prevClass = this.page.currentClass;
-		this.page.current = page;
-		this.page.currentClass = pageClass;
+		var prev = this.pages.current;
+		this.pages.prev.push(this.pages.current);
+		this.pages.current = {page:page, class:pageClass};
+		showhide($('#page_'+ this.pages.current.page).addClass('mtt-page-'+ this.pages.current.class), $('#page_'+ prev.page));
 	},
 	
 	pageBack: function()
 	{
-		if(this.page.current == '') return false;		
-		var showId = (this.page.prev == '') ? 'tasks' : this.page.prev;
-		showhide($('#page_'+ showId), $('#page_'+ this.page.current).removeClass('mtt-page-'+this.page.currentClass));
-		this.page.current = this.page.prev;
-		this.page.currentClass = this.page.prevClass;
+		if(this.pages.current.page == 'tasks') return false;
+		var prev = this.pages.current;
+		this.pages.current = this.pages.prev.pop();
+		showhide($('#page_'+ this.pages.current.page), $('#page_'+ prev.page).removeClass('mtt-page-'+prev.page.class));
 	}
 
 };
@@ -1036,6 +1020,7 @@ function editTask(id)
 {
 	var item = taskList[id];
 	if(!item) return false;
+	// no need to clear form
 	var form = document.getElementById('taskedit_form');
 	form.task.value = dehtml(item.title);
 	form.note.value = item.noteText;
@@ -1046,8 +1031,20 @@ function editTask(id)
 	$('#taskedit-date .date-created>span').text(item.date);
 	if(item.compl) $('#taskedit-date .date-completed').show().find('span').text(item.dateCompleted);
 	else $('#taskedit-date .date-completed').hide();
+	toggleEditAllTags(0);
 	showEditForm();
 	return false;
+};
+
+function clearEditForm()
+{
+	var form = document.getElementById('taskedit_form');
+	form.task.value = '';
+	form.note.value = '';
+	form.tags.value = '';
+	form.duedate.value = '';
+	form.prio.value = '0';
+	toggleEditAllTags(0);
 };
 
 function showEditForm(isAdd)
@@ -1055,6 +1052,7 @@ function showEditForm(isAdd)
 	var form = document.getElementById('taskedit_form');
 	if(isAdd)
 	{
+		clearEditForm();
 		$('#page_taskedit').removeClass('mtt-inedit').addClass('mtt-inadd');
 		form.isadd.value = 1;
 		if(_mtt.options.autotag) form.tags.value = filter.tag;
@@ -1074,30 +1072,8 @@ function showEditForm(isAdd)
 		$('#page_taskedit').removeClass('mtt-inadd').addClass('mtt-inedit');
 		form.isadd.value = 0;
 	}
-	
-	if(!_mtt.options.modalEdit) {
-		showhide($('#page_taskedit'), $('#page_tasks'));
-		return;
-	}
 
-	$('<div id="overlay"></div>').appendTo('body').css('opacity', 0.5).show();
-	//clear selection
-	if(document.selection && document.selection.empty && document.selection.createRange().text) document.selection.empty();
-	else if(window.getSelection) window.getSelection().removeAllRanges();
-
-	var w = $('#page_taskedit');
-	if(!flag.windowTaskEditMoved)
-	{
-		var x = Math.floor($(window).width()/2 - w.outerWidth()/2);
-		var y = Math.floor($(window).height()/2 - w.outerHeight()/2);
-		if(x < 0) x = 0;
-		if(y < 0) y = 0;
-		w.css({left:x, top:y});
-		tmp.editformpos = [x, y];
-	}
-	w.css('max-width', $(window).width() - (w.outerWidth() - w.width()));
-	w.fadeIn('fast');	//.show();
-	$(document).bind('keydown', cancelEdit);
+	_mtt.pageSet('taskedit');
 };
 
 function saveTask(form)
@@ -1116,49 +1092,13 @@ function saveTask(form)
 			var noteExpanded = (item.note != '' && $('#taskrow_'+item.id).is('.task-expanded')) ? 1 : 0;
 			$('#taskrow_'+item.id).replaceWith(prepareTaskStr(item, noteExpanded));
 			if(curList.sort != 0) changeTaskOrder(item.id);
-			cancelEdit();
+			_mtt.pageBack(); //back to list
 			refreshTaskCnt();
 			$('#taskrow_'+item.id).effect("highlight", {color:_mtt.theme.editTaskFlashColor}, 'normal', function(){$(this).css('display','')});
 	});
 	$("#edittags").flushCache();
 	flag.tagsChanged = true;
 	return false;
-};
-
-function cancelEdit(e)
-{
-	if(e && e.keyCode != 27) return;
-	if(!_mtt.options.modalEdit) {
-		showhide($('#page_tasks'), $('#page_taskedit'));
-	} else
-	{
-		$(document).unbind('keydown', cancelEdit);
-		$('#page_taskedit').hide();
-		$('#overlay').remove();
-	}
-	var form = document.getElementById('taskedit_form');
-	form.task.value = '';
-	form.note.value = '';
-	form.tags.value = '';
-	form.duedate.value = '';
-	form.prio.value = '0';
-	toggleEditAllTags(0);
-	return false;
-};
-
-function editFormResize(startstop, event)
-{
-	var f = $('#page_taskedit');
-	if(startstop == 1) {
-		tmp.editformdiff = f.height() - $('#page_taskedit textarea').height();
-	}
-	else if(startstop == 2) {
-		//to avoid bug http://dev.jqueryui.com/ticket/3628
-		if(f.is('.ui-draggable')) {
-			f.css( {left:tmp.editformpos[0], top:tmp.editformpos[1], height:''} ).css('position', 'fixed');
-		}
-	}
-	else  $('#page_taskedit textarea').height(f.height() - tmp.editformdiff);
 };
 
 function toggleEditAllTags(show)
@@ -1302,7 +1242,7 @@ function submitFullTask(form)
 		taskOrder.push(parseInt(item.id));
 		$('#tasklist').append(prepareTaskStr(item));
 		changeTaskOrder(item.id);
-		cancelEdit();
+		_mtt.pageBack();
 		$('#taskrow_'+item.id).effect("highlight", {color:_mtt.theme.newTaskFlashColor}, 2000);
 		changeTaskCnt(item, 1);
 		refreshTaskCnt();
@@ -1835,7 +1775,6 @@ function updateAccessStatus()
 		addsearchToggle(0);
 	}
 	$('#page_ajax').hide();
-	_mtt.page.current = '';
 }
 
 function showAuth(el)
@@ -1890,9 +1829,9 @@ function logout()
 
 function showSettings()
 {
-	if(_mtt.page.current == 'settings') return false;
+	if(_mtt.pages.current.page == 'ajax' && _mtt.pages.current.class == 'settings') return false;
 	$('#page_ajax').load(_mtt.mttUrl+'settings.php?ajax=yes',null,function(){ 
-		showhide($('#page_ajax').addClass('mtt-page-settings'), $('#page_tasks'));
+		//showhide($('#page_ajax').addClass('mtt-page-settings'), $('#page_tasks'));
 		_mtt.pageSet('ajax','settings');
 	})
 	return false;
