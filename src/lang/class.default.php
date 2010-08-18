@@ -41,6 +41,7 @@ class DefaultLang
 		'taskdate_inline_duedate' => "Due: %s",
 		'taskdate_created' => "Date of creation",
 		'taskdate_completed' => "Date of completion",
+		'go_back' => "&lt;&lt; Back",
 		'edit_task' => "Edit Task",
 		'add_task' => "New Task",
 		'priority' => "Priority",

@@ -31,7 +31,6 @@ var tabLists = {
 };
 var curList = 0;
 var tagsList = [];
-var page = {cur:'', prev:''};
 
 var mytinytodo = window.mytinytodo = _mtt = {
 
@@ -81,6 +80,12 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		}
 	},
 
+	page: { 
+		current: '',
+		currentClass: '',
+		prev: '',
+		prevClass: 0
+	},
 
 	// procs
 	init: function(options, lang)
@@ -375,11 +380,12 @@ var mytinytodo = window.mytinytodo = _mtt = {
 
 		// Settings
 		$("#settings").click(showSettings);
-		$("#settings_cancel").live('click', closeSettings);
 		$("#settings_form").live('submit', function() {
 			saveSettings(this);
 			return false;
 		});
+		
+		$(".mtt-back-button").live('click', function(){ _mtt.pageBack(); return false; } );
 
 
 		// tab menu
@@ -502,6 +508,23 @@ var mytinytodo = window.mytinytodo = _mtt = {
 	errorDenied: function()
 	{
 		flashError(this.lang.get('denied'));
+	},
+	
+	pageSet: function(page, pageClass)
+	{
+		this.page.prev = this.page.current;
+		this.page.prevClass = this.page.currentClass;
+		this.page.current = page;
+		this.page.currentClass = pageClass;
+	},
+	
+	pageBack: function()
+	{
+		if(this.page.current == '') return false;		
+		var showId = (this.page.prev == '') ? 'tasks' : this.page.prev;
+		showhide($('#page_'+ showId), $('#page_'+ this.page.current).removeClass('mtt-page-'+this.page.currentClass));
+		this.page.current = this.page.prev;
+		this.page.currentClass = this.page.prevClass;
 	}
 
 };
@@ -1812,7 +1835,7 @@ function updateAccessStatus()
 		addsearchToggle(0);
 	}
 	$('#page_ajax').hide();
-	page.cur = '';
+	_mtt.page.current = '';
 }
 
 function showAuth(el)
@@ -1867,21 +1890,11 @@ function logout()
 
 function showSettings()
 {
-	if(page.cur == 'settings') return false;
+	if(_mtt.page.current == 'settings') return false;
 	$('#page_ajax').load(_mtt.mttUrl+'settings.php?ajax=yes',null,function(){ 
 		showhide($('#page_ajax').addClass('mtt-page-settings'), $('#page_tasks'));
-		page.prev = page.cur;
-		page.cur = 'settings';
+		_mtt.pageSet('ajax','settings');
 	})
-	return false;
-}
-
-function closeSettings()
-{
-	showhide($('#page_tasks'), $('#page_ajax').removeClass('mtt-page-settings'));
-	page.prev = page.cur;
-	page.cur = '';
-//	$("#msg").hide();
 	return false;
 }
 

@@ -219,6 +219,8 @@ li.task-completed .task-note-block .task-note { text-decoration:line-through; }
 #page_taskedit.mtt-inedit .mtt-inadd { display:none; }
 #taskedit-date { font-size:10pt; font-weight:normal; text-align:right; float:right; color:#777; }
 
+a.mtt-back-button { font-size:8pt; }
+
 /* autocomplete */
 .ac_results { padding:0px; border:1px solid #cccccc; background-color:#f9f9f9; overflow:hidden; z-index:99999; -moz-box-shadow:1px 2px 5px rgba(0,0,0,0.5); -webkit-box-shadow:1px 2px 5px rgba(0,0,0,0.5); }
 .ac_results ul { width: 100%; list-style-position: outside; list-style: none; padding: 0; margin: 0; }

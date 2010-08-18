@@ -74,6 +74,8 @@ function selectOptions($a, $value, $default=null)
 
 ?>
 
+<div><a href="#" class="mtt-back-button"><?php _e('go_back');?></a></div>
+
 <h3><?php _e('set_header');?></h3>
 
 <div id="settings_msg" style="display:none"></div>
@@ -180,7 +182,7 @@ function selectOptions($a, $value, $default=null)
 <tr><td colspan="2" class="form-buttons">
 
 <input type="submit" value="<?php _e('set_submit');?>" />
-<input type="button" id="settings_cancel" value="<?php _e('set_cancel');?>" />
+<input type="button" class="mtt-back-button" value="<?php _e('set_cancel');?>" />
 
 </td></tr>
 </table>
