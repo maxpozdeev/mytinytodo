@@ -100,7 +100,12 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			addList();
 		});
 
-		$('.mtt-tabs-select-button').click(function(){
+		$('.mtt-tabs-select-button').click(function(event){
+			if(event.metaKey || event.ctrlKey) {
+				// toggle singetab interface
+				_mtt.applySingletab(!_mtt.options.singletab);
+				return false;
+			}
 			if(!_mtt.menus.selectlist) _mtt.menus.selectlist = new mttMenu('slmenucontainer', {onclick:slmenuSelect});
 			_mtt.menus.selectlist.show(this);
 		});
@@ -187,8 +192,12 @@ var mytinytodo = window.mytinytodo = _mtt = {
 
 		
 		// Tabs
-		$('#lists li.mtt-tab').live('click', function(){
+		$('#lists li.mtt-tab').live('click', function(event){
 			tabSelected(this);
+			if(event.metaKey || event.ctrlKey) {
+				// toggle singetab interface
+				_mtt.applySingletab(!_mtt.options.singletab);
+			}
 			return false;
 		});
 
@@ -302,9 +311,8 @@ var mytinytodo = window.mytinytodo = _mtt = {
 
 		$("#tasklist").sortable({cancel:'span,input,a,textarea', delay: 150, update:orderChanged, start:sortStart, items:'> :not(.task-completed)'});
 
-		if(!this.options.singletab) {
-			$("#lists ul").sortable({delay:150, update:listOrderChanged}); 
-		}
+		$("#lists ul").sortable({delay:150, update:listOrderChanged}); 
+		this.applySingletab();
 
 		$("#duedate").datepicker({
 			dateFormat: _mtt.datepickerformat(),
@@ -509,6 +517,21 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		var prev = this.pages.current;
 		this.pages.current = this.pages.prev.pop();
 		showhide($('#page_'+ this.pages.current.page), $('#page_'+ prev.page).removeClass('mtt-page-'+prev.page.class));
+	},
+	
+	applySingletab: function(yesno)
+	{
+		if(yesno == null) yesno = this.options.singletab;
+		else this.options.singletab = yesno;
+		
+		if(yesno) {
+			$('#lists .mtt-tabs').addClass('mtt-tabs-only-one');
+			$("#lists ul").sortable('disable');
+		}
+		else {
+			$('#lists .mtt-tabs').removeClass('mtt-tabs-only-one');
+			$("#lists ul").sortable('enable');
+		}
 	}
 
 };
