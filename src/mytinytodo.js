@@ -302,10 +302,13 @@ var mytinytodo = window.mytinytodo = _mtt = {
 
 		$('#tasklist .tag').live('mouseover mouseout', function(event){
 			var cl = 'tag-id-' + $(this).attr('tagid');
-			if(event.type == 'mouseover') _mtt.timers.previewtag = setTimeout( function(){$('#tasklist li:not(.'+cl+')').addClass('not-preview-tag');}, 500);
+			var sel = (event.metaKey || event.ctrlKey) ? 'li.'+cl : 'li:not(.'+cl+')';
+			if(event.type == 'mouseover') {
+				_mtt.timers.previewtag = setTimeout( function(){$('#tasklist '+sel).addClass('not-in-tagpreview');}, 700);
+			}
 			else {
 				clearTimeout(_mtt.timers.previewtag);
-				$('#tasklist li:not(.'+cl+')').removeClass('not-preview-tag');
+				$('#tasklist li').removeClass('not-in-tagpreview');
 			}
 		});
 

@@ -169,7 +169,7 @@ li.task-completed .task-title a { color:#777777; }
 #tasklist li.task-completed .duedate { color:#777777; border-color:#777777; }
 li.task-completed  { opacity:0.8; }
 li.task-completed .task-toggle { opacity:0.8; }
-li.not-preview-tag  { opacity:0.1; }
+li.not-in-tagpreview  { opacity:0.1; }
 
 a.taskactionbtn { display:block; float:right; height:15px; width:15px; text-decoration:none; background:url(images/icons.gif) 0 0 no-repeat; }
 li:hover a.taskactionbtn, a.taskactionbtn.mtt-menu-button-active { background-position:-16px 0; }
