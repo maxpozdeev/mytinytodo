@@ -79,7 +79,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 	},
 
 	pages: { 
-		current: { page:'tasks', class:'' },
+		current: { page:'tasks', pageClass:'' },
 		prev: []
 	},
 
@@ -510,8 +510,8 @@ var mytinytodo = window.mytinytodo = _mtt = {
 	{
 		var prev = this.pages.current;
 		this.pages.prev.push(this.pages.current);
-		this.pages.current = {page:page, class:pageClass};
-		showhide($('#page_'+ this.pages.current.page).addClass('mtt-page-'+ this.pages.current.class), $('#page_'+ prev.page));
+		this.pages.current = {page:page, pageClass:pageClass};
+		showhide($('#page_'+ this.pages.current.page).addClass('mtt-page-'+ this.pages.current.pageClass), $('#page_'+ prev.page));
 	},
 	
 	pageBack: function()
@@ -519,7 +519,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		if(this.pages.current.page == 'tasks') return false;
 		var prev = this.pages.current;
 		this.pages.current = this.pages.prev.pop();
-		showhide($('#page_'+ this.pages.current.page), $('#page_'+ prev.page).removeClass('mtt-page-'+prev.page.class));
+		showhide($('#page_'+ this.pages.current.page), $('#page_'+ prev.page).removeClass('mtt-page-'+prev.page.pageClass));
 	},
 	
 	applySingletab: function(yesno)
@@ -1856,7 +1856,7 @@ function logout()
 
 function showSettings()
 {
-	if(_mtt.pages.current.page == 'ajax' && _mtt.pages.current.class == 'settings') return false;
+	if(_mtt.pages.current.page == 'ajax' && _mtt.pages.current.pageClass == 'settings') return false;
 	$('#page_ajax').load(_mtt.mttUrl+'settings.php?ajax=yes',null,function(){ 
 		//showhide($('#page_ajax').addClass('mtt-page-settings'), $('#page_tasks'));
 		_mtt.pageSet('ajax','settings');
