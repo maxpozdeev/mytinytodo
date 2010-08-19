@@ -831,7 +831,7 @@ function prepareList($row)
 		'sort' => (int)$row['sorting'],
 		'published' => $row['published'] ? 1 :0,
 		'showCompl' => $taskview & 1 ? 1 : 0,
-//		'showNotes' => $taskview & 2 ? 1 : 0,
+		'showNotes' => $taskview & 2 ? 1 : 0,
 	);
 }
 

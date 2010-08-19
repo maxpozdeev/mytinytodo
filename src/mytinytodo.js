@@ -642,8 +642,8 @@ function prepareTaskStr(item, noteExp)
 {
 	var id = item.id;
 	var prio = item.prio;
-	return '<li id="taskrow_'+id+'" class="'+(item.compl?'task-completed ':'')+item.dueClass+(item.note!=''?' task-has-note':'')+(noteExp?' task-expanded':'')+
-		prepareTagsClass(item.tags_ids) + '">'+
+	return '<li id="taskrow_'+id+'" class="' + (item.compl?'task-completed ':'') + item.dueClass + (item.note!=''?' task-has-note':'') +
+				((curList.showNotes && item.note != '') || noteExp ? ' task-expanded' : '') + prepareTagsClass(item.tags_ids) + '">' +
 		'<div class="task-actions"><a href="#" class="taskactionbtn"></a></div>'+"\n"+
 		'<div class="task-left"><div class="task-toggle"></div>'+
 		'<input type="checkbox" '+(flag.readOnly?'disabled="disabled"':'')+(item.compl?'checked="checked"':'')+'/></div>'+"\n"+
@@ -897,6 +897,7 @@ function toggleAllNotes(show)
 		if(show) $('#taskrow_'+id).addClass('task-expanded');
 		else $('#taskrow_'+id).removeClass('task-expanded');
 	}
+	curList.showNotes = show;
 };
 
 
