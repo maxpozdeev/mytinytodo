@@ -133,9 +133,10 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 .mtt-notes-showhide { font-size:8pt; font-weight:normal; margin-left:2px; margin-right:2px; }
 .mtt-notes-showhide a { text-decoration:none; border-bottom:1px dotted; }
 
-#tag_filters { font-size:8pt; font-weight:normal; }
+#mtt_filters { font-size:8pt; font-weight:normal; }
 .tag-filter { margin-left:3px; margin-right:3px; }
-.tag-filter-close { cursor:pointer; position:relative; top:2px; margin-left:3px; display:inline-block; width:10px; height:10px; background:url(images/closetag.gif) 0 0 no-repeat; }
+.mtt-filter-header { font-weight:bold; margin-right:.33em; }
+.mtt-filter-close { cursor:pointer; position:relative; top:2px; margin-left:3px; display:inline-block; width:10px; height:10px; background:url(images/closetag.gif) 0 0 no-repeat; }
 
 .task-left { float:left; }
 .task-toggle { visibility:hidden; margin-top:2px; cursor:pointer; width:15px; height:15px; float:left; background:url(images/icons.gif) -32px 0 no-repeat; }

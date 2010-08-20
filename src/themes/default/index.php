@@ -114,7 +114,7 @@ $().ready(function(){
 <h3>
 <span id="taskview" class="mtt-menu-button"><span class="btnstr"><?php _e('tasks');?></span> (<span id="total">0</span>) <span class="arrdown"></span></span>
 <span class="mtt-notes-showhide"><?php _e('notes');?> <a href="#" id="mtt-notes-show"><?php _e('notes_show');?></a> / <a href="#" id="mtt-notes-hide"><?php _e('notes_hide');?></a></span>
-<span id="tag_filters"></span>
+<span id="mtt_filters"></span>
 <span id="tagcloudbtn" class="mtt-menu-button"><?php _e('tags');?> <span class="arrdown2"></span></span>
 </h3>
 

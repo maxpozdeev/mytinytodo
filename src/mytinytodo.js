@@ -7,7 +7,7 @@
 (function(){
 
 var taskList = new Array(), taskOrder = new Array();
-var filter = { compl:0, search:'', tag:'', due:'' };
+var filter = { compl:0, search:'', due:'' };
 var sortOrder; //save task order before dragging
 var searchTimer;
 var objPrio = {};
@@ -52,8 +52,6 @@ var mytinytodo = window.mytinytodo = _mtt = {
 	timers: {
 		previewtag: 0
 	},
-		
-	tagFilter: [],
 
 	lang: {
 		__lang: null,
@@ -142,7 +140,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			_mtt.menus.taskview.show(this);
 		});
 
-		$('#tag_filters .tag-filter-close').live('click', function(){
+		$('#mtt_filters .tag-filter .mtt-filter-close').live('click', function(){
 			cancelTagFilter($(this).attr('tagid'));
 		});
 
@@ -535,7 +533,44 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			$('#lists .mtt-tabs').removeClass('mtt-tabs-only-one');
 			$("#lists ul").sortable('enable');
 		}
-	}
+	},
+	
+	filter: {
+		_filters: [],
+		clear: function() {
+			this._filters = [];
+			$('#mtt_filters').html('');
+		},
+		addTag: function(tagId, tag, exclude)
+		{
+			for(var i in this._filters) {
+				if(this._filters[i].tagId && this._filters[i].tagId == tagId) return false;
+			}
+			this._filters.push({tagId:tagId, tag:tag, exclude:exclude});
+			$('#mtt_filters').append('<span class="tag-filter tag-id-'+tagId+'"><span class="mtt-filter-header">'+
+				_mtt.lang.get('tagfilter')+'</span>'+tag+'<span class="mtt-filter-close" tagid="'+tagId+'"></span></span>');
+			return true;
+		},
+		cancelTag: function(tagId)
+		{
+			for(var i in this._filters) {
+				if(this._filters[i].tagId && this._filters[i].tagId == tagId) {
+					this._filters.splice(i,1);
+					$('#mtt_filters .tag-filter.tag-id-'+tagId).remove();
+					return true;
+				}
+			}
+			return false;
+		},
+		getTags: function()
+		{
+			var a = [];
+			for(var i in this._filters) {
+				if(this._filters[i].tagId) a.push(this._filters[i].tag)
+			}
+			return a.join(', ');
+		}
+	},
 
 };
 
@@ -618,7 +653,7 @@ function loadTasks(opts)
 		compl: curList.showCompl,
 		sort: curList.sort,
 		search: filter.search,
-		tag: filter.tag,
+		tag: _mtt.filter.getTags(),
 		tz: tz(),
 		setCompl: opts.setCompl
 	}, function(json){
@@ -711,7 +746,7 @@ function prepareDuedate(item)
 function submitNewTask(form)
 {
 	if(form.task.value == '') return false;
-	_mtt.db.request('newTask', { list:curList.id, title: form.task.value, tz:tz(), tag:filter.tag}, function(json){
+	_mtt.db.request('newTask', { list:curList.id, title: form.task.value, tz:tz(), tag:_mtt.filter.getTags() }, function(json){
 		if(!json.total) return;
 		$('#total').text( parseInt($('#total').text()) + 1 );
 		taskCnt.total++;
@@ -1082,10 +1117,10 @@ function showEditForm(isAdd)
 		clearEditForm();
 		$('#page_taskedit').removeClass('mtt-inedit').addClass('mtt-inadd');
 		form.isadd.value = 1;
-		if(_mtt.options.autotag) form.tags.value = filter.tag;
+		if(_mtt.options.autotag) form.tags.value = _mtt.filter.getTags();
 		if($('#task').val() != '')
 		{
-			_mtt.db.request('parseTaskStr', { list:curList.id, title:$('#task').val(), tz:tz(), tag:filter.tag }, function(json){
+			_mtt.db.request('parseTaskStr', { list:curList.id, title:$('#task').val(), tz:tz(), tag:_mtt.filter.getTags() }, function(json){
 				if(!json) return;
 				form.task.value = json.title
 				form.tags.value = (form.tags.value != '') ? form.tags.value +', '+ json.tags : json.tags;
@@ -1180,39 +1215,15 @@ function loadTags(callback)
 
 function cancelTagFilter(tagId, dontLoadTasks)
 {
-	if(tagId && _mtt.tagFilter[tagId])
-	{
-		delete _mtt.tagFilter[tagId];
-		var a = [];
-		for(var i in _mtt.tagFilter) {
-			a.push(_mtt.tagFilter[i]);
-		}
-		filter.tag = a.join(',');
-		$('#tag_filters .tag-filter.tag-id-'+tagId).remove();
-	}
-	else {
-		_mtt.tagFilter.length = 0;
-		filter.tag = '';
-		$('#tag_filters').html('');
-	}
+	if(tagId)  _mtt.filter.cancelTag(tagId);
+	else _mtt.filter.clear();
 	if(dontLoadTasks==null || !dontLoadTasks) loadTasks();
 };
 
 function addFilterTag(tag, tagId)
 {
-	// no action if already filtered this tag
-	if(_mtt.tagFilter[tagId]) return false;
-
-	_mtt.tagFilter[tagId] = tag;
-	var a = [];
-	for(var i in _mtt.tagFilter) {
-		a.push(_mtt.tagFilter[i]);
-	}
-	filter.tag = a.join(', ');
-
+	if(!_mtt.filter.addTag(tagId, tag)) return false;
 	loadTasks();
-	$('#tag_filters').append('<span class="tag-filter tag-id-'+tagId+'"><b>'+
-		_mtt.lang.get('tagfilter')+'</b> '+tag+'<span class="tag-filter-close" tagid="'+tagId+'"></span></span>');
 };
 
 function addsearchToggle(toSearch)
@@ -1260,7 +1271,7 @@ function submitFullTask(form)
 {
 //port:	if(flag.needAuth && !flag.isLogged) return false;
 
-	_mtt.db.request('fullNewTask', { list:curList.id, tag:filter.tag, title: form.task.value, note:form.note.value,
+	_mtt.db.request('fullNewTask', { list:curList.id, tag:_mtt.filter.getTags(), title: form.task.value, note:form.note.value,
 			prio:form.prio.value, tags:form.tags.value, duedate:form.duedate.value }, function(json){
 		if(!parseInt(json.total)) return;
 		form.task.value = '';
