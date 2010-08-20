@@ -684,9 +684,9 @@ function prepareTaskStr(item, noteExp)
 		'<div class="task-actions"><a href="#" class="taskactionbtn"></a></div>'+"\n"+
 		'<div class="task-left"><div class="task-toggle"></div>'+
 		'<input type="checkbox" '+(flag.readOnly?'disabled="disabled"':'')+(item.compl?'checked="checked"':'')+'/></div>'+"\n"+
-		'<div class="task-middle"><div class="task-middle-right">'+prepareDuedate(item)+
-		'<span class="task-date-completed" title="'+item.dateCompletedInlineTitle+'">'+item.dateCompletedInline+'</span></div>'+"\n"+
-		'<div class="task-through"><span class="task-date" title="'+item.dateInlineTitle+'">'+item.dateInline+'</span>'+preparePrio(prio,id)+
+		'<div class="task-middle"><div class="task-through"><span class="task-through-right">'+prepareDuedate(item)+
+		'<span class="task-date-completed" title="'+item.dateCompletedInlineTitle+'">'+item.dateCompletedInline+'</span></span>'+"\n"+
+		'<span class="task-date" title="'+item.dateInlineTitle+'">'+item.dateInline+'</span>'+preparePrio(prio,id)+
 		'<span class="task-title">'+prepareHtml(item.title)+'</span> '+"\n"+
 		prepareTagsStr(item)+'</div>'+
 		'<div class="task-note-block">'+
