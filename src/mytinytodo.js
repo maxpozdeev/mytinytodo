@@ -12,7 +12,7 @@ var sortOrder; //save task order before dragging
 var searchTimer;
 var objPrio = {};
 var selTask = 0;
-var flag = { needAuth:false, isLogged:false, tagsChanged:true, windowTaskEditMoved:false, readOnly:false };
+var flag = { needAuth:false, isLogged:false, tagsChanged:true, readOnly:false };
 var taskCnt = { total:0, past: 0, today:0, soon:0 };
 var cmenu;
 var tabLists = {
@@ -275,6 +275,8 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		});
 
 		$('#tasklist .tag').live('click', function(){
+			clearTimeout(_mtt.timers.previewtag);
+			$('#tasklist li').removeClass('not-in-tagpreview');
 			addFilterTag($(this).attr('tag'), $(this).attr('tagid'));
 			return false;
 		});
