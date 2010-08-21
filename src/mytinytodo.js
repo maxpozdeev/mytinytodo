@@ -322,10 +322,8 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			firstDay: _mtt.options.firstdayofweek,
 			showOn: 'button',
 			buttonImage: _mtt.templateUrl + 'images/calendar.png', buttonImageOnly: true,
-			changeMonth:true, changeYear:true, 
 			constrainInput: false,
 			duration:'',
-			nextText:'&gt;', prevText:'&lt;',
 			dayNamesMin:_mtt.lang.daysMin, dayNames:_mtt.lang.daysLong, monthNamesShort:_mtt.lang.monthsLong
 		});
 
