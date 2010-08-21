@@ -570,7 +570,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			}
 			return a.join(', ');
 		}
-	},
+	}
 
 };
 
