@@ -46,7 +46,8 @@ var mytinytodo = window.mytinytodo = _mtt = {
 	options: {
 		openList: 0,
 		singletab: false,
-		autotag: false
+		autotag: false,
+		tagPreview: true
 	},
 
 	timers: {
@@ -82,7 +83,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 	},
 
 	// procs
-	init: function(options, lang)
+	init: function(options)
 	{
 		jQuery.extend(this.options, options);
 
@@ -300,17 +301,19 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			return false;
 		});
 
-		$('#tasklist .tag').live('mouseover mouseout', function(event){
-			var cl = 'tag-id-' + $(this).attr('tagid');
-			var sel = (event.metaKey || event.ctrlKey) ? 'li.'+cl : 'li:not(.'+cl+')';
-			if(event.type == 'mouseover') {
-				_mtt.timers.previewtag = setTimeout( function(){$('#tasklist '+sel).addClass('not-in-tagpreview');}, 700);
-			}
-			else {
-				clearTimeout(_mtt.timers.previewtag);
-				$('#tasklist li').removeClass('not-in-tagpreview');
-			}
-		});
+		if(this.options.tagPreview) {
+			$('#tasklist .tag').live('mouseover mouseout', function(event){
+				var cl = 'tag-id-' + $(this).attr('tagid');
+				var sel = (event.metaKey || event.ctrlKey) ? 'li.'+cl : 'li:not(.'+cl+')';
+				if(event.type == 'mouseover') {
+					_mtt.timers.previewtag = setTimeout( function(){$('#tasklist '+sel).addClass('not-in-tagpreview');}, 700);
+				}
+				else {
+					clearTimeout(_mtt.timers.previewtag);
+					$('#tasklist li').removeClass('not-in-tagpreview');
+				}
+			});
+		}
 
 		$("#tasklist").sortable({cancel:'span,input,a,textarea', delay: 150, update:orderChanged, start:sortStart, items:'> :not(.task-completed)'});
 
