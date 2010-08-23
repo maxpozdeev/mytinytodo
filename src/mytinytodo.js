@@ -274,10 +274,10 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			return false;
 		});
 
-		$('#tasklist .tag').live('click', function(){
+		$('#tasklist .tag').live('click', function(event){
 			clearTimeout(_mtt.timers.previewtag);
 			$('#tasklist li').removeClass('not-in-tagpreview');
-			addFilterTag($(this).attr('tag'), $(this).attr('tagid'));
+			addFilterTag($(this).attr('tag'), $(this).attr('tagid'), (event.metaKey || event.ctrlKey ? true : false) );
 			return false;
 		});
 
@@ -547,7 +547,8 @@ var mytinytodo = window.mytinytodo = _mtt = {
 				if(this._filters[i].tagId && this._filters[i].tagId == tagId) return false;
 			}
 			this._filters.push({tagId:tagId, tag:tag, exclude:exclude});
-			$('#mtt_filters').append('<span class="tag-filter tag-id-'+tagId+'"><span class="mtt-filter-header">'+
+			$('#mtt_filters').append('<span class="tag-filter tag-id-'+tagId+
+				(exclude ? ' tag-filter-exclude' : '')+'"><span class="mtt-filter-header">'+
 				_mtt.lang.get('tagfilter')+'</span>'+tag+'<span class="mtt-filter-close" tagid="'+tagId+'"></span></span>');
 			return true;
 		},
@@ -562,11 +563,14 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			}
 			return false;
 		},
-		getTags: function()
+		getTags: function(withExcluded)
 		{
 			var a = [];
 			for(var i in this._filters) {
-				if(this._filters[i].tagId) a.push(this._filters[i].tag)
+				if(this._filters[i].tagId) {
+					if(this._filters[i].exclude && withExcluded) a.push('^'+ this._filters[i].tag);
+					else if(!this._filters[i].exclude) a.push(this._filters[i].tag)
+				}
 			}
 			return a.join(', ');
 		}
@@ -653,7 +657,7 @@ function loadTasks(opts)
 		compl: curList.showCompl,
 		sort: curList.sort,
 		search: filter.search,
-		tag: _mtt.filter.getTags(),
+		tag: _mtt.filter.getTags(true),
 		tz: tz(),
 		setCompl: opts.setCompl
 	}, function(json){
@@ -1220,9 +1224,9 @@ function cancelTagFilter(tagId, dontLoadTasks)
 	if(dontLoadTasks==null || !dontLoadTasks) loadTasks();
 };
 
-function addFilterTag(tag, tagId)
+function addFilterTag(tag, tagId, exclude)
 {
-	if(!_mtt.filter.addTag(tagId, tag)) return false;
+	if(!_mtt.filter.addTag(tagId, tag, exclude)) return false;
 	loadTasks();
 };
 

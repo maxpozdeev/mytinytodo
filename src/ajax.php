@@ -42,9 +42,15 @@ elseif(isset($_GET['loadTasks']))
 	{
 		$at = explode(',', $tag);
 		$tagIds = array();
+		$tagExIds = array();
 		foreach($at as $i=>$atv) {
-			$at[$i] = trim($atv);
-			if($at[$i] != '') $tagIds[] = getTagId($at[$i]);
+			$atv = trim($atv);
+			if($atv == '' || $atv == '^') continue;
+			if(substr($atv,0,1) == '^') {
+				$tagExIds[] = getTagId(substr($atv,1));
+			} else {
+				$tagIds[] = getTagId($atv);
+			}
 		}
 
 		if(sizeof($tagIds) > 1) {
@@ -52,9 +58,14 @@ elseif(isset($_GET['loadTasks']))
 						implode(',',$tagIds). ") GROUP BY task_id) ON id=task_id";
 			$sqlWhere = " AND c=". sizeof($tagIds); //overwrite sqlWhere!
 		}
-		else {
+		elseif($tagIds) {
 			$inner = "INNER JOIN {$db->prefix}tag2task ON id=task_id";
-			$sqlWhere .= " AND tag_id IN (". implode(',',$tagIds). ")";
+			$sqlWhere .= " AND tag_id = ". $tagIds[0];
+		}
+		
+		if($tagExIds) {
+			$sqlWhere .= " AND id NOT IN (SELECT DISTINCT task_id FROM {$db->prefix}tag2task WHERE list_id=$listId AND tag_id IN (".
+						implode(',',$tagExIds). "))"; //DISTINCT ?
 		}
 	}
 

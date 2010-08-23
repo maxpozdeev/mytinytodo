@@ -135,6 +135,7 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 
 #mtt_filters { font-size:8pt; font-weight:normal; }
 .tag-filter { margin-left:3px; margin-right:3px; }
+.tag-filter-exclude { text-decoration:line-through; }
 .mtt-filter-header { font-weight:bold; margin-right:.33em; }
 .mtt-filter-close { cursor:pointer; position:relative; top:2px; margin-left:3px; display:inline-block; width:10px; height:10px; background:url(images/closetag.gif) 0 0 no-repeat; }
 
