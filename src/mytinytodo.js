@@ -1317,15 +1317,15 @@ function orderChanged(event,ui)
 	}
 	if(n.toString() == sortOrder.toString()) return;
 
-	// make assoc from array for easy index
-	var h0 = new Array();
+	// make index: id=>position
+	var h0 = {}; //before
 	for(var j=0; j<sortOrder.length; j++) {
 		h0[sortOrder[j]] = j;
 	}
-	var h1 = new Array();
+	var h1 = {}; //after
 	for(var j=0; j<n.length; j++) {
 		h1[n[j]] = j;
-		taskOrder[j] = n[j].split('_')[1];
+		taskOrder[j] = parseInt(n[j].split('_')[1]);
 	}
 
 	// prepare param
