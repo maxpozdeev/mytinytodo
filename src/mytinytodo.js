@@ -315,7 +315,11 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			});
 		}
 
-		$("#tasklist").sortable({cancel:'span,input,a,textarea', delay: 150, update:orderChanged, start:sortStart, items:'> :not(.task-completed)'});
+		$("#tasklist").sortable({
+				items:'> :not(.task-completed)', cancel:'span,input,a,textarea',
+		 		delay:150, start:sortStart, update:orderChanged, 
+				placeholder:'mtt-task-placeholder'
+		});
 
 		$("#lists ul").sortable({delay:150, update:listOrderChanged}); 
 		this.applySingletab();
