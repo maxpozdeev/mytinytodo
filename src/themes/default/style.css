@@ -172,7 +172,7 @@ li.task-completed .task-toggle { opacity:0.8; }
 li.not-in-tagpreview  { opacity:0.1; }
 #tasklist li.mtt-task-placeholder {
  min-height:0px; padding:0px; height:18px; line-height:18px;
- background-color:#FDD017; border:1px solid #FBB917;
+ background-color:#ddd; border:1px solid #aaa;
  -moz-border-radius:5px; -webkit-border-radius:5px; border-radius:5px;
 }
 
