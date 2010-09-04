@@ -151,8 +151,8 @@ li.task-expanded .task-toggle { background-position:-80px -16px; }
 .task-actions { float:right; width:25px; text-align:right; }
 .task-date { display:inline-block; min-width:55px; color:#999999; margin-right:10px; display:none; }
 .task-date-completed { color:#999999; display:none; margin-left:5px; }
-.show-inline-date .task-date { display:inline-block; }
-.show-inline-date .task-completed .task-date-completed { display:inline-block; }
+.show-inline-date .task-date { display:inline; }
+.show-inline-date li.task-completed .task-date-completed { display:inline; }
 .task-through { overflow:hidden; }
 .task-through-right { float:right; }
 .task-title a { color:#000000; }
@@ -166,10 +166,9 @@ li.task-completed .duedate { /*font-size:0.8em;*/ display:none; }
 #tasklist li.soon .duedate { color:#008000; }
 #tasklist li.today .duedate { color:#FF0000; } 
 #tasklist li.past .duedate { color:#A52A2A; } 
-li.task-completed .task-through, li.task-completed .task-through-right { text-decoration:line-through; color:#777777; }
-li.task-completed .task-title a { color:#777777; }
-li.task-completed  { opacity:0.8; }
-li.task-completed .task-toggle { opacity:0.8; }
+li.task-completed .task-middle { text-decoration:line-through; color:#777777;}
+li.task-completed .task-date, li.task-completed .task-date-completed, li.task-completed .task-title a { color:#777777; }
+li.task-completed  { opacity:0.7; }
 li.not-in-tagpreview  { opacity:0.1; }
 #tasklist li.mtt-task-placeholder {
  min-height:0px; padding:0px; height:18px; line-height:18px;
