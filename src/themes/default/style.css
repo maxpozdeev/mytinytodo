@@ -168,8 +168,8 @@ li.task-completed .duedate { /*font-size:0.8em;*/ display:none; }
 #tasklist li.past .duedate { color:#A52A2A; } 
 li.task-completed .task-middle { text-decoration:line-through; color:#777777;}
 li.task-completed .task-date, li.task-completed .task-date-completed, li.task-completed .task-title a { color:#777777; }
-li.task-completed  { opacity:0.7; }
-li.not-in-tagpreview  { opacity:0.1; }
+li.task-completed  { opacity:0.7; filter: alpha(opacity=70); }
+li.not-in-tagpreview  { opacity:0.1; filter: alpha(opacity=10); }
 #tasklist li.mtt-task-placeholder {
  min-height:0px; padding:0px; height:18px; line-height:18px;
  background-color:#ddd; border:1px solid #aaa;
