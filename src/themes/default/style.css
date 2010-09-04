@@ -73,7 +73,6 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 .mtt-tabs-button {
  float:left;
  font-size:9pt;
- cursor:pointer;
  padding:1px; /* makes button bigger */
  border:1px solid transparent; /* preallocate space for :hover border */
 }
@@ -90,8 +89,6 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 
 .mtt-tabs-add-button>span { background:url(images/buttons.png) 0 0 no-repeat; }
 .mtt-tabs-add-button:hover>span { background-position:-16px 0; }
-.mtt-tabs-search-button>span { background:url(images/buttons.png) 0 -16px no-repeat; }
-.mtt-tabs-search-button:hover>span { background-position:-16px -16px; }
 .mtt-tabs-select-button>span { background:url(images/icons.gif) -64px 0 no-repeat; }
 .mtt-tabs-select-button:hover>span, .mtt-tabs-select-button.mtt-menu-button-active>span { background-position:-80px 0; }
 
@@ -102,11 +99,7 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 .mtt-img-button span { display:inline-block; width:16px; height:16px; }
 
 #newtask_adv span { position:relative; top:3px; background:url(images/buttons.png) 0 -48px no-repeat; }
-#newtask_adv:hover span { background-position:-16px -48px; } 
-#search_close span { position:relative; top:3px; background:url(images/buttons.png) 0 -32px no-repeat; }
-#search_close:hover span { background-position:-16px -32px; }
-#rss_icon { float:right;margin-top:4px; }
-#rss_icon img { border:none; }
+#newtask_adv:hover span { background-position:-16px -48px; }
 
 .arrdown { display:inline-block; height:7px; width:9px; background:url(images/arrdown.gif); }
 .arrdown2 { display:inline-block; height:7px; width:7px; background:url(images/arrdown2.gif); }
@@ -116,20 +109,29 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 .flex-cell-companion { white-space:nowrap; }
 
 #newtask_form .flex-cell { width:350px }
-#search_form .flex-cell { width:250px; }
-#newtask_form .flex-cell-companion, #search_form .flex-cell-companion { padding-left:2px; }
+#newtask_form .flex-cell-companion { padding-left:2px; }
 
 #task { color:#444444; width:100%; }
-#search {
- color:#444444;
- background:#fff url(images/magnifier.png) no-repeat 2px 2px;
- padding-left:20px; /* text-indent:18px here is not working in webkit */
-}
-#search_form .flex-cell { padding-right:24px; } /* padding 6px + 18px indent (20px-2px) */
-.small-bar{ font-size:8pt; color:#999999; font-weight:normal;}
+
+/* Live Search */
+#search { color:#444444; width:100%;  height:18px; outline:none; border:0 none; }
+#search_close { display:none; }
+
+
+.mtt-searchbox { background-color:#fff; border:1px inset #f0f0f0; -moz-border-radius:10px; -webkit-border-radius:10px; border-radius:10px; }
+.mtt-searchbox-left { width:16px; padding-left:3px; }
+.mtt-searchbox-center { width:150px; }
+.mtt-searchbox-right { width:16px; padding-right:3px; }
+.mtt-searchbox-icon > span { display:block; width:16px; height:16px; }
+
+.mtt-searchbox-icon.mtt-icon-search > span { background:url(images/search.png) center no-repeat; }
+.mtt-searchbox-icon.mtt-icon-cancelsearch > span { background:url(images/closetab.png) center no-repeat; }
+
 #searchbar { font-size:10pt; font-weight:normal; display:none;  margin-top:5px; }
 #searchbarkeyword { font-weight:bold; }
 
+
+/* */
 .mtt-notes-showhide { font-size:8pt; font-weight:normal; margin-left:2px; margin-right:2px; }
 .mtt-notes-showhide a { text-decoration:none; border-bottom:1px dotted; }
 

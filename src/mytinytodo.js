@@ -109,9 +109,6 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			_mtt.menus.selectlist.show(this);
 		});
 
-		$('.mtt-tabs-search-button').click(function(){
-			addsearchToggle(1);
-		});
 
 		$('#newtask_form').submit(function(){
 			submitNewTask(this);
@@ -124,16 +121,36 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		});
 
 		$('#search_form').submit(function(){
-			searchTasks();
+			searchTasks(1);
 			return false;
 		});
 
 		$('#search_close').click(function(){
-			addsearchToggle(0);
+			liveSearchToggle(0);
 			return false;
 		});
 
-		$('#search').keyup(timerSearch);
+		$('#search').keyup(function(event){
+			if(event.keyCode == 27) return;
+			if($(this).val() == '') $('#search_close').hide();	//actual value is only on keyup
+			else $('#search_close').show();
+			clearTimeout(searchTimer);
+			searchTimer = setTimeout(function(){searchTasks()}, 400);
+		})
+		.keydown(function(event){
+			if(event.keyCode == 27) { // cancel on Esc (NB: no esc event on keypress in Chrome and on keyup in Opera)
+				if($(this).val() != '') {
+					$(this).val('');
+					$('#search_close').hide();
+					searchTasks();
+				}
+				else {
+					liveSearchToggle(0);
+				}
+				return false; //need to return false in firefox (for AJAX?)
+			}		
+		});
+
 
 
 		$('#taskview').click(function(){
@@ -678,6 +695,9 @@ function loadTasks(opts)
 			taskOrder.push(parseInt(item.id));
 			changeTaskCnt(item, 1);
 		});
+		if(opts.beforeShow && opts.beforeShow.call) {
+			opts.beforeShow();
+		}
 		refreshTaskCnt();
 		$('#tasklist').html(tasks);
 	});
@@ -962,11 +982,7 @@ function tabSelected(elementOrId)
 	if(curList.id != id)
 	{
 		$('#tasklist').html('');
-		if(filter.search != '') {
-			filter.search = '';
-			$('#searchbarkeyword').text('');
-			$('#searchbar').hide();
-		}
+		if(filter.search != '') liveSearchToggle(0, 1);
 		mytinytodo.doAction('listSelected', tabLists.get(id));
 	}
 	curList = tabLists.get(id);
@@ -1237,39 +1253,35 @@ function addFilterTag(tag, tagId, exclude)
 	loadTasks();
 };
 
-function addsearchToggle(toSearch)
+function liveSearchToggle(toSearch, dontLoad)
 {
 	if(toSearch)
 	{
-		showhide($('#htab_search'), $('#htab_newtask'));
+		if(flag.readOnly) $('#htab_newtask').hide();
 		$('#search').focus();
 	}
 	else
 	{
-		if(flag.readOnly) $('#htab_search').hide();
-		else showhide($('#htab_newtask'), $('#htab_search'));
+		if(!flag.readOnly) $('#htab_newtask').show();
 
-		// reload tasks when we return to task tab (from search tab)
-		if(filter.search != '') {
+		if($('#search').val() != '') {
 			filter.search = '';
+			$('#search').val('');
 			$('#searchbarkeyword').text('');
 			$('#searchbar').hide();
-			loadTasks();
+			$('#search_close').hide();
+			if(!dontLoad) loadTasks();
 		}
-		$('#task').focus();
+		
+		$('#search').blur();
 	}
 };
 
-function timerSearch(event)
+function searchTasks(force)
 {
-	if(event.keyCode == 13) return;  // do not process Enter key
-	clearTimeout(searchTimer);
-	searchTimer = setTimeout(function(){searchTasks()}, 500);
-};
-
-function searchTasks()
-{
-	filter.search = $('#search').val();
+	var newkeyword = $('#search').val();
+	if(newkeyword == filter.search && !force) return false;
+	filter.search = newkeyword;
 	$('#searchbarkeyword').text(filter.search);
 	if(filter.search != '') $('#searchbar').fadeIn('fast');
 	else $('#searchbar').fadeOut('fast');
@@ -1815,13 +1827,13 @@ function updateAccessStatus()
 		flag.readOnly = true;
 		$("#bar_public").show();
 		$('#page_tasks').addClass('readonly')
-		addsearchToggle(1);
+		liveSearchToggle(1);
 	}
 	else {
 		flag.readOnly = false;
 		$('#page_tasks').removeClass('readonly')
 		$("#bar_public").hide();
-		addsearchToggle(0);
+		liveSearchToggle(0);
 	}
 	$('#page_ajax').hide();
 }

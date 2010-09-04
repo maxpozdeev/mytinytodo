@@ -73,7 +73,6 @@ $().ready(function(){
  <ul class="mtt-tabs"></ul>
  <div id="tabs_buttons">
   <div class="mtt-tabs-add-button mtt-tabs-button" title="<?php _e('list_new'); ?>"><span></span></div>
-  <div class="mtt-tabs-search-button mtt-tabs-button" title="<?php _e('htab_search'); ?>"><span></span></div>
   <div class="mtt-tabs-select-button mtt-tabs-button" title="<?php _e('list_select'); ?>"><span></span></div>
  </div>
 
@@ -83,7 +82,21 @@ $().ready(function(){
 
 <div id="toolbar" class="mtt-htabs">
 
-<span id="htab_newtask">
+<div id="htab_search" style="float:right;">
+  <table cellspacing="0" cellpadding="0" class="mtt-searchbox">
+  <tr>
+   <td class="mtt-searchbox-left"><span class="mtt-searchbox-icon mtt-icon-search"><span></span></span></td>
+   <td class="mtt-searchbox-center">
+   	<form id="search_form" method="post">
+   	  <input type="text" name="search" value="" maxlength="250" id="search" autocomplete="off" />
+   	</form>
+   </td>
+   <td class="mtt-searchbox-right"><span id="search_close" class="mtt-searchbox-icon mtt-icon-cancelsearch" title=""><span></span></td>
+  </tr>
+  </table>
+</div>
+
+<div id="htab_newtask">
  <form id="newtask_form" method="post">
   <table cellspacing="0" cellpadding="0"><tr>
    <td class="flex-cell"><input type="text" name="task" value="" maxlength="250" id="task" /></td>
@@ -93,20 +106,11 @@ $().ready(function(){
    </td>
   </tr></table>
  </form>
-</span>
+</div>
  
-<span id="htab_search" style="display:none">
- <form id="search_form" method="post">
-  <table cellspacing="0" cellpadding="0"><tr>
-   <td class="flex-cell"><input type="text" name="search" value="" maxlength="250" id="search" autocomplete="off" /></td>
-   <td class="flex-cell-companion">
-    <input type="submit" value="<?php _e('btn_search');?>" />
-    <a href="#" id="search_close" class="mtt-img-button" title=""><span></span></a>
-   </td>
-  </tr></table>
- </form>
- <div id="searchbar"><?php _e('searching');?> <span id="searchbarkeyword"></span></div> 
-</span>
+<div id="searchbar" style="display:none"><?php _e('searching');?> <span id="searchbarkeyword"></span></div>
+
+<div style="clear:both"></div>
 
 </div>
 
