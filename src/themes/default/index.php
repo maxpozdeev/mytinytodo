@@ -27,14 +27,24 @@
 
 <script type="text/javascript">
 $().ready(function(){
+
+	<?php if(isset($_GET['pda'])): ?>
+
+	$('body').width(screen.width);
+	$(window).resize(function() {
+		$('body').width(screen.width);
+	});
+		
+	<?php endif; ?>
+
 	mytinytodo.mttUrl = "<?php mttinfo('mtt_url'); ?>";
 	mytinytodo.templateUrl = "<?php mttinfo('template_url'); ?>";
 	mytinytodo.db = new mytinytodoStorageAjax(mytinytodo);
 	mytinytodo.init({
 		needAuth: <?php echo $needAuth ? "true" : "false"; ?>,
 		isLogged: <?php echo ($needAuth && is_logged()) ? "true" : "false"; ?>,
-		showdate: <?php echo Config::get('showdate') ? "true" : "false"; ?>,
-		singletab: <?php echo isset($_GET['singletab']) ? "true" : "false"; ?>,
+		showdate: <?php echo (Config::get('showdate') && !isset($_GET['pda'])) ? "true" : "false"; ?>,
+		singletab: <?php echo (isset($_GET['singletab']) || isset($_GET['pda'])) ? "true" : "false"; ?>,
 		duedateformat: <?php echo (int)Config::get('duedateformat'); ?>,
 		autotag: <?php echo Config::get('autotag') ? "true" : "false"; ?>
 		<?php if(isset($_GET['list'])) echo ",openList: ". (int)$_GET['list']; ?>

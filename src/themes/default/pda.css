@@ -1,5 +1,5 @@
-body { margin:0px; }
-h2 { margin:0; margin-bottom:2px; font-size:18px; }
+body { margin:0px; font-size:100%; }
+h2 { margin:0; margin-bottom:2px; font-size:1em; }
 h3 { margin-bottom:4px; padding:4px 0; }
 #body { margin-left:1px; margin-right:1px; padding:1px; padding-bottom:12px;}
 #bar_login, #bar_logout { padding-right:1px; }
@@ -7,9 +7,8 @@ h3 { margin-bottom:4px; padding:4px 0; }
 #tabs ul { margin-top:0px; }
 #tabs ul li { width:70px; margin-right: 1px; }
 .tab-content { padding:4px; }
-#task, #search { color:#444444; width:65%; max-width:300px; }
 
-#tasklist li { padding:4px 1px; overflow:hidden;  }
+#tasklist li { padding:0.5em 3px; overflow:hidden;  }
 .task-actions { display:none; }
 .task-date { display:none; }
 .task-note-actions { display:block; padding-top:8px; }
@@ -26,6 +25,7 @@ h3 { margin-bottom:4px; padding:4px 0; }
 #tasklist li.clicked .task-through { white-space:normal; display:inline; }
 #tasklist li.clicked.task-has-note .task-note-block { display:block; }
 /*#tasklist li.clicked.task-has-note .task-toggle { background-position:-48px 0; } */
+#tasklist li.clicked.doubleclicked.task-has-note .task-note-block { display:none; }
 .task-toggle { display:none; }
 .task-middle { margin-left:25px; }
 
