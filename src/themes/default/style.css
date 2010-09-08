@@ -115,12 +115,13 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 
 /* Live Search */
 #search {
- color:#444444; background:#fff; height:1.35em; padding:2px 18px; width:150px;
+ color:#444444; background:#fff; height:1.35em; padding:2px 18px; width:100%; margin-left:-38px; /*padding+border*/
  border:1px inset #F0F0F0; -moz-border-radius:10px; -webkit-border-radius:10px; border-radius:10px; 
 }
 #search_close { display:none; }
 
-.mtt-searchbox { position:relative; width:188px; /* input width+padding+border */ }
+.mtt-searchbox td { padding:0px; width:180px; }
+.mtt-searchbox-c { position:relative; padding-left:38px; /*input padding+border*/ }
 .mtt-searchbox-icon { width:16px; height:16px; position:absolute; top:50%; margin-top:-8px; }
 
 .mtt-searchbox-icon.mtt-icon-search { background:url(images/mzl.png) 0px -16px no-repeat; left:4px; }

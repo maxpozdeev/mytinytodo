@@ -93,11 +93,13 @@ $().ready(function(){
 <div id="toolbar" class="mtt-htabs">
 
 <div id="htab_search" style="float:right;">
- <div class="mtt-searchbox">
-  <input type="text" name="search" value="" maxlength="250" id="search" autocomplete="off" />
-  <div class="mtt-searchbox-icon mtt-icon-search"></div>
-  <div id="search_close" class="mtt-searchbox-icon mtt-icon-cancelsearch"></div>
- </div>
+ <table class="mtt-searchbox"><tr><td>
+  <div class="mtt-searchbox-c">
+   <input type="text" name="search" value="" maxlength="250" id="search" autocomplete="off" />
+   <div class="mtt-searchbox-icon mtt-icon-search"></div>
+   <div id="search_close" class="mtt-searchbox-icon mtt-icon-cancelsearch"></div>
+  </div> 
+ </td></tr></table>
 </div>
 
 <div id="htab_newtask">
