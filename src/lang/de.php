@@ -4,10 +4,10 @@
 	myTinyTodo language pack
 	Language: German
 	Original name: Deutsch
-	Author: Sebastian
+	Author: Sebastian Riehm
 	Author Url:
-	AppVersion: v1.3.5
-	Date: 2010-05-23
+	AppVersion: v1.3.6
+	Date: 2010-09-05
 	Modified by: Pascal
 */
 
@@ -50,9 +50,9 @@ class Lang extends DefaultLang
 		'save' => "Speichern",
 		'cancel' => "Abbrechen",
 		'password' => "Passwort",
-		'btn_login' => "Login",
-		'a_login' => "Login",
-		'a_logout' => "Logout",
+		'btn_login' => "Anmelden",
+		'a_login' => "Anmelden",
+		'a_logout' => "Abmelden",
 		'public_tasks' => "Öffentliche Aufgabe",
 		'tags' => "Schlagwörter",
 		'tagfilter_cancel' => "Filter aufheben",
