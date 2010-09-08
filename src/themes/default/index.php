@@ -103,15 +103,16 @@ $().ready(function(){
 </div>
 
 <div id="htab_newtask">
- <form id="newtask_form" method="post">
-  <table cellspacing="0" cellpadding="0"><tr>
-   <td class="flex-cell"><input type="text" name="task" value="" maxlength="250" id="task" /></td>
-   <td class="flex-cell-companion">
-    <input type="submit" value="<?php _e('btn_add');?>" />
-    <a href="#" id="newtask_adv" class="mtt-img-button" title="<?php _e('advanced_add');?>"><span></span></a>
-   </td>
-  </tr></table>
- </form>
+ <table class="mtt-taskbox"><tr><td class="mtt-tb-cell">
+  <div class="mtt-tb-c">
+   <form id="newtask_form" method="post">
+    <input type="text" name="task" value="" maxlength="250" id="task" autocomplete="off" />
+    <div id="newtask_submit" class="mtt-taskbox-icon mtt-icon-submittask" title="<?php _e('btn_add');?>"></div>
+   </form>
+  </div>
+ </td>
+ <td><a href="#" id="newtask_adv" class="mtt-img-button" title="<?php _e('advanced_add');?>"><span></span></a></td>
+ </tr></table>
 </div>
  
 <div id="searchbar" style="display:none"><?php _e('searching');?> <span id="searchbarkeyword"></span></div>

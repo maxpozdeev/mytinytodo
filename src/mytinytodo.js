@@ -114,11 +114,22 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			submitNewTask(this);
 			return false;
 		});
+		
+		$('#newtask_submit').click(function(){
+			$('#newtask_form').submit();
+		});
 
 		$('#newtask_adv').click(function(){
 			showEditForm(1);
 			return false;
 		});
+		
+		$('#task').keydown(function(event){
+			if(event.keyCode == 27) {
+				$(this).val('');
+			}
+		});
+
 
 		$('#search_form').submit(function(){
 			searchTasks(1);

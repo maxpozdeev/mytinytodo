@@ -94,24 +94,26 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 
 .mtt-htabs  { clear:both; padding:8px; border-bottom:2px solid #DEDEDE; background:#ededed; }
 
-.mtt-img-button { width:16px; height:16px; padding:2px; border:1px solid transparent; }
+.mtt-img-button { width:16px; height:16px; padding:2px; border:1px solid transparent; display:inline-block; }
 .mtt-img-button:hover { border:1px solid #ccc; -moz-border-radius:3px; -webkit-border-radius:3px; border-radius:3px; }
 .mtt-img-button span { display:inline-block; width:16px; height:16px; }
-
-#newtask_adv span { position:relative; top:3px; background:url(images/buttons.png) 0 -48px no-repeat; }
-#newtask_adv:hover span { background-position:-16px -48px; }
 
 .arrdown { display:inline-block; height:7px; width:9px; background:url(images/arrdown.gif); }
 .arrdown2 { display:inline-block; height:7px; width:7px; background:url(images/arrdown2.gif); }
 
-.flex-cell { padding-right:6px; }
-.flex-cell input { width:100%; padding:2px; border:1px inset #f0f0f0; } 
-.flex-cell-companion { white-space:nowrap; }
 
-#newtask_form .flex-cell { width:350px }
-#newtask_form .flex-cell-companion { padding-left:2px; }
+/* Quick Task Add */
 
-#task { color:#444444; width:100%; }
+.mtt-taskbox td.mtt-tb-cell { padding:0px; width:350px; }
+.mtt-tb-c { position:relative; padding-left:22px; /*input padding+border*/ }
+#task { color:#444444; background:#fff; height:1.35em; padding:2px; padding-right:18px; border:1px inset #F0F0F0; width:100%; margin-left:-22px; }
+
+.mtt-taskbox-icon { width:16px; height:16px; position:absolute; top:50%; margin-top:-8px; }
+.mtt-taskbox-icon.mtt-icon-submittask { background:url(images/mzl.png) 0px -32px no-repeat; right:4px; }
+
+#newtask_adv span { background:url(images/buttons.png) 0 -48px no-repeat; }
+#newtask_adv:hover span { background-position:-16px -48px; }
+
 
 /* Live Search */
 #search {
@@ -129,6 +131,7 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 
 #searchbar { font-size:1em; font-weight:normal; display:none;  margin-top:5px; }
 #searchbarkeyword { font-weight:bold; }
+
 
 /* */
 .mtt-notes-showhide { font-size:0.8em; font-weight:normal; margin-left:2px; margin-right:2px; }
