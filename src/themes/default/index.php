@@ -92,7 +92,7 @@ $().ready(function(){
 
 <div id="toolbar" class="mtt-htabs">
 
-<div id="htab_search" style="float:right;">
+<div id="htab_search">
  <table class="mtt-searchbox"><tr><td>
   <div class="mtt-searchbox-c">
    <input type="text" name="search" value="" maxlength="250" id="search" autocomplete="off" />

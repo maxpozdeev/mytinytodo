@@ -118,6 +118,7 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 
 
 /* Live Search */
+#htab_search { float:right; }
 #search {
  color:#444444; background:#fff; height:1.35em; padding:2px 18px; width:100%; margin-left:-38px; /*padding+border*/
  border:1px inset #F0F0F0; -moz-border-radius:10px; -webkit-border-radius:10px; border-radius:10px; 
@@ -277,11 +278,11 @@ a.mtt-back-button { font-size:0.8em; }
 .ui-datepicker-calendar td.ui-datepicker-today a { color:#fff; background-color:#ccc;  }
 .ui-datepicker-calendar td a:hover { border-color:#5980FF; }
 .ui-datepicker-header { padding:3px 0px; }
-.ui-datepicker-prev { position:absolute; left:2px; height:20px;  }
-.ui-datepicker-next { position:absolute; right:2px; height:20px; }
+.ui-datepicker-prev { position:absolute; left:2px; height:20px; text-decoration:none; }
+.ui-datepicker-next { position:absolute; right:2px; height:20px; text-decoration:none; }
 .ui-datepicker-title { text-align:center; line-height:20px;  }
 .ui-icon { width:16px; height:16px; text-indent:-99999px; overflow:hidden; }
-.ui-datepicker .ui-icon-circle-triangle-w { display:block; position:absolute; top:50%; margin-top:-8px; background:url(images/icons.gif) -48px -16px no-repeat; }
+.ui-datepicker .ui-icon-circle-triangle-w { display:block; position:absolute; top:50%; margin-top:-8px; left:50%; background:url(images/icons.gif) -48px -16px no-repeat; }
 .ui-datepicker .ui-icon-circle-triangle-e { display:block; position:absolute; top:50%; margin-top:-8px; right:50%; background:url(images/icons.gif) -32px -16px no-repeat; }
 
 .mtt-menu-button {
