@@ -1,76 +1,54 @@
-<?php
-
-function datepickerformat()
-{
-	if(Config::get('duedateformat') == 2) $duedateformat = 'm/d/yy';
-	elseif(Config::get('duedateformat') == 3) $duedateformat = 'dd.mm.yy';
-	elseif(Config::get('duedateformat') == 4) $duedateformat = 'dd/mm/yy';
-	else $duedateformat = 'yy-mm-dd';
-	return $duedateformat;
-}
-
-?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
-<HEAD>
-<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title><?php mttinfo('title'); ?></title>
-<link rel="stylesheet" type="text/css" href="<?php mttinfo('template_url'); ?>style.css?v=@VERSION" media="all">
+<link rel="stylesheet" type="text/css" href="<?php mttinfo('template_url'); ?>style.css?v=@VERSION" media="all" />
 <?php if(Config::get('rtl')): ?>
-<link rel="stylesheet" type="text/css" href="<?php mttinfo('template_url'); ?>style_rtl.css?v=@VERSION" media="all">
+<link rel="stylesheet" type="text/css" href="<?php mttinfo('template_url'); ?>style_rtl.css?v=@VERSION" media="all" />
 <?php endif; ?>
 <?php if(isset($_GET['pda'])): ?>
-<meta name="viewport" id="viewport" content="width=device-width">
-<link rel="stylesheet" type="text/css" href="<?php mttinfo('template_url'); ?>pda.css?v=@VERSION" media="all">
+<meta name="viewport" id="viewport" content="width=device-width" />
+<link rel="stylesheet" type="text/css" href="<?php mttinfo('template_url'); ?>pda.css?v=@VERSION" media="all" />
 <?php else: ?>
-<link rel="stylesheet" type="text/css" href="<?php mttinfo('template_url'); ?>print.css?v=@VERSION" media="print">
+<link rel="stylesheet" type="text/css" href="<?php mttinfo('template_url'); ?>print.css?v=@VERSION" media="print" />
 <?php endif; ?>
-</HEAD>
+</head>
 
 <body>
 
-<script type="text/javascript" src="<?php mttinfo('mtt_url'); ?>jquery/jquery-1.3.2.min.js"></script>
+<script type="text/javascript" src="<?php mttinfo('mtt_url'); ?>jquery/jquery-1.4.2.min.js"></script>
 <script type="text/javascript" src="<?php mttinfo('mtt_url'); ?>jquery/jquery-ui-1.7.2.custom.min.js"></script>
-<script type="text/javascript" src="<?php mttinfo('mtt_url'); ?>ajax.lang.php?v=@VERSION"></script>
-<script type="text/javascript" src="<?php mttinfo('mtt_url'); ?>ajax.js?v=@VERSION"></script>
-<script type="text/javascript" src="<?php mttinfo('mtt_url'); ?>jquery/jquery.autocomplete.min.js"></script>
+<script type="text/javascript" src="<?php mttinfo('mtt_url'); ?>jquery/jquery.autocomplete-1.1.js"></script>
+<script type="text/javascript" src="<?php mttinfo('mtt_url'); ?>mytinytodo.js?v=@VERSION"></script>
+<script type="text/javascript" src="<?php mttinfo('mtt_url'); ?>mytinytodo_lang.php?v=@VERSION"></script>
+<script type="text/javascript" src="<?php mttinfo('mtt_url'); ?>mytinytodo_ajax_storage.js?v=@VERSION"></script>
 <script type="text/javascript" src="<?php mttinfo('template_url'); ?>functions.js?v=@VERSION"></script>
 
 <script type="text/javascript">
 $().ready(function(){
+
+	<?php if(isset($_GET['pda'])): ?>
+
+	$('body').width(screen.width);
+	$(window).resize(function() {
+		$('body').width(screen.width);
+	});
+		
+	<?php endif; ?>
+
 	mytinytodo.mttUrl = "<?php mttinfo('mtt_url'); ?>";
-	$("#tasklist").sortable({cancel:'span,input,a,textarea', delay: 150, update:orderChanged, start:sortStart, items:'> :not(.task-completed)'});
-	$("#tasklist").bind("click", tasklistClick);
-	$("#edittags").autocomplete('ajax.php?suggestTags', {scroll: false, multiple: true, selectFirst:false, max:8, extraParams:{list:function(){return curList.id}}});
-	$("#priopopup").mouseleave(function(){$(this).hide()});
-<?php
-	if($needAuth)
-	{
-		echo "\tflag.needAuth = true;\n";
-		if(is_logged()) echo "\tflag.isLogged = true;\n";
-	}
-	if(Config::get('autotag')) echo "\tflag.autoTag = true;\n";
-	if(isset($_GET['list'])) echo "\tmytinytodo.setOptions({openList:". (int)$_GET['list']. "});\n";
-	echo "\tloadLists(1, 1);\n";
-?>
-	$("#duedate").datepicker({dateFormat: '<?php echo datepickerformat(); ?>', firstDay: <?php echo Config::get('firstdayofweek'); ?>,
-		showOn: 'button', buttonImage: '<?php mttinfo('template_url'); ?>images/calendar.png', buttonImageOnly: true, changeMonth:true,
-		changeYear:true, constrainInput: false, duration:'', nextText:'&gt;', prevText:'&lt;', dayNamesMin:lang.daysMin, 
-		dayNames:lang.daysLong, monthNamesShort:lang.monthsLong });
-<?php if(!isset($_GET['pda'])): ?>
-	$("#page_taskedit").draggable({ handle:'h3', stop: function(e,ui){ flag.windowTaskEditMoved=true; tmp.editformpos=[$(this).css('left'),$(this).css('top')]; } }); 
-	$("#page_taskedit").resizable({ minWidth:$("#page_taskedit").width(), minHeight:220, start:function(ui,e){editFormResize(1)}, resize:function(ui,e){editFormResize(0,e)}, stop:function(ui,e){editFormResize(2,e)} });
-<?php else: ?>
-	flag.pda = true;
-<?php endif; ?>
-<?php if(isset($_GET['singletab'])): ?>
-	mytinytodo.addAction('listsLoaded', tplSingleTabLoaded);
-	mytinytodo.addAction('listRenamed', tplSingleTabRenamed);
-	mytinytodo.addAction('listAdded', tplSingleTabAdded);
-<?php endif; ?>
-<?php if(!isset($_GET['singletab']) && !isset($_GET['pda'])): ?>
-	$("#lists ul").sortable({delay:150, update:listOrderChanged});
-<?php endif; ?>
+	mytinytodo.templateUrl = "<?php mttinfo('template_url'); ?>";
+	mytinytodo.db = new mytinytodoStorageAjax(mytinytodo);
+	mytinytodo.init({
+		needAuth: <?php echo $needAuth ? "true" : "false"; ?>,
+		isLogged: <?php echo ($needAuth && is_logged()) ? "true" : "false"; ?>,
+		showdate: <?php echo (Config::get('showdate') && !isset($_GET['pda'])) ? "true" : "false"; ?>,
+		singletab: <?php echo (isset($_GET['singletab']) || isset($_GET['pda'])) ? "true" : "false"; ?>,
+		duedateformat: <?php echo (int)Config::get('duedateformat'); ?>,
+		autotag: <?php echo Config::get('autotag') ? "true" : "false"; ?>
+		<?php if(isset($_GET['list'])) echo ",openList: ". (int)$_GET['list']; ?>
+	}).loadLists(1);
 });
 </script>
 
@@ -80,50 +58,78 @@ $().ready(function(){
 
 <h2><?php mttinfo('title'); ?></h2>
 
-<div id="loading"><img src="<?php mttinfo('template_url'); ?>images/loading1.gif"></div>
+<div id="loading"></div>
 
 <div id="bar">
- <div id="msg"><span class="msg-text" onClick="toggleMsgDetails()"></span><div class="msg-details"></div></div>
+ <div id="msg"><span class="msg-text"></span><div class="msg-details"></div></div>
  <div class="bar-menu">
- <span class="menu-owner">
-   <a href="#settings" onClick="showSettings();return false;"><?php _e('a_settings');?></a>
+ <span class="menu-owner" style="display:none">
+   <a href="#settings" id="settings"><?php _e('a_settings');?></a>
  </span>
  <span class="bar-delim" style="display:none"> | </span>
  <span id="bar_auth">
   <span id="bar_public" style="display:none"><?php _e('public_tasks');?> |</span>
-  <span id="bar_login"><a href="#login" class="nodecor" onClick="showAuth(this);return false;"><u><?php _e('a_login');?></u> <img src="<?php mttinfo('template_url'); ?>images/arrdown.gif" border=0></a></span>
-  <a href="#logout" id="bar_logout" onClick="logout();return false"><?php _e('a_logout');?></a>
+  <a href="#login" id="bar_login" class="nodecor"><u><?php _e('a_login');?></u> <span class="arrdown"></span></a>
+  <a href="#logout" id="bar_logout"><?php _e('a_logout');?></a>
  </span>
  </div>
 </div>
 
-<br clear="all">
+<br clear="all" />
 
-<div id="page_tasks" style="display:none" class="<?php if(Config::get('showdate')) echo "show-inline-date"; ?>">
+<div id="page_tasks" style="display:none">
 
 <div id="lists">
- <ul class="mtt-tabs <?php if(isset($_GET['singletab'])) echo "mtt-tabs-only-one"; ?>"></ul>
- <div class="mtt-tabs-add-button" onClick="addList();return false;" title="<?php _e('list_new'); ?>"><span></span></div>
+ <ul class="mtt-tabs"></ul>
+ <div id="tabs_buttons">
+  <div class="mtt-tabs-add-button mtt-tabs-button" title="<?php _e('list_new'); ?>"><span></span></div>
+  <div class="mtt-tabs-select-button mtt-tabs-button" title="<?php _e('list_select'); ?>"><span></span></div>
+ </div>
+
 </div>
+
+
 
 <div id="toolbar" class="mtt-htabs">
-   <span id="rss_icon"><a href="#" title="<?php _e('rss_feed');?>"><img src="<?php mttinfo('template_url'); ?>images/feed_bw.png" onMouseOver="this.src='<?php mttinfo('template_url'); ?>images/feed.png'" onMouseOut="this.src='<?php mttinfo('template_url'); ?>images/feed_bw.png'"></a></span>
-   <span id="htab_newtask"><?php _e('htab_newtask');?> 
-	<form onSubmit="return submitNewTask(this)"><input type="text" name="task" value="" maxlength="250" id="task"> <input type="submit" value="<?php _e('btn_add');?>"></form>
-	<a href="#" onClick="showEditForm(1);return false;" title="<?php _e('advanced_add');?>"><img src="<?php mttinfo('template_url'); ?>images/page_white_edit_bw.png" onMouseOver="this.src='<?php mttinfo('template_url'); ?>images/page_white_edit.png'" onMouseOut="this.src='<?php mttinfo('template_url'); ?>images/page_white_edit_bw.png'"></a>
-	&nbsp;&nbsp;| <a href="#" class="htab-toggle" onClick="addsearchToggle(1);this.blur();return false;"><?php _e('htab_search');?></a>
-   </span>
-   <span id="htab_search" style="display:none"><?php _e('htab_search');?>
-	<form onSubmit="return searchTasks()"><input type="text" name="search" value="" maxlength="250" id="search" onKeyUp="timerSearch()" autocomplete="off"> <input type="submit" value="<?php _e('btn_search');?>"></form>
-	&nbsp;&nbsp;| <a href="#" class="htab-toggle" onClick="addsearchToggle(0);this.blur();return false;"><?php _e('htab_newtask');?></a> 
-	<div id="searchbar"><?php _e('searching');?> <span id="searchbarkeyword"></span></div> 
-   </span>
+
+<div id="htab_search">
+ <table class="mtt-searchbox"><tr><td>
+  <div class="mtt-searchbox-c">
+   <input type="text" name="search" value="" maxlength="250" id="search" autocomplete="off" />
+   <div class="mtt-searchbox-icon mtt-icon-search"></div>
+   <div id="search_close" class="mtt-searchbox-icon mtt-icon-cancelsearch"></div>
+  </div> 
+ </td></tr></table>
 </div>
 
+<div id="htab_newtask">
+ <table class="mtt-taskbox"><tr><td class="mtt-tb-cell">
+  <div class="mtt-tb-c">
+   <form id="newtask_form" method="post">
+    <label id="task_placeholder" class="placeholding" for="task">
+     <input type="text" name="task" value="" maxlength="250" id="task" autocomplete="off" />
+     <span><?php _e('htab_newtask');?></span>
+    </label>
+    <div id="newtask_submit" class="mtt-taskbox-icon mtt-icon-submittask" title="<?php _e('btn_add');?>"></div>
+   </form>
+  </div>
+ </td>
+ <td><a href="#" id="newtask_adv" class="mtt-img-button" title="<?php _e('advanced_add');?>"><span></span></a></td>
+ </tr></table>
+</div>
+ 
+<div id="searchbar" style="display:none"><?php _e('searching');?> <span id="searchbarkeyword"></span></div>
+
+<div style="clear:both"></div>
+
+</div>
+
+
 <h3>
-<span id="taskview" onClick="btnMenu(this);return false;" class="mtt-btnmenu"><span class="btnstr"><?php _e('tasks');?></span> (<span id="total">0</span>) &nbsp;<img src="<?php mttinfo('template_url'); ?>images/arrdown.gif"></span>
-<span id="tagcloudbtn" onClick="showTagCloud(this);"><span class="btnstr"><?php _e('tags');?></span> <img src="<?php mttinfo('template_url'); ?>images/arrdown.gif"></span>
-<span class="mtt-notes-showhide"><?php _e('notes');?> <a href="#" onClick="toggleAllNotes(1);this.blur();return false;"><?php _e('notes_show');?></a> / <a href="#" onClick="toggleAllNotes(0);this.blur();return false;"><?php _e('notes_hide');?></a></span>
+<span id="taskview" class="mtt-menu-button"><span class="btnstr"><?php _e('tasks');?></span> (<span id="total">0</span>) <span class="arrdown"></span></span>
+<span class="mtt-notes-showhide"><?php _e('notes');?> <a href="#" id="mtt-notes-show"><?php _e('notes_show');?></a> / <a href="#" id="mtt-notes-hide"><?php _e('notes_hide');?></a></span>
+<span id="mtt_filters"></span>
+<span id="tagcloudbtn" class="mtt-menu-button"><?php _e('tags');?> <span class="arrdown2"></span></span>
 </h3>
 
 <div id="taskcontainer">
@@ -135,82 +141,98 @@ $().ready(function(){
 
 <div id="page_taskedit" style="display:none">
 
+<div><a href="#" class="mtt-back-button"><?php _e('go_back');?></a></div>
+
 <h3 class="mtt-inadd"><?php _e('add_task');?></h3>
-<h3 class="mtt-inedit">
+<h3 class="mtt-inedit"><?php _e('edit_task');?>
  <div id="taskedit-date" class="mtt-inedit">
-  <span class="date-created" title="<?php _e('taskdate_created');?>"><span></span></span>
-  <span class="date-completed" title="<?php _e('taskdate_completed');?>"> / <span></span></span>
+  (<span class="date-created" title="<?php _e('taskdate_created');?>"><span></span></span><span class="date-completed" title="<?php _e('taskdate_completed');?>"> &mdash; <span></span></span>)
  </div>
- <?php _e('edit_task');?>
 </h3>
 
-<form onSubmit="return saveTask(this)" name="edittask">
-<input type="hidden" name="isadd" value="0">
-<input type="hidden" name="id" value="">
-<div class="form-row form-row-short"><span class="h"><?php _e('priority');?></span> <SELECT name="prio"><option value="2">+2</option><option value="1">+1</option><option value="0" selected>&plusmn;0</option><option value="-1">&minus;1</option></SELECT></div>
-<div class="form-row form-row-short"><span class="h"><?php _e('due');?> </span> <input name="duedate" id="duedate" value="" class="in100" title="Y-M-D, M/D/Y, D.M.Y, M/D, D.M" autocomplete="off"></div>
+<form id="taskedit_form" name="edittask" method="post">
+<input type="hidden" name="isadd" value="0" />
+<input type="hidden" name="id" value="" />
+<div class="form-row form-row-short">
+ <span class="h"><?php _e('priority');?></span>
+ <select name="prio">
+  <option value="2">+2</option><option value="1">+1</option><option value="0" selected="selected">&plusmn;0</option><option value="-1">&minus;1</option>
+ </select>
+</div>
+<div class="form-row form-row-short">
+ <span class="h"><?php _e('due');?> </span>
+ <input name="duedate" id="duedate" value="" class="in100" title="Y-M-D, M/D/Y, D.M.Y, M/D, D.M" autocomplete="off" />
+</div>
 <div class="form-row-short-end"></div>
-<div class="form-row"><div class="h"><?php _e('task');?></div> <input type="text" name="task" value="" class="in500" maxlength="250"></div>
+<div class="form-row"><div class="h"><?php _e('task');?></div> <input type="text" name="task" value="" class="in500" maxlength="250" /></div>
 <div class="form-row"><div class="h"><?php _e('note');?></div> <textarea name="note" class="in500"></textarea></div>
 <div class="form-row"><div class="h"><?php _e('tags');?></div>
  <table cellspacing="0" cellpadding="0" width="100%"><tr>
-  <td><input type="text" name="tags" id="edittags" value="" class="in500" maxlength="250"></td>
+  <td><input type="text" name="tags" id="edittags" value="" class="in500" maxlength="250" /></td>
   <td class="alltags-cell">
-   <a href="#" id="alltags_show" onClick="toggleEditAllTags(1);return false;"><?php _e('alltags_show');?></a>
-   <a href="#" id="alltags_hide" onClick="toggleEditAllTags(0);return false;" style="display:none"><?php _e('alltags_hide');?></a></td>
+   <a href="#" id="alltags_show"><?php _e('alltags_show');?></a>
+   <a href="#" id="alltags_hide" style="display:none"><?php _e('alltags_hide');?></a></td>
  </tr></table>
 </div>
 <div class="form-row" id="alltags" style="display:none;"><?php _e('alltags');?> <span class="tags-list"></span></div>
-<div class="form-row form-bottom-buttons"><input type="submit" value="<?php _e('save');?>" onClick="this.blur()"> <input type="button" value="<?php _e('cancel');?>" onClick="cancelEdit();this.blur();return false"></div>
+<div class="form-row form-bottom-buttons">
+ <input type="submit" value="<?php _e('save');?>" /> 
+ <input type="button" id="mtt_edit_cancel" class="mtt-back-button" value="<?php _e('cancel');?>" />
+</div>
 </form>
 
 </div>  <!-- end of page_taskedit -->
 
 
 <div id="authform" style="display:none">
-<form onSubmit="doAuth(this);return false;">
- <div class="h"><?php _e('password');?></div><div><input type="password" name="password" id="password"></div><div><input type="submit" value="<?php _e('btn_login');?>"></div>
+<form id="login_form">
+ <div class="h"><?php _e('password');?></div>
+ <div><input type="password" name="password" id="password" /></div>
+ <div><input type="submit" value="<?php _e('btn_login');?>" /></div>
 </form>
 </div>
 
 <div id="priopopup" style="display:none">
- <span class="prio-neg prio-neg-1" onClick="prioClick(-1,this)">&minus;1</span>
- <span class="prio-zero" onClick="prioClick(0,this)">&plusmn;0</span>
- <span class="prio-pos prio-pos-1" onClick="prioClick(1,this)">+1</span>
- <span class="prio-pos prio-pos-2" onClick="prioClick(2,this)">+2</span>
+ <span class="prio-neg prio-neg-1">&minus;1</span>
+ <span class="prio-zero">&plusmn;0</span>
+ <span class="prio-pos prio-pos-1">+1</span>
+ <span class="prio-pos prio-pos-2">+2</span>
 </div>
 
-<div id="taskviewcontainer" class="mtt-btnmenu-container" style="display:none">
+<div id="taskviewcontainer" class="mtt-menu-container" style="display:none">
 <ul>
- <li onClick="setTaskview(0)"><span id="view_tasks"><?php _e('tasks');?></span> (<span id="cnt_total">0</span>)</li>
- <li onClick="setTaskview('past')"><span id="view_past"><?php _e('f_past');?></span> (<span id="cnt_past">0</span>)</li>
- <li onClick="setTaskview('today')"><span id="view_today"><?php _e('f_today');?></span> (<span id="cnt_today">0</span>)</li>
- <li onClick="setTaskview('soon')"><span id="view_soon"><?php _e('f_soon');?></span> (<span id="cnt_soon">0</span>)</li>
+ <li id="view_tasks"><?php _e('tasks');?> (<span id="cnt_total">0</span>)</li>
+ <li id="view_past"><?php _e('f_past');?> (<span id="cnt_past">0</span>)</li>
+ <li id="view_today"><?php _e('f_today');?> (<span id="cnt_today">0</span>)</li>
+ <li id="view_soon"><?php _e('f_soon');?> (<span id="cnt_soon">0</span>)</li>
 </ul>
 </div>
 
 <div id="tagcloud" style="display:none">
- <div id="tagcloudcancel" onClick="cancelTagFilter();tagCloudClose();"><?php _e('tagfilter_cancel');?></div>
- <div id="tagcloudload"><img src="<?php mttinfo('template_url'); ?>images/loading1_24.gif"></div>
+ <a id="tagcloudcancel" class="mtt-img-button"><span></span></a>
+ <div id="tagcloudload"></div>
  <div id="tagcloudcontent"></div>
 </div>
 
-<div id="mylistscontainer" class="mtt-btnmenu-container mtt-menu-has-images" style="display:none">
+
+<div id="mylistscontainer" class="mtt-menu-container" style="display:none">
 <ul>
  <li class="mtt-need-list" id="btnRenameList"><?php _e('list_rename');?></li>
  <li class="mtt-need-list" id="btnDeleteList"><?php _e('list_delete');?></li>
  <li class="mtt-need-list" id="btnClearCompleted"><?php _e('list_clearcompleted');?></li>
- <li class="mtt-btnmenu-delimiter"></li>
+ <li class="mtt-need-list" id="btnExportCSV"><?php _e('list_exportcsv');?></li>
+ <li class="mtt-need-list" id="btnRssFeed"><div class="menu-icon"></div><?php _e('list_rssfeed');?></li>
+ <li class="mtt-menu-delimiter"></li>
  <li class="mtt-need-list" id="btnPublish"><div class="menu-icon"></div><?php _e('list_publish');?></li>
  <li class="mtt-need-list" id="btnShowCompleted"><div class="menu-icon"></div><?php _e('list_showcompleted');?></li>
- <li class="mtt-btnmenu-delimiter"></li>
+ <li class="mtt-menu-delimiter"></li>
  <li class="mtt-need-list sort-item" id="sortByHand"><div class="menu-icon"></div><?php _e('sortByHand');?></li>
  <li class="mtt-need-list sort-item" id="sortByPrio"><div class="menu-icon"></div><?php _e('sortByPriority');?></li>
  <li class="mtt-need-list sort-item" id="sortByDueDate"><div class="menu-icon"></div><?php _e('sortByDueDate');?></li>
 </ul>
 </div>
 
-<div id="taskcontextcontainer" class="mtt-btnmenu-container mtt-menu-has-images mtt-menu-has-submenu" style="display:none">
+<div id="taskcontextcontainer" class="mtt-menu-container" style="display:none">
 <ul>
  <li id="cmenu_edit"><b><?php _e('action_edit');?></b></li>
  <li id="cmenu_note"><?php _e('action_note');?></li>
@@ -220,7 +242,7 @@ $().ready(function(){
 </ul>
 </div>
 
-<div id="priocontainer" class="mtt-btnmenu-container mtt-menu-has-images" style="display:none">
+<div id="priocontainer" class="mtt-menu-container" style="display:none">
 <ul>
  <li id="cmenu_prio:2">+2</li>
  <li id="cmenu_prio:1">+1</li>
@@ -229,7 +251,12 @@ $().ready(function(){
 </ul>
 </div>
 
-<div id="listsmenucontainer" class="mtt-btnmenu-container mtt-menu-has-images" style="display:none">
+<div id="listsmenucontainer" class="mtt-menu-container" style="display:none">
+<ul>
+</ul>
+</div>
+
+<div id="slmenucontainer" class="mtt-menu-container" style="display:none">
 <ul>
 </ul>
 </div>

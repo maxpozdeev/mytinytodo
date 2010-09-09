@@ -7,6 +7,6 @@ require_once(MTTPATH. 'lang/class.default.php');
 require_once(MTTPATH. 'lang/'. $config['lang']. '.php');
 
 header('Content-type: text/javascript');
-echo Lang::instance()->makeJS();
+echo "mytinytodo.lang.init(". Lang::instance()->makeJS() .");";
 
 ?>

@@ -21,10 +21,11 @@ div.task-note-block { border-left:1px solid #777777; background:none; padding-le
 #tasklist li.today, #tasklist li.past { background-color:#ffffff; border-color:#dedede; }
 .task-prio { font-weight:bold; }
 
+li.task-completed  { opacity:1; }
+
 #footer_content { border-top:1px solid #777777; background:none; }
 #footer_content a { text-decoration:none; color:#000000; }
 
 #tagcloudbtn { display:none; }
 .mtt-notes-showhide { display:none; }
-.mtt-btnmenu { border:none; }
 #taskview img { display:none; }

@@ -36,9 +36,12 @@ class DefaultLang
 		'advanced_add' => "Advanced",
 		'searching' => "Searching for",
 		'tasks' => "Tasks",
-		'taskdate_inline' => "added at %s",
-		'taskdate_created' => "Date of creation",
-		'taskdate_completed' => "Date of completion",
+		'taskdate_inline_created' => "Created: %s",
+		'taskdate_inline_completed' => "Completed: %s",
+		'taskdate_inline_duedate' => "Due: %s",
+		'taskdate_created' => "Created",
+		'taskdate_completed' => "Completed",
+		'go_back' => "&lt;&lt; Back",
 		'edit_task' => "Edit Task",
 		'add_task' => "New Task",
 		'priority' => "Priority",
@@ -83,13 +86,18 @@ class DefaultLang
 		'list_publish' => "Publish list",
 		'list_showcompleted' => "Show completed tasks",
 		'list_clearcompleted' => "Clear completed tasks",
+		'list_select' => "Select list",
+		'list_exportcsv' => "Export to CSV",
+		'list_rssfeed' => "RSS Feed",
 		'alltags' => "All tags:",
 		'alltags_show' => "Show all",
 		'alltags_hide' => "Hide all",
 		'a_settings' => "Settings",
 		'rss_feed' => "RSS Feed",
 		'feed_title' => "%s",
-		'feed_description' => "New tasks in %s",
+		'feed_completed_tasks' => "Completed tasks",
+		'feed_modified_tasks' => "Modified tasks",
+		'feed_new_tasks' => "New tasks",
 
 		/* Settings */
 		'set_header' => "Settings",
@@ -147,8 +155,17 @@ class DefaultLang
 		$t = array();
 		foreach($this->get('months_long') as $v) { $t[] = '"'.str_replace('"','\\"',$v).'"'; }
 		$a[] = "monthsLong: [". implode(',', $t). "]";
-		$a[] = "tags: \"". str_replace('"','\\"',$this->get('tags')). "\"";
-		return "lang = {\n". implode(",\n", $a). "\n};";
+		$a[] = $this->_2js('tags');
+		$a[] = $this->_2js('tasks');
+		$a[] = $this->_2js('f_past');
+		$a[] = $this->_2js('f_today');
+		$a[] = $this->_2js('f_soon');
+		return "{\n". implode(",\n", $a). "\n}";
+	}
+
+	function _2js($v)
+	{
+		return "$v: \"". str_replace('"','\\"',$this->get($v)). "\"";
 	}
 
 	function get($key)

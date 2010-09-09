@@ -48,7 +48,7 @@ if($needAuth && !isset($dontStartSession))
 {
 	if(Config::get('session') == 'files')
 	{
-		session_save_path(MTTPATH. 'tmp/sessions/');
+		session_save_path(MTTPATH. 'tmp/sessions');
 		ini_set('session.gc_maxlifetime', '1209600'); # 14 days session file minimum lifetime
 		ini_set('session.gc_probability', 1);
 		ini_set('session.gc_divisor', 10);
