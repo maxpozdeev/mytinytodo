@@ -128,6 +128,10 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			if(event.keyCode == 27) {
 				$(this).val('');
 			}
+		}).focusin(function(){
+			$('#task_placeholder').removeClass('placeholding');
+		}).focusout(function(){
+			if('' == $(this).val()) $('#task_placeholder').addClass('placeholding');
 		});
 
 

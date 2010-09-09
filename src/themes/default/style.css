@@ -107,6 +107,8 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 .mtt-taskbox td.mtt-tb-cell { padding:0px; width:350px; }
 .mtt-tb-c { position:relative; padding-left:22px; /*input padding+border*/ }
 #task { color:#444444; background:#fff; height:1.35em; padding:2px; padding-right:18px; border:1px inset #F0F0F0; width:100%; margin-left:-22px; }
+#task_placeholder span { display:none; color:#ccc; position:absolute; left:0; top:0; height:1.35em; line-height:1.35em; padding:3px; /*input top and left padding+border*/  }
+#task_placeholder.placeholding span { display:inline-block; }
 
 .mtt-taskbox-icon { width:16px; height:16px; position:absolute; top:50%; margin-top:-8px; }
 .mtt-taskbox-icon.mtt-icon-submittask { background:url(images/mzl.png) 0px -32px no-repeat; right:4px; }

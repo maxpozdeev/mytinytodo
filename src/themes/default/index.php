@@ -106,7 +106,10 @@ $().ready(function(){
  <table class="mtt-taskbox"><tr><td class="mtt-tb-cell">
   <div class="mtt-tb-c">
    <form id="newtask_form" method="post">
-    <input type="text" name="task" value="" maxlength="250" id="task" autocomplete="off" />
+    <label id="task_placeholder" class="placeholding" for="task">
+     <input type="text" name="task" value="" maxlength="250" id="task" autocomplete="off" />
+     <span><?php _e('htab_newtask');?></span>
+    </label>
     <div id="newtask_submit" class="mtt-taskbox-icon mtt-icon-submittask" title="<?php _e('btn_add');?>"></div>
    </form>
   </div>
