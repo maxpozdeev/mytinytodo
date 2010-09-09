@@ -130,8 +130,10 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			}
 		}).focusin(function(){
 			$('#task_placeholder').removeClass('placeholding');
+			$('#toolbar').addClass('mtt-intask');
 		}).focusout(function(){
 			if('' == $(this).val()) $('#task_placeholder').addClass('placeholding');
+			$('#toolbar').removeClass('mtt-intask');
 		});
 
 
@@ -164,8 +166,12 @@ var mytinytodo = window.mytinytodo = _mtt = {
 				}
 				return false; //need to return false in firefox (for AJAX?)
 			}		
+		}).focusin(function(){
+			$('#toolbar').addClass('mtt-insearch');
+			$(this).focus();
+		}).focusout(function(){
+			$('#toolbar').removeClass('mtt-insearch');
 		});
-
 
 
 		$('#taskview').click(function(){

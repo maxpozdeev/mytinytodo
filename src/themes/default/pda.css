@@ -8,6 +8,14 @@ h3 { margin-bottom:4px; padding:4px 0; }
 #tabs ul li { width:70px; margin-right: 1px; }
 .tab-content { padding:4px; }
 
+#htab_search { width:40%; max-width:190px; }
+.mtt-searchbox { float:right; }
+.mtt-searchbox td { width:40%; }
+#toolbar.mtt-intask #htab_search { display:none; }
+#toolbar.mtt-insearch #htab_newtask { display:none; }
+#toolbar.mtt-insearch #htab_search { width:100%; }
+#toolbar.mtt-insearch .mtt-searchbox td { width:40%; }
+
 #tasklist li { padding:0.5em 3px; overflow:hidden;  }
 .task-actions { display:none; }
 .task-date { display:none; }
