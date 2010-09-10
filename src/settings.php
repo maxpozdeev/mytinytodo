@@ -47,7 +47,7 @@ function _c($key)
 	return Config::get($key);
 }
 
-function getLangs()
+function getLangs($withContents = 0)
 {
     if (!$h = opendir(MTTPATH. 'lang')) return false;
     $a = array();
@@ -55,10 +55,32 @@ function getLangs()
 	{
 		if(preg_match('/(.+)\.php$/', $file, $m) && $file != 'class.default.php') {
 			$a[$m[1]] = $m[1];
+			if($withContents) {
+			    $a[$m[1]] = getLangDetails(MTTPATH. 'lang'. DIRECTORY_SEPARATOR. $file, $m[1]);
+			    $a[$m[1]]['name'] = $a[$m[1]]['original_name'];
+			    $a[$m[1]]['title'] = $a[$m[1]]['language'];
+			}
 		}
     }
     closedir($h);
     return $a;
+}
+
+function getLangDetails($filename, $default)
+{
+    $contents = file_get_contents($filename);
+    $a = array('language'=>$default, 'original_name'=>$default);
+    if(preg_match("|/\\*\s*myTinyTodo language pack([\s\S]+?)\\*/|", $contents, $m))
+	{
+	    $str = $m[1];
+	 	if(preg_match("|Language\s*:\s*(.+)|i", $str, $m)) {
+			$a['language'] = trim($m[1]);
+		}
+		if(preg_match("|Original name\s*:\s*(.+)|i", $str, $m)) {
+			$a['original_name'] = trim($m[1]);
+		}
+	}
+	return $a;
 }
 
 function selectOptions($a, $value, $default=null)
@@ -68,6 +90,19 @@ function selectOptions($a, $value, $default=null)
 	if($default !== null && !isset($a[$value])) $value = $default;
 	foreach($a as $k=>$v) {
 		$s .= '<option value="'.htmlspecialchars($k).'" '.($k===$value?'selected="selected"':'').'>'.htmlspecialchars($v).'</option>';
+	}
+	return $s;
+}
+
+function selectOptionsA($a, $value, $default=null)
+{
+	if(!$a) return '';
+	$s = '';
+	if($default !== null && !isset($a[$value])) $value = $default;
+	foreach($a as $k=>$v) {
+		$s .= '<option value="'.htmlspecialchars($k).'" '.($k===$value?'selected="selected"':'').
+		    (isset($v['title']) ? ' title="'.htmlspecialchars($v['title']).'"' : '').
+		    '>'.htmlspecialchars($v['name']).'</option>';
 	}
 	return $s;
 }
@@ -91,7 +126,7 @@ function selectOptions($a, $value, $default=null)
 
 <tr>
 <th><?php _e('set_language');?>:</th>
-<td> <select name="lang"><?php $langs = getLangs(); echo selectOptions($langs, _c('lang')); ?></select> </td>
+<td> <select name="lang"><?php echo selectOptionsA(getLangs(1), _c('lang')); ?></select> </td>
 </tr>
 
 <tr>
