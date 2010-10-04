@@ -47,7 +47,8 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		openList: 0,
 		singletab: false,
 		autotag: false,
-		tagPreview: true
+		tagPreview: true,
+		saveShowNotes: false
 	},
 
 	timers: {
@@ -985,6 +986,7 @@ function toggleAllNotes(show)
 		else $('#taskrow_'+id).removeClass('task-expanded');
 	}
 	curList.showNotes = show;
+	if(_mtt.options.saveShowNotes) _mtt.db.request('setShowNotesInList', {list:curList.id, shownotes:show}, function(json){});
 };
 
 

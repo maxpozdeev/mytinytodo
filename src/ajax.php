@@ -517,6 +517,16 @@ elseif(isset($_GET['clearCompletedInList']))
 	echo json_encode($t);
 	exit;
 }
+elseif(isset($_GET['setShowNotesInList']))
+{
+	check_write_access();
+	$listId = (int)_post('list');
+	$flag = (int)_post('shownotes');
+	$bitwise = ($flag == 0) ? 'taskview & ~2' : 'taskview | 2';
+	$db->dq("UPDATE {$db->prefix}lists SET taskview=$bitwise WHERE id=$listId");
+	echo json_encode(array('total'=>1));
+	exit;
+}
 
 ###################################################################################################
 
