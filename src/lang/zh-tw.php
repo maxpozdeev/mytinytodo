@@ -2,7 +2,7 @@
 
 /*
 	myTinyTodo language pack
-	Language: Traditional Chinese
+	Language: Chinese Traditional
 	Original name: 中文(繁體)
 	Author: DonaldIsFreak
 	Author Url: http://donaldknuth.blogspot.com/
