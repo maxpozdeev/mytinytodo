@@ -25,7 +25,14 @@ if(isset($_POST['save']))
 	if(isset($_POST['password']) && $_POST['password'] != '') Config::set('password', $_POST['password']);
 	elseif(!_post('allowpassword')) Config::set('password', '');
 	Config::set('smartsyntax', (int)_post('smartsyntax'));
-	Config::set('autotz', (int)_post('autotz'));
+	// Do not set invalid timezone
+	try {
+	    $tz = trim(_post('timezone'));
+	    $testTZ = new DateTimeZone($tz); //will throw Exception on invalid timezone
+	    Config::set('timezone', $tz);
+	}
+	catch (Exception $e) {
+	}
 	Config::set('autotag', (int)_post('autotag'));
 	Config::set('session', _post('session'));
 	Config::set('firstdayofweek', (int)_post('firstdayofweek'));
@@ -94,17 +101,32 @@ function selectOptions($a, $value, $default=null)
 	return $s;
 }
 
-function selectOptionsA($a, $value, $default=null)
+/*
+    @param array $a             array of id=>array(name, optional title)
+    @param mixed $key           Key of OPTION to be selected
+    @param mixed $default       Default key if $key is not present in $a
+*/
+function selectOptionsA($a, $key, $default=null)
 {
 	if(!$a) return '';
 	$s = '';
-	if($default !== null && !isset($a[$value])) $value = $default;
+	if($default !== null && !isset($a[$key])) $key = $default;
 	foreach($a as $k=>$v) {
-		$s .= '<option value="'.htmlspecialchars($k).'" '.($k===$value?'selected="selected"':'').
+		$s .= '<option value="'.htmlspecialchars($k).'" '.($k===$key?'selected="selected"':'').
 		    (isset($v['title']) ? ' title="'.htmlspecialchars($v['title']).'"' : '').
 		    '>'.htmlspecialchars($v['name']).'</option>';
 	}
 	return $s;
+}
+
+function timezoneIdentifiers()
+{
+    $zones = DateTimeZone::listIdentifiers();
+    $a = array();
+    foreach($zones as $v) {
+        $a[$v] = $v;
+    }
+    return $a;
 }
 
 ?>
@@ -149,13 +171,6 @@ function selectOptionsA($a, $value, $default=null)
 </td></tr>
 
 <tr>
-<th><?php _e('set_autotz');?>:<br/><span class="descr"><?php _e('set_autotz_descr');?></span></th>
-<td>
- <label><input type="radio" name="autotz" value="1" <?php if(_c('autotz')) echo 'checked="checked"'; ?> /><?php _e('set_enabled');?></label> <br/>
- <label><input type="radio" name="autotz" value="0" <?php if(!_c('autotz')) echo 'checked="checked"'; ?> /><?php _e('set_disabled');?></label>
-</td></tr>
-
-<tr>
 <th><?php _e('set_autotag');?>:<br/><span class="descr"><?php _e('set_autotag_descr');?></span></th>
 <td>
  <label><input type="radio" name="autotag" value="1" <?php if(_c('autotag')) echo 'checked="checked"'; ?> /><?php _e('set_enabled');?></label> <br/>
@@ -167,6 +182,12 @@ function selectOptionsA($a, $value, $default=null)
 <td>
  <label><input type="radio" name="session" value="default" <?php if(_c('session')=='default') echo 'checked="checked"'; ?> /><?php _e('set_sessions_php');?></label> <br/>
  <label><input type="radio" name="session" value="files" <?php if(_c('session')=='files') echo 'checked="checked"'; ?> /><?php _e('set_sessions_files');?></label> <span class="descr">(&lt;mytinytodo_dir&gt;/tmp/sessions)</span>
+</td></tr>
+
+<tr>
+<th><?php _e('set_timezone');?>:</th>
+<td>
+ <select name="timezone"><?php echo selectOptions(timezoneIdentifiers(), _c('timezone')); ?></select>
 </td></tr>
 
 <tr>

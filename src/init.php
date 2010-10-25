@@ -16,11 +16,13 @@ if(!isset($config)) global $config;
 Config::loadConfig($config);
 unset($config);
 
+date_default_timezone_set(Config::get('timezone'));
+
 # MySQL Database Connection
 if(Config::get('db') == 'mysql')
 {
 	require_once(MTTPATH. 'class.db.mysql.php');
-	$db = new Database_Mysql;
+	$db = DBConnection::init(new Database_Mysql);
 	$db->connect(Config::get('mysql.host'), Config::get('mysql.user'), Config::get('mysql.password'), Config::get('mysql.db'));
 	$db->dq("SET NAMES utf8");
 }
@@ -29,7 +31,7 @@ if(Config::get('db') == 'mysql')
 elseif(Config::get('db') == 'sqlite')
 {
 	require_once(MTTPATH. 'class.db.sqlite3.php');
-	$db = new Database_Sqlite3;
+	$db = DBConnection::init(new Database_Sqlite3);
 	$db->connect(MTTPATH. 'db/todolist.db');
 }
 else {
@@ -67,19 +69,18 @@ function is_logged()
 	return true;
 }
 
-function timestampToDatetime($timestamp, $tz)
+function timestampToDatetime($timestamp)
 {
 	$format = Config::get('dateformat') .' '. (Config::get('clock') == 12 ? 'g:i A' : 'H:i');
-	return formatTime($format, $timestamp, $tz);
+	return formatTime($format, $timestamp);
 }
 
-function formatTime($format, $timestamp=0, $tz=null)
+function formatTime($format, $timestamp=0)
 {
 	$lang = Lang::instance();
 	if($timestamp == 0) $timestamp = time();
-	if(is_null($tz)) $tz = round(date('Z')/60);
 	$newformat = strtr($format, array('F'=>'%1', 'M'=>'%2'));
-	$adate = explode(',', gmdate('n,'.$newformat, $timestamp + $tz*60), 2);
+	$adate = explode(',', date('n,'.$newformat, $timestamp), 2);
 	$s = $adate[1];
 	if($newformat != $format)
 	{

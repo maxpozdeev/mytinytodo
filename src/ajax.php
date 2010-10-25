@@ -11,7 +11,7 @@ set_exception_handler('myExceptionHandler');
 
 require_once('./init.php');
 
-$lang = Lang::instance();
+$db = DBConnection::instance();
 
 if(isset($_GET['loadLists']))
 {
@@ -76,8 +76,6 @@ elseif(isset($_GET['loadTasks']))
 	if($sort == 1) $sqlSort .= "prio DESC, ddn ASC, duedate ASC, ow ASC";
 	elseif($sort == 2) $sqlSort .= "ddn ASC, duedate ASC, prio DESC, ow ASC";
 	else $sqlSort .= "ow ASC";
-	$tz = (int)_get('tz');
-	if(Config::get('autotz')==0 || $tz<-720 || $tz>720 || $tz%30!=0) $tz = round(date('Z')/60);
 	$t = array();
 	$t['total'] = 0;
 	$t['list'] = array();
@@ -85,7 +83,7 @@ elseif(isset($_GET['loadTasks']))
 	while($r = $q->fetch_assoc($q))
 	{
 		$t['total']++;
-		$t['list'][] = prepareTaskRow($r, $tz);
+		$t['list'][] = prepareTaskRow($r);
 	}
 	if(_get('setCompl') && have_write_access()) {
 		$bitwise = (_get('compl') == 0) ? 'taskview & ~1' : 'taskview | 1';
@@ -120,8 +118,6 @@ elseif(isset($_GET['newTask']))
 		exit;
 	}
 	if(Config::get('autotag')) $tags .= ','._post('tag');
-	$tz = (int)_post('tz');
-	if(Config::get('autotz')==0 || $tz<-720 || $tz>720 || $tz%30!=0 ) $tz = round(date('Z')/60);
 	$ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->prefix}todolist WHERE list_id=$listId AND compl=0");
 	$db->ex("BEGIN");
 	$db->dq("INSERT INTO {$db->prefix}todolist (uuid,list_id,title,d_created,d_edited,ow,prio) VALUES (?,?,?,?,?,?,?)",
@@ -137,7 +133,7 @@ elseif(isset($_GET['newTask']))
 	}
 	$db->ex("COMMIT");
 	$r = $db->sqa("SELECT * FROM {$db->prefix}todolist WHERE id=$id");
-	$t['list'][] = prepareTaskRow($r, $tz);
+	$t['list'][] = prepareTaskRow($r);
 	$t['total'] = 1;
 	echo json_encode($t); 
 	exit;
@@ -161,8 +157,6 @@ elseif(isset($_GET['fullNewTask']))
 	}
 	$tags = trim(_post('tags'));
 	if(Config::get('autotag')) $tags .= ','._post('tag');
-	$tz = (int)_post('tz');
-	if( Config::get('autotz')==0 || $tz<-720 || $tz>720 || $tz%30!=0 ) $tz = round(date('Z')/60);
 	$ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->prefix}todolist WHERE list_id=$listId AND compl=0");
 	$db->ex("BEGIN");
 	$db->dq("INSERT INTO {$db->prefix}todolist (uuid,list_id,title,d_created,d_edited,ow,prio,note,duedate) VALUES(?,?,?,?,?,?,?,?,?)",
@@ -178,7 +172,7 @@ elseif(isset($_GET['fullNewTask']))
 	}
 	$db->ex("COMMIT");
 	$r = $db->sqa("SELECT * FROM {$db->prefix}todolist WHERE id=$id");
-	$t['list'][] = prepareTaskRow($r, $tz);
+	$t['list'][] = prepareTaskRow($r);
 	$t['total'] = 1;
 	echo json_encode($t); 
 	exit;
@@ -204,11 +198,9 @@ elseif(isset($_GET['completeTask']))
 	$dateCompleted = $compl ? time() : 0;
 	$db->dq("UPDATE {$db->prefix}todolist SET compl=$compl,ow=$ow,d_completed=?,d_edited=? WHERE id=$id",
 				array($dateCompleted, time()) );
-	$tz = (int)_post('tz');
-	if(Config::get('autotz')==0 || $tz<-720 || $tz>720 || $tz%30!=0) $tz = round(date('Z')/60);
 	$t = array();
 	$t['total'] = 1;
-	$t['list'][] = array('id'=>$id, 'compl'=>$compl, 'ow'=>$ow, 'dateCompleted'=>$dateCompleted?htmlarray(timestampToDatetime($dateCompleted, $tz)):'');
+	$t['list'][] = array('id'=>$id, 'compl'=>$compl, 'ow'=>$ow, 'dateCompleted'=>$dateCompleted?htmlarray(timestampToDatetime($dateCompleted)):'');
 	echo json_encode($t);
 	exit;
 }
@@ -243,8 +235,6 @@ elseif(isset($_GET['editTask']))
 		echo json_encode($t);
 		exit;
 	}
-	$tz = (int)_post('tz');
-	if( Config::get('autotz')==0 || $tz<-720 || $tz>720 || $tz%30!=0 ) $tz = round(date('Z')/60);
 	$tags = trim(_post('tags'));
 	$db->ex("BEGIN");
 	$db->ex("DELETE FROM {$db->prefix}tag2task WHERE task_id=$id");
@@ -259,7 +249,7 @@ elseif(isset($_GET['editTask']))
 	$db->ex("COMMIT");
 	$r = $db->sqa("SELECT * FROM {$db->prefix}todolist WHERE id=$id");
 	if($r) {
-		$t['list'][] = prepareTaskRow($r, $tz);
+		$t['list'][] = prepareTaskRow($r);
 		$t['total'] = 1;
 	}
 	echo json_encode($t); 
@@ -530,25 +520,25 @@ elseif(isset($_GET['setShowNotesInList']))
 
 ###################################################################################################
 
-function prepareTaskRow($r, $tz)
+function prepareTaskRow($r)
 {
-	global $lang;
-	$dueA = prepare_duedate($r['duedate'], $tz);
+	$lang = Lang::instance();
+	$dueA = prepare_duedate($r['duedate']);
 	$formatCreatedInline = $formatCompletedInline = 'M d';
 	if(date('Y') != date('Y',$r['d_created'])) $formatCreatedInline = 'M Y';
 	if($r['d_completed'] && date('Y') != date('Y',$r['d_completed'])) $formatCompletedInline = 'M Y';
 
-	$dCreated = timestampToDatetime($r['d_created'], $tz);
-	$dCompleted = $r['d_completed'] ? timestampToDatetime($r['d_completed'], $tz) : '';
+	$dCreated = timestampToDatetime($r['d_created']);
+	$dCompleted = $r['d_completed'] ? timestampToDatetime($r['d_completed']) : '';
 
 	return array(
 		'id' => $r['id'],
 		'title' => escapeTags($r['title']),
 		'date' => htmlarray($dCreated),
-		'dateInline' => htmlarray(formatTime($formatCreatedInline, $r['d_created'], $tz)),
+		'dateInline' => htmlarray(formatTime($formatCreatedInline, $r['d_created'])),
 		'dateInlineTitle' => htmlarray(sprintf($lang->get('taskdate_inline_created'), $dCreated)),
 		'dateCompleted' => htmlarray($dCompleted),
-		'dateCompletedInline' => $r['d_completed'] ? htmlarray(formatTime($formatCompletedInline, $r['d_completed'], $tz)) : '',
+		'dateCompletedInline' => $r['d_completed'] ? htmlarray(formatTime($formatCompletedInline, $r['d_completed'])) : '',
 		'dateCompletedInlineTitle' => htmlarray(sprintf($lang->get('taskdate_inline_completed'), $dCompleted)),
 		'compl' => (int)$r['compl'],
 		'prio' => $r['prio'],
@@ -559,7 +549,7 @@ function prepareTaskRow($r, $tz)
 		'tags_ids' => htmlarray($r['tags_ids']),
 		'duedate' => $dueA['formatted'],
 		'dueClass' => $dueA['class'],
-		'dueStr' => htmlarray($r['compl'] && $dueA['timestamp'] ? formatTime($formatCompletedInline, $dueA['timestamp'], $tz) : $dueA['str']),
+		'dueStr' => htmlarray($r['compl'] && $dueA['timestamp'] ? formatTime($formatCompletedInline, $dueA['timestamp']) : $dueA['str']),
 		'dueInt' => date2int($r['duedate']),
 		'dueTitle' => htmlarray(sprintf($lang->get('taskdate_inline_duedate'), $dueA['formatted'])),
 	);
@@ -567,7 +557,7 @@ function prepareTaskRow($r, $tz)
 
 function check_read_access($listId = null)
 {
-	global $db;
+	$db = DBConnection::instance();
 	if(Config::get('password') == '') return true;
 	if(is_logged()) return true;
 	if($listId)
@@ -631,7 +621,7 @@ function prepareTags($tagsStr)
 
 function getOrCreateTag($name)
 {
-	global $db;
+	$db = DBConnection::instance();
 	$tagId = $db->sq("SELECT id FROM {$db->prefix}tags WHERE name=?", array($name));
 	if($tagId) return array('id'=>$tagId, 'name'=>$name);
 
@@ -641,14 +631,14 @@ function getOrCreateTag($name)
 
 function getTagId($tag)
 {
-	global $db;
+	$db = DBConnection::instance();
 	$id = $db->sq("SELECT id FROM {$db->prefix}tags WHERE name=?", array($tag));
 	return $id ? $id : 0;
 }
 
 function get_task_tags($id)
 {
-	global $db;
+	$db = DBConnection::instance();
 	$q = $db->dq("SELECT tag_id FROM {$db->prefix}tag2task WHERE task_id=?", $id);
 	$a = array();
 	while($r = $q->fetch_row()) {
@@ -660,7 +650,7 @@ function get_task_tags($id)
 
 function addTaskTags($taskId, $tagIds, $listId)
 {
-	global $db;
+	$db = DBConnection::instance();
 	if(!$tagIds) return;
 	foreach($tagIds as $tagId)
 	{
@@ -734,17 +724,17 @@ function parse_duedate($s)
 	return "$y-$m-$d";
 }
 
-function prepare_duedate($duedate, $tz)
+function prepare_duedate($duedate)
 {
-	global $lang;
+	$lang = Lang::instance();
 
 	$a = array( 'class'=>'', 'str'=>'', 'formatted'=>'', 'timestamp'=>0 );
 	if($duedate == '') {
 		return $a;
 	}
 	$ad = explode('-', $duedate);
-	$at = explode('-', gmdate('Y-m-d', time() + $tz*60));
-	$a['timestamp'] = gmmktime(0,0,0,$ad[1],$ad[2],$ad[0]) + $tz*60;
+	$at = explode('-', date('Y-m-d'));
+	$a['timestamp'] = mktime(0,0,0,$ad[1],$ad[2],$ad[0]);
 	$diff = mktime(0,0,0,$ad[1],$ad[2],$ad[0]) - mktime(0,0,0,$at[1],$at[2],$at[0]);
 
 	if($diff < -604800 && $ad[0] == $at[0])	{ $a['class'] = 'past'; $a['str'] = formatDate3(Config::get('dateformatshort'), (int)$ad[0], (int)$ad[1], (int)$ad[2], $lang); }
@@ -811,7 +801,7 @@ function myExceptionHandler($e)
 function deleteTask($id)
 {
 	check_write_access();
-	global $db;
+	$db = DBConnection::instance();
 	$db->ex("BEGIN");
 	$db->ex("DELETE FROM {$db->prefix}tag2task WHERE task_id=$id");
 	//TODO: delete unused tags?
@@ -824,7 +814,7 @@ function deleteTask($id)
 function moveTask($id, $listId)
 {
 	check_write_access();
-	global $db;
+	$db = DBConnection::instance();
 
 	// Check task exists and not in target list
 	$r = $db->sqa("SELECT * FROM {$db->prefix}todolist WHERE id=?", array($id));

@@ -704,7 +704,6 @@ function loadTasks(opts)
 		sort: curList.sort,
 		search: filter.search,
 		tag: _mtt.filter.getTags(true),
-		tz: tz(),
 		setCompl: opts.setCompl
 	}, function(json){
 		taskList.length = 0;
@@ -799,7 +798,7 @@ function prepareDuedate(item)
 function submitNewTask(form)
 {
 	if(form.task.value == '') return false;
-	_mtt.db.request('newTask', { list:curList.id, title: form.task.value, tz:tz(), tag:_mtt.filter.getTags() }, function(json){
+	_mtt.db.request('newTask', { list:curList.id, title: form.task.value, tag:_mtt.filter.getTags() }, function(json){
 		if(!json.total) return;
 		$('#total').text( parseInt($('#total').text()) + 1 );
 		taskCnt.total++;
@@ -916,11 +915,6 @@ function setSort(v, init)
 	}
 };
 
-
-function tz()
-{
-	return -1 * (new Date()).getTimezoneOffset();
-};
 
 function changeTaskCnt(task, dir, old)
 {
@@ -1064,7 +1058,7 @@ function completeTask(id, ch)
 	if(!taskList[id]) return; //click on already removed from the list while anim. effect
 	var compl = 0;
 	if(ch.checked) compl = 1;
-	_mtt.db.request('completeTask', {id:id, compl:compl, list:curList.id, tz:tz()}, function(json){
+	_mtt.db.request('completeTask', {id:id, compl:compl, list:curList.id}, function(json){
 		if(!parseInt(json.total)) return;
 		var item = json.list[0];
 		if(item.compl) $('#taskrow_'+id).addClass('task-completed');
@@ -1170,7 +1164,7 @@ function showEditForm(isAdd)
 		if(_mtt.options.autotag) form.tags.value = _mtt.filter.getTags();
 		if($('#task').val() != '')
 		{
-			_mtt.db.request('parseTaskStr', { list:curList.id, title:$('#task').val(), tz:tz(), tag:_mtt.filter.getTags() }, function(json){
+			_mtt.db.request('parseTaskStr', { list:curList.id, title:$('#task').val(), tag:_mtt.filter.getTags() }, function(json){
 				if(!json) return;
 				form.task.value = json.title
 				form.tags.value = (form.tags.value != '') ? form.tags.value +', '+ json.tags : json.tags;
@@ -1194,7 +1188,7 @@ function saveTask(form)
 	if(form.isadd.value != 0)
 		return submitFullTask(form);
 
-	_mtt.db.request('editTask', {id:form.id.value, list:curList.id, tz:tz(), title: form.task.value, note:form.note.value,
+	_mtt.db.request('editTask', {id:form.id.value, list:curList.id, title: form.task.value, note:form.note.value,
 		prio:form.prio.value, tags:form.tags.value, duedate:form.duedate.value},
 		function(json){
 			if(!parseInt(json.total)) return;

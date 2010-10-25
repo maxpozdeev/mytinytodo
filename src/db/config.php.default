@@ -31,8 +31,8 @@ $config['password'] = "";
 # To disable smart syntax uncomment the line below
 #$config['smartsyntax'] = 0;
 
-# To disable auto detecting user time zone uncomment the line below
-#$config['autotz'] = 0;
+# Default Time zone
+$config['timezone'] = 'UTC';
 
 # To disable auto adding selected tag  comment out the line below or set value to 0
 $config['autotag'] = 1;

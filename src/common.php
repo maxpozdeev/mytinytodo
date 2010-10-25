@@ -73,7 +73,7 @@ class Config
 		'lang' => array('default'=>'en', 'type'=>'s'),
 		'password' => array('default'=>'', 'type'=>'s'),
 		'smartsyntax' => array('default'=>1, 'type'=>'i'),
-		'autotz' => array('default'=>1, 'type'=>'i'),
+		'timezone' => array('default'=>'UTC', 'type'=>'s'),
 		'autotag' => array('default'=>1, 'type'=>'i'),
 		'duedateformat' => array('default'=>1, 'type'=>'i'),
 		'firstdayofweek' => array('default'=>1, 'type'=>'i'),
@@ -176,5 +176,25 @@ function generateUUID()
     );
 }
 
+class DBConnection
+{
+	protected static $instance;
+
+	public static function init($instance)
+	{
+		self::$instance = $instance;
+		return $instance;
+	}
+
+	public static function instance()
+	{
+        if (!isset(self::$instance)) {
+			//$c = __CLASS__;
+			$c = 'DBConnection';
+			self::$instance = new $c;
+        }
+		return self::$instance;	
+	}
+}
 
 ?>

@@ -50,21 +50,21 @@ mytinytodoStorageAjax.prototype =
 		})
 */
 
-		$.getJSON(this.mtt.mttUrl+'ajax.php?loadTasks&list='+params.list+'&compl='+params.compl+'&sort='+params.sort+'&tz='+params.tz+q, callback);
+		$.getJSON(this.mtt.mttUrl+'ajax.php?loadTasks&list='+params.list+'&compl='+params.compl+'&sort='+params.sort+q, callback);
 	},
 
 
 	newTask: function(params, callback)
 	{
 		$.post(this.mtt.mttUrl+'ajax.php?newTask',
-			{ list:params.list, title: params.title, tz:params.tz, tag:params.tag }, callback, 'json');
+			{ list:params.list, title: params.title, tag:params.tag }, callback, 'json');
 	},
 	
 
 	fullNewTask: function(params, callback)
 	{
 		$.post(this.mtt.mttUrl+'ajax.php?fullNewTask',
-			{ list:params.list, tz:params.tz, title:params.title, note:params.note, prio:params.prio, tags:params.tags, duedate:params.duedate },
+			{ list:params.list, title:params.title, note:params.note, prio:params.prio, tags:params.tags, duedate:params.duedate },
 			callback, 'json');
 	},
 
@@ -72,7 +72,7 @@ mytinytodoStorageAjax.prototype =
 	editTask: function(params, callback)
 	{
 		$.post(this.mtt.mttUrl+'ajax.php?editTask='+params.id,
-			{ id:params.id, list:params.list, tz:params.tz, title:params.title, note:params.note, prio:params.prio, tags:params.tags, duedate:params.duedate },
+			{ id:params.id, list:params.list, title:params.title, note:params.note, prio:params.prio, tags:params.tags, duedate:params.duedate },
 			callback, 'json');
 	},
 
@@ -85,7 +85,7 @@ mytinytodoStorageAjax.prototype =
 
 	completeTask: function(params, callback)
 	{
-		$.post(this.mtt.mttUrl+'ajax.php?completeTask='+params.id, { id:params.id, compl:params.compl, tz:params.tz }, callback, 'json');
+		$.post(this.mtt.mttUrl+'ajax.php?completeTask='+params.id, { id:params.id, compl:params.compl }, callback, 'json');
 	},
 
 
@@ -127,7 +127,7 @@ mytinytodoStorageAjax.prototype =
 
 	parseTaskStr: function(params, callback)
 	{
-		$.post(this.mtt.mttUrl+'ajax.php?parseTaskStr', { list:params.list, title:params.title, tz:params.tz, tag:params.tag }, callback, 'json');
+		$.post(this.mtt.mttUrl+'ajax.php?parseTaskStr', { list:params.list, title:params.title, tag:params.tag }, callback, 'json');
 	},
 	
 
