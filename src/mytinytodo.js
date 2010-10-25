@@ -733,11 +733,11 @@ function prepareTaskStr(item, noteExp)
 				((curList.showNotes && item.note != '') || noteExp ? ' task-expanded' : '') + prepareTagsClass(item.tags_ids) + '">' +
 		'<div class="task-actions"><a href="#" class="taskactionbtn"></a></div>'+"\n"+
 		'<div class="task-left"><div class="task-toggle"></div>'+
-		'<input type="checkbox" '+(flag.readOnly?'disabled="disabled"':'')+(item.compl?'checked="checked"':'')+'/></div>'+"\n"+
+		'<input type="checkbox" '+(flag.readOnly?'disabled="disabled"':'')+(item.compl?'checked="checked"':'')+'/>'+
+		'<span class="task-date" title="'+item.dateInlineTitle+'">'+item.dateInline+'</span></div>'+"\n"+
 		'<div class="task-middle"><div class="task-through-right">'+prepareDuedate(item)+
 		'<span class="task-date-completed" title="'+item.dateCompletedInlineTitle+'">'+item.dateCompletedInline+'</span></div>'+"\n"+
-		'<div class="task-through"><span class="task-date" title="'+item.dateInlineTitle+'">'+item.dateInline+'</span>'+preparePrio(prio,id)+
-		'<span class="task-title">'+prepareHtml(item.title)+'</span> '+"\n"+
+		'<div class="task-through">'+preparePrio(prio,id)+'<span class="task-title">'+prepareHtml(item.title)+'</span> '+"\n"+
 		prepareTagsStr(item)+'</div>'+
 		'<div class="task-note-block">'+
 			'<div id="tasknote'+id+'" class="task-note"><span>'+prepareHtml(item.note)+'</span></div>'+
