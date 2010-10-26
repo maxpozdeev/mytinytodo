@@ -289,6 +289,10 @@ var mytinytodo = window.mytinytodo = _mtt = {
 
 		// tasklist handlers
 		$('#tasklist li').live('dblclick', function(){
+			//clear selection
+			if(document.selection && document.selection.empty && document.selection.createRange().text) document.selection.empty();
+			else if(window.getSelection) window.getSelection().removeAllRanges();
+			
 			var li = findParentNode(this, 'LI');
 			if(li && li.id) {
 				var id = li.id.split('_',2)[1];
