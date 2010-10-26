@@ -36,9 +36,9 @@ if(isset($_POST['save']))
 	Config::set('autotag', (int)_post('autotag'));
 	Config::set('session', _post('session'));
 	Config::set('firstdayofweek', (int)_post('firstdayofweek'));
-	Config::set('duedateformat', (int)_post('duedateformat'));
 	Config::set('clock', (int)_post('clock'));
 	Config::set('dateformat', _post('dateformat'));
+	Config::set('dateformat2', _post('dateformat2'));
 	Config::set('dateformatshort', _post('dateformatshort'));
 	Config::set('title', trim(_post('title')));
 	Config::set('showdate', (int)_post('showdate'));
@@ -197,18 +197,24 @@ function timezoneIdentifiers()
 </td></tr>
 
 <tr>
-<th><?php _e('set_duedate');?>:</th>
-<td>
- <select name="duedateformat"><?php echo selectOptions(array(1=>'yyyy-mm-dd ('.date('Y-m-d').')', 2=>'m/d/yyyy ('.date('n/j/Y').')', 3=>'dd.mm.yyyy ('.date('d.m.Y').')', 4=>'dd/mm/yyyy ('.date('d/m/Y').')'), _c('duedateformat')); ?></select>
-</td></tr>
-
-<tr>
 <th><?php _e('set_date');?>:</th>
 <td>
  <input name="dateformat" value="<?php echo htmlspecialchars(_c('dateformat'));?>" />
  <select onchange="if(this.value!=0) this.form.dateformat.value=this.value;">
  <?php echo selectOptions(array('F j, Y'=>formatTime('F j, Y'), 'M d, Y'=>formatTime('M d, Y'), 'j M Y'=>formatTime('j M Y'), 'd F Y'=>formatTime('d F Y'),
 	'n/j/Y'=>formatTime('n/j/Y'), 'd.m.Y'=>formatTime('d.m.Y'), 'j. F Y'=>formatTime('j. F Y'), 0=>'Custom'), _c('dateformat'), 0); ?>
+ </select>
+</td></tr>
+
+<tr>
+<th><?php _e('set_date2');?>:</th>
+<td>
+ <input name="dateformat2" value="<?php echo htmlspecialchars(_c('dateformat2'));?>" />
+ <select onchange="if(this.value!=0) this.form.dateformat2.value=this.value;">
+ <?php echo selectOptions(array('Y-m-d'=>'yyyy-mm-dd ('.date('Y-m-d').')',
+       'n/j/y'=>'m/d/yy ('.date('n/j/y').')',
+       'd.m.y'=>'dd.mm.yy ('.date('d.m.y').')',
+       'd/m/y'=>'dd/mm/yy ('.date('d/m/y').')', 0=>'Custom'), _c('dateformat2')); ?>
  </select>
 </td></tr>
 

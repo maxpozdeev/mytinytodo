@@ -80,6 +80,7 @@ class Config
 		'session' => array('default'=>'files', 'type'=>'s', 'options'=>array('files','default')),
 		'clock' => array('default'=>24, 'type'=>'i', 'options'=>array(12,24)),
 		'dateformat' => array('default'=>'j M Y', 'type'=>'s'),
+		'dateformat2' => array('default'=>'n/j/y', 'type'=>'s'),
 		'dateformatshort' => array('default'=>'j M', 'type'=>'s'),
 		'template' => array('default'=>'default', 'type'=>'s'),
 		'showdate' => array('default'=>0, 'type'=>'i'),
@@ -134,13 +135,14 @@ function formatDate3($format, $ay, $am, $ad, $lang)
 	$ml = $lang->get('months_long');
 	$ms = $lang->get('months_short');
 	$Y = $ay;
+	$y = $Y < 2010 ? '0'.($Y-2000) : $Y-2000;
 	$n = $am;
 	$m = $n < 10 ? '0'.$n : $n;
 	$F = $ml[$am-1];
 	$M = $ms[$am-1];
 	$j = $ad;
 	$d = $j < 10 ? '0'.$j : $j;
-	return strtr($format, array('Y'=>$Y, 'F'=>$F, 'M'=>$M, 'n'=>$n, 'm'=>$m, 'd'=>$d, 'j'=>$j));
+	return strtr($format, array('Y'=>$Y, 'y'=>$y, 'F'=>$F, 'M'=>$M, 'n'=>$n, 'm'=>$m, 'd'=>$d, 'j'=>$j));
 }
 
 function url_dir($url)

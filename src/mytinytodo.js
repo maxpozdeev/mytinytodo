@@ -364,7 +364,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		this.applySingletab();
 
 		$("#duedate").datepicker({
-			dateFormat: _mtt.datepickerformat(),
+			dateFormat: _mtt.duedatepickerformat(),
 			firstDay: _mtt.options.firstdayofweek,
 			showOn: 'button',
 			buttonImage: _mtt.templateUrl + 'images/calendar.png', buttonImageOnly: true,
@@ -536,13 +536,26 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		if(onInit) updateAccessStatus();
 	},
 
-	datepickerformat: function()
+	duedatepickerformat: function()
 	{
-		var fmt = 'yy-mm-dd';
-		if(this.options.duedateformat == 2) fmt = 'm/d/yy';
-		else if(this.options.duedateformat == 3) fmt = 'dd.mm.yy';
-		else if(this.options.duedateformat == 4) fmt = 'dd/mm/yy';
-		return fmt;
+		if(!this.options.duedatepickerformat) return 'yy-mm-dd';
+	
+		var s = this.options.duedatepickerformat.replace(/(.)/g, function(t,s) {
+			switch(t) {
+				case 'Y': return 'yy';
+				case 'y': return 'y';
+				case 'd': return 'dd';
+				case 'j': return 'd';
+				case 'm': return 'mm';
+				case 'n': return 'm';
+				case '.':
+				case '-': return t;
+				default: return '';
+			}
+		});
+		
+		if(s == '') return 'yy-mm-dd';
+		return s;
 	},
 
 	errorDenied: function()

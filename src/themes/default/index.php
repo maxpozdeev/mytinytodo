@@ -45,7 +45,7 @@ $().ready(function(){
 		isLogged: <?php echo ($needAuth && is_logged()) ? "true" : "false"; ?>,
 		showdate: <?php echo (Config::get('showdate') && !isset($_GET['pda'])) ? "true" : "false"; ?>,
 		singletab: <?php echo (isset($_GET['singletab']) || isset($_GET['pda'])) ? "true" : "false"; ?>,
-		duedateformat: <?php echo (int)Config::get('duedateformat'); ?>,
+		duedatepickerformat: "<?php echo htmlspecialchars(Config::get('dateformat2')); ?>",
 		autotag: <?php echo Config::get('autotag') ? "true" : "false"; ?>
 		<?php if(isset($_GET['list'])) echo ",openList: ". (int)$_GET['list']; ?>
 	}).loadLists(1);

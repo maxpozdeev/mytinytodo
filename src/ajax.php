@@ -524,9 +524,9 @@ function prepareTaskRow($r)
 {
 	$lang = Lang::instance();
 	$dueA = prepare_duedate($r['duedate']);
-	$formatCreatedInline = $formatCompletedInline = 'M d';
-	if(date('Y') != date('Y',$r['d_created'])) $formatCreatedInline = 'M Y';
-	if($r['d_completed'] && date('Y') != date('Y',$r['d_completed'])) $formatCompletedInline = 'M Y';
+	$formatCreatedInline = $formatCompletedInline = Config::get('dateformatshort');
+	if(date('Y') != date('Y',$r['d_created'])) $formatCreatedInline = Config::get('dateformat2');
+	if($r['d_completed'] && date('Y') != date('Y',$r['d_completed'])) $formatCompletedInline = Config::get('dateformat2');
 
 	$dCreated = timestampToDatetime($r['d_created']);
 	$dCompleted = $r['d_completed'] ? timestampToDatetime($r['d_completed']) : '';
@@ -681,13 +681,17 @@ function tag_size($qmin, $q, $step)
 
 function parse_duedate($s)
 {
+	$df2 = Config::get('dateformat2');
+	if(max((int)strpos($df2,'n'), (int)strpos($df2,'m')) > max((int)strpos($df2,'d'), (int)strpos($df2,'j'))) $formatDayFirst = true;
+	else $formatDayFirst = false;
+
 	$y = $m = $d = 0;
 	if(preg_match("|^(\d+)-(\d+)-(\d+)\b|", $s, $ma)) {
 		$y = (int)$ma[1]; $m = (int)$ma[2]; $d = (int)$ma[3];
 	}
 	elseif(preg_match("|^(\d+)\/(\d+)\/(\d+)\b|", $s, $ma))
 	{
-		if(Config::get('duedateformat') == 4) {
+		if($formatDayFirst) {
 			$d = (int)$ma[1]; $m = (int)$ma[2]; $y = (int)$ma[3];
 		} else {
 			$m = (int)$ma[1]; $d = (int)$ma[2]; $y = (int)$ma[3];
@@ -704,7 +708,7 @@ function parse_duedate($s)
 	}
 	elseif(preg_match("|^(\d+)\/(\d+)\b|", $s, $ma))
 	{
-		if(Config::get('duedateformat') == 4) {
+		if($formatDayFirst) {
 			$d = (int)$ma[1]; $m = (int)$ma[2];
 		} else {
 			$m = (int)$ma[1]; $d = (int)$ma[2];
@@ -738,19 +742,16 @@ function prepare_duedate($duedate)
 	$diff = mktime(0,0,0,$ad[1],$ad[2],$ad[0]) - mktime(0,0,0,$at[1],$at[2],$at[0]);
 
 	if($diff < -604800 && $ad[0] == $at[0])	{ $a['class'] = 'past'; $a['str'] = formatDate3(Config::get('dateformatshort'), (int)$ad[0], (int)$ad[1], (int)$ad[2], $lang); }
-	elseif($diff < -604800)	{ $a['class'] = 'past'; $a['str'] = formatDate3(Config::get('dateformat'), (int)$ad[0], (int)$ad[1], (int)$ad[2], $lang); }
+	elseif($diff < -604800)	{ $a['class'] = 'past'; $a['str'] = formatDate3(Config::get('dateformat2'), (int)$ad[0], (int)$ad[1], (int)$ad[2], $lang); }
 	elseif($diff < -86400)		{ $a['class'] = 'past'; $a['str'] = sprintf($lang->get('daysago'),ceil(abs($diff)/86400)); }
 	elseif($diff < 0)			{ $a['class'] = 'past'; $a['str'] = $lang->get('yesterday'); }
 	elseif($diff < 86400)		{ $a['class'] = 'today'; $a['str'] = $lang->get('today'); }
 	elseif($diff < 172800)		{ $a['class'] = 'today'; $a['str'] = $lang->get('tomorrow'); }
 	elseif($diff < 691200)		{ $a['class'] = 'soon'; $a['str'] = sprintf($lang->get('indays'),ceil($diff/86400)); }
 	elseif($ad[0] == $at[0])	{ $a['class'] = 'future'; $a['str'] = formatDate3(Config::get('dateformatshort'), (int)$ad[0], (int)$ad[1], (int)$ad[2], $lang); }
-	else						{ $a['class'] = 'future'; $a['str'] = formatDate3(Config::get('dateformat'), (int)$ad[0], (int)$ad[1], (int)$ad[2], $lang); }
+	else						{ $a['class'] = 'future'; $a['str'] = formatDate3(Config::get('dateformat2'), (int)$ad[0], (int)$ad[1], (int)$ad[2], $lang); }
 
-	if(Config::get('duedateformat') == 2) $a['formatted'] = (int)$ad[1].'/'.(int)$ad[2].'/'.$ad[0];
-	elseif(Config::get('duedateformat') == 3) $a['formatted'] = $ad[2].'.'.$ad[1].'.'.$ad[0];
-	elseif(Config::get('duedateformat') == 4) $a['formatted'] = $ad[2].'/'.$ad[1].'/'.$ad[0];
-	else $a['formatted'] = $duedate;
+	$a['formatted'] = formatTime(Config::get('dateformat2'), $a['timestamp']);
 
 	return $a;
 }
