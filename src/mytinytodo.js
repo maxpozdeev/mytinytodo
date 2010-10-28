@@ -570,6 +570,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 	pageSet: function(page, pageClass)
 	{
 		var prev = this.pages.current;
+		prev.lastScrollTop = $(window).scrollTop();
 		this.pages.prev.push(this.pages.current);
 		this.pages.current = {page:page, pageClass:pageClass};
 		showhide($('#page_'+ this.pages.current.page).addClass('mtt-page-'+ this.pages.current.pageClass), $('#page_'+ prev.page));
@@ -581,6 +582,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		var prev = this.pages.current;
 		this.pages.current = this.pages.prev.pop();
 		showhide($('#page_'+ this.pages.current.page), $('#page_'+ prev.page).removeClass('mtt-page-'+prev.page.pageClass));
+		$(window).scrollTop(this.pages.current.lastScrollTop);
 	},
 	
 	applySingletab: function(yesno)
