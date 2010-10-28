@@ -178,7 +178,7 @@ li.task-completed .task-through { text-decoration:line-through; }
 li.task-completed .task-title a { color:#777777; }
 #tasklist li.task-completed  { opacity:0.6; filter:alpha(opacity=60); }
 #tasklist li.task-completed:hover { opacity:1.0; filter:alpha(opacity=100); }
-li.not-in-tagpreview  { opacity:0.1; filter: alpha(opacity=10); }
+#tasklist li.not-in-tagpreview  { opacity:0.1; filter: alpha(opacity=10); }
 #tasklist li.mtt-task-placeholder {
  min-height:0px; padding:0px; height:18px; line-height:18px;
  background-color:#ddd; border:1px solid #aaa;
