@@ -73,8 +73,14 @@ elseif(isset($_GET['loadTasks']))
 	if($s != '') $sqlWhere .= " AND (title LIKE ". $db->quoteForLike("%%%s%%",$s). " OR note LIKE ". $db->quoteForLike("%%%s%%",$s). ")";
 	$sort = (int)_get('sort');
 	$sqlSort = "ORDER BY compl ASC, ";
-	if($sort == 1) $sqlSort .= "prio DESC, ddn ASC, duedate ASC, ow ASC";
-	elseif($sort == 2) $sqlSort .= "ddn ASC, duedate ASC, prio DESC, ow ASC";
+	if($sort == 1) $sqlSort .= "prio DESC, ddn ASC, duedate ASC, ow ASC";		// byPrio
+	elseif($sort == 101) $sqlSort .= "prio ASC, ddn DESC, duedate DESC, ow DESC";	// byPrio (reverse)
+	elseif($sort == 2) $sqlSort .= "ddn ASC, duedate ASC, prio DESC, ow ASC";	// byDueDate
+	elseif($sort == 102) $sqlSort .= "ddn DESC, duedate DESC, prio ASC, ow DESC";// byDueDate (reverse)
+	elseif($sort == 3) $sqlSort .= "d_created ASC, prio DESC, ow ASC";			// byDateCreated
+	elseif($sort == 103) $sqlSort .= "d_created DESC, prio ASC, ow DESC";		// byDateCreated (reverse)
+	elseif($sort == 4) $sqlSort .= "d_edited ASC, prio DESC, ow ASC";			// byDateModified
+	elseif($sort == 104) $sqlSort .= "d_edited DESC, prio ASC, ow DESC";		// byDateModified (reverse)
 	else $sqlSort .= "ow ASC";
 	$t = array();
 	$t['total'] = 0;
@@ -426,7 +432,8 @@ elseif(isset($_GET['setSort']))
 	check_write_access();
 	$listId = (int)_post('list');
 	$sort = (int)_post('sort');
-	if($sort < 0 || $sort > 2) $sort = 0;
+	if($sort < 0 || $sort > 104) $sort = 0;
+	elseif($sort < 101 && $sort > 4) $sort = 0;
 	$db->ex("UPDATE {$db->prefix}lists SET sorting=$sort,d_edited=? WHERE id=$listId", array(time()));
 	echo json_encode(array('total'=>1));
 	exit;
@@ -535,8 +542,10 @@ function prepareTaskRow($r)
 		'id' => $r['id'],
 		'title' => escapeTags($r['title']),
 		'date' => htmlarray($dCreated),
+		'dateInt' => (int)$r['d_created'],
 		'dateInline' => htmlarray(formatTime($formatCreatedInline, $r['d_created'])),
 		'dateInlineTitle' => htmlarray(sprintf($lang->get('taskdate_inline_created'), $dCreated)),
+		'dateEditedInt' => (int)$r['d_edited'],
 		'dateCompleted' => htmlarray($dCompleted),
 		'dateCompletedInline' => $r['d_completed'] ? htmlarray(formatTime($formatCompletedInline, $r['d_completed'])) : '',
 		'dateCompletedInlineTitle' => htmlarray(sprintf($lang->get('taskdate_inline_completed'), $dCompleted)),

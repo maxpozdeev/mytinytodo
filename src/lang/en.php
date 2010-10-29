@@ -61,6 +61,8 @@ class Lang extends DefaultLang
 		'sortByHand' => "Sort by hand",
 		'sortByPriority' => "Sort by priority",
 		'sortByDueDate' => "Sort by due date",
+		'sortByDateCreated' => "Sort by date created",
+		'sortByDateModified' => "Sort by date modified",
 		'due' => "Due",
 		'daysago' => "%d days ago",
 		'indays' => "in %d days",
