@@ -55,7 +55,6 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 .mtt-tabs li:hover a { color: #888888; }
 .mtt-tabs.mtt-tabs-only-one li { display:none; }
 .mtt-tabs.mtt-tabs-only-one li.mtt-tabs-selected { display:block; }
-#page_tasks.readonly .list-action { display:none; }
 #page_tasks.readonly li.mtt-tabs-selected span { margin-right:0; }
 
 #tabs_buttons {

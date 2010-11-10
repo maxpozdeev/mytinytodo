@@ -988,20 +988,14 @@ function setSort(v, init)
 	else if(v==4 || v==104) $('#sortByDateModified').addClass('mtt-item-checked').children('.mtt-sort-direction').text(v==4 ? '↓' : '↑');
 	else return;
 
-/* //port:
-	if(flag.needAuth && !flag.isLogged) {
-		$("#tasklist").sortable('disable');
-		return;
-	}
-*/
 	curList.sort = v;
-	if(v == 0) $("#tasklist").sortable('enable');
+	if(v == 0 && !flag.readOnly) $("#tasklist").sortable('enable');
 	else $("#tasklist").sortable('disable');
 	
 	if(!init)
 	{
 		changeTaskOrder();
-		_mtt.db.request('setSort', {list:curList.id, sort:curList.sort});
+		if(!flag.readOnly) _mtt.db.request('setSort', {list:curList.id, sort:curList.sort});
 	}
 };
 
@@ -1937,6 +1931,8 @@ function updateAccessStatus()
 		$("#bar_public").show();
 		$('#page_tasks').addClass('readonly')
 		liveSearchToggle(1);
+		// remove some tab menu items
+		$('#btnRenameList,#btnDeleteList,#btnClearCompleted,#btnPublish').remove();
 	}
 	else {
 		flag.readOnly = false;
