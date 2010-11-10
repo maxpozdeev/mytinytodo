@@ -94,6 +94,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		if(this.options.showdate) $('#page_tasks').addClass('show-inline-date');
 		if(this.options.singletab) $('#lists .mtt-tabs').addClass('mtt-tabs-only-one');
 
+		this.parseAnchor();
 
 		// handlers
 		$('.mtt-tabs-add-button').click(function(){
@@ -505,7 +506,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 				$.each(res.list, function(i,item){
 					tabLists.add(item);
 					ti += '<li id="list_'+item.id+'" class="mtt-tab '+(item.id==openId?'mtt-tabs-selected':'')+'">'+
-						'<a href="#" title="'+item.name+'"><span>'+item.name+'</span>'+
+						'<a href="#list/'+item.id+'" title="'+item.name+'"><span>'+item.name+'</span>'+
 						'<div class="list-action"></div></a></li>';
 				});
 
@@ -639,6 +640,29 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			}
 			return a.join(', ');
 		}
+	},
+	
+	parseAnchor: function()
+	{
+		if(location.hash == '') return false;
+		var h = location.hash.substr(1);
+		var a = h.split("/");
+		if(a.length < 2) return false;
+		
+		var p = {};
+		var s = '';
+		
+		for(var i=0; i<a.length; i++)
+		{
+			s = a[i];
+			switch(s) {
+				case "list": if(a[++i].match(/^\d+$/)) { p[s] = a[i]; } break;
+			}
+		}
+
+		if(p.list) this.options.openList = p.list;
+		
+		return p;
 	}
 
 };
