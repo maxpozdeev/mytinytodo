@@ -9,14 +9,13 @@
 //$dontStartSession = 1;
 require_once('./init.php');
 
-if(!have_write_access()) {
-	die("Access denied");
-}
+$onlyPublishedList = false;
+if(!have_write_access()) $onlyPublishedList = true;
 
 $listId = (int)_get('list');
-$listData = $db->sqa("SELECT * FROM {$db->prefix}lists WHERE id=$listId");
+$listData = $db->sqa("SELECT * FROM {$db->prefix}lists WHERE id=$listId ". ($onlyPublishedList ? "AND published=1" : "") );
 if(!$listData) {
-	die("No such list");
+	die("No such list or access denied");
 }
 
 $sqlSort = "ORDER BY compl ASC, ";
