@@ -1149,9 +1149,7 @@ function completeTask(id, ch)
 		var item = json.list[0];
 		if(item.compl) $('#taskrow_'+id).addClass('task-completed');
 		else $('#taskrow_'+id).removeClass('task-completed');
-		taskList[id].ow = item.ow;
-		taskList[id].compl = item.compl;
-		taskList[id].dateCompleted = item.dateCompleted;
+		taskList[id] = item;
 		changeTaskCnt(taskList[id], 0);
 		if(item.compl && !curList.showCompl) {
 			delete taskList[id];
@@ -1159,8 +1157,9 @@ function completeTask(id, ch)
 			$('#taskrow_'+id).fadeOut('normal', function(){ $(this).remove() });
 		}
 		else if(curList.showCompl) {
-			$('#taskrow_'+id).fadeOut('fast', function(){
-				changeTaskOrder(id);
+			$('#taskrow_'+item.id).replaceWith(prepareTaskStr(taskList[id]));
+			$('#taskrow_'+id).fadeOut('fast', function(){	
+				changeTaskOrder(id);				
 				$(this).effect("highlight", {color:_mtt.theme.editTaskFlashColor}, 'normal', function(){$(this).css('display','')});
 			});
 		}

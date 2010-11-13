@@ -206,7 +206,8 @@ elseif(isset($_GET['completeTask']))
 				array($dateCompleted, time()) );
 	$t = array();
 	$t['total'] = 1;
-	$t['list'][] = array('id'=>$id, 'compl'=>$compl, 'ow'=>$ow, 'dateCompleted'=>$dateCompleted?htmlarray(timestampToDatetime($dateCompleted)):'');
+	$r = $db->sqa("SELECT * FROM {$db->prefix}todolist WHERE id=$id");
+	$t['list'][] = prepareTaskRow($r);
 	echo json_encode($t);
 	exit;
 }
