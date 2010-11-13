@@ -738,8 +738,10 @@ function loadTasks(opts)
 	if(!curList) return false;
 	setSort(curList.sort, 1);
 	opts = opts || {};
-	$('#tasklist').html('');
-	$('#total').html('...');
+	if(opts.clearTasklist) {
+		$('#tasklist').html('');
+		$('#total').html('0');
+	}
 
 	_mtt.db.request('loadTasks', {
 		list: curList.id,
@@ -1082,7 +1084,6 @@ function tabSelected(elementOrId)
 	$('#list_'+id).addClass('mtt-tabs-selected');
 	if(curList.id != id)
 	{
-		$('#tasklist').html('');
 		if(filter.search != '') liveSearchToggle(0, 1);
 		mytinytodo.doAction('listSelected', tabLists.get(id));
 	}
@@ -1090,7 +1091,7 @@ function tabSelected(elementOrId)
 	flag.tagsChanged = true;
 	cancelTagFilter(0, 1);
 	setTaskview(0);
-	loadTasks();
+	loadTasks({clearTasklist:1});
 };
 
 
