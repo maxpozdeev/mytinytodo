@@ -1926,6 +1926,9 @@ function updateAccessStatus()
 			$('#bar .bar-delim').hide();
 		}
 	}
+	else {
+		$('#bar .menu-owner').show();
+	}
 	if(flag.needAuth && !flag.isLogged) {
 		flag.readOnly = true;
 		$("#bar_public").show();
