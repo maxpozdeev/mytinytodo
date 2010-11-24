@@ -553,12 +553,13 @@ var mytinytodo = window.mytinytodo = _mtt = {
 				case 'j': return 'd';
 				case 'm': return 'mm';
 				case 'n': return 'm';
+				case '/':
 				case '.':
 				case '-': return t;
 				default: return '';
 			}
 		});
-		
+
 		if(s == '') return 'yy-mm-dd';
 		return s;
 	},
