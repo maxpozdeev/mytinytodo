@@ -214,7 +214,6 @@ li.task-completed .task-note-block .task-note { text-decoration:line-through; }
 .form-row { margin-top:8px; }
 .form-row .h { font-weight:bold; color:#333333; }
 .form-row-short-end { clear:both; }
-#page_taskedit .form-row { max-width:700px; }
 #page_taskedit .form-row .in500 { width:99%; }
 #page_taskedit .form-row textarea.in500 { height:200px; /*resize:none;*/ }
 #page_taskedit .form-row-short { float:left; margin-right:12px; }
