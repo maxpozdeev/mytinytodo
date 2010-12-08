@@ -154,11 +154,11 @@ li.task-expanded .task-toggle { background-position:-80px -16px; }
 #tasklist li { padding:6px 2px 6px 6px; border-bottom:1px solid #DEDEDE; min-height:18px; margin-bottom:1px; background-color:#fff; }
 #tasklist li:hover { background-color:#f6f6f6; }
 .task-actions { float:right; width:20px; text-align:right; }
-.task-date { display:none; min-width:55px; color:#999999; margin-right:10px; margin-left:5px; text-align:right; }
+.task-date { color:#999999; font-size:0.8em; margin-left:4px; display:none; }
 .task-date-completed { color:#999999; display:none; margin-left:5px; }
-.show-inline-date .task-middle { margin-left:110px; }
-.show-inline-date .task-date { display:inline-block; }
+.show-inline-date .task-date { display:inline; }
 .show-inline-date li.task-completed .task-date-completed { display:inline; }
+.show-inline-date li.task-completed .task-date { display:none; }
 .task-through { overflow:hidden; }
 .task-through-right { float:right; }
 .task-title a { color:#000000; }

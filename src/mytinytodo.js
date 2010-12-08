@@ -773,18 +773,19 @@ function loadTasks(opts)
 
 function prepareTaskStr(item, noteExp)
 {
+	// &mdash; = &#8212; = —
 	var id = item.id;
 	var prio = item.prio;
 	return '<li id="taskrow_'+id+'" class="' + (item.compl?'task-completed ':'') + item.dueClass + (item.note!=''?' task-has-note':'') +
 				((curList.showNotes && item.note != '') || noteExp ? ' task-expanded' : '') + prepareTagsClass(item.tags_ids) + '">' +
 		'<div class="task-actions"><a href="#" class="taskactionbtn"></a></div>'+"\n"+
 		'<div class="task-left"><div class="task-toggle"></div>'+
-		'<input type="checkbox" '+(flag.readOnly?'disabled="disabled"':'')+(item.compl?'checked="checked"':'')+'/>'+
-		'<span class="task-date" title="'+item.dateInlineTitle+'">'+item.dateInline+'</span></div>'+"\n"+
+		'<input type="checkbox" '+(flag.readOnly?'disabled="disabled"':'')+(item.compl?'checked="checked"':'')+'/></div>'+"\n"+
 		'<div class="task-middle"><div class="task-through-right">'+prepareDuedate(item)+
-		'<span class="task-date-completed" title="'+item.dateCompletedInlineTitle+'">'+item.dateCompletedInline+'</span></div>'+"\n"+
+		'<span class="task-date-completed"><span title="'+item.dateInlineTitle+'">'+item.dateInline+'</span>&#8212;'+
+		'<span title="'+item.dateCompletedInlineTitle+'">'+item.dateCompletedInline+'</span></span></div>'+"\n"+
 		'<div class="task-through">'+preparePrio(prio,id)+'<span class="task-title">'+prepareHtml(item.title)+'</span> '+"\n"+
-		prepareTagsStr(item)+'</div>'+
+		prepareTagsStr(item)+'<span class="task-date">'+item.dateInlineTitle+'</span></div>'+
 		'<div class="task-note-block">'+
 			'<div id="tasknote'+id+'" class="task-note"><span>'+prepareHtml(item.note)+'</span></div>'+
 			'<div id="tasknotearea'+id+'" class="task-note-area"><textarea id="notetext'+id+'"></textarea>'+
