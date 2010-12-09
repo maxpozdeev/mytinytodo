@@ -81,8 +81,8 @@ $().ready(function(){
 
 <div id="lists">
  <ul class="mtt-tabs"></ul>
+ <div class="mtt-tabs-add-button" title="<?php _e('list_new'); ?>"><span></span></div>
  <div id="tabs_buttons">
-  <div class="mtt-tabs-add-button mtt-tabs-button" title="<?php _e('list_new'); ?>"><span></span></div>
   <div class="mtt-tabs-select-button mtt-tabs-button" title="<?php _e('list_select'); ?>"><span></span></div>
  </div>
 

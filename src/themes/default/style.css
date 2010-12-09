@@ -86,8 +86,12 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
  border:1px solid #ccc; -moz-border-radius:3px; -webkit-border-radius:3px; border-radius:3px;
 }
 
-.mtt-tabs-add-button>span { background:url(images/buttons.png) 0 0 no-repeat; }
+.mtt-tabs-add-button { float:left; margin-top:1px; padding:6px 2px 0px 2px; font-size:0.9em; height:21px; border-left:1px solid #ededed; background:#fbfbfb url(images/tab_hover.gif) no-repeat top right; }
+.mtt-tabs-add-button:hover { cursor:pointer; }
+.mtt-tabs-add-button>span { display:block; width:16px; height:16px; background:url(images/buttons.png) 0 0 no-repeat; }
 .mtt-tabs-add-button:hover>span { background-position:-16px 0; }
+#page_tasks.readonly .mtt-tabs-add-button { display:none; }
+
 .mtt-tabs-select-button>span { background:url(images/icons.gif) -64px 0 no-repeat; }
 .mtt-tabs-select-button:hover>span, .mtt-tabs-select-button.mtt-menu-button-active>span { background-position:-80px 0; }
 
