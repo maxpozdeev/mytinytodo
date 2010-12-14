@@ -19,12 +19,16 @@ var tabLists = {
 	_lists: {},
 	_length: 0,
 	_order: [],
-	clear: function(){ this._lists = {}; this._length = 0; this._order = []; },
+	_alltasks: {},
+	clear: function(){
+		this._lists = {}; this._length = 0; this._order = [];
+		this._alltasks = { id:-1, showCompl:0, sort:3 }; 
+	},
 	length: function(){ return this._length; },
-	exists: function(id){ if(this._lists[id]) return true; else return false; },
+	exists: function(id){ if(this._lists[id] || id==-1) return true; else return false; },
 	add: function(list){ this._lists[list.id] = list; this._length++; this._order.push(list.id); },
 	replace: function(list){ this._lists[list.id] = list; },
-	get: function(id){ return this._lists[id]; },
+	get: function(id){ if(id==-1) return this._alltasks; else return this._lists[id]; },
 	getAll: function(){ var r = []; for(var i in this._order) { r.push(this._lists[this._order[i]]); }; return r; },
 	reorder: function(order){ this._order = order; }
 };
@@ -237,6 +241,11 @@ var mytinytodo = window.mytinytodo = _mtt = {
 				// toggle singetab interface
 				_mtt.applySingletab(!_mtt.options.singletab);
 			}
+			return false;
+		});
+		
+		$('#list_all').click(function(event){
+			tabSelected(-1);
 			return false;
 		});
 
@@ -1083,9 +1092,19 @@ function tabSelected(elementOrId)
 	}
 	if(!tabLists.exists(id)) return;
 	$('#lists .mtt-tabs-selected').removeClass('mtt-tabs-selected');
-	$('#list_'+id).addClass('mtt-tabs-selected');
+	$('#list_all').removeClass('mtt-tabs-selected');
+	
+	if(id == -1) {
+		$('#list_all').addClass('mtt-tabs-selected');
+	}
+	else {
+		$('#list_'+id).addClass('mtt-tabs-selected');
+	}
+	
 	if(curList.id != id)
 	{
+		if(id == -1) $('#page_tasks').addClass('show-all-tasks');
+		else $('#page_tasks').removeClass('show-all-tasks');
 		if(filter.search != '') liveSearchToggle(0, 1);
 		mytinytodo.doAction('listSelected', tabLists.get(id));
 	}

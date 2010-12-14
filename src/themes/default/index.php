@@ -85,7 +85,7 @@ $().ready(function(){
  <div id="tabs_buttons">
   <div class="mtt-tabs-select-button mtt-tabs-button" title="<?php _e('list_select'); ?>"><span></span></div>
  </div>
-
+ <div id="list_all" class="mtt-tabs-alltasks"><a href="#alltasks"><span><?php _e('alltasks'); ?><span></a></div>
 </div>
 
 

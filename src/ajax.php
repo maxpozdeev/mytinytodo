@@ -33,9 +33,14 @@ elseif(isset($_GET['loadTasks']))
 	stop_gpc($_GET);
 	$listId = (int)_get('list');
 	check_read_access($listId);
-	$sqlWhere = " AND {$db->prefix}todolist.list_id=". $listId;
+
+	$sqlWhere = $inner = '';
+	if($listId == -1) {
+		$userLists = getUserListsSimple();
+		$sqlWhere .= " AND {$db->prefix}todolist.list_id IN (". implode(array_keys($userLists), ','). ") ";
+	}
+	else $sqlWhere .= " AND {$db->prefix}todolist.list_id=". $listId;
 	if(_get('compl') == 0) $sqlWhere .= ' AND compl=0';
-	$inner = '';
 	
 	$tag = trim(_get('t'));
 	if($tag != '')
@@ -54,12 +59,12 @@ elseif(isset($_GET['loadTasks']))
 		}
 
 		if(sizeof($tagIds) > 1) {
-			$inner = "INNER JOIN (SELECT task_id, COUNT(tag_id) AS c FROM {$db->prefix}tag2task WHERE list_id=$listId AND tag_id IN (".
+			$inner .= "INNER JOIN (SELECT task_id, COUNT(tag_id) AS c FROM {$db->prefix}tag2task WHERE list_id=$listId AND tag_id IN (".
 						implode(',',$tagIds). ") GROUP BY task_id) ON id=task_id";
 			$sqlWhere = " AND c=". sizeof($tagIds); //overwrite sqlWhere!
 		}
 		elseif($tagIds) {
-			$inner = "INNER JOIN {$db->prefix}tag2task ON id=task_id";
+			$inner .= "INNER JOIN {$db->prefix}tag2task ON id=task_id";
 			$sqlWhere .= " AND tag_id = ". $tagIds[0];
 		}
 		
@@ -82,6 +87,7 @@ elseif(isset($_GET['loadTasks']))
 	elseif($sort == 4) $sqlSort .= "d_edited ASC, prio DESC, ow ASC";			// byDateModified
 	elseif($sort == 104) $sqlSort .= "d_edited DESC, prio ASC, ow DESC";		// byDateModified (reverse)
 	else $sqlSort .= "ow ASC";
+	
 	$t = array();
 	$t['total'] = 0;
 	$t['list'] = array();
@@ -542,6 +548,7 @@ function prepareTaskRow($r)
 	return array(
 		'id' => $r['id'],
 		'title' => escapeTags($r['title']),
+		'listId' => $r['list_id'],
 		'date' => htmlarray($dCreated),
 		'dateInt' => (int)$r['d_created'],
 		'dateInline' => htmlarray(formatTime($formatCreatedInline, $r['d_created'])),
@@ -855,6 +862,17 @@ function prepareList($row)
 		'showCompl' => $taskview & 1 ? 1 : 0,
 		'showNotes' => $taskview & 2 ? 1 : 0,
 	);
+}
+
+function getUserListsSimple()
+{
+	$db = DBConnection::instance();
+	$a = array();
+	$q = $db->dq("SELECT id,name FROM {$db->prefix}lists ORDER BY id ASC");
+	while($r = $q->fetch_row()) {
+		$a[$r[0]] = $r[1];
+	}
+	return $a;
 }
 
 ?>

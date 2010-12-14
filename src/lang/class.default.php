@@ -100,6 +100,7 @@ class DefaultLang
 		'feed_completed_tasks' => "Completed tasks",
 		'feed_modified_tasks' => "Modified tasks",
 		'feed_new_tasks' => "New tasks",
+		'alltasks' => "All tasks",
 
 		/* Settings */
 		'set_header' => "Settings",

@@ -56,16 +56,21 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 .mtt-tabs.mtt-tabs-only-one li { display:none; }
 .mtt-tabs.mtt-tabs-only-one li.mtt-tabs-selected { display:block; }
 #page_tasks.readonly li.mtt-tabs-selected span { margin-right:0; }
+                     
+.mtt-tabs-alltasks { margin:1px 3px 0 3px; float:right; border-right:1px solid #ededed; background:#fbfbfb url(images/tab_hover.gif) no-repeat top left; }
+.mtt-tabs-alltasks a { position:relative; margin:0; font-size:0.9em; font-weight:bold; text-decoration:none; text-align:center; white-space:nowrap; color:#444444; display:block; height:21px; padding:6px 2px 0px 6px; outline:none; vertical-align:top; }
+.mtt-tabs-alltasks.mtt-tabs-selected { border-left:none; border-right:1px solid #ededed;  background:#ededed url(images/corner_left.gif) no-repeat top left; }
+#page_tasks.readonly .mtt-tabs-alltasks { display:none; }
 
 #tabs_buttons {
  float:right;
  padding-top:4px;
- padding-bottom:3px; 
+ padding-bottom:2px; 
  padding-left:2px;
  padding-right:2px;
  border:1px solid #ededed;
  border-bottom:none;
- -moz-border-radius-topleft:5px; -webkit-border-top-left-radius:5px; border-top-left-radius:5px;
+ margin-top:1px;
  -moz-border-radius-topright:5px; -webkit-border-top-right-radius:5px; border-top-right-radius:5px;
 }
 
@@ -118,6 +123,7 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 
 #newtask_adv span { background:url(images/buttons.png) 0 -48px no-repeat; }
 #newtask_adv:hover span { background-position:-16px -48px; }
+#page_tasks.show-all-tasks #htab_newtask { display:none; }
 
 
 /* Live Search */
