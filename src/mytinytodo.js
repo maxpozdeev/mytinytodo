@@ -1990,7 +1990,7 @@ function doAuth(form)
 		if(json.logged)
 		{
 			flag.isLogged = true;
-			_mtt.loadLists(1);
+			window.location.reload();
 		}
 		else {
 			flashError(_mtt.lang.get('invalidpass'));
@@ -2004,7 +2004,7 @@ function logout()
 {
 	$.post(mytinytodo.mttUrl+'ajax.php?logout', { logout:1 }, function(json){
 		flag.isLogged = false;
-		_mtt.loadLists(1);
+		window.location.reload();
 	}, 'json');
 	return false;
 } 
