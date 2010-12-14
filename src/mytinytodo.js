@@ -1381,13 +1381,10 @@ function liveSearchToggle(toSearch, dontLoad)
 {
 	if(toSearch)
 	{
-		if(flag.readOnly) $('#htab_newtask').hide();
 		$('#search').focus();
 	}
 	else
 	{
-		if(!flag.readOnly) $('#htab_newtask').show();
-
 		if($('#search').val() != '') {
 			filter.search = '';
 			$('#search').val('');

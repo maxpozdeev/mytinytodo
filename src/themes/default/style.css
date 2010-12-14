@@ -123,7 +123,7 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 
 #newtask_adv span { background:url(images/buttons.png) 0 -48px no-repeat; }
 #newtask_adv:hover span { background-position:-16px -48px; }
-#page_tasks.show-all-tasks #htab_newtask { display:none; }
+#page_tasks.show-all-tasks #htab_newtask, #page_tasks.readonly #htab_newtask { display:none; }
 
 
 /* Live Search */
