@@ -85,7 +85,7 @@ $().ready(function(){
  <div id="tabs_buttons">
   <div class="mtt-tabs-select-button mtt-tabs-button" title="<?php _e('list_select'); ?>"><span></span></div>
  </div>
- <div id="list_all" class="mtt-tabs-alltasks"><a href="#alltasks"><span><?php _e('alltasks'); ?><span></a></div>
+ <div id="list_all" class="mtt-tabs-alltasks mtt-tabs-hidden"><a href="#alltasks"><span><?php _e('alltasks'); ?><span></a></div>
 </div>
 
 
@@ -261,6 +261,8 @@ $().ready(function(){
 
 <div id="slmenucontainer" class="mtt-menu-container" style="display:none">
 <ul>
+ <li id="slmenu_list:-1" class="list-id--1"><div class="menu-icon"></div><a href="#alltasks"><?php _e('alltasks'); ?></a></li>
+ <li class="mtt-menu-delimiter slmenu-lists-begin"></li>
 </ul>
 </div>
 

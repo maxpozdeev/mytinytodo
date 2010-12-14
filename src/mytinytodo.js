@@ -245,6 +245,11 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		});
 		
 		$('#list_all').click(function(event){
+			if(event.metaKey || event.ctrlKey) {
+				// hide the tab
+				hideTab(-1);
+				return false;
+			}
 			tabSelected(-1);
 			return false;
 		});
@@ -1095,10 +1100,10 @@ function tabSelected(elementOrId)
 	$('#list_all').removeClass('mtt-tabs-selected');
 	
 	if(id == -1) {
-		$('#list_all').addClass('mtt-tabs-selected');
+		$('#list_all').addClass('mtt-tabs-selected').removeClass('mtt-tabs-hidden');
 	}
 	else {
-		$('#list_'+id).addClass('mtt-tabs-selected');
+		$('#list_'+id).addClass('mtt-tabs-selected').removeClass('mtt-tabs-hidden');
 	}
 	
 	if(curList.id != id)
@@ -1842,7 +1847,8 @@ function slmenuOnListsLoaded()
 	for(var i in all) {
 		s += '<li id="slmenu_list:'+all[i].id+'" class="'+(all[i].id==curList.id?'mtt-item-checked':'')+' list-id-'+all[i].id+'"><div class="menu-icon"></div><a href="#list/'+all[i].id+'">'+all[i].name+'</a></li>';
 	}
-	$('#slmenucontainer ul').html(s);
+	$('#slmenucontainer ul>.slmenu-lists-begin').nextAll().remove();
+	$('#slmenucontainer ul>.slmenu-lists-begin').after(s);
 };
 
 function slmenuOnListRenamed(list)
@@ -1894,6 +1900,14 @@ function feedCurList()
 	window.location.href = _mtt.mttUrl + 'feed.php?list='+curList.id;
 }
 
+function hideTab(listId)
+{
+	if(listId == -1) {
+		$('#list_all').addClass('mtt-tabs-hidden').removeClass('mtt-tabs-selected');
+		var a = tabLists.getAll();
+		if(a[0]) tabSelected(parseInt(a[0].id)); else _mtt.loadLists();
+	}
+}
 
 /*
 	Errors and Info messages

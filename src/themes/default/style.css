@@ -56,6 +56,7 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 .mtt-tabs.mtt-tabs-only-one li { display:none; }
 .mtt-tabs.mtt-tabs-only-one li.mtt-tabs-selected { display:block; }
 #page_tasks.readonly li.mtt-tabs-selected span { margin-right:0; }
+.mtt-tabs-hidden { display:none; }
                      
 .mtt-tabs-alltasks { margin:1px 3px 0 3px; float:right; border-right:1px solid #ededed; background:#fbfbfb url(images/tab_hover.gif) no-repeat top left; }
 .mtt-tabs-alltasks a { position:relative; margin:0; font-size:0.9em; font-weight:bold; text-decoration:none; text-align:center; white-space:nowrap; color:#444444; display:block; height:21px; padding:6px 2px 0px 6px; outline:none; vertical-align:top; }
