@@ -97,7 +97,7 @@ elseif(isset($_GET['loadTasks']))
 		$t['total']++;
 		$t['list'][] = prepareTaskRow($r);
 	}
-	if(_get('setCompl') && have_write_access()) {
+	if(_get('setCompl') && have_write_access($listId)) {
 		$bitwise = (_get('compl') == 0) ? 'taskview & ~1' : 'taskview | 1';
 		$db->dq("UPDATE {$db->prefix}lists SET taskview=$bitwise WHERE id=$listId");
 	}
@@ -106,11 +106,11 @@ elseif(isset($_GET['loadTasks']))
 }
 elseif(isset($_GET['newTask']))
 {
-	check_write_access();
 	stop_gpc($_POST);
+	$listId = (int)_post('list');
+	check_write_access($listId);
 	$t = array();
 	$t['total'] = 0;
-	$listId = (int)_post('list');
 	$title = trim(_post('title'));
 	$prio = 0;
 	$tags = '';
@@ -152,9 +152,9 @@ elseif(isset($_GET['newTask']))
 }
 elseif(isset($_GET['fullNewTask']))
 {
-	check_write_access();
 	stop_gpc($_POST);
 	$listId = (int)_post('list');
+	check_write_access($listId);
 	$title = trim(_post('title'));
 	$note = str_replace("\r\n", "\n", trim(_post('note')));
 	$prio = (int)_post('prio');
@@ -235,7 +235,7 @@ elseif(isset($_GET['editTask']))
 	check_write_access();
 	$id = (int)_post('id');
 	stop_gpc($_POST);
-	$listId = (int)_post('list');
+	$listId = (int)_post('list'); // TODO: listId may be incorrect
 	$title = trim(_post('title'));
 	$note = str_replace("\r\n", "\n", trim(_post('note')));
 	$prio = (int)_post('prio');
@@ -586,15 +586,22 @@ function check_read_access($listId = null)
 	exit;
 }
 
-function have_write_access()
+function have_write_access($listId = null)
 {
-	if(Config::get('password') == '') return true;
-	if(is_logged()) return true;
+	if(is_readonly()) return false;
+	// check list exist
+	if($listId)
+	{
+		$db = DBConnection::instance();
+		$count = $db->sq("SELECT COUNT(*) FROM {$db->prefix}lists WHERE id=?", array($listId));
+		if(!$count) return false;
+	}
+	return true;
 }
 
-function check_write_access()
+function check_write_access($listId = null)
 {
-	if(have_write_access()) return;
+	if(have_write_access($listId)) return;
 	echo json_encode( array('total'=>0, 'list'=>array(), 'denied'=>1) );
 	exit;
 }
