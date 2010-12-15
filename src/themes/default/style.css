@@ -252,6 +252,7 @@ a.mtt-back-button { font-size:0.8em; }
 #priopopup .prio-pos-1:hover { border-color:#ff7700; }
 
 #tagcloudbtn { margin-right:2px; font-size:0.8em; font-weight:normal; padding:2px; float:right; }
+#page_tasks.show-all-tasks #tagcloudbtn { display:none; }
 #tagcloudload { display:none; height:24px; background:url(images/loading1_24.gif) center no-repeat; }
 #tagcloud {
  overflow: hidden; z-index:100; background-color:#f9f9f9; border:1px solid #cccccc; padding:5px;
