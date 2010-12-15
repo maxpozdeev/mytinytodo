@@ -239,22 +239,22 @@ $().ready(function(){
 <ul>
  <li id="cmenu_edit"><b><?php _e('action_edit');?></b></li>
  <li id="cmenu_note"><?php _e('action_note');?></li>
- <li id="cmenu_prio" class="mtt-menu-indicator" submenu="priocontainer"><div class="submenu-icon"></div><?php _e('action_priority');?></li>
- <li id="cmenu_move" class="mtt-menu-indicator" submenu="listsmenucontainer"><div class="submenu-icon"></div><?php _e('action_move');?></li>
+ <li id="cmenu_prio" class="mtt-menu-indicator" submenu="cmenupriocontainer"><div class="submenu-icon"></div><?php _e('action_priority');?></li>
+ <li id="cmenu_move" class="mtt-menu-indicator" submenu="cmenulistscontainer"><div class="submenu-icon"></div><?php _e('action_move');?></li>
  <li id="cmenu_delete"><?php _e('action_delete');?></li>
 </ul>
 </div>
 
-<div id="priocontainer" class="mtt-menu-container" style="display:none">
+<div id="cmenupriocontainer" class="mtt-menu-container" style="display:none">
 <ul>
- <li id="cmenu_prio:2">+2</li>
- <li id="cmenu_prio:1">+1</li>
- <li id="cmenu_prio:0">&plusmn;0</li>
- <li id="cmenu_prio:-1">&minus;1</li>
+ <li id="cmenu_prio:2"><div class="menu-icon"></div>+2</li>
+ <li id="cmenu_prio:1"><div class="menu-icon"></div>+1</li>
+ <li id="cmenu_prio:0"><div class="menu-icon"></div>&plusmn;0</li>
+ <li id="cmenu_prio:-1"><div class="menu-icon"></div>&minus;1</li>
 </ul>
 </div>
 
-<div id="listsmenucontainer" class="mtt-menu-container" style="display:none">
+<div id="cmenulistscontainer" class="mtt-menu-container" style="display:none">
 <ul>
 </ul>
 </div>

@@ -14,7 +14,6 @@ var objPrio = {};
 var selTask = 0;
 var flag = { needAuth:false, isLogged:false, tagsChanged:true, readOnly:false };
 var taskCnt = { total:0, past: 0, today:0, soon:0 };
-var cmenu;
 var tabLists = {
 	_lists: {},
 	_length: 0,
@@ -1653,15 +1652,21 @@ function mttMenu(container, options)
 
 function taskContextMenu(el, id)
 {
-	if(!cmenu) cmenu = new mttMenu('taskcontextcontainer', {onclick:taskContextClick});
-	cmenu.tag = id;
-	cmenu.show(el);
+	if(!_mtt.menus.cmenu) _mtt.menus.cmenu = new mttMenu('taskcontextcontainer', {
+		onclick: taskContextClick,
+		beforeShow: function() {
+			$('#cmenupriocontainer li').removeClass('mtt-item-checked');
+			$('#cmenu_prio\\:'+ taskList[_mtt.menus.cmenu.tag].prio).addClass('mtt-item-checked');
+		} 
+	});
+	_mtt.menus.cmenu.tag = id;
+	_mtt.menus.cmenu.show(el);
 };
 
 function taskContextClick(el, menu)
 {
 	if(!el.id) return;
-	var taskId = parseInt(cmenu.tag);
+	var taskId = parseInt(_mtt.menus.cmenu.tag);
 	var id = el.id, value;
 	var a = id.split(':');
 	if(a.length == 2) {
@@ -1699,21 +1704,21 @@ function moveTaskToList(taskId, listId)
 
 function cmenuOnListsLoaded()
 {
-	if(cmenu) cmenu.destroy();
-	cmenu = null;
+	if(_mtt.menus.cmenu) _mtt.menus.cmenu.destroy();
+	_mtt.menus.cmenu = null;
 	var s = '';
 	var all = tabLists.getAll();
 	for(var i in all) {
 		s += '<li id="cmenu_list:'+all[i].id+'">'+all[i].name+'</li>';
 	}
-	$('#listsmenucontainer ul').html(s);
+	$('#cmenulistscontainer ul').html(s);
 };
 
 function cmenuOnListAdded(list)
 {
-	if(cmenu) cmenu.destroy();
-	cmenu = null;
-	$('#listsmenucontainer ul').append('<li id="cmenu_list:'+list.id+'">'+list.name+'</li>');
+	if(_mtt.menus.cmenu) _mtt.menus.cmenu.destroy();
+	_mtt.menus.cmenu = null;
+	$('#cmenulistscontainer ul').append('<li id="cmenu_list:'+list.id+'">'+list.name+'</li>');
 };
 
 function cmenuOnListRenamed(list)
@@ -1723,7 +1728,7 @@ function cmenuOnListRenamed(list)
 
 function cmenuOnListSelected(list)
 {
-	$('#listsmenucontainer li').removeClass('mtt-disabled');
+	$('#cmenulistscontainer li').removeClass('mtt-disabled');
 	$('#cmenu_list\\:'+list.id).addClass('mtt-disabled');
 };
 
