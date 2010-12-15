@@ -261,8 +261,8 @@ $().ready(function(){
 
 <div id="slmenucontainer" class="mtt-menu-container" style="display:none">
 <ul>
- <li id="slmenu_list:-1" class="list-id--1"><div class="menu-icon"></div><a href="#alltasks"><?php _e('alltasks'); ?></a></li>
- <li class="mtt-menu-delimiter slmenu-lists-begin"></li>
+ <li id="slmenu_list:-1" class="list-id--1" <?php if(is_readonly()) echo 'style="display:none"' ?>><div class="menu-icon"></div><a href="#alltasks"><?php _e('alltasks'); ?></a></li>
+ <li class="mtt-menu-delimiter slmenu-lists-begin" <?php if(is_readonly()) echo 'style="display:none"' ?>></li>
 </ul>
 </div>
 

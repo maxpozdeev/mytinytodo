@@ -69,6 +69,13 @@ function is_logged()
 	return true;
 }
 
+function is_readonly()
+{
+	$needAuth = (Config::get('password') != '') ? 1 : 0;
+	if($needAuth && !is_logged()) return true;
+	return false;
+}
+
 function timestampToDatetime($timestamp)
 {
 	$format = Config::get('dateformat') .' '. (Config::get('clock') == 12 ? 'g:i A' : 'H:i');
