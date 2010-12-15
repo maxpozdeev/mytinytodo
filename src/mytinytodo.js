@@ -1691,11 +1691,26 @@ function moveTaskToList(taskId, listId)
 	if(curList.id == listId) return;
 	_mtt.db.request('moveTask', {id:taskId, from:curList.id, to:listId}, function(json){
 		if(!parseInt(json.total)) return;
-		changeTaskCnt(taskList[taskId], -1)
-		delete taskList[taskId];
-		taskOrder.splice($.inArray(taskId,taskOrder), 1);
-		$('#taskrow_'+taskId).fadeOut('normal', function(){ $(this).remove() });
-		refreshTaskCnt();
+		if(curList.id == -1)
+		{
+			// leave the task in current tab (all tasks tab)
+			var item = json.list[0];
+			changeTaskCnt(item, 0, taskList[item.id]);
+			taskList[item.id] = item;
+			var noteExpanded = (item.note != '' && $('#taskrow_'+item.id).is('.task-expanded')) ? 1 : 0;
+			$('#taskrow_'+item.id).replaceWith(prepareTaskStr(item, noteExpanded));
+			if(curList.sort != 0) changeTaskOrder(item.id);
+			refreshTaskCnt();
+			$('#taskrow_'+item.id).effect("highlight", {color:_mtt.theme.editTaskFlashColor}, 'normal', function(){$(this).css('display','')});
+		}
+		else {
+			// remove the task from currrent tab
+			changeTaskCnt(taskList[taskId], -1)
+			delete taskList[taskId];
+			taskOrder.splice($.inArray(taskId,taskOrder), 1);
+			$('#taskrow_'+taskId).fadeOut('normal', function(){ $(this).remove() });
+			refreshTaskCnt();
+		}
 	});
 
 	$("#edittags").flushCache();

@@ -458,10 +458,14 @@ elseif(isset($_GET['moveTask']))
 {
 	check_write_access();
 	$id = (int)_post('id');
-//	$fromId = (int)_post('from');
+	$fromId = (int)_post('from');
 	$toId = (int)_post('to');
-	$r = moveTask($id, $toId);
-	echo json_encode(array('total'=>$r?1:0));
+	$result = moveTask($id, $toId);
+	$t = array('total' => $result ? 1 : 0);
+	if($fromId == -1 && $result && $r = $db->sqa("SELECT * FROM {$db->prefix}todolist WHERE id=$id")) {
+		$t['list'][] = prepareTaskRow($r);
+	}
+	echo json_encode($t);
 	exit;
 }
 elseif(isset($_GET['changeListOrder']))
