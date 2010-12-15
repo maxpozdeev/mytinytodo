@@ -235,7 +235,6 @@ elseif(isset($_GET['editTask']))
 	check_write_access();
 	$id = (int)_post('id');
 	stop_gpc($_POST);
-	$listId = (int)_post('list'); // TODO: listId may be incorrect
 	$title = trim(_post('title'));
 	$note = str_replace("\r\n", "\n", trim(_post('note')));
 	$prio = (int)_post('prio');
@@ -248,6 +247,7 @@ elseif(isset($_GET['editTask']))
 		echo json_encode($t);
 		exit;
 	}
+	$listId = $db->sq("SELECT list_id FROM {$db->prefix}todolist WHERE id=$id");
 	$tags = trim(_post('tags'));
 	$db->ex("BEGIN");
 	$db->ex("DELETE FROM {$db->prefix}tag2task WHERE task_id=$id");

@@ -1300,7 +1300,7 @@ function saveTask(form)
 	if(form.isadd.value != 0)
 		return submitFullTask(form);
 
-	_mtt.db.request('editTask', {id:form.id.value, list:curList.id, title: form.task.value, note:form.note.value,
+	_mtt.db.request('editTask', {id:form.id.value, title: form.task.value, note:form.note.value,
 		prio:form.prio.value, tags:form.tags.value, duedate:form.duedate.value},
 		function(json){
 			if(!parseInt(json.total)) return;
