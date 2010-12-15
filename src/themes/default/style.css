@@ -174,6 +174,7 @@ li.task-expanded .task-toggle { background-position:-80px -16px; }
 .task-title a { color:#000000; }
 .task-title a:hover { color:#af0000; }
 #page_tasks.readonly #tasklist li .task-actions { display:none; }
+.task-listname { background-color:#eee; color:#555; padding:0px 3px; }
 .task-tags { padding:0px 2px; }
 .task-tags .tag { font-size:0.8em; font-weight:bold; color:#333333; text-decoration:underline;  }
 .task-tags .tag:hover {  }
