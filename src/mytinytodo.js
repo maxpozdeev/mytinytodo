@@ -1296,7 +1296,7 @@ function showEditForm(isAdd)
 
 function saveTask(form)
 {
-//port:	if(flag.needAuth && !flag.isLogged) return false;
+	if(flag.readOnly) return false;
 	if(form.isadd.value != 0)
 		return submitFullTask(form);
 
@@ -1418,7 +1418,7 @@ function searchTasks(force)
 
 function submitFullTask(form)
 {
-//port:	if(flag.needAuth && !flag.isLogged) return false;
+	if(flag.readOnly) return false;
 
 	_mtt.db.request('fullNewTask', { list:curList.id, tag:_mtt.filter.getTags(), title: form.task.value, note:form.note.value,
 			prio:form.prio.value, tags:form.tags.value, duedate:form.duedate.value }, function(json){
