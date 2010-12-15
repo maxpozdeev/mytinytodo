@@ -194,7 +194,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 					if(flag.tagsChanged) {
 						$('#tagcloudcontent').html('');
 						$('#tagcloudload').show();
-						loadTags(function(){$('#tagcloudload').hide();});
+						loadTags(curList.id, function(){$('#tagcloudload').hide();});
 					}
 				}, adjustWidth:true
 			});
@@ -391,7 +391,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			dayNamesMin:_mtt.lang.daysMin, dayNames:_mtt.lang.daysLong, monthNamesShort:_mtt.lang.monthsLong
 		});
 
-		$("#edittags").autocomplete('ajax.php?suggestTags', {scroll: false, multiple: true, selectFirst:false, max:8, extraParams:{list:function(){return curList.id}}});
+		$("#edittags").autocomplete('ajax.php?suggestTags', {scroll: false, multiple: true, selectFirst:false, max:8, extraParams:{list:function(){ var taskId = document.getElementById('taskedit_form').id.value; return taskList[taskId].listId; }}});
 
 
 		// AJAX Errors
@@ -1323,7 +1323,8 @@ function toggleEditAllTags(show)
 {
 	if(show)
 	{
-		if(flag.tagsChanged) loadTags(fillEditAllTags);
+		var taskId = document.getElementById('taskedit_form').id.value;
+		if(curList.id == -1 || flag.tagsChanged) loadTags(taskList[taskId].listId, fillEditAllTags);
 		else fillEditAllTags();
 		showhide($('#alltags_hide'), $('#alltags_show'));
 	}
@@ -1354,9 +1355,9 @@ function addEditTag(tag)
 	if(r < 0) $('#edittags').val(v+', '+tag);
 };
 
-function loadTags(callback)
+function loadTags(listId, callback)
 {
-	_mtt.db.request('tagCloud', {list:curList.id}, function(json){
+	_mtt.db.request('tagCloud', {list:listId}, function(json){
 		if(!parseInt(json.total)) tagsList = [];
 		else tagsList = json.cloud;
 		var cloud = '';
