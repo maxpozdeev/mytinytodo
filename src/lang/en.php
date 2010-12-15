@@ -6,8 +6,8 @@
 	Original name: English
 	Author: Max Pozdeev
 	Author Url: http://www.mytinytodo.net
-	AppVersion: v1.3.4
-	Date: 2010-02-11
+	AppVersion: v1.4
+	Date: 2010-12-15
 */
 
 class Lang extends DefaultLang
