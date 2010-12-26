@@ -257,6 +257,11 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			listMenu(this);
 			return false;	//stop bubble to tab click
 		});
+		
+		$('#list_all .list-action').click(function(event){
+			listMenu(this);
+			return false;	//stop bubble to tab click
+		});
 
 		//Priority popup
 		$('#priopopup .prio-neg-1').click(function(){
@@ -523,12 +528,8 @@ var mytinytodo = window.mytinytodo = _mtt = {
 						'<div class="list-action"></div></a></li>';
 				});
 
-				//TODO: replace 'chilren', with 'addClass'!
-				if(!curList) {
-					$('#toolbar').children().removeClass('invisible');
-					$('#page_tasks h3').children().removeClass('invisible');
-					$('#mylistscontainer .mtt-need-list').removeClass('mtt-disabled');
-				}
+				$('#mtt_body').removeClass('no-lists');
+				$('.mtt-need-list').removeClass('mtt-item-disabled');
 
 				curList = tabLists.get(openId);
 				loadTasks();
@@ -536,9 +537,8 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			else
 			{
 				curList = 0;
-				$('#toolbar').children().addClass('invisible');
-				$('#page_tasks h3').children().addClass('invisible');
-				$('#mylistscontainer .mtt-need-list').addClass('mtt-disabled');
+				$('#mtt_body').addClass('no-lists');
+				$('.mtt-need-list').addClass('mtt-item-disabled');
 				$('#tasklist').html('');
 			}
 
@@ -737,11 +737,11 @@ function publishCurList()
 		curList.published = curList.published?0:1;
 		if(curList.published) {
 			$('#btnPublish').addClass('mtt-item-checked');
-			$('#btnRssFeed').removeClass('mtt-disabled');
+			$('#btnRssFeed').removeClass('mtt-item-disabled');
 		}
 		else {
 			$('#btnPublish').removeClass('mtt-item-checked');
-			$('#btnRssFeed').addClass('mtt-disabled');
+			$('#btnRssFeed').addClass('mtt-item-disabled');
 		}
 	});
 };
@@ -998,7 +998,7 @@ function setTaskPrio(id, prio)
 
 function setSort(v, init)
 {
-	$('#mylistscontainer .sort-item').removeClass('mtt-item-checked').children('.mtt-sort-direction').text('');
+	$('#listmenucontainer .sort-item').removeClass('mtt-item-checked').children('.mtt-sort-direction').text('');
 	if(v == 0) $('#sortByHand').addClass('mtt-item-checked');
 	else if(v==1 || v==101) $('#sortByPrio').addClass('mtt-item-checked').children('.mtt-sort-direction').text(v==1 ? '↑' : '↓');
 	else if(v==2 || v==102) $('#sortByDueDate').addClass('mtt-item-checked').children('.mtt-sort-direction').text(v==2 ? '↑' : '↓');
@@ -1101,15 +1101,17 @@ function tabSelected(elementOrId)
 	
 	if(id == -1) {
 		$('#list_all').addClass('mtt-tabs-selected').removeClass('mtt-tabs-hidden');
+		$('#listmenucontainer .mtt-need-real-list').addClass('mtt-item-hidden');
 	}
 	else {
 		$('#list_'+id).addClass('mtt-tabs-selected').removeClass('mtt-tabs-hidden');
+		$('#listmenucontainer .mtt-need-real-list').removeClass('mtt-item-hidden');
 	}
 	
 	if(curList.id != id)
 	{
-		if(id == -1) $('#page_tasks').addClass('show-all-tasks');
-		else $('#page_tasks').removeClass('show-all-tasks');
+		if(id == -1) $('#mtt_body').addClass('show-all-tasks');
+		else $('#mtt_body').removeClass('show-all-tasks');
 		if(filter.search != '') liveSearchToggle(0, 1);
 		mytinytodo.doAction('listSelected', tabLists.get(id));
 	}
@@ -1124,7 +1126,7 @@ function tabSelected(elementOrId)
 
 function listMenu(el)
 {
-	if(!mytinytodo.menus.listMenu) mytinytodo.menus.listMenu = new mttMenu('mylistscontainer', {onclick:listMenuClick});
+	if(!mytinytodo.menus.listMenu) mytinytodo.menus.listMenu = new mttMenu('listmenucontainer', {onclick:listMenuClick});
 	mytinytodo.menus.listMenu.show(el);
 };
 
@@ -1562,7 +1564,7 @@ function mttMenu(container, options)
 
 	this.onclick = function(item, fromMenu)
 	{
-		if($(item).is('.mtt-disabled,.mtt-menu-indicator')) return;
+		if($(item).is('.mtt-item-disabled,.mtt-menu-indicator,.mtt-item-hidden')) return;
 		menu.close();
 		if(this.options.onclick) this.options.onclick(item, fromMenu);
 	};
@@ -1745,14 +1747,14 @@ function cmenuOnListRenamed(list)
 
 function cmenuOnListSelected(list)
 {
-	$('#cmenulistscontainer li').removeClass('mtt-disabled');
-	$('#cmenu_list\\:'+list.id).addClass('mtt-disabled');
+	$('#cmenulistscontainer li').removeClass('mtt-item-disabled');
+	$('#cmenu_list\\:'+list.id).addClass('mtt-item-disabled');
 };
 
 function cmenuOnListOrderChanged()
 {
 	cmenuOnListsLoaded();
-	$('#cmenu_list\\:'+curList.id).addClass('mtt-disabled');
+	$('#cmenu_list\\:'+curList.id).addClass('mtt-item-disabled');
 };
 
 
@@ -1760,11 +1762,11 @@ function tabmenuOnListSelected(list)
 {
 	if(list.published) {
 		$('#btnPublish').addClass('mtt-item-checked');
-		$('#btnRssFeed').removeClass('mtt-disabled');
+		$('#btnRssFeed').removeClass('mtt-item-disabled');
 	}
 	else {
 		$('#btnPublish').removeClass('mtt-item-checked');
-		$('#btnRssFeed').addClass('mtt-disabled');
+		$('#btnRssFeed').addClass('mtt-item-disabled');
 	}
 	if(list.showCompl) $('#btnShowCompleted').addClass('mtt-item-checked');
 	else $('#btnShowCompleted').removeClass('mtt-item-checked');

@@ -54,7 +54,7 @@ $().ready(function(){
 
 <div id="wrapper">
 <div id="container">
-<div id="body">
+<div id="mtt_body">
 
 <h2><?php mttinfo('title'); ?></h2>
 
@@ -85,7 +85,7 @@ $().ready(function(){
  <div id="tabs_buttons">
   <div class="mtt-tabs-select-button mtt-tabs-button" title="<?php _e('list_select'); ?>"><span></span></div>
  </div>
- <div id="list_all" class="mtt-tabs-alltasks mtt-tabs-hidden"><a href="#alltasks"><span><?php _e('alltasks'); ?><span></a></div>
+ <div id="list_all" class="mtt-tab mtt-tabs-alltasks mtt-tabs-hidden"><a href="#alltasks"><span><?php _e('alltasks'); ?></span><div class="list-action"></div></a></div>
 </div>
 
 
@@ -215,17 +215,17 @@ $().ready(function(){
 </div>
 
 
-<div id="mylistscontainer" class="mtt-menu-container" style="display:none">
+<div id="listmenucontainer" class="mtt-menu-container" style="display:none">
 <ul>
- <li class="mtt-need-list" id="btnRenameList"><?php _e('list_rename');?></li>
- <li class="mtt-need-list" id="btnDeleteList"><?php _e('list_delete');?></li>
- <li class="mtt-need-list" id="btnClearCompleted"><?php _e('list_clearcompleted');?></li>
- <li class="mtt-need-list" id="btnExportCSV"><?php _e('list_exportcsv');?></li>
- <li class="mtt-menu-delimiter"></li>
- <li class="mtt-need-list" id="btnPublish"><div class="menu-icon"></div><?php _e('list_publish');?></li>
- <li class="mtt-need-list" id="btnRssFeed"><div class="menu-icon"></div><?php _e('list_rssfeed');?></li>
- <li class="mtt-menu-delimiter"></li>
- <li class="mtt-need-list sort-item" id="sortByHand"><div class="menu-icon"></div><?php _e('sortByHand');?> <span class="mtt-sort-direction"></span></li>
+ <li class="mtt-need-list mtt-need-real-list" id="btnRenameList"><?php _e('list_rename');?></li>
+ <li class="mtt-need-list mtt-need-real-list" id="btnDeleteList"><?php _e('list_delete');?></li>
+ <li class="mtt-need-list mtt-need-real-list" id="btnClearCompleted"><?php _e('list_clearcompleted');?></li>
+ <li class="mtt-need-list mtt-need-real-list" id="btnExportCSV"><?php _e('list_exportcsv');?></li>
+ <li class="mtt-menu-delimiter mtt-need-real-list"></li>
+ <li class="mtt-need-list mtt-need-real-list" id="btnPublish"><div class="menu-icon"></div><?php _e('list_publish');?></li>
+ <li class="mtt-need-list mtt-need-real-list" id="btnRssFeed"><div class="menu-icon"></div><?php _e('list_rssfeed');?></li>
+ <li class="mtt-menu-delimiter mtt-need-real-list"></li>
+ <li class="mtt-need-list mtt-need-real-list sort-item" id="sortByHand"><div class="menu-icon"></div><?php _e('sortByHand');?> <span class="mtt-sort-direction"></span></li>
  <li class="mtt-need-list sort-item" id="sortByDateCreated"><div class="menu-icon"></div><?php _e('sortByDateCreated');?> <span class="mtt-sort-direction"></span></li>
  <li class="mtt-need-list sort-item" id="sortByPrio"><div class="menu-icon"></div><?php _e('sortByPriority');?> <span class="mtt-sort-direction"></span></li>
  <li class="mtt-need-list sort-item" id="sortByDueDate"><div class="menu-icon"></div><?php _e('sortByDueDate');?> <span class="mtt-sort-direction"></span></li>
@@ -261,8 +261,8 @@ $().ready(function(){
 
 <div id="slmenucontainer" class="mtt-menu-container" style="display:none">
 <ul>
- <li id="slmenu_list:-1" class="list-id--1" <?php if(is_readonly()) echo 'style="display:none"' ?>><div class="menu-icon"></div><a href="#alltasks"><?php _e('alltasks'); ?></a></li>
- <li class="mtt-menu-delimiter slmenu-lists-begin" <?php if(is_readonly()) echo 'style="display:none"' ?>></li>
+ <li id="slmenu_list:-1" class="list-id--1 mtt-need-list" <?php if(is_readonly()) echo 'style="display:none"' ?>><div class="menu-icon"></div><a href="#alltasks"><?php _e('alltasks'); ?></a></li>
+ <li class="mtt-menu-delimiter slmenu-lists-begin mtt-need-list" <?php if(is_readonly()) echo 'style="display:none"' ?>></li>
 </ul>
 </div>
 
