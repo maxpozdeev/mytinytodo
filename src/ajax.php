@@ -581,7 +581,7 @@ function check_read_access($listId = null)
 	$db = DBConnection::instance();
 	if(Config::get('password') == '') return true;
 	if(is_logged()) return true;
-	if($listId)
+	if($listId !== null)
 	{
 		$id = $db->sq("SELECT id FROM {$db->prefix}lists WHERE id=? AND published=1", array($listId));
 		if($id) return;
@@ -594,7 +594,7 @@ function have_write_access($listId = null)
 {
 	if(is_readonly()) return false;
 	// check list exist
-	if($listId)
+	if($listId !== null)
 	{
 		$db = DBConnection::instance();
 		$count = $db->sq("SELECT COUNT(*) FROM {$db->prefix}lists WHERE id=?", array($listId));
