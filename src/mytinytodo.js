@@ -1988,14 +1988,14 @@ function updateAccessStatus()
 	if(flag.needAuth && !flag.isLogged) {
 		flag.readOnly = true;
 		$("#bar_public").show();
-		$('#page_tasks').addClass('readonly')
+		$('#mtt_body').addClass('readonly')
 		liveSearchToggle(1);
 		// remove some tab menu items
 		$('#btnRenameList,#btnDeleteList,#btnClearCompleted,#btnPublish').remove();
 	}
 	else {
 		flag.readOnly = false;
-		$('#page_tasks').removeClass('readonly')
+		$('#mtt_body').removeClass('readonly')
 		$("#bar_public").hide();
 		liveSearchToggle(0);
 	}

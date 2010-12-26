@@ -55,7 +55,7 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 .mtt-tabs li:hover a { color: #888888; }
 .mtt-tabs.mtt-tabs-only-one li { display:none; }
 .mtt-tabs.mtt-tabs-only-one li.mtt-tabs-selected { display:block; }
-#page_tasks.readonly li.mtt-tabs-selected span { margin-right:0; }
+#mtt_body.readonly li.mtt-tabs-selected span { margin-right:0; }
 .mtt-tabs-hidden { display:none; }
                      
 .mtt-tabs-alltasks { margin:1px 3px 0 3px; float:right; border-right:1px solid #ededed; background:#fbfbfb url(images/tab_hover.gif) no-repeat top left; }
@@ -96,7 +96,7 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 .mtt-tabs-add-button:hover { cursor:pointer; }
 .mtt-tabs-add-button>span { display:block; width:16px; height:16px; background:url(images/buttons.png) 0 0 no-repeat; }
 .mtt-tabs-add-button:hover>span { background-position:-16px 0; }
-#page_tasks.readonly .mtt-tabs-add-button { display:none; }
+#mtt_body.readonly .mtt-tabs-add-button { display:none; }
 
 .mtt-tabs-select-button>span { background:url(images/icons.gif) -64px 0 no-repeat; }
 .mtt-tabs-select-button:hover>span, .mtt-tabs-select-button.mtt-menu-button-active>span { background-position:-80px 0; }
@@ -177,7 +177,7 @@ li.task-expanded .task-toggle { background-position:-80px -16px; }
 .task-through-right { float:right; }
 .task-title a { color:#000000; }
 .task-title a:hover { color:#af0000; }
-#page_tasks.readonly #tasklist li .task-actions { display:none; }
+#mtt_body.readonly #tasklist li .task-actions { display:none; }
 .task-listname { background-color:#eee; color:#555; padding:0px 3px; }
 .task-tags { padding:0px 2px; }
 .task-tags .tag { font-size:0.8em; font-weight:bold; color:#333333; text-decoration:underline;  }
