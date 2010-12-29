@@ -235,11 +235,12 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		
 		// Tabs
 		$('#lists li.mtt-tab').live('click', function(event){
-			tabSelected(this);
 			if(event.metaKey || event.ctrlKey) {
-				// toggle singetab interface
-				_mtt.applySingletab(!_mtt.options.singletab);
+				// hide the tab
+				hideTab(this);
+				return false;
 			}
+			tabSelect(this);
 			return false;
 		});
 		
@@ -249,7 +250,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 				hideTab(-1);
 				return false;
 			}
-			tabSelected(-1);
+			tabSelect(-1);
 			return false;
 		});
 
@@ -460,13 +461,14 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		this.addAction('listAdded', cmenuOnListAdded);
 		this.addAction('listSelected', cmenuOnListSelected);
 		this.addAction('listOrderChanged', cmenuOnListOrderChanged);
+		this.addAction('listHidden', cmenuOnListHidden);
 
 		// select list menu
 		this.addAction('listsLoaded', slmenuOnListsLoaded);
 		this.addAction('listRenamed', slmenuOnListRenamed);
 		this.addAction('listAdded', slmenuOnListAdded);
 		this.addAction('listSelected', slmenuOnListSelected);
-		this.addAction('listOrderChanged', slmenuOnListsLoaded);
+		this.addAction('listHidden', slmenuOnListHidden);
 
 		return this;
 	},
@@ -502,51 +504,57 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			$('#searchbar').hide();
 		}
 		$('#page_tasks').hide();
+		$('#tasklist').html('');
 		
 		tabLists.clear();
 		
 		this.db.loadLists(null, function(res)
 		{
 			var ti = '';
+			var openListId = 0;
 			if(res && res.total)
 			{
-				// determine if need to open specific tab
-				var openId = res.list[0].id;
-				if(_mtt.options.openList) {
-					for(var i in res.list) {
+				// open required or first non-hidden list
+				for(var i=0; i<res.list.length; i++) {
+					if(_mtt.options.openList) {
 						if(_mtt.options.openList == res.list[i].id) {
-							openId = res.list[i].id;
+							openListId = res.list[i].id;
 							break;
 						}
 					}
+					else if(!res.list[i].hidden) {
+						openListId = res.list[i].id;
+						break;
+					}
 				}
+				
+				// or open first if all list are hidden
+				if(!openListId) openListId = res.list[0].id;
 				
 				$.each(res.list, function(i,item){
 					tabLists.add(item);
-					ti += '<li id="list_'+item.id+'" class="mtt-tab '+(item.id==openId?'mtt-tabs-selected':'')+'">'+
+					ti += '<li id="list_'+item.id+'" class="mtt-tab'+(item.id==openListId?' mtt-tabs-selected':'')+(item.hidden?' mtt-tabs-hidden':'')+'">'+
 						'<a href="#list/'+item.id+'" title="'+item.name+'"><span>'+item.name+'</span>'+
 						'<div class="list-action"></div></a></li>';
 				});
-
+			}
+			
+			if(openListId) {
 				$('#mtt_body').removeClass('no-lists');
 				$('.mtt-need-list').removeClass('mtt-item-disabled');
-
-				curList = tabLists.get(openId);
-				loadTasks();
 			}
-			else
-			{
+			else {
 				curList = 0;
 				$('#mtt_body').addClass('no-lists');
 				$('.mtt-need-list').addClass('mtt-item-disabled');
-				$('#tasklist').html('');
 			}
 
 			_mtt.options.openList = 0;
 			$('#lists ul').html(ti);
 			$('#lists').show();
 			_mtt.doAction('listsLoaded');
-			if(curList) _mtt.doAction('listSelected', curList);
+			tabSelect(openListId);
+
 			$('#page_tasks').show();
 
 		});
@@ -1086,10 +1094,11 @@ function toggleAllNotes(show)
 };
 
 
-function tabSelected(elementOrId)
+function tabSelect(elementOrId)
 {
 	var id;
 	if(typeof elementOrId == 'number') id = elementOrId;
+	else if(typeof elementOrId == 'string') id = parseInt(elementOrId);
 	else {
 		id = $(elementOrId).attr('id');
 		if(!id) return;
@@ -1116,6 +1125,10 @@ function tabSelected(elementOrId)
 		mytinytodo.doAction('listSelected', tabLists.get(id));
 	}
 	curList = tabLists.get(id);
+	if(curList.hidden) {
+		curList.hidden = false;
+		if(curList.id > 0) _mtt.db.request('setHideList', {list:curList.id, hide:0});
+	}
 	flag.tagsChanged = true;
 	cancelTagFilter(0, 1);
 	setTaskview(0);
@@ -1728,7 +1741,7 @@ function cmenuOnListsLoaded()
 	var s = '';
 	var all = tabLists.getAll();
 	for(var i in all) {
-		s += '<li id="cmenu_list:'+all[i].id+'">'+all[i].name+'</li>';
+		s += '<li id="cmenu_list:'+all[i].id+'" class="'+(all[i].hidden?'mtt-list-hidden':'')+'">'+all[i].name+'</li>';
 	}
 	$('#cmenulistscontainer ul').html(s);
 };
@@ -1748,13 +1761,18 @@ function cmenuOnListRenamed(list)
 function cmenuOnListSelected(list)
 {
 	$('#cmenulistscontainer li').removeClass('mtt-item-disabled');
-	$('#cmenu_list\\:'+list.id).addClass('mtt-item-disabled');
+	$('#cmenu_list\\:'+list.id).addClass('mtt-item-disabled').removeClass('mtt-list-hidden');
 };
 
 function cmenuOnListOrderChanged()
 {
 	cmenuOnListsLoaded();
 	$('#cmenu_list\\:'+curList.id).addClass('mtt-item-disabled');
+};
+
+function cmenuOnListHidden(list)
+{
+	$('#cmenu_list\\:'+list.id).addClass('mtt-list-hidden');
 };
 
 
@@ -1869,7 +1887,7 @@ function slmenuOnListsLoaded()
 	var s = '';
 	var all = tabLists.getAll();
 	for(var i in all) {
-		s += '<li id="slmenu_list:'+all[i].id+'" class="'+(all[i].id==curList.id?'mtt-item-checked':'')+' list-id-'+all[i].id+'"><div class="menu-icon"></div><a href="#list/'+all[i].id+'">'+all[i].name+'</a></li>';
+		s += '<li id="slmenu_list:'+all[i].id+'" class="'+(all[i].id==curList.id?'mtt-item-checked':'')+' list-id-'+all[i].id+(all[i].hidden?' mtt-list-hidden':'')+'"><div class="menu-icon"></div><a href="#list/'+all[i].id+'">'+all[i].name+'</a></li>';
 	}
 	$('#slmenucontainer ul>.slmenu-lists-begin').nextAll().remove();
 	$('#slmenucontainer ul>.slmenu-lists-begin').after(s);
@@ -1892,8 +1910,13 @@ function slmenuOnListAdded(list)
 function slmenuOnListSelected(list)
 {
 	$('#slmenucontainer li').removeClass('mtt-item-checked');
-	$('#slmenucontainer li.list-id-'+list.id).addClass('mtt-item-checked');
+	$('#slmenucontainer li.list-id-'+list.id).addClass('mtt-item-checked').removeClass('mtt-list-hidden');
 
+};
+
+function slmenuOnListHidden(list)
+{
+	$('#slmenucontainer li.list-id-'+list.id).addClass('mtt-list-hidden');
 };
 
 function slmenuSelect(el, menu)
@@ -1906,7 +1929,7 @@ function slmenuSelect(el, menu)
 		value = a[1];
 	}
 	if(id == 'slmenu_list') {
-		tabSelected(parseInt(value));
+		tabSelect(parseInt(value));
 	}
 	return false;
 };
@@ -1926,10 +1949,44 @@ function feedCurList()
 
 function hideTab(listId)
 {
+	if(typeof listId != 'number') {
+		var id = $(listId).attr('id');
+		if(!id) return;
+		listId = parseInt(id.split('_', 2)[1]);
+	}
+	
+	if(!tabLists.get(listId)) return false;
+
+	// if we hide current tab
+	var listIdToSelect = 0;
+	if(curList.id == listId) {
+		var all = tabLists.getAll();
+		for(var i in all) {
+			if(all[i].id != curList.id && !all[i].hidden) {
+				listIdToSelect = all[i].id;
+				break;
+			}
+		}
+		// do not hide the tab if others are hidden
+		if(!listIdToSelect) return false;
+	}
+
 	if(listId == -1) {
 		$('#list_all').addClass('mtt-tabs-hidden').removeClass('mtt-tabs-selected');
-		var a = tabLists.getAll();
-		if(a[0]) tabSelected(parseInt(a[0].id)); else _mtt.loadLists();
+	}
+	else {
+		$('#list_'+listId).addClass('mtt-tabs-hidden').removeClass('mtt-tabs-selected');
+	}
+	
+	tabLists.get(listId).hidden = true;
+	
+	if(listId > 0) {
+		_mtt.db.request('setHideList', {list:listId, hide:1});
+		_mtt.doAction('listHidden', tabLists.get(listId));
+	}
+	
+	if(listIdToSelect) {
+		tabSelect(listIdToSelect);
 	}
 }
 

@@ -535,6 +535,17 @@ elseif(isset($_GET['setShowNotesInList']))
 	echo json_encode(array('total'=>1));
 	exit;
 }
+elseif(isset($_GET['setHideList']))
+{
+	check_write_access();
+	$listId = (int)_post('list');
+	$flag = (int)_post('hide');
+	$bitwise = ($flag == 0) ? 'taskview & ~4' : 'taskview | 4';
+	$db->dq("UPDATE {$db->prefix}lists SET taskview=$bitwise WHERE id=$listId");
+	echo json_encode(array('total'=>1));
+	exit;	
+}
+
 
 ###################################################################################################
 
@@ -872,6 +883,7 @@ function prepareList($row)
 		'published' => $row['published'] ? 1 :0,
 		'showCompl' => $taskview & 1 ? 1 : 0,
 		'showNotes' => $taskview & 2 ? 1 : 0,
+		'hidden' => $taskview & 4 ? 1 : 0,
 	);
 }
 

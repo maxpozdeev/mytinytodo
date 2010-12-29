@@ -157,6 +157,11 @@ mytinytodoStorageAjax.prototype =
 	{
 	    $.post(this.mtt.mttUrl+'ajax.php?setShowNotesInList', { list:params.list, shownotes:params.shownotes },  callback, 'json');
 	},
+	
+	setHideList: function(params, callback)
+	{
+		$.post(this.mtt.mttUrl+'ajax.php?setHideList', { list:params.list, hide:params.hide }, callback, 'json');
+	},
 
 	changeListOrder: function(params, callback)
 	{

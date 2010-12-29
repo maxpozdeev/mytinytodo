@@ -338,6 +338,9 @@ li.mtt-menu-indicator .submenu-icon {
 }
 li.mtt-item-hidden { display:none; }
 
+#slmenucontainer li.mtt-list-hidden a { font-style:italic; }
+#cmenulistscontainer li.mtt-list-hidden { font-style:italic; }
+
 #btnRssFeed .menu-icon { background:url(images/buttons.png) -16px -64px no-repeat; }
 #btnRssFeed.mtt-item-disabled .menu-icon { background:url(images/buttons.png) 0px -64px no-repeat; }
 
