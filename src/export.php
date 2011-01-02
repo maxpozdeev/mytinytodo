@@ -50,7 +50,7 @@ function printCSV($listData, $data)
 	{
 		$s .= ($r['compl']?'1':'0'). ','. $r['prio']. ','. escape_csv($r['title']). ','.
 			escape_csv($r['note']). ','. escape_csv($r['tags']). ','. $r['duedate'].
-			','. gmdate('Y-m-d H:i:s O',$r['d_created']). ','. ($r['d_completed'] ? gmdate('Y-m-d H:i:s O',$r['d_completed']) :''). "\n";
+			','. date('Y-m-d H:i:s O',$r['d_created']). ','. ($r['d_completed'] ? date('Y-m-d H:i:s O',$r['d_completed']) :''). "\n";
 	}
 	header('Content-type: text/csv');
 	header('Content-disposition: attachment; filename=list_'.$listData['id'].'.csv');
