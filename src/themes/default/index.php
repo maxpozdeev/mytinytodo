@@ -23,7 +23,6 @@
 <script type="text/javascript" src="<?php mttinfo('mtt_url'); ?>mytinytodo.js?v=@VERSION"></script>
 <script type="text/javascript" src="<?php mttinfo('mtt_url'); ?>mytinytodo_lang.php?v=@VERSION"></script>
 <script type="text/javascript" src="<?php mttinfo('mtt_url'); ?>mytinytodo_ajax_storage.js?v=@VERSION"></script>
-<script type="text/javascript" src="<?php mttinfo('template_url'); ?>functions.js?v=@VERSION"></script>
 
 <script type="text/javascript">
 $().ready(function(){
