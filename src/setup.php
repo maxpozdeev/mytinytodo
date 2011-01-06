@@ -2,7 +2,7 @@
 
 /*
 	This file is part of myTinyTodo.
-	(C) Copyright 2009-2010 Max Pozdeev <maxpozdeev@gmail.com>
+	(C) Copyright 2009-2011 Max Pozdeev <maxpozdeev@gmail.com>
 	Licensed under the GNU GPL v3 license. See file COPYRIGHT for details.
 */
 
@@ -681,7 +681,9 @@ function update_131_14($db, $dbtype)
 	$db->ex("DELETE FROM {$db->prefix}tag2task");
 	
 	$q = $db->dq("SELECT id,list_id,tags FROM {$db->prefix}todolist WHERE tags != ''");
-	while($r = $q->fetch_assoc())
+	$ar = array();
+	while($r = $q->fetch_assoc()) $ar[] = $r;
+	foreach($ar as $r)
 	{
 			$aTags = v14_prepareTags($r['tags']);
 			if($aTags)
@@ -702,11 +704,16 @@ function update_131_14($db, $dbtype)
 	
 	# add UUID
 	$q = $db->dq("SELECT id FROM {$db->prefix}todolist");
-	while($r = $q->fetch_assoc()) {
+	$ar = array();
+	while($r = $q->fetch_assoc()) $ar[] = $r;
+	foreach($ar as $r) {
 		$db->ex("UPDATE {$db->prefix}todolist SET uuid=? WHERE id=".$r['id'], array(generateUUID()) );
 	}
+
 	$q = $db->dq("SELECT id FROM {$db->prefix}lists");
-	while($r = $q->fetch_assoc()) {
+	$ar = array();
+	while($r = $q->fetch_assoc()) $ar[] = $r;
+	foreach($ar as $r) {
 		$db->ex("UPDATE {$db->prefix}lists SET uuid=? WHERE id=".$r['id'], array(generateUUID()) );
 	}
 	
