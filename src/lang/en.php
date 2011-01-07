@@ -6,8 +6,8 @@
 	Original name: English
 	Author: Max Pozdeev
 	Author Url: http://www.mytinytodo.net
-	AppVersion: v1.4
-	Date: 2010-12-15
+	AppVersion: v1.4b2
+	Date: 2011-01-07
 */
 
 class Lang extends DefaultLang
@@ -91,7 +91,9 @@ class Lang extends DefaultLang
 		'list_showcompleted' => "Show completed tasks",
 		'list_clearcompleted' => "Clear completed tasks",
 		'list_select' => "Select list",
-		'list_exportcsv' => "Export to CSV",
+		'list_export' => "Export",
+		'list_export_csv' => "CSV",
+		'list_export_ical' => "iCalendar",
 		'list_rssfeed' => "RSS Feed",
 		'alltags' => "All tags:",
 		'alltags_show' => "Show all",

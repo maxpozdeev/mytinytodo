@@ -32,7 +32,7 @@ while($r = $q->fetch_assoc($q))
 
 $format = _get('format');
 	
-if($format = 'ical') printICal($listData, $data);
+if($format == 'ical') printICal($listData, $data);
 else printCSV($listData, $data);
 
 

@@ -1152,7 +1152,8 @@ function listMenuClick(el, menu)
 		case 'btnRenameList': renameCurList(); break;
 		case 'btnDeleteList': deleteCurList(); break;
 		case 'btnPublish': publishCurList(); break;
-		case 'btnExportCSV': exportCurListToCSV(); break;
+		case 'btnExportCSV': exportCurList('csv'); break;
+		case 'btnExportICAL': exportCurList('ical'); break;
 		case 'btnRssFeed': feedCurList(); break;
 		case 'btnShowCompleted': showCompletedToggle(); break;
 		case 'btnClearCompleted': clearCompleted(); break;
@@ -1936,10 +1937,11 @@ function slmenuSelect(el, menu)
 };
 
 
-function exportCurListToCSV()
+function exportCurList(format)
 {
 	if(!curList) return;
-	window.location.href = _mtt.mttUrl + 'export.php?list='+curList.id +'&format=csv';
+	if(!format.match(/^[a-z0-9-]+$/i)) return;
+	window.location.href = _mtt.mttUrl + 'export.php?list='+curList.id +'&format='+format;
 };
 
 function feedCurList()
