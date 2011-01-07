@@ -51,7 +51,8 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		singletab: false,
 		autotag: false,
 		tagPreview: true,
-		saveShowNotes: false
+		saveShowNotes: false,
+		firstdayofweek: 1
 	},
 
 	timers: {
