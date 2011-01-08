@@ -6,8 +6,8 @@
 	Original name: English
 	Author: Max Pozdeev
 	Author Url: http://www.mytinytodo.net
-	AppVersion: v1.4b2
-	Date: 2011-01-07
+	AppVersion: v1.4b3
+	Date: 2011-01-09
 */
 
 class Lang extends DefaultLang
@@ -30,7 +30,6 @@ class Lang extends DefaultLang
 
 	var $inc = array
 	(
-		'My Tiny Todolist' => "My Tiny Todolist",
 		'htab_newtask' => "New task",
 		'htab_search' => "Search",
 		'btn_add' => "Add",
@@ -137,5 +136,3 @@ class Lang extends DefaultLang
 		'set_showdate' => "Show task date in list",
 	);
 }
-
-?>
