@@ -202,7 +202,7 @@ function timezoneIdentifiers()
  <input name="dateformat" value="<?php echo htmlspecialchars(_c('dateformat'));?>" />
  <select onchange="if(this.value!=0) this.form.dateformat.value=this.value;">
  <?php echo selectOptions(array('F j, Y'=>formatTime('F j, Y'), 'M d, Y'=>formatTime('M d, Y'), 'j M Y'=>formatTime('j M Y'), 'd F Y'=>formatTime('d F Y'),
-	'n/j/Y'=>formatTime('n/j/Y'), 'd.m.Y'=>formatTime('d.m.Y'), 'j. F Y'=>formatTime('j. F Y'), 0=>'Custom'), _c('dateformat'), 0); ?>
+	'n/j/Y'=>formatTime('n/j/Y'), 'd.m.Y'=>formatTime('d.m.Y'), 'j. F Y'=>formatTime('j. F Y'), 0=>__('set_custom')), _c('dateformat'), 0); ?>
  </select>
 </td></tr>
 
@@ -214,7 +214,7 @@ function timezoneIdentifiers()
  <?php echo selectOptions(array('Y-m-d'=>'yyyy-mm-dd ('.date('Y-m-d').')',
        'n/j/y'=>'m/d/yy ('.date('n/j/y').')',
        'd.m.y'=>'dd.mm.yy ('.date('d.m.y').')',
-       'd/m/y'=>'dd/mm/yy ('.date('d/m/y').')', 0=>'Custom'), _c('dateformat2')); ?>
+       'd/m/y'=>'dd/mm/yy ('.date('d/m/y').')', 0=>__('set_custom')), _c('dateformat2')); ?>
  </select>
 </td></tr>
 
@@ -223,7 +223,7 @@ function timezoneIdentifiers()
 <td>
  <input name="dateformatshort" value="<?php echo htmlspecialchars(_c('dateformatshort'));?>" />
  <select onchange="if(this.value!=0) this.form.dateformatshort.value=this.value;">
- <?php echo selectOptions(array('M d'=>formatTime('M d'), 'j M'=>formatTime('j M'), 'n/j'=>formatTime('n/j'), 'd.m'=>formatTime('d.m'), 0=>'Custom'), _c('dateformatshort'), 0); ?>
+ <?php echo selectOptions(array('M d'=>formatTime('M d'), 'j M'=>formatTime('j M'), 'n/j'=>formatTime('n/j'), 'd.m'=>formatTime('d.m'), 0=>__('set_custom')), _c('dateformatshort'), 0); ?>
  </select>
 </td></tr>
 

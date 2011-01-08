@@ -123,6 +123,7 @@ class DefaultLang
 		'set_sessions_php' => "PHP",
 		'set_sessions_files' => "Files",
 		'set_firstdayofweek' => "First day of week",
+		'set_custom' => "Custom",
 		'set_date' => "Date format",
 		'set_date2' => "Short Date format",
 		'set_shortdate' => "Short Date (current year)",
