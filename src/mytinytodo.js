@@ -51,6 +51,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		singletab: false,
 		autotag: false,
 		tagPreview: true,
+		tagPreviewDelay: 700, //milliseconds
 		saveShowNotes: false,
 		firstdayofweek: 1
 	},
@@ -370,7 +371,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 				var cl = 'tag-id-' + $(this).attr('tagid');
 				var sel = (event.metaKey || event.ctrlKey) ? 'li.'+cl : 'li:not(.'+cl+')';
 				if(event.type == 'mouseover') {
-					_mtt.timers.previewtag = setTimeout( function(){$('#tasklist '+sel).addClass('not-in-tagpreview');}, 700);
+					_mtt.timers.previewtag = setTimeout( function(){$('#tasklist '+sel).addClass('not-in-tagpreview');}, _mtt.options.tagPreviewDelay);
 				}
 				else {
 					clearTimeout(_mtt.timers.previewtag);
