@@ -12,6 +12,7 @@ class DefaultLang
 	private $default_js = array
 	(
 		'confirmDelete' => "Are you sure you want to delete the task?",
+		'confirmLeave' => "There can be unsaved data. Do you really want to leave?",
 		'actionNoteSave' => "save",
 		'actionNoteCancel' => "cancel",
 		'error' => "Some error occurred (click for details)",

@@ -12,7 +12,7 @@ var sortOrder; //save task order before dragging
 var searchTimer;
 var objPrio = {};
 var selTask = 0;
-var flag = { needAuth:false, isLogged:false, tagsChanged:true, readOnly:false };
+var flag = { needAuth:false, isLogged:false, tagsChanged:true, readOnly:false, editFormChanged:false };
 var taskCnt = { total:0, past: 0, today:0, soon:0 };
 var tabLists = {
 	_lists: {},
@@ -232,8 +232,6 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			else if(this.id == 'view_soon') setTaskview('soon');
 		});
 
-		$("#tasklist").bind("click", tasklistClick);
-
 		
 		// Tabs
 		$('#lists li.mtt-tab').live('click', function(event){
@@ -306,10 +304,27 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		$('#alltags .tag').live('click', function(){
 			addEditTag($(this).attr('tag'));
 			return false;
-		});	
+		});
+		
+		$("#duedate").datepicker({
+			dateFormat: _mtt.duedatepickerformat(),
+			firstDay: _mtt.options.firstdayofweek,
+			showOn: 'button',
+			buttonImage: _mtt.templateUrl + 'images/calendar.png', buttonImageOnly: true,
+			constrainInput: false,
+			duration:'',
+			dayNamesMin:_mtt.lang.daysMin, dayNames:_mtt.lang.daysLong, monthNamesShort:_mtt.lang.monthsLong
+		});
 
+		$("#edittags").autocomplete('ajax.php?suggestTags', {scroll: false, multiple: true, selectFirst:false, max:8, extraParams:{list:function(){ var taskId = document.getElementById('taskedit_form').id.value; return taskList[taskId].listId; }}});
+
+		$('#taskedit_form').find('select,input,textarea').change(function(){
+			flag.editFormChanged = true;
+		});
 
 		// tasklist handlers
+		$("#tasklist").bind("click", tasklistClick);
+		
 		$('#tasklist li').live('dblclick', function(){
 			//clear selection
 			if(document.selection && document.selection.empty && document.selection.createRange().text) document.selection.empty();
@@ -389,18 +404,6 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		$("#lists ul").sortable({delay:150, update:listOrderChanged}); 
 		this.applySingletab();
 
-		$("#duedate").datepicker({
-			dateFormat: _mtt.duedatepickerformat(),
-			firstDay: _mtt.options.firstdayofweek,
-			showOn: 'button',
-			buttonImage: _mtt.templateUrl + 'images/calendar.png', buttonImageOnly: true,
-			constrainInput: false,
-			duration:'',
-			dayNamesMin:_mtt.lang.daysMin, dayNames:_mtt.lang.daysLong, monthNamesShort:_mtt.lang.monthsLong
-		});
-
-		$("#edittags").autocomplete('ajax.php?suggestTags', {scroll: false, multiple: true, selectFirst:false, max:8, extraParams:{list:function(){ var taskId = document.getElementById('taskedit_form').id.value; return taskList[taskId].listId; }}});
-
 
 		// AJAX Errors
 		$('#msg').ajaxSend(function(r,s){
@@ -452,6 +455,12 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		});
 		
 		$(".mtt-back-button").live('click', function(){ _mtt.pageBack(); this.blur(); return false; } );
+		
+		$(window).bind('beforeunload', function() {
+			if(_mtt.pages.current.page == 'taskedit' && flag.editFormChanged) {
+				return _mtt.lang.get('confirmLeave');
+			}
+		});
 
 
 		// tab menu
@@ -1309,6 +1318,7 @@ function showEditForm(isAdd)
 		form.isadd.value = 0;
 	}
 
+	flag.editFormChanged = false;
 	_mtt.pageSet('taskedit');
 };
 

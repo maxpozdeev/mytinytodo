@@ -15,6 +15,7 @@ class Lang extends DefaultLang
 	var $js = array
 	(
 		'confirmDelete' => 'Вы действительно хотите удалить задачу?',
+		'confirmLeave' => 'На странице могут быть несохраненные данные. Вы действительно хотите закрыть страницу?',
 		'actionNoteSave' => 'сохранить',
 		'actionNoteCancel' => 'отмена',
 		'error' => 'Ошибка',
