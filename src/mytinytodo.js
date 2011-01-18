@@ -318,7 +318,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 
 		$("#edittags").autocomplete('ajax.php?suggestTags', {scroll: false, multiple: true, selectFirst:false, max:8, extraParams:{list:function(){ var taskId = document.getElementById('taskedit_form').id.value; return taskList[taskId].listId; }}});
 
-		$('#taskedit_form').find('select,input,textarea').change(function(){
+		$('#taskedit_form').find('select,input,textarea').bind('change keypress', function(){
 			flag.editFormChanged = true;
 		});
 
@@ -455,7 +455,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		});
 		
 		$(".mtt-back-button").live('click', function(){ _mtt.pageBack(); this.blur(); return false; } );
-		
+
 		$(window).bind('beforeunload', function() {
 			if(_mtt.pages.current.page == 'taskedit' && flag.editFormChanged) {
 				return _mtt.lang.get('confirmLeave');
