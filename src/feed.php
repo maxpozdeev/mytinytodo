@@ -32,6 +32,11 @@ elseif($feedType == 'modified') {
     $listData['_uid_field'] = 'd_edited';
     $listData['_feed_descr'] = $lang->get('feed_modified_tasks');
 }
+elseif($feedType == 'current') {
+	$listData['_uid_field'] = 'd_created';
+	$listData['_feed_descr'] = $lang->get('feed_new_tasks');
+	$sqlWhere = 'AND compl=0';
+}
 else {
     $listData['_uid_field'] = 'd_created';
     $listData['_feed_descr'] = $lang->get('feed_new_tasks');
@@ -52,6 +57,7 @@ while($r = $q->fetch_assoc($q))
 		$a[] = $lang->get('due'). ": ".formatDate3(Config::get('dateformat'), (int)$ad[0], (int)$ad[1], (int)$ad[2], $lang);
 	}
 	if($r['tags'] != '') $a[] = $lang->get('tags'). ": ". str_replace(',', ', ', $r['tags']);
+	if($r['compl']) $a[] = $lang->get('taskdate_completed'). ": ". timestampToDatetime($r['d_completed']);
 	$r['title'] = strip_tags($r['title']);
 	$r['note'] = escapeTags($r['note']);
 	$r['_descr'] = nl2br($r['note']). ($a && $r['note']!='' ? "<br/><br/>" : "").  implode("<br/>", htmlarray($a));
