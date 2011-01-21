@@ -1289,6 +1289,7 @@ function clearEditForm()
 	form.tags.value = '';
 	form.duedate.value = '';
 	form.prio.value = '0';
+	form.id.value = '';
 	toggleEditAllTags(0);
 };
 
@@ -1351,8 +1352,11 @@ function toggleEditAllTags(show)
 {
 	if(show)
 	{
-		var taskId = document.getElementById('taskedit_form').id.value;
-		if(curList.id == -1 || flag.tagsChanged) loadTags(taskList[taskId].listId, fillEditAllTags);
+		if(curList.id == -1) {
+			var taskId = document.getElementById('taskedit_form').id.value;
+			loadTags(taskList[taskId].listId, fillEditAllTags);
+		}
+		else if(flag.tagsChanged) loadTags(curList.id, fillEditAllTags);
 		else fillEditAllTags();
 		showhide($('#alltags_hide'), $('#alltags_show'));
 	}
