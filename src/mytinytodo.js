@@ -539,12 +539,15 @@ var mytinytodo = window.mytinytodo = _mtt = {
 					}
 				}
 				
+				// open all tasks tab
+				if(_mtt.options.openList == -1) openListId = -1;
+				
 				// or open first if all list are hidden
 				if(!openListId) openListId = res.list[0].id;
 				
 				$.each(res.list, function(i,item){
 					tabLists.add(item);
-					ti += '<li id="list_'+item.id+'" class="mtt-tab'+(item.id==openListId?' mtt-tabs-selected':'')+(item.hidden?' mtt-tabs-hidden':'')+'">'+
+					ti += '<li id="list_'+item.id+'" class="mtt-tab'+(item.hidden?' mtt-tabs-hidden':'')+'">'+
 						'<a href="#list/'+item.id+'" title="'+item.name+'"><span>'+item.name+'</span>'+
 						'<div class="list-action"></div></a></li>';
 				});
@@ -680,8 +683,6 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		if(location.hash == '') return false;
 		var h = location.hash.substr(1);
 		var a = h.split("/");
-		if(a.length < 2) return false;
-		
 		var p = {};
 		var s = '';
 		
@@ -689,7 +690,8 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		{
 			s = a[i];
 			switch(s) {
-				case "list": if(a[++i].match(/^\d+$/)) { p[s] = a[i]; } break;
+				case "list": if(a[++i].match(/^-?\d+$/)) { p[s] = a[i]; } break;
+				case "alltasks": p.list = '-1'; break;
 			}
 		}
 
