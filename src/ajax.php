@@ -60,7 +60,7 @@ elseif(isset($_GET['loadTasks']))
 
 		if(sizeof($tagIds) > 1) {
 			$inner .= "INNER JOIN (SELECT task_id, COUNT(tag_id) AS c FROM {$db->prefix}tag2task WHERE list_id=$listId AND tag_id IN (".
-						implode(',',$tagIds). ") GROUP BY task_id) ON id=task_id";
+						implode(',',$tagIds). ") GROUP BY task_id) AS t2t ON id=t2t.task_id";
 			$sqlWhere = " AND c=". sizeof($tagIds); //overwrite sqlWhere!
 		}
 		elseif($tagIds) {
@@ -87,7 +87,7 @@ elseif(isset($_GET['loadTasks']))
 	elseif($sort == 4) $sqlSort .= "d_edited ASC, prio DESC, ow ASC";			// byDateModified
 	elseif($sort == 104) $sqlSort .= "d_edited DESC, prio ASC, ow DESC";		// byDateModified (reverse)
 	else $sqlSort .= "ow ASC";
-	
+
 	$t = array();
 	$t['total'] = 0;
 	$t['list'] = array();
