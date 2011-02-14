@@ -48,6 +48,7 @@ $().ready(function(){
 		firstdayofweek: <?php echo (int) Config::get('firstdayofweek'); ?>,
 		autotag: <?php echo Config::get('autotag') ? "true" : "false"; ?>
 		<?php if(isset($_GET['list'])) echo ",openList: ". (int)$_GET['list']; ?>
+		<?php if(isset($_GET['pda'])) echo ", touchDevice: true"; ?>
 	}).loadLists(1);
 });
 </script>

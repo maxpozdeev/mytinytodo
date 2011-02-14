@@ -53,7 +53,8 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		tagPreview: true,
 		tagPreviewDelay: 700, //milliseconds
 		saveShowNotes: false,
-		firstdayofweek: 1
+		firstdayofweek: 1,
+		touchDevice: false
 	},
 
 	timers: {
@@ -362,12 +363,14 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			return false;
 		});
 
-		$('#tasklist .task-prio').live('mouseover mouseout', function(event){
-			var id = parseInt(getLiTaskId(this));
-			if(!id) return;
-			if(event.type == 'mouseover') prioPopup(1, this, id);
-			else prioPopup(0, this);
-		});
+		if(!this.options.touchDevice) {
+			$('#tasklist .task-prio').live('mouseover mouseout', function(event){
+				var id = parseInt(getLiTaskId(this));
+				if(!id) return;
+				if(event.type == 'mouseover') prioPopup(1, this, id);
+				else prioPopup(0, this);
+			});
+		}
 
 		$('#tasklist .mtt-action-note-cancel').live('click', function(){
 			var id = parseInt(getLiTaskId(this));
