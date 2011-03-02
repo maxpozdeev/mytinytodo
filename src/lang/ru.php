@@ -7,7 +7,7 @@
 	Author: Max Pozdeev
 	Author Url: http://www.mytinytodo.net
 	AppVersion: v1.4.0
-	Date: 2011-01-15
+	Date: 2011-03-02
 */
 
 class Lang extends DefaultLang
@@ -61,7 +61,7 @@ class Lang extends DefaultLang
 		'sortByHand' => 'Сортировка вручную',
 		'sortByPriority' => 'Сортировка по приоритету',
 		'sortByDueDate' => 'Сортировка по сроку',
-		'sortByDateCreated' => 'Сортировка по дате дабавления',
+		'sortByDateCreated' => 'Сортировка по дате добавления',
 		'sortByDateModified' => 'Сортировка по дате изменения',
 		'due' => 'Срок',
 		'daysago' => '%d дн. назад',
