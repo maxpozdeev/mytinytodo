@@ -44,8 +44,7 @@ if(isset($_POST['save']))
 	Config::set('showdate', (int)_post('showdate'));
 	Config::save();
 	$t['saved'] = 1;
-	echo json_encode($t);
-	exit;
+	jsonExit($t);
 }
 
 
@@ -129,6 +128,7 @@ function timezoneIdentifiers()
     return $a;
 }
 
+header('Content-type:text/html; charset=utf-8');
 ?>
 
 <div><a href="#" class="mtt-back-button"><?php _e('go_back');?></a></div>

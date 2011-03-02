@@ -25,8 +25,7 @@ if(isset($_GET['loadLists']))
 		$t['total']++;
 		$t['list'][] = prepareList($r);
 	}
-	echo json_encode($t); 
-	exit;
+	jsonExit($t);
 }
 elseif(isset($_GET['loadTasks']))
 {
@@ -101,8 +100,7 @@ elseif(isset($_GET['loadTasks']))
 		$bitwise = (_get('compl') == 0) ? 'taskview & ~1' : 'taskview | 1';
 		$db->dq("UPDATE {$db->prefix}lists SET taskview=$bitwise WHERE id=$listId");
 	}
-	echo json_encode($t); 
-	exit;
+	jsonExit($t);
 }
 elseif(isset($_GET['newTask']))
 {
@@ -118,16 +116,14 @@ elseif(isset($_GET['newTask']))
 	{
 		$a = parse_smartsyntax($title);
 		if($a === false) {
-			echo json_encode($t);
-			exit;
+			jsonExit($t);
 		}
 		$title = $a['title'];
 		$prio = $a['prio'];
 		$tags = $a['tags'];
 	}
 	if($title == '') {
-		echo json_encode($t);
-		exit;
+		jsonExit($t);
 	}
 	if(Config::get('autotag')) $tags .= ','._post('tag');
 	$ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->prefix}todolist WHERE list_id=$listId AND compl=0");
@@ -147,8 +143,7 @@ elseif(isset($_GET['newTask']))
 	$r = $db->sqa("SELECT * FROM {$db->prefix}todolist WHERE id=$id");
 	$t['list'][] = prepareTaskRow($r);
 	$t['total'] = 1;
-	echo json_encode($t); 
-	exit;
+	jsonExit($t);
 }
 elseif(isset($_GET['fullNewTask']))
 {
@@ -164,8 +159,7 @@ elseif(isset($_GET['fullNewTask']))
 	$t = array();
 	$t['total'] = 0;
 	if($title == '') {
-		echo json_encode($t);
-		exit;
+		jsonExit($t);
 	}
 	$tags = trim(_post('tags'));
 	if(Config::get('autotag')) $tags .= ','._post('tag');
@@ -186,8 +180,7 @@ elseif(isset($_GET['fullNewTask']))
 	$r = $db->sqa("SELECT * FROM {$db->prefix}todolist WHERE id=$id");
 	$t['list'][] = prepareTaskRow($r);
 	$t['total'] = 1;
-	echo json_encode($t); 
-	exit;
+	jsonExit($t);
 }
 elseif(isset($_GET['deleteTask']))
 {
@@ -196,8 +189,7 @@ elseif(isset($_GET['deleteTask']))
 	$t = array();
 	$t['total'] = $deleted;
 	$t['list'][] = array('id'=>$id);
-	echo json_encode($t);
-	exit;
+	jsonExit($t);
 }
 elseif(isset($_GET['completeTask']))
 {
@@ -214,8 +206,7 @@ elseif(isset($_GET['completeTask']))
 	$t['total'] = 1;
 	$r = $db->sqa("SELECT * FROM {$db->prefix}todolist WHERE id=$id");
 	$t['list'][] = prepareTaskRow($r);
-	echo json_encode($t);
-	exit;
+	jsonExit($t);
 }
 elseif(isset($_GET['editNote']))
 {
@@ -227,8 +218,7 @@ elseif(isset($_GET['editNote']))
 	$t = array();
 	$t['total'] = 1;
 	$t['list'][] = array('id'=>$id, 'note'=>nl2br(escapeTags($note)), 'noteText'=>(string)$note);
-	echo json_encode($t);
-	exit;
+	jsonExit($t);
 }
 elseif(isset($_GET['editTask']))
 {
@@ -244,8 +234,7 @@ elseif(isset($_GET['editTask']))
 	$t = array();
 	$t['total'] = 0;
 	if($title == '') {
-		echo json_encode($t);
-		exit;
+		jsonExit($t);
 	}
 	$listId = $db->sq("SELECT list_id FROM {$db->prefix}todolist WHERE id=$id");
 	$tags = trim(_post('tags'));
@@ -265,8 +254,7 @@ elseif(isset($_GET['editTask']))
 		$t['list'][] = prepareTaskRow($r);
 		$t['total'] = 1;
 	}
-	echo json_encode($t); 
-	exit;
+	jsonExit($t);
 }
 elseif(isset($_GET['changeOrder']))
 {
@@ -291,16 +279,14 @@ elseif(isset($_GET['changeOrder']))
 		$db->ex("COMMIT");
 		$t['total'] = 1;
 	}
-	echo json_encode($t);
-	exit;
+	jsonExit($t);
 }
 elseif(isset($_POST['login']))
 {
 	$t = array('logged' => 0);
 	if(!$needAuth) {
 		$t['disabled'] = 1;
-		echo json_encode($t);
-		exit;
+		jsonExit($t);
 	}
 	stop_gpc($_POST);
 	$password = _post('password');
@@ -309,15 +295,13 @@ elseif(isset($_POST['login']))
 		session_regenerate_id(1);
 		$_SESSION['logged'] = 1;
 	}
-	echo json_encode($t);
-	exit;
+	jsonExit($t);
 }
 elseif(isset($_POST['logout']))
 {
 	unset($_SESSION['logged']);
 	$t = array('logged' => 0);
-	echo json_encode($t);
-	exit;
+	jsonExit($t);
 }
 elseif(isset($_GET['suggestTags']))
 {
@@ -346,8 +330,7 @@ elseif(isset($_GET['setPrio']))
 	$t = array();
 	$t['total'] = 1;
 	$t['list'][] = array('id'=>$id, 'prio'=>$prio);
-	echo json_encode($t);
-	exit;
+	jsonExit($t);
 }
 elseif(isset($_GET['tagCloud']))
 {
@@ -367,8 +350,7 @@ elseif(isset($_GET['tagCloud']))
 	$t['total'] = 0;
 	$count = sizeof($at);
 	if(!$count) {
-		echo json_encode($t);
-		exit;
+		jsonExit($t);
 	}
 
 	$qmax = max($ac);
@@ -381,8 +363,7 @@ elseif(isset($_GET['tagCloud']))
 		$t['cloud'][] = array('tag'=>htmlarray($tag['name']), 'id'=>(int)$tag['id'], 'w'=> tag_size($qmin,$ac[$i],$step) );
 	}
 	$t['total'] = $count;
-	echo json_encode($t);
-	exit;
+	jsonExit($t);
 }
 elseif(isset($_GET['addList']))
 {
@@ -398,8 +379,7 @@ elseif(isset($_GET['addList']))
 	$t['total'] = 1;
 	$r = $db->sqa("SELECT * FROM {$db->prefix}lists WHERE id=$id");
 	$t['list'][] = prepareList($r);
-	echo json_encode($t);
-	exit;
+	jsonExit($t);
 }
 elseif(isset($_GET['renameList']))
 {
@@ -413,8 +393,7 @@ elseif(isset($_GET['renameList']))
 	$t['total'] = $db->affected();
 	$r = $db->sqa("SELECT * FROM {$db->prefix}lists WHERE id=$id");
 	$t['list'][] = prepareList($r);
-	echo json_encode($t);
-	exit;
+	jsonExit($t);
 }
 elseif(isset($_GET['deleteList']))
 {
@@ -431,8 +410,7 @@ elseif(isset($_GET['deleteList']))
 		$db->ex("DELETE FROM {$db->prefix}todolist WHERE list_id=$id");
 	}
 	$db->ex("COMMIT");
-	echo json_encode($t);
-	exit;
+	jsonExit($t);
 }
 elseif(isset($_GET['setSort']))
 {
@@ -442,8 +420,7 @@ elseif(isset($_GET['setSort']))
 	if($sort < 0 || $sort > 104) $sort = 0;
 	elseif($sort < 101 && $sort > 4) $sort = 0;
 	$db->ex("UPDATE {$db->prefix}lists SET sorting=$sort,d_edited=? WHERE id=$listId", array(time()));
-	echo json_encode(array('total'=>1));
-	exit;
+	jsonExit(array('total'=>1));
 }
 elseif(isset($_GET['publishList']))
 {
@@ -451,8 +428,7 @@ elseif(isset($_GET['publishList']))
 	$listId = (int)_post('list');
 	$publish = (int)_post('publish');
 	$db->ex("UPDATE {$db->prefix}lists SET published=?,d_created=? WHERE id=$listId", array($publish ? 1 : 0, time()));
-	echo json_encode(array('total'=>1));
-	exit;
+	jsonExit(array('total'=>1));
 }
 elseif(isset($_GET['moveTask']))
 {
@@ -465,8 +441,7 @@ elseif(isset($_GET['moveTask']))
 	if($fromId == -1 && $result && $r = $db->sqa("SELECT * FROM {$db->prefix}todolist WHERE id=$id")) {
 		$t['list'][] = prepareTaskRow($r);
 	}
-	echo json_encode($t);
-	exit;
+	jsonExit($t);
 }
 elseif(isset($_GET['changeListOrder']))
 {
@@ -489,8 +464,7 @@ elseif(isset($_GET['changeListOrder']))
 					array(time()) );
 		$t['total'] = 1;
 	}
-	echo json_encode($t);
-	exit;
+	jsonExit($t);
 }
 elseif(isset($_GET['parseTaskStr']))
 {
@@ -507,8 +481,7 @@ elseif(isset($_GET['parseTaskStr']))
 		$t['prio'] = $a['prio'];
 		$t['tags'] = $a['tags'];
 	}
-	echo json_encode($t);
-	exit;
+	jsonExit($t);
 }
 elseif(isset($_GET['clearCompletedInList']))
 {
@@ -522,8 +495,7 @@ elseif(isset($_GET['clearCompletedInList']))
 	$db->ex("DELETE FROM {$db->prefix}todolist WHERE list_id=$listId and compl=1");
 	$t['total'] = $db->affected();
 	$db->ex("COMMIT");
-	echo json_encode($t);
-	exit;
+	jsonExit($t);
 }
 elseif(isset($_GET['setShowNotesInList']))
 {
@@ -532,8 +504,7 @@ elseif(isset($_GET['setShowNotesInList']))
 	$flag = (int)_post('shownotes');
 	$bitwise = ($flag == 0) ? 'taskview & ~2' : 'taskview | 2';
 	$db->dq("UPDATE {$db->prefix}lists SET taskview=$bitwise WHERE id=$listId");
-	echo json_encode(array('total'=>1));
-	exit;
+	jsonExit(array('total'=>1));
 }
 elseif(isset($_GET['setHideList']))
 {
@@ -542,8 +513,7 @@ elseif(isset($_GET['setHideList']))
 	$flag = (int)_post('hide');
 	$bitwise = ($flag == 0) ? 'taskview & ~4' : 'taskview | 4';
 	$db->dq("UPDATE {$db->prefix}lists SET taskview=$bitwise WHERE id=$listId");
-	echo json_encode(array('total'=>1));
-	exit;	
+	jsonExit(array('total'=>1));	
 }
 
 
@@ -597,8 +567,7 @@ function check_read_access($listId = null)
 		$id = $db->sq("SELECT id FROM {$db->prefix}lists WHERE id=? AND published=1", array($listId));
 		if($id) return;
 	}
-	echo json_encode( array('total'=>0, 'list'=>array(), 'denied'=>1) );
-	exit;
+	jsonExit( array('total'=>0, 'list'=>array(), 'denied'=>1) );
 }
 
 function have_write_access($listId = null)
@@ -617,8 +586,7 @@ function have_write_access($listId = null)
 function check_write_access($listId = null)
 {
 	if(have_write_access($listId)) return;
-	echo json_encode( array('total'=>0, 'list'=>array(), 'denied'=>1) );
-	exit;
+	jsonExit( array('total'=>0, 'list'=>array(), 'denied'=>1) );
 }
 
 function inputTaskParams()

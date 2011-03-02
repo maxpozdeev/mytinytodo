@@ -91,7 +91,7 @@ function printRss($listData, $data)
 
 	$s .= "</channel>\n</rss>";
 
-	header("Content-type: text/xml");
+	header("Content-type: text/xml; charset=utf-8");
 	print $s;
 }
 
