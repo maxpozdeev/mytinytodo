@@ -2146,7 +2146,7 @@ function saveSettings(frm)
 {
 	if(!frm) return false;
 	var params = { save:'ajax' };
-	$(frm).find("input:text,input:checked,select,:password").filter(":enabled").each(function() { params[this.name || '__'] = this.value; }); 
+	$(frm).find("input:text,input:password,input:checked,select").filter(":enabled").each(function() { params[this.name || '__'] = this.value; }); 
 	$(frm).find(":submit").attr('disabled','disabled').blur();
 	$.post(_mtt.mttUrl+'settings.php', params, function(json){
 		if(json.saved) {
