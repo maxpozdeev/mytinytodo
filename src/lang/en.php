@@ -6,8 +6,8 @@
 	Original name: English
 	Author: Max Pozdeev
 	Author Url: http://www.mytinytodo.net
-	AppVersion: v1.4.0
-	Date: 2011-01-15
+	AppVersion: v1.4.2
+	Date: 2011-03-21
 */
 
 class Lang extends DefaultLang
@@ -49,6 +49,7 @@ class Lang extends DefaultLang
 		'priority' => "Priority",
 		'task' => "Task",
 		'note' => "Note",
+		'tags' => "Tags",
 		'save' => "Save",
 		'cancel' => "Cancel",
 		'password' => "Password",
@@ -56,7 +57,7 @@ class Lang extends DefaultLang
 		'a_login' => "Login",
 		'a_logout' => "Logout",
 		'public_tasks' => "Public Tasks",
-		'tags' => "Tags",
+		'tagcloud' => "Tags",
 		'tagfilter_cancel' => "cancel filter",
 		'sortByHand' => "Sort by hand",
 		'sortByPriority' => "Sort by priority",
