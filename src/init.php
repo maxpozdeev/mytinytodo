@@ -40,6 +40,11 @@ else {
 }
 $db->prefix = Config::get('prefix');
 
+//User can override language setting by cookies
+if(isset($_COOKIE['lang']) && preg_match("/^[a-z-]+$/i", $_COOKIE['lang']) && file_exists('lang/'. $_COOKIE['lang']. '.php')) {
+	Config::set('lang', $_COOKIE['lang']);
+}
+
 require_once(MTTPATH. 'lang/class.default.php');
 require_once(MTTPATH. 'lang/'.Config::get('lang').'.php');
 

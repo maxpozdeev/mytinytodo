@@ -2,7 +2,7 @@
 
 /*
 	This file is part of myTinyTodo.
-	(C) Copyright 2009-2010 Max Pozdeev <maxpozdeev@gmail.com>
+	(C) Copyright 2009-2011 Max Pozdeev <maxpozdeev@gmail.com>
 	Licensed under the GNU GPL v3 license. See file COPYRIGHT for details.
 */
 
@@ -22,6 +22,14 @@ if(isset($_POST['save']))
 	$langs = getLangs();
 	Config::$params['lang']['options'] = array_keys($langs);
 	Config::set('lang', _post('lang'));
+	
+	// in Demo mode we can set only language by cookies
+	if(defined('MTTDEMO')) {
+		setcookie('lang', Config::get('lang'), 0, url_dir(Config::get('url')=='' ? $_SERVER['REQUEST_URI'] : Config::get('url')));
+		$t['saved'] = 1;
+		jsonExit($t);
+	}
+	
 	if(isset($_POST['password']) && $_POST['password'] != '') Config::set('password', $_POST['password']);
 	elseif(!_post('allowpassword')) Config::set('password', '');
 	Config::set('smartsyntax', (int)_post('smartsyntax'));
