@@ -1,22 +1,23 @@
-﻿
-myTinyTodo is free software: you can redistribute it and/or modify
+﻿This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+the Free Software Foundation; either version 2 of the License, or (at
+your option) any later version.
 
-myTinyTodo is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+for more details.
 
-See file LICENSE or <http://www.gnu.org/licenses/gpl-3.0.txt>.
+You should have received a copy of the GNU General Public License
+along with this program as the file LICENSE; if not, please see
+http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
 
 myTinyTodo
 --------------
 Url:		http://www.mytinytodo.net/
 Copyright:	2009,2010 Max Pozdeev <maxpozdeev@gmail.com>
-License:	GPL version 3 (see LICENSE file)
+License:	GPL version 2 (see LICENSE file)
 
 
 myTinyTodo uses other works:

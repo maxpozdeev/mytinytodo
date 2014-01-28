@@ -1,6 +1,10 @@
 <?php
 
-# Copyright 2009 Max Pozdeev
+/*
+	(C) Copyright 2009 Max Pozdeev <maxpozdeev@gmail.com>
+	Licensed under the GNU GPL v2 license. See file COPYRIGHT for details.
+*/ 
+
 
 class DatabaseResult_Mysql
 {
