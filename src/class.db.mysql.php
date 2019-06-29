@@ -1,12 +1,8 @@
 <?php
 
 /*
-	(C) Copyright 2009 Max Pozdeev <maxpozdeev@gmail.com>
+	(C) Copyright 2009,2019 Max Pozdeev <maxpozdeev@gmail.com>
 	Licensed under the GNU GPL v2 license. See file COPYRIGHT for details.
-  
-  Edited to replace mysql_ calls with mysqli_ calls, still uses procedural
-  routines.
-  
 */ 
 
 // ---------------------------------------------------------------------------- //
@@ -25,7 +21,7 @@ class DatabaseResult_Mysql
 		$this->parent = $h;
 		$this->query = $query;
 
-		$this->q = mysqli_query($this->parent->dbh ,$query);
+		$this->q = mysqli_query($this->parent->dbh, $query);
 
 		if(!$this->q)
 		{
@@ -98,10 +94,10 @@ class Database_Mysql
 		$q = $this->_dq($query, $p);
 
 		if($q->rows()) $res = $q->fetch_row();
-		  else return NULL;
+		else return NULL;
 
 		if(sizeof($res) > 1) return $res;
-		  else return $res[0];
+		else return $res[0];
 	}
 
 	function sqa($query, $p = NULL)
@@ -109,10 +105,10 @@ class Database_Mysql
 		$q = $this->_dq($query, $p);
 
 		if($q->rows()) $res = $q->fetch_assoc();
-		  else return NULL;
+		else return NULL;
 
 		if(sizeof($res) > 1) return $res;
-		  else return $res[0];
+		else return $res[0];
 	}
 
 	function dq($query, $p = NULL)
@@ -151,7 +147,7 @@ class Database_Mysql
 
 	function affected()
 	{
-		return	mysqli_affected_rows($this->dbh);
+		return mysqli_affected_rows($this->dbh);
 	}
 
 	function quote($s)
@@ -170,7 +166,7 @@ class Database_Mysql
 		$table = addslashes($table);
 		$q = mysqli_query($this->dbh, "SELECT 1 FROM `$table` WHERE 1=0");
 		if($q === false) return false;
-		  else return true;
+		else return true;
 	}
 }
 
