@@ -22,7 +22,7 @@ class DatabaseResult_Sqlite3
 			$r = $this->parent->dbh->exec($query);
 			if($r === false) {
 				$ei = $this->parent->dbh->errorInfo();
-				throw new Exception($ei[2]);
+				throw new Exception("SQLSTATE[$ei[0]] [$ei[1]] $ei[2]");	
 			}
 			$this->parent->affected = $r;
 		}
@@ -31,7 +31,7 @@ class DatabaseResult_Sqlite3
 			$this->q = $this->parent->dbh->query($query);
 			if(!$this->q) {
 				$ei = $this->parent->dbh->errorInfo();
-				throw new Exception($ei[2]);
+				throw new Exception("SQLSTATE[$ei[0]] [$ei[1]] $ei[2]");
 			}
 			$this->parent->affected = $this->q->rowCount();
 		}
