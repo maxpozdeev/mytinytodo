@@ -64,7 +64,12 @@ function printCSV($listData, $data)
 
 function escape_csv($v)
 {
-	return '"'.str_replace('"', '""', $v).'"';
+    //escape formulas
+    $nf = '';
+    if (strlen($v) > 0 && in_array(substr($v, 0, 1), array('=', '+', '-', '@'))) {
+        $nf = "'";
+    }
+	return '"'. $nf. str_replace('"', '""', $v). '"';
 }
 
 function printICal($listData, $data)
