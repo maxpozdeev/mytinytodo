@@ -23,7 +23,12 @@ if(Config::get('db') == 'mysql')
 {
 	require_once(MTTPATH. 'class.db.mysql.php');
 	$db = DBConnection::init(new Database_Mysql);
-	$db->connect(Config::get('mysql.host'), Config::get('mysql.user'), Config::get('mysql.password'), Config::get('mysql.db'));
+	try {
+		$db->connect(Config::get('mysql.host'), Config::get('mysql.user'), Config::get('mysql.password'), Config::get('mysql.db'));
+	}
+	catch(Exception $e) {
+		die("Failed to connect to mysql database: ". $e->getMessage());
+	}
 	$db->dq("SET NAMES utf8");
 }
 
