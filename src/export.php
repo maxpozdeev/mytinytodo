@@ -66,7 +66,8 @@ function escape_csv($v)
 {
     //escape formulas
     $nf = '';
-    if (strlen($v) > 0 && in_array(substr($v, 0, 1), array('=', '+', '-', '@'))) {
+	$trimmed = ltrim($v);
+    if (strlen($trimmed) > 0 && in_array(substr($trimmed, 0, 1), array('=', '+', '-', '@'))) {
         $nf = "'";
     }
 	return '"'. $nf. str_replace('"', '""', $v). '"';
