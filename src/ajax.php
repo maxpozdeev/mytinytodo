@@ -803,16 +803,12 @@ function myExceptionHandler($e)
 	{
 		if(-1 == $e->getCode()) {
 			//thrown in myErrorHandler
-			error_log($e->getMessage());
-			echo $e->getMessage()."\n". $e->getTraceAsString();
-			exit;
+			die2($e->getMessage()."\n". $e->getTraceAsString(), $e->getMessage());
 		}
-		error_log('Exception: \''. $e->getMessage() .'\' in '. $e->getFile() .':'. $e->getLine());
-		echo 'Exception: \''. $e->getMessage() .'\' in '. $e->getFile() .':'. $e->getLine(); //."\n". $e->getTraceAsString();
+		die2('Exception: \''. $e->getMessage() .'\' in '. $e->getFile() .':'. $e->getLine());
 	}
 	catch(Exception $e) {
-		error_log('Exception in ExceptionHandler: \''. $e->getMessage() .'\' in '. $e->getFile() .':'. $e->getLine());
-		echo 'Exception in ExceptionHandler: \''. $e->getMessage() .'\' in '. $e->getFile() .':'. $e->getLine();
+		die2('Exception in ExceptionHandler: \''. $e->getMessage() .'\' in '. $e->getFile() .':'. $e->getLine());
 	}
 	exit;
 }
