@@ -2,7 +2,7 @@
 
 /*
 	This file is part of myTinyTodo.
-	(C) Copyright 2010-2011 Max Pozdeev <maxpozdeev@gmail.com>
+	(C) Copyright 2010-2011,2019 Max Pozdeev <maxpozdeev@gmail.com>
 	Licensed under the GNU GPL v2 license. See file COPYRIGHT for details.
 */
 
@@ -46,12 +46,16 @@ function have_write_access()
 
 function printCSV($listData, $data)
 {
-	$s = /*chr(0xEF).chr(0xBB).chr(0xBF).*/ "Completed,Priority,Task,Notes,Tags,Due,DateCreated,DateCompleted\n";
+	$s = "\xEF\xBB\xBF". "Completed;Priority;Task;Notes;Tags;Due;DateCreated;DateCompleted\n";
 	foreach($data as $r)
 	{
-		$s .= ($r['compl']?'1':'0'). ','. $r['prio']. ','. escape_csv($r['title']). ','.
-			escape_csv($r['note']). ','. escape_csv($r['tags']). ','. $r['duedate'].
-			','. date('Y-m-d H:i:s O',$r['d_created']). ','. ($r['d_completed'] ? date('Y-m-d H:i:s O',$r['d_completed']) :''). "\n";
+		$s .= ($r['compl']?'1':'0'). ';'.
+		    $r['prio']. ';'. escape_csv($r['title']). ';'.
+			escape_csv($r['note']). ';'.
+			escape_csv($r['tags']). ';'.
+			$r['duedate']. ';'.
+			date('Y-m-d H:i:s O',$r['d_created']). ';'.
+			($r['d_completed'] ? date('Y-m-d H:i:s O',$r['d_completed']) :''). "\n";
 	}
 	header('Content-type: text/csv; charset=utf-8');
 	header('Content-disposition: attachment; filename=list_'.$listData['id'].'.csv');
