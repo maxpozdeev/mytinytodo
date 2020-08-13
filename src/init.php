@@ -1,9 +1,14 @@
 <?php
 /*
 	This file is part of myTinyTodo.
-	(C) Copyright 2009-2010 Max Pozdeev <maxpozdeev@gmail.com>
+	(C) Copyright 2009-2010,2020 Max Pozdeev <maxpozdeev@gmail.com>
 	Licensed under the GNU GPL v2 license. See file COPYRIGHT for details.
 */
+
+##### MyTinyTodo requires php 5.4.0 and above! #####
+if (version_compare(PHP_VERSION, '5.4.0') < 0) {
+	die("PHP 5.4+ is required");
+}
 
 if(!defined('MTTPATH')) define('MTTPATH', dirname(__FILE__) .'/');
 
@@ -46,7 +51,7 @@ else {
 $db->prefix = Config::get('prefix');
 
 //User can override language setting by cookies
-if(isset($_COOKIE['lang']) && preg_match("/^[a-z-]+$/i", $_COOKIE['lang']) && file_exists('lang/'. $_COOKIE['lang']. '.php')) {
+if(isset($_COOKIE['lang']) && preg_match("/^[a-z-]+$/i", $_COOKIE['lang']) && file_exists(MTTPATH. 'lang/'. $_COOKIE['lang']. '.php')) {
 	Config::set('lang', $_COOKIE['lang']);
 }
 

@@ -2,7 +2,7 @@
 
 /*
 	This file is part of myTinyTodo.
-	(C) Copyright 2009-2010 Max Pozdeev <maxpozdeev@gmail.com>
+	(C) Copyright 2009-2010,2020 Max Pozdeev <maxpozdeev@gmail.com>
 	Licensed under the GNU GPL v2 license. See file COPYRIGHT for details.
 */
 
@@ -32,14 +32,26 @@ function htmlarray_ref(&$a, $exclude=null)
 
 function stop_gpc(&$arr)
 {
-	if (!is_array($arr)) return 1;
+	if (!is_array($arr)) {
+		return 1;
+	}
 	
-	if (!get_magic_quotes_gpc()) return 1;
+	// Since PHP v5.4.0 magic quotes feature was removed from PHP
+	// In PHP v7.4 get_magic_quotes_gpc is deprecated
+	// TODO: do not use get_magic_quotes_gpc() and stop_gpc()
+	if (!@get_magic_quotes_gpc()) {
+		return 1;
+	}
+	
 	reset($arr);
-	foreach($arr as $k=>$v)
+	foreach ($arr as $k=>$v)
 	{
-		if(is_array($arr[$k])) stop_gpc($arr[$k]);
-		elseif(is_string($arr[$k])) $arr[$k] = stripslashes($v);
+		if (is_array($arr[$k])) {
+			stop_gpc($arr[$k]);
+		}
+		elseif (is_string($arr[$k])) {
+			$arr[$k] = stripslashes($v);
+		}
 	}
 
 	return 1;
