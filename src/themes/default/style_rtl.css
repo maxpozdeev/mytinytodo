@@ -3,8 +3,10 @@ h2 { float:right; padding-left:10px; padding-right:0px; }
 .bar-menu { float:left; }
 #loading { float:right; }
 #lists .mtt-tabs { float:right; }
-.mtt-tabs li { float:right; margin:1px 0 0 3px; border-left:none; border-right:1px solid #ededed; background:#fbfbfb url(images/tab_hover.gif) no-repeat top left; }
-.mtt-tabs li.mtt-tabs-selected { border-left:none; border-right:1px solid #ededed;  background:#ededed url(images/corner_left.gif) no-repeat top left; }
+.mtt-tabs li { float:right; margin:1px 0 0 3px; }
+.mtt-tab { border-top-right-radius:0px; border-top-left-radius:8px; }
+.mtt-tab a { padding:6px 2px 0px 6px; }
+.mtt-tabs-add-button { float:right; border-top-right-radius:0px; border-top-left-radius:8px; }
 
 #tabs_buttons { float:left; }
 .mtt-tabs-button { float:right; }

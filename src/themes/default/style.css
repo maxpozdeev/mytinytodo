@@ -44,23 +44,24 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 #msg.mtt-info .msg-details { border:1px solid #EFC300;}
 
 .mtt-tabs { list-style:none; padding:0; margin:0; }
-.mtt-tabs li { margin:1px 3px 0 0; float:left; border-left:1px solid #ededed; background:#fbfbfb url(images/tab_hover.gif) no-repeat top right; }
-.mtt-tab a { position:relative; margin:0; font-size:0.9em; font-weight:bold; text-decoration:none; text-align:center; white-space:nowrap; color:#444444; display:block; height:21px; padding:6px 6px 0px 2px; outline:none; vertical-align:top; }
+.mtt-tabs li { margin:1px 3px 0 0; float:left; }
+.mtt-tab { background-color:#fbfbfb; border:1px solid #ededed; border-bottom:none; border-top-right-radius:8px; }
+.mtt-tab a { position:relative; margin:0; font-size:0.9em; font-weight:bold; text-decoration:none; text-align:center; white-space:nowrap; color:#444444; display:block; height:20px; padding:6px 6px 0px 2px; outline:none; vertical-align:top; }
 .mtt-tab a span { display:inline-block; min-width:75px; max-width:195px; cursor:pointer; padding:0; overflow:hidden; }
 .mtt-tab .list-action { display:none; float:left; position:absolute; top:6px; right:5px; width:15px; height:15px; background:transparent url(images/icons.gif) 0 0 no-repeat; cursor:pointer; }
 .mtt-tab .list-action:hover, .mtt-tab .list-action.mtt-menu-button-active { background-position:-16px 0; } 
 .mtt-tab.mtt-tabs-selected span { margin-right:16px; }
 .mtt-tab.mtt-tabs-selected .list-action { display:block; }
-.mtt-tab.mtt-tabs-selected { background:#ededed url(images/corner_right.gif) no-repeat top right; border-left:1px solid #ededed; }
+.mtt-tab.mtt-tabs-selected { border-color:transparent; background-color:#ededed; }
 .mtt-tabs li:hover a { color: #888888; }
 .mtt-tabs.mtt-tabs-only-one li { display:none; }
 .mtt-tabs.mtt-tabs-only-one li.mtt-tabs-selected { display:block; }
 #mtt_body.readonly li.mtt-tabs-selected span { margin-right:0; }
 .mtt-tabs-hidden { display:none; }
                      
-.mtt-tabs-alltasks { margin:1px 3px 0 3px; float:right; border-right:1px solid #ededed; background:#fbfbfb url(images/tab_hover.gif) no-repeat top left; }
+.mtt-tabs-alltasks { margin:1px 3px 0 3px; float:right;  }
+.mtt-tabs-alltasks.mtt-tab { border-top-right-radius:0px; border-top-left-radius:8px; }
 .mtt-tabs-alltasks.mtt-tab a { padding:6px 2px 0px 6px; }
-.mtt-tabs-alltasks.mtt-tab.mtt-tabs-selected { border-left:none; border-right:1px solid #ededed; background:#ededed url(images/corner_left.gif) no-repeat top left; }
 
 
 #tabs_buttons {
@@ -72,7 +73,8 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
  border:1px solid #ededed;
  border-bottom:none;
  margin-top:1px;
- border-top-right-radius:5px;
+ border-top-right-radius:3px;
+ border-top-left-radius:3px;
 }
 
 .mtt-tabs-button {
@@ -92,7 +94,7 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
  border:1px solid #ccc; border-radius:3px;
 }
 
-.mtt-tabs-add-button { float:left; margin-top:1px; padding:6px 2px 0px 2px; font-size:0.9em; height:21px; border-left:1px solid #ededed; background:#fbfbfb url(images/tab_hover.gif) no-repeat top right; }
+.mtt-tabs-add-button { float:left; margin-top:1px; padding:6px 2px 0px 2px; font-size:0.9em; height:20px; background-color:#fbfbfb; border:1px solid #ededed; border-bottom:none; border-top-right-radius: 8px; }
 .mtt-tabs-add-button:hover { cursor:pointer; }
 .mtt-tabs-add-button>span { display:block; width:16px; height:16px; background:url(images/buttons.png) 0 0 no-repeat; }
 .mtt-tabs-add-button:hover>span { background-position:-16px 0; }
@@ -286,7 +288,7 @@ a.mtt-back-button { font-size:0.8em; }
 #taskview { padding:2px; }
 
 .ui-datepicker { width:190px; z-index:202; border: 1px solid #cccccc; background: #ffffff; display:none; padding:2px; box-shadow:1px 2px 5px rgba(0,0,0,0.5); border-radius:5px; }
-.ui-datepicker-trigger { cursor:pointer; vertical-align:text-bottom; margin-left:2px; } 
+.ui-datepicker-trigger { cursor:pointer; vertical-align:text-bottom; margin-left:2px; margin-right:2px; } 
 .ui-datepicker-calendar { width:100%; border-collapse:collapse; }
 .ui-datepicker-calendar thead th { text-align:center; padding:0px; font-size:0.9em; }
 .ui-datepicker-calendar tbody td { text-align:right; padding:1px;  }
