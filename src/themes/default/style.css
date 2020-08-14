@@ -46,14 +46,15 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 .mtt-tabs { list-style:none; padding:0; margin:0; }
 .mtt-tabs li { margin:1px 3px 0 0; float:left; }
 .mtt-tab { background-color:#fbfbfb; border:1px solid #ededed; border-bottom:none; border-top-right-radius:8px; }
-.mtt-tab a { position:relative; margin:0; font-size:0.9em; font-weight:bold; text-decoration:none; text-align:center; white-space:nowrap; color:#444444; display:block; height:20px; padding:6px 6px 0px 2px; outline:none; vertical-align:top; }
+.mtt-tab a { position:relative; margin:0; font-size:0.9em; text-decoration:none; text-align:center; white-space:nowrap; color:#333333; display:block; height:20px; padding:6px 6px 0px 2px; outline:none; vertical-align:top; }
 .mtt-tab a span { display:inline-block; min-width:75px; max-width:195px; cursor:pointer; padding:0; overflow:hidden; }
 .mtt-tab .list-action { display:none; float:left; position:absolute; top:6px; right:5px; width:15px; height:15px; background:transparent url(images/icons.gif) 0 0 no-repeat; cursor:pointer; }
 .mtt-tab .list-action:hover, .mtt-tab .list-action.mtt-menu-button-active { background-position:-16px 0; } 
 .mtt-tab.mtt-tabs-selected span { margin-right:16px; }
 .mtt-tab.mtt-tabs-selected .list-action { display:block; }
 .mtt-tab.mtt-tabs-selected { border-color:transparent; background-color:#ededed; }
-.mtt-tabs li:hover a { color: #888888; }
+.mtt-tab:hover { background-color:#ddd; }
+.mtt-tab.mtt-tabs-selected:hover { background-color:#ededed; }
 .mtt-tabs.mtt-tabs-only-one li { display:none; }
 .mtt-tabs.mtt-tabs-only-one li.mtt-tabs-selected { display:block; }
 #mtt_body.readonly li.mtt-tabs-selected span { margin-right:0; }
