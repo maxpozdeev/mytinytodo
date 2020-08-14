@@ -2,7 +2,7 @@
 
 /*
 	This file is part of myTinyTodo.
-	(C) Copyright 2009-2011 Max Pozdeev <maxpozdeev@gmail.com>
+	(C) Copyright 2009-2011,2020 Max Pozdeev <maxpozdeev@gmail.com>
 	Licensed under the GNU GPL v2 license. See file COPYRIGHT for details.
 */
 
@@ -151,7 +151,7 @@ header('Content-type:text/html; charset=utf-8');
 
 <tr>
 <th><?php _e('set_title');?>:<br/><span class="descr"><?php _e('set_title_descr');?></span></th>
-<td> <input name="title" value="<?php echo htmlspecialchars(_c('title'));?>" class="in350" /> </td>
+<td> <input name="title" value="<?php echo htmlspecialchars(_c('title'));?>" class="in350" autocomplete="off" /> </td>
 </tr>
 
 <tr>
@@ -249,7 +249,7 @@ header('Content-type:text/html; charset=utf-8');
 </td>
 </tr>
 
-<tr><td colspan="2" class="form-buttons">
+<tr><td colspan="2" class="form-bottom-buttons">
 
 <input type="submit" value="<?php _e('set_submit');?>" />
 <input type="button" class="mtt-back-button" value="<?php _e('set_cancel');?>" />

@@ -157,20 +157,20 @@ $().ready(function(){
 <input type="hidden" name="id" value="" />
 <div class="form-row form-row-short">
  <span class="h"><?php _e('priority');?></span>
- <select name="prio">
+ <select name="prio" class="form-input">
   <option value="2">+2</option><option value="1">+1</option><option value="0" selected="selected">&plusmn;0</option><option value="-1">&minus;1</option>
  </select>
 </div>
 <div class="form-row form-row-short">
  <span class="h"><?php _e('due');?> </span>
- <input name="duedate" id="duedate" value="" class="in100" title="Y-M-D, M/D/Y, D.M.Y, M/D, D.M" autocomplete="off" />
+ <input name="duedate" id="duedate" value="" class="in100 form-input" title="Y-M-D, M/D/Y, D.M.Y, M/D, D.M" autocomplete="off" type="text" />
 </div>
 <div class="form-row-short-end"></div>
-<div class="form-row"><div class="h"><?php _e('task');?></div> <input type="text" name="task" value="" class="in500" maxlength="250" /></div>
-<div class="form-row"><div class="h"><?php _e('note');?></div> <textarea name="note" class="in500"></textarea></div>
+<div class="form-row"><div class="h"><?php _e('task');?></div> <input type="text" name="task" value="" class="in500 form-input" maxlength="250" /></div>
+<div class="form-row"><div class="h"><?php _e('note');?></div> <textarea name="note" class="in500 form-input"></textarea></div>
 <div class="form-row"><div class="h"><?php _e('tags');?></div>
  <table cellspacing="0" cellpadding="0" width="100%"><tr>
-  <td><input type="text" name="tags" id="edittags" value="" class="in500" maxlength="250" /></td>
+  <td><input type="text" name="tags" id="edittags" value="" class="in500 form-input" maxlength="250" /></td>
   <td class="alltags-cell">
    <a href="#" id="alltags_show"><?php _e('alltags_show');?></a>
    <a href="#" id="alltags_hide" style="display:none"><?php _e('alltags_hide');?></a></td>
@@ -178,8 +178,8 @@ $().ready(function(){
 </div>
 <div class="form-row" id="alltags" style="display:none;"><?php _e('alltags');?> <span class="tags-list"></span></div>
 <div class="form-row form-bottom-buttons">
- <input type="submit" value="<?php _e('save');?>" /> 
- <input type="button" id="mtt_edit_cancel" class="mtt-back-button" value="<?php _e('cancel');?>" />
+ <input type="submit" value="<?php _e('save');?>" class="form-input-button" /> 
+ <input type="button" id="mtt_edit_cancel" class="mtt-back-button form-input-button" value="<?php _e('cancel');?>" />
 </div>
 </form>
 
