@@ -285,11 +285,8 @@ a.mtt-back-button { font-size:0.8em; }
 
 #taskview { padding:2px; }
 
-.ui-datepicker { width:190px; z-index:202; border: 1px solid #cccccc; background: #ffffff; display:none; padding:2px; 
- -moz-box-shadow:1px 2px 5px rgba(0,0,0,0.5); -webkit-box-shadow:1px 2px 5px rgba(0,0,0,0.5); box-shadow:1px 2px 5px rgba(0,0,0,0.5); 
- border-radius:5px;
-}
-.ui-datepicker-trigger { cursor:pointer; vertical-align:text-bottom; margin-left:1px; } 
+.ui-datepicker { width:190px; z-index:202; border: 1px solid #cccccc; background: #ffffff; display:none; padding:2px; box-shadow:1px 2px 5px rgba(0,0,0,0.5); border-radius:5px; }
+.ui-datepicker-trigger { cursor:pointer; vertical-align:text-bottom; margin-left:2px; } 
 .ui-datepicker-calendar { width:100%; border-collapse:collapse; }
 .ui-datepicker-calendar thead th { text-align:center; padding:0px; font-size:0.9em; }
 .ui-datepicker-calendar tbody td { text-align:right; padding:1px;  }

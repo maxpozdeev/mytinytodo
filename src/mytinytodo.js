@@ -311,7 +311,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			dateFormat: _mtt.duedatepickerformat(),
 			firstDay: _mtt.options.firstdayofweek,
 			showOn: 'button',
-			buttonImage: _mtt.templateUrl + 'images/calendar.png', buttonImageOnly: true,
+			buttonImage: _mtt.templateUrl + 'images/calendar.svg', buttonImageOnly: true,
 			constrainInput: false,
 			duration:'',
 			dayNamesMin:_mtt.lang.daysMin, dayNames:_mtt.lang.daysLong, monthNamesShort:_mtt.lang.monthsLong
