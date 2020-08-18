@@ -459,7 +459,7 @@ elseif(isset($_GET['changeListOrder']))
 			$a[] = $id;
 			$setCase .= "WHEN id=$id THEN $ow\n";
 		}
-		$ids = implode($a, ',');
+		$ids = implode(',', $a);
 		$db->dq("UPDATE {$db->prefix}lists SET d_edited=?, ow = CASE\n $setCase END WHERE id IN ($ids)",
 					array(time()) );
 		$t['total'] = 1;
