@@ -1,6 +1,6 @@
 /*
 	This file is a part of myTinyTodo. 
-	Copyright 2009-2010 Max Pozdeev <maxpozdeev@gmail.com>
+	Copyright 2009-2010,2020 Max Pozdeev <maxpozdeev@gmail.com>
 */
 
 /*	default style	*/
@@ -48,8 +48,8 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 .mtt-tab { background-color:#fbfbfb; border:1px solid #ededed; border-bottom:none; border-top-right-radius:8px; }
 .mtt-tab a { position:relative; margin:0; font-size:0.9em; text-decoration:none; text-align:center; white-space:nowrap; color:#333333; display:block; height:20px; padding:6px 6px 0px 2px; outline:none; vertical-align:top; }
 .mtt-tab a span { display:inline-block; min-width:75px; max-width:195px; cursor:pointer; padding:0; overflow:hidden; }
-.mtt-tab .list-action { display:none; float:left; position:absolute; top:6px; right:5px; width:15px; height:15px; background:transparent url(images/icons.gif) 0 0 no-repeat; cursor:pointer; }
-.mtt-tab .list-action:hover, .mtt-tab .list-action.mtt-menu-button-active { background-position:-16px 0; } 
+.mtt-tab .list-action { display:none; float:left; position:absolute; top:6px; right:5px; width:16px; height:16px; background:transparent url(images/arrdown.svg) no-repeat; cursor:pointer; }
+.mtt-tab .list-action:hover, .mtt-tab .list-action.mtt-menu-button-active { background-image:url(images/arrdown-hover.svg); } 
 .mtt-tab.mtt-tabs-selected span { margin-right:16px; }
 .mtt-tab.mtt-tabs-selected .list-action { display:block; }
 .mtt-tab.mtt-tabs-selected { border-color:transparent; background-color:#ededed; }
@@ -96,13 +96,12 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 }
 
 .mtt-tabs-add-button { float:left; margin-top:1px; padding:6px 2px 0px 2px; font-size:0.9em; height:20px; background-color:#fbfbfb; border:1px solid #ededed; border-bottom:none; border-top-right-radius: 8px; }
-.mtt-tabs-add-button:hover { cursor:pointer; }
-.mtt-tabs-add-button>span { display:block; width:16px; height:16px; background:url(images/buttons.png) 0 0 no-repeat; }
-.mtt-tabs-add-button:hover>span { background-position:-16px 0; }
+.mtt-tabs-add-button>span { display:block; width:16px; height:16px; background:url(images/plus.svg) no-repeat; }
+.mtt-tabs-add-button:hover { cursor:pointer; background-color:#ddd; }
 #mtt_body.readonly .mtt-tabs-add-button { display:none; }
 
-.mtt-tabs-select-button>span { background:url(images/icons.gif) -64px 0 no-repeat; }
-.mtt-tabs-select-button:hover>span, .mtt-tabs-select-button.mtt-menu-button-active>span { background-position:-80px 0; }
+.mtt-tabs-select-button>span { background:url(images/selectlist.svg) no-repeat; }
+/*.mtt-tabs-select-button:hover>span, .mtt-tabs-select-button.mtt-menu-button-active>span { background:url(images/selectlist.svg) no-repeat; }*/
 
 
 #mtt_body.no-lists #toolbar > * { visibility:hidden; }
@@ -112,8 +111,8 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 .mtt-img-button:hover { border:1px solid #ccc; border-radius:3px; }
 .mtt-img-button span { display:inline-block; width:16px; height:16px; }
 
-.arrdown { display:inline-block; height:7px; width:9px; background:url(images/arrdown.gif); }
-.arrdown2 { display:inline-block; height:7px; width:7px; background:url(images/arrdown2.gif); }
+.arrdown { display:inline-block; height:9px; width:9px; background:url(images/arrdown2.svg) no-repeat; }
+.arrdown2 { display:inline-block; height:7px; width:7px; background:url(images/arrdown2.svg) no-repeat; }
 
 
 /* Quick Task Add */
@@ -125,27 +124,26 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 #task_placeholder.placeholding span { display:inline-block; }
 
 .mtt-taskbox-icon { width:16px; height:16px; position:absolute; top:50%; margin-top:-8px; }
-.mtt-taskbox-icon.mtt-icon-submittask { background:url(images/mzl.png) 0px -32px no-repeat; right:4px; }
+.mtt-taskbox-icon.mtt-icon-submittask { background:url(images/add.svg) no-repeat; right:4px; }
 
-#newtask_adv span { background:url(images/buttons.png) 0 -48px no-repeat; }
-#newtask_adv:hover span { background-position:-16px -48px; }
+#newtask_adv span { background:url(images/newtask-ext.svg) no-repeat; }
 #mtt_body.show-all-tasks #htab_newtask, #mtt_body.readonly #htab_newtask { display:none; }
 
 
 /* Live Search */
 #htab_search { float:right; }
 #search {
- color:#444444; background:#fff; height:1.35em; padding:2px 18px; width:100%; margin-left:-38px; /*padding+border*/
+ color:#444444; background:#fff; height:1.35em; padding:2px 20px; width:100%; margin-left:-42px; /*padding+border*/
  border:1px solid #ccc; border-radius:10px; 
 }
 #search_close { display:none; }
 
 .mtt-searchbox td { padding:0px; width:180px; }
-.mtt-searchbox-c { position:relative; padding-left:38px; /*input padding+border*/ }
+.mtt-searchbox-c { position:relative; padding-left:42px; /*input padding+border*/ }
 .mtt-searchbox-icon { width:16px; height:16px; position:absolute; top:50%; margin-top:-8px; }
 
-.mtt-searchbox-icon.mtt-icon-search { background:url(images/mzl.png) 0px -16px no-repeat; left:4px; top:55%; }
-.mtt-searchbox-icon.mtt-icon-cancelsearch { background:url(images/mzl.png) 0px 0px no-repeat; right:4px; }
+.mtt-searchbox-icon.mtt-icon-search { background:url(images/search.svg) no-repeat; left:4px; top:50%; }
+.mtt-searchbox-icon.mtt-icon-cancelsearch { background:url(images/search-cancel.svg) no-repeat; right:4px; }
 
 #searchbar { font-size:1em; font-weight:normal; display:none;  margin-top:5px; }
 #searchbarkeyword { font-weight:bold; }
@@ -160,17 +158,17 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 .tag-filter { margin-left:3px; margin-right:3px; }
 .tag-filter-exclude { text-decoration:line-through; }
 .mtt-filter-header { font-weight:bold; margin-right:.33em; }
-.mtt-filter-close { cursor:pointer; position:relative; top:2px; margin-left:3px; display:inline-block; width:10px; height:10px; background:url(images/closetag.gif) 0 0 no-repeat; }
+.mtt-filter-close { cursor:pointer; position:relative; top:2px; margin-left:3px; display:inline-block; width:10px; height:10px; background:url(images/closetag.svg) no-repeat; }
 
 .task-left { float:left; }
-.task-toggle { visibility:hidden; margin-top:2px; cursor:pointer; width:15px; height:15px; float:left; background:url(images/icons.gif) -64px -16px no-repeat; }
+.task-toggle { visibility:hidden; margin-top:1px; cursor:pointer; width:16px; height:16px; float:left; background:url(images/note-toggle.svg) no-repeat; }
 li.task-has-note .task-toggle { visibility:visible; }
-li.task-expanded .task-toggle { background-position:-80px -16px; }
+li.task-expanded .task-toggle { background-image:url(images/note-toggled.svg); }
 .task-middle { margin-left:40px; margin-right:20px; }
 #tasklist { list-style-type: none; margin: 0; padding: 0;}
 #tasklist li { padding:6px 2px 6px 6px; border-bottom:1px solid #DEDEDE; min-height:18px; margin-bottom:1px; background-color:#fff; }
 #tasklist li:hover { background-color:#f6f6f6; }
-.task-actions { float:right; width:20px; text-align:right; }
+.task-actions { float:right; width:20px; min-height:18px; padding-top:1px; text-align:right; }
 .task-date { color:#999999; font-size:0.8em; margin-left:4px; display:none; }
 .task-date-completed { color:#999999; display:none; margin-left:5px; }
 .show-inline-date .task-date { display:inline; }
@@ -202,14 +200,14 @@ li.task-completed .task-title a { color:#777777; }
  border-radius:5px;
 }
 
-a.taskactionbtn { display:block; float:right; height:15px; width:15px; text-decoration:none; background:url(images/icons.gif) 0 0 no-repeat; display:none; }
-li:hover a.taskactionbtn, a.taskactionbtn.mtt-menu-button-active { background-position:-16px 0; display:block;}
+a.taskactionbtn { display:block; float:right; height:16px; width:16px; text-decoration:none; background:url(images/arrdown.svg) no-repeat; display:none; }
+li:hover a.taskactionbtn, a.taskactionbtn.mtt-menu-button-active { background-image:url(images/arrdown-hover.svg); display:block;}
 
 #tasklist.filter-past li, #tasklist.filter-today li, #tasklist.filter-soon li { display:none; }
 #tasklist.filter-past li.past, #tasklist.filter-today li.today, #tasklist.filter-soon li.soon { display:block; }
 #tasklist.filter-past li.task-completed, #tasklist.filter-today li.task-completed, #tasklist.filter-soon li.task-completed { display:none; }
 
-.task-note-block { margin-left:2px; color:#777777; background:url(images/page_white_text.png) left  2px no-repeat; padding-left:19px; padding-top:2px; min-height:16px; margin-top:2px; display:none; }
+.task-note-block { margin-left:2px; color:#777777; background:url(images/note.svg) left  2px no-repeat; padding-left:19px; padding-top:2px; min-height:16px; margin-top:2px; display:none; }
 li.task-expanded .task-note-block { display:block; }
 li.task-completed .task-note-block .task-note { text-decoration:line-through; }
 .task-note-area { display:none; margin-bottom:5px; }
@@ -267,7 +265,7 @@ a.mtt-back-button { font-size:0.8em; }
 #tagcloud {
  overflow: hidden; z-index:100; background-color:#f9f9f9; border:1px solid #cccccc; padding:5px;
  width:100%; max-width:450px; margin:0px 7px 7px 7px; text-align:center;
- -moz-box-shadow:1px 2px 5px rgba(0,0,0,0.5); -webkit-box-shadow:1px 2px 5px rgba(0,0,0,0.5);
+ box-shadow:1px 2px 5px rgba(0,0,0,0.5);
 } 
 #tagcloud .tag { margin:1px 0px; padding:2px; line-height:140%; color:black; }
 #tagcloud .tag:hover { background-color:#999988; color:white; }
@@ -283,8 +281,8 @@ a.mtt-back-button { font-size:0.8em; }
 #tagcloud .w9 { font-size:170%; }
 
 #tagcloudcancel { float:right; }
-#tagcloudcancel span { background:url(images/buttons.png) 0 -32px no-repeat; }
-#tagcloudcancel span:hover { background-position:-16px -32px; }
+#tagcloudcancel span { background:url(images/tagcloud-close.svg) no-repeat; }
+/*#tagcloudcancel span:hover { background:url(images/tagcloud-close.svg) no-repeat; }*/
 
 #taskview { padding:2px; }
 
@@ -302,8 +300,8 @@ a.mtt-back-button { font-size:0.8em; }
 .ui-datepicker-next { position:absolute; right:2px; height:20px; text-decoration:none; }
 .ui-datepicker-title { text-align:center; line-height:20px;  }
 .ui-icon { width:16px; height:16px; text-indent:-99999px; overflow:hidden; }
-.ui-datepicker .ui-icon-circle-triangle-w { display:block; position:absolute; top:50%; margin-top:-8px; left:50%; background:url(images/icons.gif) -48px -16px no-repeat; }
-.ui-datepicker .ui-icon-circle-triangle-e { display:block; position:absolute; top:50%; margin-top:-8px; right:50%; background:url(images/icons.gif) -32px -16px no-repeat; }
+.ui-datepicker .ui-icon-circle-triangle-w { display:block; position:absolute; top:50%; margin-top:-8px; left:50%; background:url(images/arr-left.svg) no-repeat; }
+.ui-datepicker .ui-icon-circle-triangle-e { display:block; position:absolute; top:50%; margin-top:-8px; right:50%; background:url(images/arr-right.svg) no-repeat; }
 
 .mtt-menu-button {
  -moz-user-select:none; -webkit-user-select: none;
@@ -334,18 +332,18 @@ a.mtt-back-button { font-size:0.8em; }
 .mtt-menu-container li:hover a { color:white; }
 .mtt-menu-container li.mtt-menu-delimiter { height:0px; line-height:0; border-bottom:1px solid #cccccc; margin:2px -1px; padding:0px; font-size:0px; }
 .mtt-menu-container .menu-icon { width:16px; height:16px; position:absolute; left:4px; top:50%; margin-top:-8px; }
-li.mtt-item-checked .menu-icon { background:url(images/icons.gif) -16px -16px; }
+li.mtt-item-checked .menu-icon { background:url(images/checkmark.svg) no-repeat; }
 li.mtt-menu-indicator .submenu-icon {
 	position:absolute; right:2px; top:50%; margin-top:-8px;
-	width:16px; height:16px; background:url(images/icons.gif) -32px -16px no-repeat;
+	width:16px; height:16px; background:url(images/arr-right.svg) no-repeat;
 }
 li.mtt-item-hidden { display:none; }
 
 #slmenucontainer li.mtt-list-hidden a { font-style:italic; }
 #cmenulistscontainer li.mtt-list-hidden { font-style:italic; }
 
-#btnRssFeed .menu-icon { background:url(images/buttons.png) -16px -64px no-repeat; }
-#btnRssFeed.mtt-item-disabled .menu-icon { background:url(images/buttons.png) 0px -64px no-repeat; }
+#btnRssFeed .menu-icon { background:url(images/rss.svg) no-repeat; }
+#btnRssFeed.mtt-item-disabled .menu-icon { background:url(images/rss-disabled.svg) no-repeat; }
 
 .mtt-settings-table { width:100%; border-collapse:collapse; }
 .mtt-settings-table th, .mtt-settings-table td { border-bottom:1px solid #dedede; padding:8px; vertical-align:top; }
