@@ -33,7 +33,7 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 #authform { overflow: hidden; z-index:100; background-color:#f9f9f9; border:1px solid #cccccc; padding:5px; width:160px; }
 #authform div { padding:2px 0px; }
 #authform div.h { font-weight:bold; }
-#loading { float:left; padding-top:5px; background-color:#ffffff; display:none; padding-right:6px; width:16px; height:16px; background:url(images/loading1.gif) no-repeat; }
+#loading { float:left; padding-top:5px; background-color:#ffffff; display:none; padding-right:6px; width:16px; height:16px; background:url(images/loading48.gif) no-repeat; background-size:16px 16px; }
 
 #msg { float:left; }
 #msg .msg-text {  padding:1px 4px; font-weight:bold; cursor:pointer; }
@@ -261,7 +261,7 @@ a.mtt-back-button { font-size:0.8em; }
 
 #tagcloudbtn { margin-right:2px; font-size:0.8em; font-weight:normal; padding:2px; float:right; }
 #mtt_body.show-all-tasks #tagcloudbtn { display:none; }
-#tagcloudload { display:none; height:24px; background:url(images/loading1_24.gif) center no-repeat; }
+#tagcloudload { display:none; height:24px; background:url(images/loading48.gif) center no-repeat; background-size:24px 24px; }
 #tagcloud {
  overflow: hidden; z-index:100; background-color:#f9f9f9; border:1px solid #cccccc; padding:5px;
  width:100%; max-width:450px; margin:0px 7px 7px 7px; text-align:center;
