@@ -30,9 +30,11 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 .nodecor { text-decoration:none; }
 #bar_logout { display:none; }
 #bar_auth { display:none; }
-#authform { overflow: hidden; z-index:100; background-color:#f9f9f9; border:1px solid #cccccc; padding:5px; width:160px; }
+#authform { overflow: hidden; z-index:100; background-color:#f9f9f9; border:1px solid #cccccc; border-radius:2px; padding:10px; min-width:160px; box-shadow:1px 2px 5px rgba(0,0,0,0.5); }
 #authform div { padding:2px 0px; }
 #authform div.h { font-weight:bold; }
+#authform input { padding:3px; border:1px solid #ccc; border-radius:2px; }
+#authform input[type="submit"] { padding:4px; border-radius:3px; background-color:#efefef; }
 #loading { float:left; padding-top:5px; background-color:#ffffff; display:none; padding-right:6px; width:16px; height:16px; background:url(images/loading48.gif) no-repeat; background-size:16px 16px; }
 
 #msg { float:left; }
