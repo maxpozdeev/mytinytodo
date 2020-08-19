@@ -24,6 +24,7 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 #footer { height:30px; margin-top:-30px; }
 #footer_content { background-color:#b5d5ff; padding:5px; font-size:0.8em; }
 #footer_content a { color:#000000; }
+#mobileordesktop { float:right; }
 
 #bar { border-bottom:1px solid #b5d5ff; padding-bottom:5px; height:15px; }
 .bar-menu { float:right; }

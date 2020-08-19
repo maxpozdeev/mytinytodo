@@ -8,7 +8,7 @@
 <?php if(Config::get('rtl')): ?>
 <link rel="stylesheet" type="text/css" href="<?php mttinfo('template_url'); ?>style_rtl.css?v=@VERSION" media="all" />
 <?php endif; ?>
-<?php if(isset($_GET['pda'])): ?>
+<?php if(Config::get('mobile')): ?>
 <meta name="viewport" id="viewport" content="width=device-width" />
 <link rel="stylesheet" type="text/css" href="<?php mttinfo('template_url'); ?>pda.css?v=@VERSION" media="all" />
 <?php else: ?>
@@ -28,7 +28,7 @@
 <script type="text/javascript">
 $().ready(function(){
 
-	<?php if(isset($_GET['pda'])): ?>
+	<?php if(Config::get('mobile')): ?>
 
 	$('body').width(screen.width);
 	$(window).resize(function() {
@@ -43,13 +43,13 @@ $().ready(function(){
 	mytinytodo.init({
 		needAuth: <?php echo $needAuth ? "true" : "false"; ?>,
 		isLogged: <?php echo ($needAuth && is_logged()) ? "true" : "false"; ?>,
-		showdate: <?php echo (Config::get('showdate') && !isset($_GET['pda'])) ? "true" : "false"; ?>,
-		singletab: <?php echo (isset($_GET['singletab']) || isset($_GET['pda'])) ? "true" : "false"; ?>,
+		showdate: <?php echo (Config::get('showdate') && !Config::get('mobile')) ? "true" : "false"; ?>,
+		singletab: <?php echo (isset($_GET['singletab']) || Config::get('mobile')) ? "true" : "false"; ?>,
 		duedatepickerformat: "<?php echo htmlspecialchars(Config::get('dateformat2')); ?>",
 		firstdayofweek: <?php echo (int) Config::get('firstdayofweek'); ?>,
 		autotag: <?php echo Config::get('autotag') ? "true" : "false"; ?>
 		<?php if(isset($_GET['list'])) echo ",openList: ". (int)$_GET['list']; ?>
-		<?php if(isset($_GET['pda'])) echo ", touchDevice: true"; ?>
+		<?php if(Config::get('mobile')) echo ", touchDevice: true"; ?>
 	}).loadLists(1);
 });
 </script>
@@ -281,7 +281,12 @@ $().ready(function(){
 <div id="space"></div>
 </div>
 
-<div id="footer"><div id="footer_content">Powered by <strong><a href="http://www.mytinytodo.net/">myTinyTodo</a></strong> @VERSION </div></div>
+<div id="footer">
+	<div id="footer_content"> 
+		<span id="mobileordesktop" ><a href="<?php mttinfo('url'); ?>">Desktop</a> | <a href="<?php mttinfo('mobile_url'); ?>">Mobile</a></span>
+		<span>Powered by <strong><a href="http://www.mytinytodo.net/">myTinyTodo</a></strong> @VERSION</span> 
+	</div>
+</div>
 
 </div>
 </body>

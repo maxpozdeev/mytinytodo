@@ -139,7 +139,9 @@ function mttinfo($v)
 function get_mttinfo($v)
 {
 	global $_mttinfo;
-	if(isset($_mttinfo[$v])) return $_mttinfo[$v];
+	if (isset($_mttinfo[$v])) {
+		return $_mttinfo[$v];
+	}
 	switch($v)
 	{
 		case 'template_url':
@@ -147,13 +149,24 @@ function get_mttinfo($v)
 			return $_mttinfo['template_url'];
 		case 'url':
 			$_mttinfo['url'] = Config::get('url');
-			if($_mttinfo['url'] == '')
-				$_mttinfo['url'] = 'http://'.$_SERVER['HTTP_HOST'] .($_SERVER['SERVER_PORT'] != 80 ? ':'.$_SERVER['SERVER_PORT'] : '').
+			if ($_mttinfo['url'] == '') {
+				$proto = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != '' && $_SERVER['HTTPS'] != 'off') ? 'https://' : 'http://';
+				$defport = $proto == 'https://' ? 443 : 80;
+				$_mttinfo['url'] = $proto. $_SERVER['HTTP_HOST']. ($_SERVER['SERVER_PORT'] != $defport ? ':'.$_SERVER['SERVER_PORT'] : '').
 									url_dir(isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : $_SERVER['SCRIPT_NAME']);
+			}
 			return $_mttinfo['url'];
+		case 'mobile_url':
+			$_mttinfo['mobile_url'] = Config::get('mobile_url');
+			if ($_mttinfo['mobile_url'] == '') {
+				$_mttinfo['mobile_url'] = get_mttinfo('url'). '?pda';
+			}
+			return $_mttinfo['mobile_url'];
 		case 'mtt_url':
 			$_mttinfo['mtt_url'] = Config::get('mtt_url');
-			if($_mttinfo['mtt_url'] == '') $_mttinfo['mtt_url'] = url_dir(isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : $_SERVER['SCRIPT_NAME']);
+			if ($_mttinfo['mtt_url'] == '') {
+				$_mttinfo['mtt_url'] = url_dir(isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : $_SERVER['SCRIPT_NAME']);
+			}
 			return $_mttinfo['mtt_url'];
 		case 'title':
 			$_mttinfo['title'] = (Config::get('title') != '') ? htmlarray(Config::get('title')) : __('My Tiny Todolist');
