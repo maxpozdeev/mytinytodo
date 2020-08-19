@@ -5,6 +5,8 @@
 	Licensed under the GNU GPL v2 license. See file COPYRIGHT for details.
 */
 
+define('MTT_VERSION', '@VERSION');
+
 ##### MyTinyTodo requires php 5.4.0 and above! #####
 if (version_compare(PHP_VERSION, '5.4.0') < 0) {
 	die("PHP 5.4+ is required");
@@ -171,6 +173,12 @@ function get_mttinfo($v)
 		case 'title':
 			$_mttinfo['title'] = (Config::get('title') != '') ? htmlarray(Config::get('title')) : __('My Tiny Todolist');
 			return $_mttinfo['title'];
+		case 'version':
+			if (MTT_VERSION != '@VERSION') {
+				$_mttinfo['version'] = MTT_VERSION;
+				return $_mttinfo['version'];
+			}
+			return date('Ymd-His'); //force no-cache for dev needs
 	}
 }
 

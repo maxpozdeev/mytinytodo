@@ -4,15 +4,15 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title><?php mttinfo('title'); ?></title>
-<link rel="stylesheet" type="text/css" href="<?php mttinfo('template_url'); ?>style.css?v=@VERSION" media="all" />
+<link rel="stylesheet" type="text/css" href="<?php mttinfo('template_url'); ?>style.css?v=<?php mttinfo('version'); ?>" media="all" />
 <?php if(Config::get('rtl')): ?>
-<link rel="stylesheet" type="text/css" href="<?php mttinfo('template_url'); ?>style_rtl.css?v=@VERSION" media="all" />
+<link rel="stylesheet" type="text/css" href="<?php mttinfo('template_url'); ?>style_rtl.css?v=<?php mttinfo('version'); ?>" media="all" />
 <?php endif; ?>
 <?php if(Config::get('mobile')): ?>
 <meta name="viewport" id="viewport" content="width=device-width" />
-<link rel="stylesheet" type="text/css" href="<?php mttinfo('template_url'); ?>pda.css?v=@VERSION" media="all" />
+<link rel="stylesheet" type="text/css" href="<?php mttinfo('template_url'); ?>pda.css?v=<?php mttinfo('version'); ?>" media="all" />
 <?php else: ?>
-<link rel="stylesheet" type="text/css" href="<?php mttinfo('template_url'); ?>print.css?v=@VERSION" media="print" />
+<link rel="stylesheet" type="text/css" href="<?php mttinfo('template_url'); ?>print.css?v=<?php mttinfo('version'); ?>" media="print" />
 <?php endif; ?>
 </head>
 
@@ -21,9 +21,9 @@
 <script type="text/javascript" src="<?php mttinfo('mtt_url'); ?>jquery/jquery-1.8.3.min.js"></script>
 <script type="text/javascript" src="<?php mttinfo('mtt_url'); ?>jquery/jquery-ui-1.12.1.min.js"></script>
 <script type="text/javascript" src="<?php mttinfo('mtt_url'); ?>jquery/jquery.autocomplete-1.1.js"></script>
-<script type="text/javascript" src="<?php mttinfo('mtt_url'); ?>mytinytodo.js?v=@VERSION"></script>
-<script type="text/javascript" src="<?php mttinfo('mtt_url'); ?>mytinytodo_lang.php?v=@VERSION"></script>
-<script type="text/javascript" src="<?php mttinfo('mtt_url'); ?>mytinytodo_ajax_storage.js?v=@VERSION"></script>
+<script type="text/javascript" src="<?php mttinfo('mtt_url'); ?>mytinytodo.js?v=<?php mttinfo('version'); ?>"></script>
+<script type="text/javascript" src="<?php mttinfo('mtt_url'); ?>mytinytodo_lang.php?v=<?php mttinfo('version'); ?>"></script>
+<script type="text/javascript" src="<?php mttinfo('mtt_url'); ?>mytinytodo_ajax_storage.js?v=<?php mttinfo('version'); ?>"></script>
 
 <script type="text/javascript">
 $().ready(function(){
@@ -284,7 +284,7 @@ $().ready(function(){
 <div id="footer">
 	<div id="footer_content"> 
 		<span id="mobileordesktop" ><a href="<?php mttinfo('url'); ?>">Desktop</a> | <a href="<?php mttinfo('mobile_url'); ?>">Mobile</a></span>
-		<span>Powered by <strong><a href="http://www.mytinytodo.net/">myTinyTodo</a></strong> @VERSION</span> 
+		<span>Powered by <strong><a href="http://www.mytinytodo.net/">myTinyTodo</a></strong> <?php mttinfo('version'); ?></span> 
 	</div>
 </div>
 
