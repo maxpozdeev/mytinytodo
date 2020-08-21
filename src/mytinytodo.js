@@ -1,6 +1,6 @@
 /*
 	This file is part of myTinyTodo.
-	(C) Copyright 2009-2010 Max Pozdeev <maxpozdeev@gmail.com>
+	(C) Copyright 2009-2010,2020 Max Pozdeev <maxpozdeev@gmail.com>
 	Licensed under the GNU GPL v2 license. See file COPYRIGHT for details.
 */
 
@@ -123,7 +123,8 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			return false;
 		});
 		
-		$('#newtask_submit').click(function(){
+		$('#newtask_submit').mousedown(function(e){
+			e.preventDefault(); //keep the focus in #task
 			$('#newtask_form').submit();
 		});
 
@@ -176,7 +177,6 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			}		
 		}).focusin(function(){
 			$('#toolbar').addClass('mtt-insearch');
-			$(this).focus();
 		}).focusout(function(){
 			$('#toolbar').removeClass('mtt-insearch');
 		});

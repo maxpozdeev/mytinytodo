@@ -17,12 +17,11 @@ form { display: inline; }
 h2,h3 { margin:0; }
 h2 { font-size:1.5em; float:left; padding-right:10px; background-color:#ffffff; }
 h3 { border-bottom:2px solid #B5D5FF; margin-bottom:10px; padding:6px 0; font-size:1.1em; }
-#page_tasks h3 { padding-left:4px; padding-right:4px; }
 a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 
 #space { height:30px; }
 #footer { height:30px; margin-top:-30px; }
-#footer_content { background-color:#b5d5ff; padding:5px; font-size:0.8em; }
+#footer_content { background-color:#b5d5ff; padding:5px 4px; font-size:0.8em; }
 #footer_content a { color:#000000; }
 #mobileordesktop { float:right; }
 
@@ -119,14 +118,15 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 
 /* Quick Task Add */
 
-.mtt-taskbox td.mtt-tb-cell { padding:0px; width:450px; }
+.mtt-taskbox td { padding:0; }
+.mtt-taskbox td.mtt-tb-cell { width:450px; }
 .mtt-tb-c { position:relative; padding-left:22px; /*input padding+border*/ }
 #task { color:#444444; background:#fff; height:1.35em; padding:2px; padding-right:18px; border:1px solid #ccc; border-radius:3px; width:100%; margin-left:-22px; }
-#task_placeholder span { display:none; color:#ccc; position:absolute; left:0; top:0; height:1.35em; line-height:1.35em; padding:3px; /*input top and left padding+border*/  }
+#task_placeholder span { cursor:text; display:none; color:#ccc; position:absolute; left:0; top:0; height:1.35em; line-height:1.35em; padding:3px; /*input top and left padding+border*/  }
 #task_placeholder.placeholding span { display:inline-block; }
 
 .mtt-taskbox-icon { width:16px; height:16px; position:absolute; top:50%; margin-top:-8px; }
-.mtt-taskbox-icon.mtt-icon-submittask { background:url(images/add.svg) no-repeat; right:4px; }
+.mtt-taskbox-icon.mtt-icon-submittask { background:url(images/add.svg) no-repeat; right:4px; cursor:pointer; }
 
 #newtask_adv span { background:url(images/newtask-ext.svg) no-repeat; }
 #mtt_body.show-all-tasks #htab_newtask, #mtt_body.readonly #htab_newtask { display:none; }
@@ -140,7 +140,7 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 }
 #search_close { display:none; }
 
-.mtt-searchbox td { padding:0px; width:180px; }
+.mtt-searchbox td { padding:0px; max-width:180px; }
 .mtt-searchbox-c { position:relative; padding-left:42px; /*input padding+border*/ }
 .mtt-searchbox-icon { width:16px; height:16px; position:absolute; top:50%; margin-top:-8px; }
 
@@ -149,7 +149,7 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 
 #searchbar { font-size:1em; font-weight:normal; display:none;  margin-top:5px; }
 #searchbarkeyword { font-weight:bold; }
-
+#taskview { margin-left:4px; }
 
 /* */
 #mtt_body.no-lists #page_tasks h3 > * { visibility:hidden; }
@@ -160,7 +160,7 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 .tag-filter { margin-left:3px; margin-right:3px; }
 .tag-filter-exclude { text-decoration:line-through; }
 .mtt-filter-header { font-weight:bold; margin-right:.33em; }
-.mtt-filter-close { cursor:pointer; position:relative; top:2px; margin-left:3px; display:inline-block; width:10px; height:10px; background:url(images/closetag.svg) no-repeat; }
+.mtt-filter-close { cursor:pointer; position:relative; top:1px; margin-left:3px; display:inline-block; width:10px; height:10px; background:url(images/closetag.svg) no-repeat; }
 
 .task-left { float:left; }
 .task-toggle { visibility:hidden; margin-top:1px; cursor:pointer; width:16px; height:16px; float:left; background:url(images/note-toggle.svg) no-repeat; }
@@ -261,7 +261,7 @@ a.mtt-back-button { font-size:0.8em; }
 #priopopup .prio-pos:hover { border-color:#ff3333; }
 #priopopup .prio-pos-1:hover { border-color:#ff7700; }
 
-#tagcloudbtn { margin-right:2px; font-size:0.8em; font-weight:normal; padding:2px; float:right; }
+#tagcloudbtn { margin-right:2px; font-size:0.8em; font-weight:normal; float:right; }
 #mtt_body.show-all-tasks #tagcloudbtn { display:none; }
 #tagcloudload { display:none; height:24px; background:url(images/loading48.gif) center no-repeat; background-size:24px 24px; }
 #tagcloud {
@@ -286,8 +286,6 @@ a.mtt-back-button { font-size:0.8em; }
 #tagcloudcancel span { background:url(images/tagcloud-close.svg) no-repeat; }
 /*#tagcloudcancel span:hover { background:url(images/tagcloud-close.svg) no-repeat; }*/
 
-#taskview { padding:2px; }
-
 .ui-datepicker { width:190px; z-index:202; border: 1px solid #cccccc; background: #ffffff; display:none; padding:2px; box-shadow:1px 2px 5px rgba(0,0,0,0.5); border-radius:5px; }
 .ui-datepicker-trigger { cursor:pointer; vertical-align:text-bottom; margin-left:2px; margin-right:2px; } 
 .ui-datepicker-calendar { width:100%; border-collapse:collapse; }
@@ -306,9 +304,10 @@ a.mtt-back-button { font-size:0.8em; }
 .ui-datepicker .ui-icon-circle-triangle-e { display:block; position:absolute; top:50%; margin-top:-8px; right:50%; background:url(images/arr-right.svg) no-repeat; }
 
 .mtt-menu-button {
- -moz-user-select:none; -webkit-user-select: none;
+ user-select: none;
  cursor:pointer;
  border:1px solid transparent;
+ padding:2px;
 }
 .mtt-menu-button:hover, .mtt-menu-button.mtt-menu-button-active { 
  border:1px solid #ccc; border-radius:3px;
@@ -317,7 +316,7 @@ a.mtt-back-button { font-size:0.8em; }
 .mtt-menu-container { 
 	overflow:hidden; z-index:100;
 	background-color:#f9f9f9; border:1px solid #cccccc; padding:2px 0px;
-	-moz-box-shadow:1px 2px 5px rgba(0,0,0,0.5); -webkit-box-shadow:1px 2px 5px rgba(0,0,0,0.5); box-shadow:1px 2px 5px rgba(0,0,0,0.5); 
+	box-shadow:1px 2px 5px rgba(0,0,0,0.5); 
 	border-radius:5px;
 	margin:0px 7px 7px 0px; /* for shadows */
 } 

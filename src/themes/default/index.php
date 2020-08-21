@@ -29,12 +29,12 @@
 $().ready(function(){
 
 	<?php if(Config::get('mobile')): ?>
-
+/*
 	$('body').width(screen.width);
 	$(window).resize(function() {
 		$('body').width(screen.width);
 	});
-		
+*/
 	<?php endif; ?>
 
 	mytinytodo.mttUrl = "<?php mttinfo('mtt_url'); ?>";
@@ -283,7 +283,11 @@ $().ready(function(){
 
 <div id="footer">
 	<div id="footer_content"> 
-		<span id="mobileordesktop" ><a href="<?php mttinfo('url'); ?>">Desktop</a> | <a href="<?php mttinfo('mobile_url'); ?>">Mobile</a></span>
+		<span id="mobileordesktop">
+			<?php if(Config::get('mobile')): ?><a href="<?php mttinfo('url'); ?>">Desktop</a>
+			<?php else: ?><a href="<?php mttinfo('mobile_url'); ?>">Mobile</a>
+			<?php endif; ?>
+		</span>
 		<span>Powered by <strong><a href="http://www.mytinytodo.net/">myTinyTodo</a></strong> <?php mttinfo('version'); ?></span> 
 	</div>
 </div>

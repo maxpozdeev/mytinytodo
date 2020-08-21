@@ -1,20 +1,38 @@
+/*
+	This file is a part of myTinyTodo. 
+	Copyright 2009-2010,2020 Max Pozdeev <maxpozdeev@gmail.com>
+*/
+
 body { margin:0px; font-size:100%; }
 h2 { margin:0; margin-bottom:2px; font-size:1em; }
-h3 { margin-bottom:4px; padding:4px 0; }
+h3 { padding:0.5em 0px; }
+
 #body { margin-left:1px; margin-right:1px; padding:1px; padding-bottom:12px;}
 #bar_login, #bar_logout { padding-right:1px; }
+
+.mtt-img-button { padding:4px; }
+.mtt-menu-button { padding:4px; }
 
 #tabs ul { margin-top:0px; }
 #tabs ul li { width:70px; margin-right: 1px; }
 .tab-content { padding:4px; }
+.mtt-tab a, .mtt-tabs-add-button { padding-top:9px; padding-bottom:3px; }
+#tabs_buttons { padding-top:6px; padding-bottom:6px; }
+.mtt-tab .list-action { top:9px; }
 
-#htab_search { width:40%; max-width:190px; }
+#task { padding:5px; padding-right:18px; margin-left:-22px; }
+#task_placeholder span { padding:6px; }
+#newtask_adv { margin-left:0.5em; }
+
+#htab_search { width:30%; max-width:190px; }
 .mtt-searchbox { float:right; }
-.mtt-searchbox td { width:40%; }
+.mtt-searchbox td { width:450px; max-width:100%; }
 #toolbar.mtt-intask #htab_search { display:none; }
 #toolbar.mtt-insearch #htab_newtask { display:none; }
-#toolbar.mtt-insearch #htab_search { width:100%; }
-#toolbar.mtt-insearch .mtt-searchbox td { width:40%; }
+#toolbar.mtt-insearch #htab_search { width:100%; max-width:100%; }
+/*#toolbar.mtt-insearch .mtt-searchbox td { width:40%; }*/
+#taskview { margin-left:0px; }
+#search { padding:5px 20px; border-radius:15px; }
 
 #tasklist li { padding:0.5em 3px; overflow:hidden;  }
 .task-actions { display:none; }
@@ -24,7 +42,7 @@ h3 { margin-bottom:4px; padding:4px 0; }
 .task-note-area textarea { width:95%; }
 .task-middle { margin-right:0px; }
 
-#tasklist li .task-through { white-space:nowrap; overflow:hidden; }
+#tasklist li .task-through { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 #tasklist li:hover { background-color:#ffffff; }
 #tasklist li.task-expanded .task-note-block { display:none; }
 /*#tasklist li.task-expanded .task-toggle { background-position:-32px 0; }*/
@@ -48,3 +66,5 @@ h3 { margin-bottom:4px; padding:4px 0; }
 #tagcloud { max-width:100%; }
 .mtt-settings-table .in350 { min-width:50px; }
 .mtt-notes-showhide { display:none; }
+
+#footer_content { padding:10px 4px; }

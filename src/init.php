@@ -178,7 +178,7 @@ function get_mttinfo($v)
 				$_mttinfo['version'] = MTT_VERSION;
 				return $_mttinfo['version'];
 			}
-			return date('Ymd-His'); //force no-cache for dev needs
+			return time(); //force no-cache for dev needs
 	}
 }
 
