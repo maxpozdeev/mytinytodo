@@ -47,9 +47,11 @@ $().ready(function(){
 		singletab: <?php echo (isset($_GET['singletab']) || Config::get('mobile')) ? "true" : "false"; ?>,
 		duedatepickerformat: "<?php echo htmlspecialchars(Config::get('dateformat2')); ?>",
 		firstdayofweek: <?php echo (int) Config::get('firstdayofweek'); ?>,
+		calendarIcon: mytinytodo.templateUrl + 'images/calendar.svg',
 		autotag: <?php echo Config::get('autotag') ? "true" : "false"; ?>
 		<?php if(isset($_GET['list'])) echo ",openList: ". (int)$_GET['list']; ?>
 		<?php if(Config::get('mobile')) echo ", touchDevice: true"; ?>
+
 	}).loadLists(1);
 });
 </script>

@@ -54,7 +54,8 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		tagPreviewDelay: 700, //milliseconds
 		saveShowNotes: false,
 		firstdayofweek: 1,
-		touchDevice: false
+		touchDevice: false,
+		calendarIcon: 'calendar.png' // need templateUrl+icon
 	},
 
 	timers: {
@@ -311,13 +312,25 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			dateFormat: _mtt.duedatepickerformat(),
 			firstDay: _mtt.options.firstdayofweek,
 			showOn: 'button',
-			buttonImage: _mtt.templateUrl + 'images/calendar.svg', buttonImageOnly: true,
+			buttonImage: _mtt.options.calendarIcon,
+			buttonImageOnly: true,
 			constrainInput: false,
 			duration:'',
-			dayNamesMin:_mtt.lang.daysMin, dayNames:_mtt.lang.daysLong, monthNamesShort:_mtt.lang.monthsLong
+			dayNamesMin:_mtt.lang.daysMin,
+			dayNames:_mtt.lang.daysLong,
+			monthNamesShort:_mtt.lang.monthsLong
 		});
 
-		$("#edittags").autocomplete('ajax.php?suggestTags', {scroll: false, multiple: true, selectFirst:false, max:8, extraParams:{list:function(){ var taskId = document.getElementById('taskedit_form').id.value; return taskList[taskId].listId; }}});
+		$("#edittags").autocomplete('ajax.php?suggestTags', {
+			scroll: false,
+			multiple: true,
+			selectFirst:false,
+			max:8,
+			extraParams:{ list:function(){
+					var taskId = document.getElementById('taskedit_form').id.value;
+					return taskList[taskId].listId; 
+				}}
+		});
 
 		$('#taskedit_form').find('select,input,textarea').bind('change keypress', function(){
 			flag.editFormChanged = true;
