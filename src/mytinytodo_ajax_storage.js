@@ -114,6 +114,11 @@ mytinytodoStorageAjax.prototype =
 		}
 		$.post(this.mtt.mttUrl+'ajax.php?changeOrder', { order:order }, callback, 'json');
 	},
+	
+	suggestTags: function(params, callback)
+	{
+		$.getJSON(this.mtt.mttUrl+'ajax.php?suggestTags', {list:params.list, q:params.q, rnd:Math.random()}, callback);
+	},
 
 	tagCloud: function(params, callback)
 	{

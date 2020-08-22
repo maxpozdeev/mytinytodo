@@ -332,11 +332,9 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		    source: function(request, response) {
 		        var taskId = document.getElementById('taskedit_form').id.value;
 		        var listId = taskList[taskId].listId;
-		        jQuery.get("ajax.php?suggestTags&list="+listId, {
-		            q: ac_extractLast(request.term)
-		        }, function(data) {
-		            response(data);
-		        });
+				_mtt.db.request('suggestTags', {list:listId, q:ac_extractLast(request.term)}, function(json){
+					response(json);
+				})
 		    },/*
 			search: function() {
 				// custom minLength
