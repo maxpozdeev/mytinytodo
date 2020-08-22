@@ -249,10 +249,11 @@ li.task-completed .task-note-block .task-note { text-decoration:line-through; }
 a.mtt-back-button { font-size:0.8em; }
 
 /* autocomplete */
-.ac_results { padding:0px; border:1px solid #cccccc; background-color:#f9f9f9; overflow:hidden; z-index:99999; -moz-box-shadow:1px 2px 5px rgba(0,0,0,0.5); -webkit-box-shadow:1px 2px 5px rgba(0,0,0,0.5); }
-.ac_results ul { width: 100%; list-style-position: outside; list-style: none; padding: 0; margin: 0; }
-.ac_results li { margin: 0px; padding: 2px 5px; cursor: default; display: block; line-height: 16px; overflow: hidden; } 
-.ac_over { background-color:#316AC5; color:white; }
+.ui-helper-hidden-accessible { border: 0; clip: rect(0 0 0 0); height: 1px; margin: -1px; overflow: hidden; padding: 0; position: absolute; width: 1px; }
+.ui-autocomplete { position: absolute; padding:0px; border:1px solid #cccccc; background-color:#f9f9f9; overflow:hidden; z-index:99999; box-shadow:1px 2px 5px rgba(0,0,0,0.5); }
+.ui-autocomplete .ui-menu-item { margin: 0px; cursor:default; overflow: hidden;  }
+.ui-autocomplete .ui-menu-item-wrapper { position: relative; padding:0.3em 4px; }
+.ui-autocomplete .ui-menu-item-wrapper.ui-state-active { background:linear-gradient(#5373fc, #3157f4); color:white; }
 
 #priopopup { overflow: hidden; z-index:100; background-color:#f9f9f9; border:1px solid #cccccc; padding:5px; } 
 #priopopup span { cursor:pointer; border:1px solid #f9f9f9; }
@@ -323,11 +324,10 @@ a.mtt-back-button { font-size:0.8em; }
 .mtt-menu-container ul { list-style: none; padding:0; margin:0; }
 .mtt-menu-container li { margin:1px 0px; cursor:default; color:#000; white-space:nowrap; padding:0.15em 0px; padding-left:24px; padding-right:18px; position:relative; }
 .mtt-menu-container li:hover, .mtt-menu-container li.mtt-menu-item-active { 
- background-color:#316AC5;
- color:white; 
- background:-moz-linear-gradient(#5373fc,  #3157f4);
- background:-webkit-gradient(linear, left top, left bottom, from(#5373fc), to(#3157f4));
-}
+  background-color:#316AC5;
+  color:white;
+  background:linear-gradient(#5373fc,  #3157f4);
+ }
 .mtt-menu-container li.mtt-item-disabled, .mtt-menu-container li.mtt-item-disabled a { color:#ACA899; }
 .mtt-menu-container a { display:block; cursor:default; text-decoration:none; outline:none; color:#000; }
 .mtt-menu-container li:hover a { color:white; }

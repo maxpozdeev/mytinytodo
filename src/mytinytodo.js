@@ -320,16 +320,43 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			dayNames:_mtt.lang.daysLong,
 			monthNamesShort:_mtt.lang.monthsLong
 		});
+		
+		function ac_split( val ) {
+			return val.split( /,\s*/ );
+		}
+		function ac_extractLast( term ) {
+			return ac_split( term ).pop();
+		}
 
-		$("#edittags").autocomplete('ajax.php?suggestTags', {
-			scroll: false,
-			multiple: true,
-			selectFirst:false,
-			max:8,
-			extraParams:{ list:function(){
-					var taskId = document.getElementById('taskedit_form').id.value;
-					return taskList[taskId].listId; 
-				}}
+		$("#edittags").autocomplete({
+		    source: function(request, response) {
+		        var taskId = document.getElementById('taskedit_form').id.value;
+		        var listId = taskList[taskId].listId;
+		        jQuery.get("ajax.php?suggestTags&list="+listId, {
+		            q: ac_extractLast(request.term)
+		        }, function(data) {
+		            response(data);
+		        });
+		    },/*
+			search: function() {
+				// custom minLength
+				var term = ac_extractLast( this.value );
+				if ( term.length < 2 ) {
+				  return false;
+				}
+			},*/
+			focus: function() {
+				// prevent value inserted on focus using keyboard
+				return false;
+			},
+			select: function( event, ui ) {
+				var terms = ac_split( this.value );
+				terms.pop(); // remove the current input
+				terms.push( ui.item.value ); // add the selected item
+				terms.push( "" ); // add placeholder to get the comma-and-space at the end
+				this.value = terms.join( ", " );
+				return false;
+			}
 		});
 
 		$('#taskedit_form').find('select,input,textarea').bind('change keypress', function(){
@@ -1361,7 +1388,6 @@ function saveTask(form)
 			refreshTaskCnt();
 			$('#taskrow_'+item.id).effect("highlight", {color:_mtt.theme.editTaskFlashColor}, 'normal', function(){$(this).css('display','')});
 	});
-	$("#edittags").flushCache();
 	flag.tagsChanged = true;
 	return false;
 };
@@ -1486,7 +1512,6 @@ function submitFullTask(form)
 		refreshTaskCnt();
 	});
 
-	$("#edittags").flushCache();
 	flag.tagsChanged = true;
 	return false;
 };
@@ -1764,7 +1789,6 @@ function moveTaskToList(taskId, listId)
 		}
 	});
 
-	$("#edittags").flushCache();
 	flag.tagsChanged = true;
 };
 
