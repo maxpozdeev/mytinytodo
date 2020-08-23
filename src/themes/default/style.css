@@ -6,7 +6,7 @@
 /*	default style	*/
 
 html { height:100%; overflow-y:scroll; }
-body { margin:0px; padding:0px;  height:100%; min-height:100%; background-color:#fff; font-family:arial; font-size:14px; }
+body { margin:0px; padding:0px;  height:100%; min-height:100%; background-color:#fff; font-family:helvetica,arial; font-size:14px; }
 #wrapper { margin:0px auto; max-width:950px;  height:100%; }
 #container { height:auto !important;height:100%;min-height:100%;    }
 #mtt_body { padding:8px; padding-bottom:16px; }
@@ -21,7 +21,7 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 
 #space { height:30px; }
 #footer { height:30px; margin-top:-30px; }
-#footer_content { background-color:#b5d5ff; padding:5px 4px; font-size:0.8em; }
+#footer_content { background-color:#b5d5ff; padding:5px; font-size:0.8em; }
 #footer_content a { color:#000000; }
 #mobileordesktop { float:right; }
 
@@ -210,7 +210,7 @@ li:hover a.taskactionbtn, a.taskactionbtn.mtt-menu-button-active { background-im
 #tasklist.filter-past li.past, #tasklist.filter-today li.today, #tasklist.filter-soon li.soon { display:block; }
 #tasklist.filter-past li.task-completed, #tasklist.filter-today li.task-completed, #tasklist.filter-soon li.task-completed { display:none; }
 
-.task-note-block { margin-left:2px; color:#777777; background:url(images/note.svg) left  2px no-repeat; padding-left:19px; padding-top:2px; min-height:16px; margin-top:2px; display:none; }
+.task-note-block { margin-left:2px; color:#777777; background:url(images/note.svg) left  0px no-repeat; padding-left:19px; min-height:16px; margin-top:6px; display:none; }
 li.task-expanded .task-note-block { display:block; }
 li.task-completed .task-note-block .task-note { text-decoration:line-through; }
 .task-note-area { display:none; margin-bottom:5px; }
@@ -232,11 +232,12 @@ li.task-completed .task-note-block .task-note { text-decoration:line-through; }
 
 .form-row { margin-top:8px; }
 .form-row .h { font-weight:bold; color:#333333; }
+.form-row div.h { margin-bottom:3px; }
 .form-row-short-end { clear:both; }
 #page_taskedit .form-input { padding:3px; border:1px solid #ccc; border-radius:2px; }
 #page_taskedit select.form-input { padding:2px; }
 #page_taskedit .form-bottom-buttons input { padding:4px; border:1px solid #ccc; border-radius:3px; background-color:#efefef; margin:2px; }
-#page_taskedit .form-row .in500 { width:99%; }
+#page_taskedit .form-row .in500 { width:100%; box-sizing:border-box; }
 #page_taskedit .form-row textarea.in500 { height:200px; /*resize:none;*/ }
 #page_taskedit .form-row-short { float:left; margin-right:12px; }
 #page_taskedit .form-bottom-buttons { text-align:center; }

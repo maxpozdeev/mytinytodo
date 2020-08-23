@@ -38,7 +38,7 @@ h3 { padding:0.5em 0px; }
 .task-actions { display:none; }
 .task-date { display:none; }
 .task-note-actions { display:block; padding-top:8px; }
-.task-note-block { margin-left:0px; border-left:1px solid #777777; background:none; padding-left:4px; margin-top:1px; padding-top:0px; display:none; } 
+.task-note-block { margin-left:0px; border-left:1px solid #777777; background:none; padding-left:4px; display:none; } 
 .task-note-area textarea { width:95%; }
 .task-middle { margin-right:0px; }
 
