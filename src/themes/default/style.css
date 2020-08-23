@@ -48,7 +48,7 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 .mtt-tabs { list-style:none; padding:0; margin:0; }
 .mtt-tabs li { margin:1px 3px 0 0; float:left; }
 .mtt-tab { background-color:#fbfbfb; border:1px solid #ededed; border-bottom:none; border-top-right-radius:8px; }
-.mtt-tab a { position:relative; margin:0; font-size:0.9em; text-decoration:none; text-align:center; white-space:nowrap; color:#333333; display:block; height:20px; padding:6px 6px 0px 2px; outline:none; vertical-align:top; }
+.mtt-tab a { position:relative; margin:0; font-size:0.9em; text-decoration:none; text-align:center; white-space:nowrap; color:#333333; display:block; height:20px; padding:6px 6px 0px 6px; outline:none; vertical-align:top; }
 .mtt-tab a span { display:inline-block; min-width:75px; max-width:195px; cursor:pointer; padding:0; overflow:hidden; }
 .mtt-tab .list-action { display:none; float:left; position:absolute; top:6px; right:5px; width:16px; height:16px; background:transparent url(images/arrdown.svg) no-repeat; cursor:pointer; }
 .mtt-tab .list-action:hover, .mtt-tab .list-action.mtt-menu-button-active { background-image:url(images/arrdown-hover.svg); } 
@@ -186,6 +186,7 @@ li.task-expanded .task-toggle { background-image:url(images/note-toggled.svg); }
 .task-tags .tag { font-size:0.8em; font-weight:bold; color:#333333; text-decoration:underline;  }
 .task-tags .tag:hover {  }
 .duedate { color:#333333; padding:0px; padding-left:1px; margin-left:5px;  }
+.duedate:before { content:'\2192\20'; }
 li.task-completed .duedate { /*font-size:0.8em;*/ display:none; }
 #tasklist li.soon .duedate { color:#008000; }
 #tasklist li.today .duedate { color:#FF0000; } 

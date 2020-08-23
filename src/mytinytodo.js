@@ -914,7 +914,7 @@ function prepareTagsClass(ids)
 function prepareDuedate(item)
 {
 	if(!item.duedate) return '';
-	return '<span class="duedate" title="'+item.dueTitle+'"><span class="duedate-arrow">→</span> '+item.dueStr+'</span>';
+	return '<span class="duedate" title="'+item.dueTitle+'">'+item.dueStr+'</span>';
 };
 
 
