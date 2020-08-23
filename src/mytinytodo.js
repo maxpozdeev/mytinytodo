@@ -624,7 +624,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		var s = this.options.duedatepickerformat.replace(/(.)/g, function(t,s) {
 			switch(t) {
 				case 'Y': return 'yy';
-				case 'y': return 'y';
+				case 'y': return 'yy';
 				case 'd': return 'dd';
 				case 'j': return 'd';
 				case 'm': return 'mm';

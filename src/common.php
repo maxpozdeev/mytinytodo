@@ -153,7 +153,8 @@ function formatDate3($format, $ay, $am, $ad, $lang)
 	$ml = $lang->get('months_long');
 	$ms = $lang->get('months_short');
 	$Y = $ay;
-	$y = $Y < 2010 ? '0'.($Y-2000) : $Y-2000;
+	$YC = 100 * floor($Y/100); //...1900,2000,2100...
+	$y = $Y < $YC+10 ? '0'.($Y-$YC) : $Y-$YC;
 	$n = $am;
 	$m = $n < 10 ? '0'.$n : $n;
 	$F = $ml[$am-1];
