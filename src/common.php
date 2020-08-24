@@ -154,7 +154,8 @@ function formatDate3($format, $ay, $am, $ad, $lang)
 	$ms = $lang->get('months_short');
 	$Y = $ay;
 	$YC = 100 * floor($Y/100); //...1900,2000,2100...
-	$y = $Y < $YC+10 ? '0'.($Y-$YC) : $Y-$YC;
+	if ($YC == 2000) $y = $Y < $YC+10 ? '0'.($Y-$YC) : $Y-$YC;
+	else $y = $Y;
 	$n = $am;
 	$m = $n < 10 ? '0'.$n : $n;
 	$F = $ml[$am-1];

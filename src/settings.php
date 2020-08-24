@@ -219,10 +219,12 @@ header('Content-type:text/html; charset=utf-8');
 <td>
  <input name="dateformat2" value="<?php echo htmlspecialchars(_c('dateformat2'));?>" />
  <select onchange="if(this.value!=0) this.form.dateformat2.value=this.value;">
- <?php echo selectOptions(array('Y-m-d'=>'yyyy-mm-dd ('.date('Y-m-d').')',
+ <?php echo selectOptions(array(
+       'Y-m-d'=>'yyyy-mm-dd ('.date('Y-m-d').')',
        'n/j/y'=>'m/d/yy ('.date('n/j/y').')',
        'd.m.y'=>'dd.mm.yy ('.date('d.m.y').')',
-       'd/m/y'=>'dd/mm/yy ('.date('d/m/y').')', 0=>__('set_custom')), _c('dateformat2'), 0); ?>
+       'd/m/y'=>'dd/mm/yy ('.date('d/m/y').')',
+       0=>__('set_custom')), _c('dateformat2'), 0);  ?>
  </select>
 </td></tr>
 
