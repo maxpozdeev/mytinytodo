@@ -3,9 +3,9 @@
 	Copyright 2009-2010,2020 Max Pozdeev <maxpozdeev@gmail.com>
 */
 
+html { font-size:100%; }
 body { margin:0px; font-size:100%; }
-h2 { margin:0; margin-bottom:2px; font-size:1em; }
-h3 { padding:0.5em 0px; }
+h2 { margin:0; margin-bottom:2px; font-size:1rem; }
 
 #body { margin-left:1px; margin-right:1px; padding:1px; padding-bottom:12px;}
 #bar_login, #bar_logout { padding-right:1px; }
@@ -15,14 +15,10 @@ h3 { padding:0.5em 0px; }
 
 #tabs ul { margin-top:0px; }
 #tabs ul li { width:70px; margin-right: 1px; }
-.tab-content { padding:4px; }
-.mtt-tab a, .mtt-tabs-add-button { padding-top:9px; padding-bottom:3px; }
-#tabs_buttons { padding-top:6px; padding-bottom:6px; }
-.mtt-tab .list-action { top:9px; }
+.mtt-tabs-add-button { padding-left:0.4rem; padding-right:0.4rem; }
 
 #task { padding:5px; padding-right:18px; margin-left:-22px; }
 #task_placeholder span { padding:6px; }
-#newtask_adv { margin-left:0.5em; }
 
 #htab_search { width:30%; max-width:190px; }
 .mtt-searchbox { float:right; }
@@ -34,7 +30,7 @@ h3 { padding:0.5em 0px; }
 #taskview { margin-left:0px; }
 #search { padding:5px 20px; border-radius:15px; }
 
-#tasklist li { padding:0.5em 3px; overflow:hidden;  }
+#tasklist li { padding:0.5rem 3px; overflow:hidden;  }
 .task-actions { display:none; }
 .task-date { display:none; }
 .task-note-actions { display:block; padding-top:8px; }

@@ -84,10 +84,10 @@ $().ready(function(){
 
 <div id="lists">
  <ul class="mtt-tabs"></ul>
- <div class="mtt-tabs-add-button" title="<?php _e('list_new'); ?>"><span></span></div>
- <div id="tabs_buttons">
-  <div class="mtt-tabs-select-button mtt-tabs-button" title="<?php _e('list_select'); ?>"><span></span></div>
- </div>
+ <div class="mtt-tabs-add-button" title="<?php _e('list_new'); ?>"><div class="tab-height-wrapper"><span></span></div></div>
+ <div id="tabs_buttons"><div class="tab-height-wrapper">
+  <div class="mtt-tabs-select-button mtt-img-button" title="<?php _e('list_select'); ?>"><span></span></div>
+ </div></div>
  <div id="list_all" class="mtt-tab mtt-tabs-alltasks mtt-tabs-hidden"><a href="#alltasks"><span><?php _e('alltasks'); ?></span><div class="list-action"></div></a></div>
 </div>
 
