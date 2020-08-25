@@ -188,7 +188,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			_mtt.menus.taskview.show(this);
 		});
 
-		$('#mtt_filters .tag-filter .mtt-filter-close').live('click', function(){
+		$('#mtt_filters').on('click', '.tag-filter .mtt-filter-close', function(){
 			cancelTagFilter($(this).attr('tagid'));
 		});
 
@@ -209,7 +209,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			if(_mtt.menus.tagcloud) _mtt.menus.tagcloud.close();
 		});
 
-		$('#tagcloudcontent .tag').live('click', function(){
+		$('#tagcloudcontent').on('click', '.tag', function(){
 			addFilterTag($(this).attr('tag'), $(this).attr('tagid'));
 			if(_mtt.menus.tagcloud) _mtt.menus.tagcloud.close();
 			return false;
@@ -236,7 +236,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 
 		
 		// Tabs
-		$('#lists li.mtt-tab').live('click', function(event){
+		$('#lists').on('click', 'li.mtt-tab', function(event){
 			if(event.metaKey || event.ctrlKey) {
 				// hide the tab
 				hideTab(this);
@@ -256,7 +256,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			return false;
 		});
 
-		$('#lists li.mtt-tab .list-action').live('click', function(){
+		$('#lists').on('click', 'li.mtt-tab .list-action', function(){
 			listMenu(this);
 			return false;	//stop bubble to tab click
 		});
@@ -303,7 +303,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			return saveTask(this);
 		});
 
-		$('#alltags .tag').live('click', function(){
+		$('#alltags').on('click', '.tag', function(){
 			addEditTag($(this).attr('tag'));
 			return false;
 		});
@@ -364,7 +364,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		// tasklist handlers
 		$("#tasklist").bind("click", tasklistClick);
 		
-		$('#tasklist li').live('dblclick', function(){
+		$('#tasklist').on('dblclick', 'li', function(){
 			//clear selection
 			if(document.selection && document.selection.empty && document.selection.createRange().text) document.selection.empty();
 			else if(window.getSelection) window.getSelection().removeAllRanges();
@@ -376,25 +376,25 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			}
 		});
 
-		$('#tasklist .taskactionbtn').live('click', function(){
+		$('#tasklist').on('click', '.taskactionbtn', function(){
 			var id = parseInt(getLiTaskId(this));
 			if(id) taskContextMenu(this, id);
 			return false;
 		});
 
-		$('#tasklist input[type=checkbox]').live('click', function(){
+		$('#tasklist').on('click', 'input[type=checkbox]', function(){
 			var id = parseInt(getLiTaskId(this));
 			if(id) completeTask(id, this);
 			//return false;
 		});
 
-		$('#tasklist .task-toggle').live('click', function(){
+		$('#tasklist').on('click', '.task-toggle', function(){
 			var id = getLiTaskId(this);
 			if(id) $('#taskrow_'+id).toggleClass('task-expanded');
 			return false;
 		});
 
-		$('#tasklist .tag').live('click', function(event){
+		$('#tasklist').on('click', '.tag', function(event){
 			clearTimeout(_mtt.timers.previewtag);
 			$('#tasklist li').removeClass('not-in-tagpreview');
 			addFilterTag($(this).attr('tag'), $(this).attr('tagid'), (event.metaKey || event.ctrlKey ? true : false) );
@@ -402,7 +402,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		});
 
 		if(!this.options.touchDevice) {
-			$('#tasklist .task-prio').live('mouseover mouseout', function(event){
+			$('#tasklist').on('mouseover mouseout', '.task-prio', function(event){
 				var id = parseInt(getLiTaskId(this));
 				if(!id) return;
 				if(event.type == 'mouseover') prioPopup(1, this, id);
@@ -410,20 +410,20 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			});
 		}
 
-		$('#tasklist .mtt-action-note-cancel').live('click', function(){
+		$('#tasklist').on('click', '.mtt-action-note-cancel', function(){
 			var id = parseInt(getLiTaskId(this));
 			if(id) cancelTaskNote(id);
 			return false;
 		});
 
-		$('#tasklist .mtt-action-note-save').live('click', function(){
+		$('#tasklist').on('click', '.mtt-action-note-save', function(){
 			var id = parseInt(getLiTaskId(this));
 			if(id) saveTaskNote(id);
 			return false;
 		});
 
 		if(this.options.tagPreview) {
-			$('#tasklist .tag').live('mouseover mouseout', function(event){
+			$('#tasklist').on('mouseover mouseout', '.tag', function(event){
 				var cl = 'tag-id-' + $(this).attr('tagid');
 				var sel = (event.metaKey || event.ctrlKey) ? 'li.'+cl : 'li:not(.'+cl+')';
 				if(event.type == 'mouseover') {
@@ -447,16 +447,16 @@ var mytinytodo = window.mytinytodo = _mtt = {
 
 
 		// AJAX Errors
-		$('#msg').ajaxSend(function(r,s){
+		$(document).ajaxSend(function(r,s){
 			$("#msg").hide().removeClass('mtt-error mtt-info').find('.msg-details').hide();
 			$("#loading").show();
 		});
 
-		$('#msg').ajaxStop(function(r,s){
+		$(document).ajaxStop(function(r,s){
 			$("#loading").fadeOut();
 		});
 
-		$('#msg').ajaxError(function(event, request, settings){
+		$(document).ajaxError(function(event, request, settings){
 			var errtxt;
 			if(request.status == 0) errtxt = 'Bad connection';
 			else if(request.status != 200) errtxt = 'HTTP: '+request.status+'/'+request.statusText;
@@ -490,12 +490,12 @@ var mytinytodo = window.mytinytodo = _mtt = {
 
 		// Settings
 		$("#settings").click(showSettings);
-		$("#settings_form").live('submit', function() {
+		$("#page_ajax").on('submit', '#settings_form', function() {
 			saveSettings(this);
 			return false;
 		});
 		
-		$(".mtt-back-button").live('click', function(){ _mtt.pageBack(); this.blur(); return false; } );
+		$(document).on('click', '.mtt-back-button', function(){ _mtt.pageBack(); this.blur(); return false; } );
 
 		$(window).bind('beforeunload', function() {
 			if(_mtt.pages.current.page == 'taskedit' && flag.editFormChanged) {
