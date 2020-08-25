@@ -107,7 +107,7 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 #mtt_body.no-lists #toolbar > * { visibility:hidden; }
 .mtt-htabs  { clear:both; padding:8px; border-bottom:2px solid #DEDEDE; background:#ededed; }
 
-.mtt-img-button { padding:4px; display:block; border-radius:4px; transition:background-color 0.1s ease-in; }
+.mtt-img-button { padding:4px; display:block; border-radius:4px; transition:background-color 0.1s ease-in; cursor:pointer; }
 .mtt-img-button:hover, .mtt-img-button.mtt-menu-button-active { background-color:#efefef; }
 .mtt-img-button span { display:block; width:16px; height:16px; }
 
