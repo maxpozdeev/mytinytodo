@@ -18,7 +18,7 @@
 
 <body>
 
-<script type="text/javascript" src="<?php mttinfo('mtt_url'); ?>jquery/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="<?php mttinfo('mtt_url'); ?>jquery/jquery-3.5.1.min.js"></script>
 <script type="text/javascript" src="<?php mttinfo('mtt_url'); ?>jquery/jquery-ui-1.12.1.min.js"></script>
 <script type="text/javascript" src="<?php mttinfo('mtt_url'); ?>mytinytodo.js?v=<?php mttinfo('version'); ?>"></script>
 <script type="text/javascript" src="<?php mttinfo('mtt_url'); ?>mytinytodo_lang.php?v=<?php mttinfo('version'); ?>"></script>
