@@ -33,13 +33,19 @@ elseif(isset($_GET['loadTasks']))
 	$listId = (int)_get('list');
 	check_read_access($listId);
 
-	$sqlWhere = $inner = '';
-	if($listId == -1) {
+	$sqlWhere = $inner = $sqlWhereListId = $sqlInnerWhereListId = '';
+	if ($listId == -1) {
 		$userLists = getUserListsSimple();
-		$sqlWhere .= " AND {$db->prefix}todolist.list_id IN (". implode(',', array_keys($userLists)). ") ";
+		$sqlWhereListId = "{$db->prefix}todolist.list_id IN (". implode(',', array_keys($userLists)). ") ";
+		$sqlInnerWhereListId = "list_id IN (". implode(',', array_keys($userLists)). ") ";
 	}
-	else $sqlWhere .= " AND {$db->prefix}todolist.list_id=". $listId;
-	if(_get('compl') == 0) $sqlWhere .= ' AND compl=0';
+	else {
+		$sqlWhereListId = "{$db->prefix}todolist.list_id=". $listId;
+		$sqlInnerWhereListId = "list_id=$listId ";
+	}
+	if (_get('compl') == 0) {
+		$sqlWhere .= ' AND compl=0';
+	}
 	
 	$tag = trim(_get('t'));
 	if($tag != '')
@@ -57,20 +63,23 @@ elseif(isset($_GET['loadTasks']))
 			}
 		}
 
-		if(sizeof($tagIds) > 1) {
-			$inner .= "INNER JOIN (SELECT task_id, COUNT(tag_id) AS c FROM {$db->prefix}tag2task WHERE list_id=$listId AND tag_id IN (".
+		// Include tags: All
+		if (sizeof($tagIds) > 1) {
+			$inner .= "INNER JOIN (SELECT task_id, COUNT(tag_id) AS c FROM {$db->prefix}tag2task WHERE $sqlInnerWhereListId AND tag_id IN (".
 						implode(',',$tagIds). ") GROUP BY task_id) AS t2t ON id=t2t.task_id";
-			$sqlWhere = " AND c=". sizeof($tagIds); //overwrite sqlWhere!
+			$sqlWhere .= " AND c=". sizeof($tagIds);
 		}
-		elseif($tagIds) {
+		elseif ($tagIds) {
 			$inner .= "INNER JOIN {$db->prefix}tag2task ON id=task_id";
-			$sqlWhere .= " AND tag_id = ". $tagIds[0];
+			$sqlWhere .= " AND tag_id = {$tagIds[0]}";
 		}
-		
-		if($tagExIds) {
-			$sqlWhere .= " AND id NOT IN (SELECT DISTINCT task_id FROM {$db->prefix}tag2task WHERE list_id=$listId AND tag_id IN (".
-						implode(',',$tagExIds). "))"; //DISTINCT ?
+
+		// Exclude tags
+		if (sizeof($tagExIds) > 0) {
+			$sqlWhere .= " AND {$db->prefix}todolist.id NOT IN (SELECT DISTINCT task_id FROM {$db->prefix}tag2task WHERE $sqlInnerWhereListId AND tag_id IN (".
+						implode(',',$tagExIds). "))";
 		}
+		//no optimization for single exTag
 	}
 
 	$s = trim(_get('s'));
@@ -90,7 +99,7 @@ elseif(isset($_GET['loadTasks']))
 	$t = array();
 	$t['total'] = 0;
 	$t['list'] = array();
-	$q = $db->dq("SELECT *, duedate IS NULL AS ddn FROM {$db->prefix}todolist $inner WHERE 1=1 $sqlWhere $sqlSort");
+	$q = $db->dq("SELECT *, duedate IS NULL AS ddn FROM {$db->prefix}todolist $inner WHERE $sqlWhereListId $sqlWhere $sqlSort");
 	while($r = $q->fetch_assoc($q))
 	{
 		$t['total']++;
