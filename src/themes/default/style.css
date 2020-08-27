@@ -7,7 +7,7 @@
 
 html { height:100%; overflow-y:scroll; font-size:14px; }
 body { margin:0px; padding:0px;  height:100%; min-height:100%; background-color:#fff; font-family:helvetica,arial; font-size:14px; }
-#wrapper { margin:0px auto; max-width:950px;  height:100%; }
+#wrapper { margin:0px auto; max-width:1000px;  height:100%; }
 #container { height:auto !important;height:100%;min-height:100%;    }
 #mtt_body { padding:8px; padding-bottom:16px; }
 
@@ -68,8 +68,6 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
                      
 .mtt-tabs-alltasks { margin:1px 3px 0 3px; float:right;  }
 .mtt-tabs-alltasks.mtt-tab { border-top-right-radius:0px; border-top-left-radius:8px; }
-.mtt-tabs-alltasks.mtt-tab a { padding:6px 2px 0px 6px; }
-
 
 #tabs_buttons {
  float:right;
