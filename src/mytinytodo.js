@@ -214,7 +214,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		});
 
 		$('#tagcloudcontent').on('click', '.tag', function(){
-			addFilterTag($(this).attr('tag'), $(this).attr('tagid'));
+			addFilterTag( $(this).attr('tag'), $(this).attr('tagid'), (event.metaKey || event.ctrlKey ? true : false) );
 			if(_mtt.menus.tagcloud) _mtt.menus.tagcloud.close();
 			return false;
 		});	
