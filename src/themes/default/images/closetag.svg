@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 10 10">
- <!--<rect x="0" y="0" width="16" height="16" fill="red"/>-->
- <rect x="0" y="0" width="10" height="10" rx="2" fill="#888"/>
- <line x1="2" y1="2" x2="8" y2="8" stroke-width="1" stroke="#fff"/>
- <line x1="8" y1="2" x2="2" y2="8" stroke-width="1" stroke="#fff"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">
+<g stroke-width="1.5" fill="none">
+<path d="M12.0 12.0l-8-8" stroke="#000"/>
+<path d="M4.0 12.0l+8-8" stroke="#000"/>
+</g>
 </svg>

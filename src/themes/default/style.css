@@ -103,11 +103,12 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 
 
 #mtt_body.no-lists #toolbar > * { visibility:hidden; }
-.mtt-htabs  { clear:both; padding:8px; border-bottom:2px solid #DEDEDE; background:#ededed; }
+.mtt-htabs  { clear:both; padding:8px; border-bottom:1px solid #DEDEDE; background:#ededed; }
 
 .mtt-img-button { padding:4px; display:block; border-radius:4px; transition:background-color 0.1s ease-in; cursor:pointer; }
-.mtt-img-button:hover, .mtt-img-button.mtt-menu-button-active { background-color:#efefef; }
+.mtt-img-button:hover, .mtt-img-button.mtt-menu-button-active { background-color:#efefef; cursor:pointer; }
 .mtt-img-button span { display:block; width:16px; height:16px; }
+#toolbar .mtt-img-button:hover { background-color:#ddd; }
 
 .arrdown { display:inline-block; height:9px; width:9px; background:url(images/arrdown2.svg) no-repeat; }
 .arrdown2 { display:inline-block; height:7px; width:7px; background:url(images/arrdown2.svg) no-repeat; }
@@ -128,7 +129,6 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 
 #newtask_adv { margin-left:0.5rem; }
 #newtask_adv span { background:url(images/newtask-ext.svg) no-repeat; }
-#newtask_adv:hover { background-color:#ddd; }
 #mtt_body.show-all-tasks #htab_newtask, #mtt_body.readonly #htab_newtask { display:none; }
 
 
@@ -148,20 +148,30 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 .mtt-searchbox-icon.mtt-icon-cancelsearch { background:url(images/search-cancel.svg) no-repeat; opacity:0.45; right:4px; cursor:pointer; transition:opacity .1s ease-in; }
 .mtt-searchbox-icon.mtt-icon-cancelsearch:hover { opacity:0.7; }
 
-#searchbar { font-size:1rem; font-weight:normal; display:none;  margin-top:5px; }
+#searchbar { font-size:1rem; font-weight:normal; display:none;  margin-top:0.5rem; }
 #searchbarkeyword { font-weight:bold; }
-#taskview { margin-left:4px; }
 
 /* */
 #mtt_body.no-lists #page_tasks h3 > * { visibility:hidden; }
 .mtt-notes-showhide { font-size:0.8rem; font-weight:normal; margin-left:2px; margin-right:2px; }
 .mtt-notes-showhide a { text-decoration:none; border-bottom:1px dotted; }
 
-#mtt_filters { font-size:0.8rem; font-weight:normal; }
-.tag-filter { margin-left:3px; margin-right:3px; }
+
+/* Tag Toolbar */
+#mtt-tag-toolbar { font-size:1.0rem; font-weight:normal; margin-top:0.5rem; line-height:1.5rem; display:flex; }
+.tag-toolbar-content { flex:auto; }
+.tag-toolbar-close { flex-shrink:0; }
+.tag-toolbar-header { font-weight:normal; }
+.tag-filter { margin-left:3px; margin-right:3px; display:inline-flex; align-items:center;
+  border:1px solid #ddd; border-radius:2rem; background-color:#ddd; padding:0.1rem 0.5rem; margin-bottom:3px; }
 .tag-filter-exclude { text-decoration:line-through; }
 .mtt-filter-header { font-weight:bold; margin-right:.33rem; }
-.mtt-filter-close { cursor:pointer; position:relative; top:1px; margin-left:3px; display:inline-block; width:10px; height:10px; background:url(images/closetag.svg) no-repeat; }
+.mtt-filter-close { cursor:pointer; /*position:relative; bottom:1px; */ margin-left:3px; display:inline-block; width:1em; height:1em; /* em! */
+  background:url(images/closetag.svg) no-repeat; background-size:1em 1em; background-position:bottom center;
+  opacity:0.45; transition:opacity .1s ease-in; }
+.mtt-filter-close:hover { opacity:0.7; }
+#mtt-tag-toolbar-close span { background:url(images/close.svg) no-repeat; }
+
 
 .task-left { float:left; }
 .task-toggle { visibility:hidden; margin-top:1px; cursor:pointer; width:16px; height:16px; float:left;
@@ -291,7 +301,7 @@ a.mtt-back-button { font-size:0.8rem; }
 #tagcloud .w9 { font-size:170%; }
 
 #tagcloudcancel { float:right; }
-#tagcloudcancel span { background:url(images/tagcloud-close.svg) no-repeat; }
+#tagcloudcancel span { background:url(images/close.svg) no-repeat; }
 
 .ui-datepicker { width:190px; z-index:202; border: 1px solid #cccccc; background: #ffffff; display:none; padding:2px; box-shadow:1px 2px 5px rgba(0,0,0,0.5); border-radius:5px; }
 .ui-datepicker-trigger { cursor:pointer; vertical-align:text-bottom; margin-left:2px; margin-right:2px; } 

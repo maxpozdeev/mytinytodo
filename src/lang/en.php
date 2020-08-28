@@ -21,7 +21,6 @@ class Lang extends DefaultLang
 		'error' => "Some error occurred (click for details)",
 		'denied' => "Access denied",
 		'invalidpass' => "Wrong password",
-		'tagfilter' => "Tag:",
 		'addList' => "Create new list",
 		'renameList' => "Rename list",
 		'deleteList' => "This will delete current list with all tasks in it.\\nAre you sure?",

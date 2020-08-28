@@ -21,7 +21,6 @@ class Lang extends DefaultLang
 		'error' => 'Ошибка',
 		'denied' => 'Доступ запрещен',
 		'invalidpass' => 'Неверный пароль',
-		'tagfilter' => 'Тег:',
 		'addList' => 'Новый список',
 		'renameList' => 'Переименовать список',
 		'deleteList' => 'Вы действительно хотите удалить этот список со всеми задачами?',

@@ -125,13 +125,19 @@ $().ready(function(){
 
 <div style="clear:both"></div>
 
+<div id="mtt-tag-toolbar" style="display:none">
+  <div class="tag-toolbar-content">
+	<span id="mtt-tag-filters"></span>
+  </div>
+  <div class="tag-toolbar-close"><div id="mtt-tag-toolbar-close" class="mtt-img-button"><span></span></div></div>
+</div>
+
 </div>
 
 
 <h3>
 <span id="taskview" class="mtt-menu-button"><span class="btnstr"><?php _e('tasks');?></span> (<span id="total">0</span>) <span class="arrdown"></span></span>
 <span class="mtt-notes-showhide"><?php _e('notes');?> <a href="#" id="mtt-notes-show"><?php _e('notes_show');?></a> / <a href="#" id="mtt-notes-hide"><?php _e('notes_hide');?></a></span>
-<span id="mtt_filters"></span>
 <span id="tagcloudbtn" class="mtt-menu-button"><?php _e('tagcloud');?> <span class="arrdown2"></span></span>
 </h3>
 

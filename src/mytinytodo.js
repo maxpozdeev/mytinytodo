@@ -188,8 +188,12 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			_mtt.menus.taskview.show(this);
 		});
 
-		$('#mtt_filters').on('click', '.tag-filter .mtt-filter-close', function(){
+		$('#mtt-tag-filters').on('click', '.tag-filter .mtt-filter-close', function(){
 			cancelTagFilter($(this).attr('tagid'));
+		});
+		
+		$('#mtt-tag-toolbar-close').click(function(){
+			cancelTagFilter(0);
 		});
 
 		$('#tagcloudbtn').click(function(){
@@ -682,7 +686,8 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		_filters: [],
 		clear: function() {
 			this._filters = [];
-			$('#mtt_filters').html('');
+			$('#mtt-tag-toolbar').hide();
+			$('#mtt-tag-filters').html('');
 		},
 		addTag: function(tagId, tag, exclude)
 		{
@@ -690,9 +695,9 @@ var mytinytodo = window.mytinytodo = _mtt = {
 				if(this._filters[i].tagId && this._filters[i].tagId == tagId) return false;
 			}
 			this._filters.push({tagId:tagId, tag:tag, exclude:exclude});
-			$('#mtt_filters').append('<span class="tag-filter tag-id-'+tagId+
-				(exclude ? ' tag-filter-exclude' : '')+'"><span class="mtt-filter-header">'+
-				_mtt.lang.get('tagfilter')+'</span>'+tag+'<span class="mtt-filter-close" tagid="'+tagId+'"></span></span>');
+			$('#mtt-tag-filters').append('<span class="tag-filter tag-id-'+tagId+
+				(exclude ? ' tag-filter-exclude' : '')+'">'+tag+'<span class="mtt-filter-close" tagid="'+tagId+'"></span></span>');
+			$('#mtt-tag-toolbar').show();
 			return true;
 		},
 		cancelTag: function(tagId)
@@ -700,7 +705,10 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			for(var i in this._filters) {
 				if(this._filters[i].tagId && this._filters[i].tagId == tagId) {
 					this._filters.splice(i,1);
-					$('#mtt_filters .tag-filter.tag-id-'+tagId).remove();
+					$('#mtt-tag-filters .tag-filter.tag-id-'+tagId).remove();
+					if (this._filters.length == 0) {
+						$('#mtt-tag-toolbar').hide();
+					}
 					return true;
 				}
 			}

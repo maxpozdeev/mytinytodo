@@ -18,7 +18,6 @@ class DefaultLang
 		'error' => "Some error occurred (click for details)",
 		'denied' => "Access denied",
 		'invalidpass' => "Wrong password",
-		'tagfilter' => "Tag:",
 		'addList' => "Create new list",
 		'addListDefault' => "Todo",
 		'renameList' => "Rename list",

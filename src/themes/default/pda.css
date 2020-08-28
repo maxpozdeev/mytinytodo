@@ -26,8 +26,6 @@ h2 { margin:0; margin-bottom:2px; font-size:1rem; }
 #toolbar.mtt-intask #htab_search { display:none; }
 #toolbar.mtt-insearch #htab_newtask { display:none; }
 #toolbar.mtt-insearch #htab_search { width:100%; max-width:100%; }
-/*#toolbar.mtt-insearch .mtt-searchbox td { width:40%; }*/
-#taskview { margin-left:0px; }
 #search { padding:5px 20px; border-radius:15px; }
 
 #tasklist li { padding:0.5rem 3px; overflow:hidden;  }
