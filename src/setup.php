@@ -221,7 +221,7 @@ if(!$ver)
 	}
 	
 	# create default list	
-	$db->ex("INSERT INTO {$db->prefix}lists (uuid,name,d_created) VALUES (?,?,?)", array(generateUUID(), 'Todo', time()));
+	$db->ex( "INSERT INTO {$db->prefix}lists (uuid,name,d_created,taskview) VALUES (?,?,?,?)", array(generateUUID(), 'Todo', time(), 1) );
 
 }
 elseif($ver == $lastVer)
