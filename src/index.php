@@ -17,12 +17,10 @@ if (!is_int(Config::get('firstdayofweek')) || Config::get('firstdayofweek')<0 ||
 	Config::set('firstdayofweek', 1);
 }
 
-if (isset($_GET['pda'])) {
+if ( isset($_GET['mobile']) || isset($_GET['pda'])) {
 	Config::set('mobile', 1);
 }
 
 define('TEMPLATEPATH', MTTPATH. 'themes/'. Config::get('template'). '/');
 
 require(TEMPLATEPATH. 'index.php');
-
-?>
