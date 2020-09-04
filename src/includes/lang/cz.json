@@ -163,7 +163,7 @@
     "addList": "Vytvořit nový seznam",
     "addListDefault": "Todo",
     "renameList": "Přejmenovat seznam",
-    "deleteList": "Tímto smažete seznam a všechny úkoly v něm.\\nChcete pokračovat?",
-    "clearCompleted": "Tímto smažete všechny splněné úkoly.\\nChcete pokračovat?",
+    "deleteList": "Tímto smažete seznam a všechny úkoly v něm.\nChcete pokračovat?",
+    "clearCompleted": "Tímto smažete všechny splněné úkoly.\nChcete pokračovat?",
     "settingsSaved": "Nastavení uloženo. Načítám..."
 }

@@ -163,7 +163,7 @@
     "addList": "Créer une nouvelle liste",
     "addListDefault": "Todo",
     "renameList": "Renommer la liste",
-    "deleteList": "Cela supprimera la liste actuelle avec toutes les tâches qu’elle contient.\\nÊtes-vous sûr ?",
-    "clearCompleted": "Cela supprimera toutes les tâches achevées de la liste.\\nÊtes-vous sûr ?",
+    "deleteList": "Cela supprimera la liste actuelle avec toutes les tâches qu’elle contient.\nÊtes-vous sûr ?",
+    "clearCompleted": "Cela supprimera toutes les tâches achevées de la liste.\nÊtes-vous sûr ?",
     "settingsSaved": "Réglages sauvegardés. Chargement..."
 }

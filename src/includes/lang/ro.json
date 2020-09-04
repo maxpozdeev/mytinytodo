@@ -163,7 +163,7 @@
     "addList": "Crează o nouă listă",
     "addListDefault": "Todo",
     "renameList": "Redenumește listă",
-    "deleteList": "Această acțiune va șterge lista curentă cu toate sarcinile conținute.\\nEști sigur?",
-    "clearCompleted": "Această acțiune va șterge toate sarcinile efectuate din listă.\\nEști sigur?",
+    "deleteList": "Această acțiune va șterge lista curentă cu toate sarcinile conținute.\nEști sigur?",
+    "clearCompleted": "Această acțiune va șterge toate sarcinile efectuate din listă.\nEști sigur?",
     "settingsSaved": "Setări salvate. Împrospătare..."
 }

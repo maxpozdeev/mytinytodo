@@ -162,7 +162,7 @@
     "addList": "Skapa ny lista",
     "addListDefault": "Todo",
     "renameList": "Döp om lista",
-    "deleteList": "Det här tar bort listan och alla uppgifter.\\nVill du fortsätta?",
-    "clearCompleted": "Det här tar bort alla avslutade uppgifter.\\nFortsätt?",
+    "deleteList": "Det här tar bort listan och alla uppgifter.\nVill du fortsätta?",
+    "clearCompleted": "Det här tar bort alla avslutade uppgifter.\nFortsätt?",
     "settingsSaved": "Inställningar sparade. Laddar om..."
 }

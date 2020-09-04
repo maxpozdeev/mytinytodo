@@ -220,6 +220,7 @@ class DefaultLang
 			if ( isset($this->js[$k]) ) {
 				$v = $this->js[$k];
 			}
+			$v = str_replace("\\n", "\n", $v);
 			$a[$k] = $v;
 		}
 		

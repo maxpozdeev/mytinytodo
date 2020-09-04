@@ -163,7 +163,7 @@
     "addList": "Opret ny liste",
     "addListDefault": "Todo",
     "renameList": "Omdøb liste",
-    "deleteList": "Dette vil slette den aktuelle liste og alle opgaver i den.\\nEr du sikker?",
-    "clearCompleted": "Dette vil slette alle afsluttede opgaver i listen.\\nEr du sikker?",
+    "deleteList": "Dette vil slette den aktuelle liste og alle opgaver i den.\nEr du sikker?",
+    "clearCompleted": "Dette vil slette alle afsluttede opgaver i listen.\nEr du sikker?",
     "settingsSaved": "Indstillinger gemt. Genindlæser..."
 }

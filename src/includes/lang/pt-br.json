@@ -162,7 +162,7 @@
     "addList": "Criar nova lista",
     "addListDefault": "Todo",
     "renameList": "Renomear lista",
-    "deleteList": "Deletar toda lista de tarefas.\\nTem certeza?",
-    "clearCompleted": "Deletar todas as tarefas completas na lista.\\nTem certeza",
+    "deleteList": "Deletar toda lista de tarefas.\nTem certeza?",
+    "clearCompleted": "Deletar todas as tarefas completas na lista.\nTem certeza",
     "settingsSaved": "Configurações salvas. Recarregando..."
 }

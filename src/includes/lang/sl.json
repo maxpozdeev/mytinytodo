@@ -162,7 +162,7 @@
     "addList": "Ustvari nov seznam",
     "addListDefault": "Todo",
     "renameList": "Preimenjuj seznam",
-    "deleteList": "Ta ukaz bo izbrisal tudi vse naloge, v tem seznamu.\\nAli ste prepričani?",
-    "clearCompleted": "This will delete all completed tasks in the list.\\nAre you sure?",
+    "deleteList": "Ta ukaz bo izbrisal tudi vse naloge, v tem seznamu.\nAli ste prepričani?",
+    "clearCompleted": "This will delete all completed tasks in the list.\nAre you sure?",
     "settingsSaved": "Nastavitve shranjene. Posodabljam..."
 }

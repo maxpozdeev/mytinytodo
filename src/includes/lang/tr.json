@@ -163,7 +163,7 @@
     "addList": "Yeni Liste Oluştur",
     "addListDefault": "Todo",
     "renameList": "Listeyi Yeniden Adlandır",
-    "deleteList": "Geçerli liste ve içindeki tüm görevler silinecek.\\nEmin misiniz?",
-    "clearCompleted": "Listedeki tamamlanmış tüm görevler silinecek.\\nEmin misiniz?",
+    "deleteList": "Geçerli liste ve içindeki tüm görevler silinecek.\nEmin misiniz?",
+    "clearCompleted": "Listedeki tamamlanmış tüm görevler silinecek.\nEmin misiniz?",
     "settingsSaved": "Ayarlar kaydedildi.Yükleniyor..."
 }

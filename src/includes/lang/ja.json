@@ -163,7 +163,7 @@
     "addList": "新規リスト作成",
     "addListDefault": "Todo",
     "renameList": "リスト名変更",
-    "deleteList": "全てのタスクと現在のリストを削除します。\\nよろしいですか？",
-    "clearCompleted": "完了した全てのリストを削除します。\\nよろしいですか？",
+    "deleteList": "全てのタスクと現在のリストを削除します。\nよろしいですか？",
+    "clearCompleted": "完了した全てのリストを削除します。\nよろしいですか？",
     "settingsSaved": "設定保存中..."
 }

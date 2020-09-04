@@ -163,7 +163,7 @@
     "addList": "輸入新增清單名稱",
     "addListDefault": "Todo",
     "renameList": "重新命名清單名稱",
-    "deleteList": "將會刪除清單內所有的任務。\\n確定刪除嗎?",
-    "clearCompleted": "將會刪除清單內所有完成的任務。\\n確定刪除嗎?",
+    "deleteList": "將會刪除清單內所有的任務。\n確定刪除嗎?",
+    "clearCompleted": "將會刪除清單內所有完成的任務。\n確定刪除嗎?",
     "settingsSaved": "設定已儲存。重新讀取中..."
 }

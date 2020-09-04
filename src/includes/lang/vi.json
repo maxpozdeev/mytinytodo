@@ -163,7 +163,7 @@
     "addList": "Tạo danh sách mới",
     "addListDefault": "Todo",
     "renameList": "Đổi tên",
-    "deleteList": "This will delete current list with all tasks in it.\\nAre you sure?",
-    "clearCompleted": "This will delete all completed tasks in the list.\\nAre you sure?",
+    "deleteList": "This will delete current list with all tasks in it.\nAre you sure?",
+    "clearCompleted": "This will delete all completed tasks in the list.\nAre you sure?",
     "settingsSaved": "Các thiết lập đã lưu thành công..."
 }

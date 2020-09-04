@@ -163,7 +163,7 @@
     "addList": "Crear una nueva lista",
     "addListDefault": "Todo",
     "renameList": "Renombrar lista",
-    "deleteList": "Esto eliminará la lista actual con todas las tareas en ella.\\n¿Está seguro?",
-    "clearCompleted": "Esto eliminará todas las tareas completadas en la lista.\\n¿Está seguro?",
+    "deleteList": "Esto eliminará la lista actual con todas las tareas en ella.\n¿Está seguro?",
+    "clearCompleted": "Esto eliminará todas las tareas completadas en la lista.\n¿Está seguro?",
     "settingsSaved": "Configuración guardada. Abriendo..."
 }

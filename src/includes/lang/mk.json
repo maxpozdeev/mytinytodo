@@ -163,7 +163,7 @@
     "addList": "Направи нова листа",
     "addListDefault": "Todo",
     "renameList": "Преименувај листа",
-    "deleteList": "Со ова ке ја избишете листата и сите задачи во неа.\\nПродолжи?",
-    "clearCompleted": "This will delete all completed tasks in the list.\\nAre you sure?",
+    "deleteList": "Со ова ке ја избишете листата и сите задачи во неа.\nПродолжи?",
+    "clearCompleted": "This will delete all completed tasks in the list.\nAre you sure?",
     "settingsSaved": "Промените зачувани. Вчитувам..."
 }

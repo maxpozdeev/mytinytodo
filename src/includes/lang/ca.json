@@ -163,7 +163,7 @@
     "addList": "Crear nova llista",
     "addListDefault": "Todo",
     "renameList": "Reanomenar llista",
-    "deleteList": "Això esborrarà la llista actual i totes les seves tasques.\\nEstàs segur?",
-    "clearCompleted": "Això esborrarà totes les tasques realitzades de la llista.\\nEstàs segur?",
+    "deleteList": "Això esborrarà la llista actual i totes les seves tasques.\nEstàs segur?",
+    "clearCompleted": "Això esborrarà totes les tasques realitzades de la llista.\nEstàs segur?",
     "settingsSaved": "Configuració desada. Recarregant..."
 }

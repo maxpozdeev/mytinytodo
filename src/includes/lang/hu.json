@@ -163,7 +163,7 @@
     "addList": "Új Lista",
     "addListDefault": "Todo",
     "renameList": "Lista átnevezése",
-    "deleteList": "Az aktuális Lista törlése az összes Feladattal.\\nBiztos benne?",
-    "clearCompleted": "This will delete all completed tasks in the list.\\nAre you sure?",
+    "deleteList": "Az aktuális Lista törlése az összes Feladattal.\nBiztos benne?",
+    "clearCompleted": "This will delete all completed tasks in the list.\nAre you sure?",
     "settingsSaved": "Beállítások mentve. Újratöltés..."
 }

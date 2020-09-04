@@ -162,7 +162,7 @@
     "addList": "Dodaj nową listę",
     "addListDefault": "Todo",
     "renameList": "Zmień nazwę listy",
-    "deleteList": "Usuwasz listę oraz wszyskie zawarte w niej zadania.\\nJesteś pewnien?",
-    "clearCompleted": "Usuwasz wszystkie zadania na tej liście.\\nJesteś pewien?",
+    "deleteList": "Usuwasz listę oraz wszyskie zawarte w niej zadania.\nJesteś pewnien?",
+    "clearCompleted": "Usuwasz wszystkie zadania na tej liście.\nJesteś pewien?",
     "settingsSaved": "Ustawienia zapisane, wczytuję ponownie..."
 }

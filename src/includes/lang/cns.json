@@ -163,7 +163,7 @@
     "addList": "请输入一个新的列表名称",
     "addListDefault": "Todo",
     "renameList": "重命名列表",
-    "deleteList": "当前列表及其包括的所有任务将被删除。\\n你确定吗?",
-    "clearCompleted": "This will delete all completed tasks in the list.\\nAre you sure?",
+    "deleteList": "当前列表及其包括的所有任务将被删除。\n你确定吗?",
+    "clearCompleted": "This will delete all completed tasks in the list.\nAre you sure?",
     "settingsSaved": "设置已经被保存了，正在重新引导..."
 }

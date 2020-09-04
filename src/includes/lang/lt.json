@@ -163,7 +163,7 @@
     "addList": "Sukurti naują sąrašą",
     "addListDefault": "Todo",
     "renameList": "Pakeisti sąrašo vardą",
-    "deleteList": "Ketinama ištrinti sąrašą ir visas jam priklausančias užduotis.\\nAr esate tikras?",
-    "clearCompleted": "Ketinama ištrinti visas šiame sąraše įvygdytas užduotis.\\nAr esate tikras?",
+    "deleteList": "Ketinama ištrinti sąrašą ir visas jam priklausančias užduotis.\nAr esate tikras?",
+    "clearCompleted": "Ketinama ištrinti visas šiame sąraše įvygdytas užduotis.\nAr esate tikras?",
     "settingsSaved": "Vyksta nustatymų išsaugojimas. Palaukite..."
 }

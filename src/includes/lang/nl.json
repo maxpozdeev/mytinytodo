@@ -163,7 +163,7 @@
     "addList": "Maak nieuwe lijst",
     "addListDefault": "Todo",
     "renameList": "Hernoem lijst",
-    "deleteList": "Hiermee verwijder je de huidige lijst met alle taken daarbinnen.\\nWeet je het zeker?",
-    "clearCompleted": "Hiermee verwijder je alle voltooide taken in de lijst.\\nWeet je het zeker?",
+    "deleteList": "Hiermee verwijder je de huidige lijst met alle taken daarbinnen.\nWeet je het zeker?",
+    "clearCompleted": "Hiermee verwijder je alle voltooide taken in de lijst.\nWeet je het zeker?",
     "settingsSaved": "Instellingen opgeslagen. Reload..."
 }

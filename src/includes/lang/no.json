@@ -163,7 +163,7 @@
     "addList": "La ny liste",
     "addListDefault": "Todo",
     "renameList": "Bytt navn på liste",
-    "deleteList": "Du sletter nå hele listen, og da innholdet i listen.\\nEr du sikker på at du vil gjøre dette?",
-    "clearCompleted": "Du sletter nå alle oppgaver som er markert som ferdig, fra listen.\\nEr du sikker på at du vil gjøre dette?",
+    "deleteList": "Du sletter nå hele listen, og da innholdet i listen.\nEr du sikker på at du vil gjøre dette?",
+    "clearCompleted": "Du sletter nå alle oppgaver som er markert som ferdig, fra listen.\nEr du sikker på at du vil gjøre dette?",
     "settingsSaved": "Innstillinger er lagret. Oppdaterer..."
 }

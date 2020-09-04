@@ -163,7 +163,7 @@
     "addList": "Neue Liste anlegen",
     "addListDefault": "Todo",
     "renameList": "Liste umbenennen",
-    "deleteList": "Die Liste wird mit allen Aufgaben gelöscht.\\nBist Du sicher?",
-    "clearCompleted": "Alle abgeschlossenen Aufgaben dieser Liste werden gelöscht.\\nBist Du sicher?",
+    "deleteList": "Die Liste wird mit allen Aufgaben gelöscht.\nBist Du sicher?",
+    "clearCompleted": "Alle abgeschlossenen Aufgaben dieser Liste werden gelöscht.\nBist Du sicher?",
     "settingsSaved": "Einstellungen gespeichert. Aktualisierung..."
 }

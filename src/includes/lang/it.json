@@ -162,7 +162,7 @@
     "addList": "Crea una nuova lista",
     "addListDefault": "Todo",
     "renameList": "Rinomina lista list",
-    "deleteList": "Questo eliminerà la lista corrente e tutti i task inclusi.\\nSei sicuro?",
-    "clearCompleted": "This will delete all completed tasks in the list.\\nAre you sure?",
+    "deleteList": "Questo eliminerà la lista corrente e tutti i task inclusi.\nSei sicuro?",
+    "clearCompleted": "This will delete all completed tasks in the list.\nAre you sure?",
     "settingsSaved": "Impostazioni salvate. Ricaricando..."
 }
