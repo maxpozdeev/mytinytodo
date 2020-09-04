@@ -55,6 +55,9 @@ if(isset($_POST['save']))
 	jsonExit($t);
 }
 
+$oldLangs = getOldLangs(1);
+if (is_array($oldLangs) && count($oldLangs) == 0) $oldLangs = 0;
+
 
 function _c($key)
 {
@@ -63,6 +66,37 @@ function _c($key)
 
 function getLangs($withContents = 0)
 {
+	$langDir = Lang::instance()->langDir();
+    if ( ! $h = opendir($langDir) ) {
+			return false;
+	}
+    $a = array();
+    while ( false !== ($file = readdir($h)) )
+	{
+		if ( preg_match('/(.+)\.json$/', $file, $m) ) {
+			$jsonText = file_get_contents($langDir. $file);
+			if (false === $jsonText) {
+				die("false ");
+				continue;
+			}
+			$a[$m[1]] = $m[1];
+
+			$j = json_decode($jsonText, true);
+			if ( isset($j['_header']['language']) && isset($j['_header']['original_name']) ) {
+				$a[$m[1]]= [
+					'name' => $j['_header']['original_name'],
+					'title' => $j['_header']['language']
+				];
+			}
+		}
+    }
+    closedir($h);
+    return $a;
+}
+
+/* deprecated */
+function getOldLangs($withContents = 0)
+{
     if (!$h = opendir(MTTPATH. 'lang')) return false;
     $a = array();
     while(false !== ($file = readdir($h)))
@@ -70,7 +104,7 @@ function getLangs($withContents = 0)
 		if(preg_match('/(.+)\.php$/', $file, $m) && $file != 'class.default.php') {
 			$a[$m[1]] = $m[1];
 			if($withContents) {
-			    $a[$m[1]] = getLangDetails(MTTPATH. 'lang'. DIRECTORY_SEPARATOR. $file, $m[1]);
+			    $a[$m[1]] = getOldLangDetails(MTTPATH. 'lang'. DIRECTORY_SEPARATOR. $file, $m[1]);
 			    $a[$m[1]]['name'] = $a[$m[1]]['original_name'];
 			    $a[$m[1]]['title'] = $a[$m[1]]['language'];
 			}
@@ -80,7 +114,8 @@ function getLangs($withContents = 0)
     return $a;
 }
 
-function getLangDetails($filename, $default)
+/* deprecated */
+function getOldLangDetails($filename, $default)
 {
     $contents = file_get_contents($filename);
     $a = array('language'=>$default, 'original_name'=>$default);
@@ -156,7 +191,21 @@ header('Content-type:text/html; charset=utf-8');
 
 <tr>
 <th><?php _e('set_language');?>:</th>
-<td> <select name="lang"><?php echo selectOptionsA(getLangs(1), _c('lang')); ?></select> </td>
+<td> 
+	<select name="lang"><?php echo selectOptionsA(getLangs(), _c('lang')); ?></select> 
+	<?php if ($oldLangs) { ?>
+	<br><br>
+	<b>Notice!</b> You can use old language files after downloading in the new format and copying to the <i>/includes/lang/</i> folder.<br>
+	<select id="mtt_old_langs"><?php echo selectOptionsA( $oldLangs, _c('lang'), 'en'); ?></select> 
+	<a id="mtt_old_langs_link" href="<?php mttinfo('mtt_url')?>mytinytodo_lang.php?jsonfile">Download json file</a>
+	<script type="text/javascript">
+	$('#mtt_old_langs').on('change', function(){
+		$('#mtt_old_langs_link').attr('href', mytinytodo.mttUrl + 'mytinytodo_lang.php?jsonfile&lang=' + $(this).val());
+	});
+	$('#mtt_old_langs_link').attr('href', mytinytodo.mttUrl + 'mytinytodo_lang.php?jsonfile&lang=' + $('#mtt_old_langs').val());
+	</script>
+	<?php } ?>
+</td>
 </tr>
 
 <tr>

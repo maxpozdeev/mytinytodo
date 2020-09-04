@@ -186,7 +186,7 @@ class DefaultLang
 		return $this->rtl ? 1 : 0;
 	}
 
-	public static function instance()
+	public static function instance_deprecated()
 	{
         if (!isset(self::$instance)) {
 			//$c = __CLASS__;
@@ -194,6 +194,82 @@ class DefaultLang
 			self::$instance = new $c;
         }
 		return self::$instance;	
+	}
+	
+	public function json($langFile = '', $pretty = 0)
+	{
+		$a = array();
+		
+		if ($langFile != '') {
+			$ah = $this->loadLangHeader($langFile);
+			$a['_header'] = $ah;
+		}
+		
+		if ($this->rtl()) {
+			$a['_rtl'] = $this->rtl();
+		}
+		
+		foreach ( $this->default_inc as $k=>$v ) {
+			if ( isset($this->inc[$k]) ) {
+				$v = $this->inc[$k];
+			}
+			$a[$k] = $v;
+		}
+		
+		foreach ( $this->default_js as $k=>$v ) {
+			if ( isset($this->js[$k]) ) {
+				$v = $this->js[$k];
+			}
+			$a[$k] = $v;
+		}
+		
+		$encOptions = JSON_UNESCAPED_UNICODE;;
+		if ($pretty) {
+			$encOptions |= JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES;
+		}
+		return json_encode($a, $encOptions);
+	}
+	
+	function loadLangHeader($langFile)
+	{
+		if (!file_exists($langFile)) {
+			die("file does not exist: $langFile");
+		}
+		$contents = file_get_contents($langFile);
+
+		$a = array();
+		
+		# parse head comment
+		if(preg_match("|/\\*\s*myTinyTodo language pack([\s\S]+?)\\*/|", $contents, $m))
+		{
+			$str = $m[1];
+			if(preg_match("|AppVersion\s*:\s*(.+)|i", $str, $m)) {
+				$a['ver'] = trim($m[1]);
+			}
+			if(preg_match("|Date\s*:\s*(.+)|i", $str, $m)) {
+				$a['date'] = trim($m[1]);
+			}
+			if(preg_match("|Language\s*:\s*(.+)|i", $str, $m)) {
+				$a['language'] = trim($m[1]);
+			}
+			if(preg_match("|Original name\s*:\s*(.+)|i", $str, $m)) {
+				$a['original_name'] = trim($m[1]);
+			}
+			if(preg_match("|Author\s*:\s*(.+)|i", $str, $m)) {
+				$a['author'] = trim($m[1]);
+			}
+			if(preg_match("|Author URL\s*:(.+)|i", $str, $m)) {
+				$a['author_url'] = trim($m[1]);
+			}
+			if(preg_match("|Author Email\s*:(.+)|i", $str, $m)) {
+				$a['author_email'] = trim($m[1]);
+			}
+			if(preg_match("|Modified by\s*:(.+)|i", $str, $m)) {
+				$a['modified_by'] = trim($m[1]);
+			}
+		}
+
+		return $a;	
 	}
 }
 

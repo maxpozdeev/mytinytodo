@@ -13,6 +13,7 @@ if (version_compare(PHP_VERSION, '5.4.0') < 0) {
 }
 
 if(!defined('MTTPATH')) define('MTTPATH', dirname(__FILE__) .'/');
+if(!defined('MTTINC'))  define('MTTINC', MTTPATH. 'includes/');
 
 require_once(MTTPATH. 'common.php');
 require_once(MTTPATH. 'db/config.php');
@@ -57,8 +58,8 @@ if(isset($_COOKIE['lang']) && preg_match("/^[a-z-]+$/i", $_COOKIE['lang']) && fi
 	Config::set('lang', $_COOKIE['lang']);
 }
 
-require_once(MTTPATH. 'lang/class.default.php');
-require_once(MTTPATH. 'lang/'.Config::get('lang').'.php');
+require_once(MTTINC. 'class.lang.php');
+Lang::loadLang(Config::get('lang'));
 
 $_mttinfo = array();
 
