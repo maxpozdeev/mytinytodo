@@ -16,7 +16,7 @@ http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 myTinyTodo
 --------------
 Url:		http://www.mytinytodo.net/
-Copyright:	2009,2010 Max Pozdeev <maxpozdeev@gmail.com>
+Copyright:	2009-2010,2020 Max Pozdeev <maxpozdeev@gmail.com>
 License:	GPL version 2 (see LICENSE file)
 
 
@@ -25,22 +25,14 @@ myTinyTodo uses other works:
 jQuery
 --------------
 Url:		http://jquery.com/
-Copyright:	2009 John Resig <jeresig@gmail.com>
-License:	Dual licensed under the MIT and GPL version 2 licenses (see http://docs.jquery.com/License)
+Copyright:	(c) JS Foundation and other contributors | jquery.org/license
+License:	MIT license. Compatible with GNU GPL (see https://blog.jquery.com/2012/09/10/jquery-licensing-changes/)
 
 jQuery UI
 --------------
 Url:		http://jqueryui.com/
-Copyright:	2009 jQuery UI Authors (see http://jqueryui.com/about)
-License:	Dual licensed under the MIT and GPL version 2 licenses (see http://jqueryui.com/about)
-
-Autocomplete - jQuery plugin
-------------------------------
-Url: 		http://bassistance.de/jquery-plugins/jquery-plugin-autocomplete/
-Copyright:	2007 Dylan Verheul, Dan G. Switzer, Anjesh Tuladhar, Jörn Zaefferer
-License:	Dual licensed under the MIT and GPL licenses:
-			* http://www.opensource.org/licenses/mit-license.php
-			* http://www.gnu.org/licenses/gpl.html
+Copyright:	Copyright jQuery Foundation and other contributors
+License:	MIT license. Compatible with GNU GPL.
 
 
 This software contains images by 3d-parties. See file themes/default/images/COPYRIGHT for details. 
