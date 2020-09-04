@@ -21,20 +21,12 @@
 <script type="text/javascript" src="<?php mttinfo('mtt_url'); ?>jquery/jquery-3.5.1.min.js"></script>
 <script type="text/javascript" src="<?php mttinfo('mtt_url'); ?>jquery/jquery-ui-1.12.1.min.js"></script>
 <script type="text/javascript" src="<?php mttinfo('includes_url'); ?>mytinytodo.js?v=<?php mttinfo('version'); ?>"></script>
-<script type="text/javascript" src="<?php mttinfo('mtt_url'); ?>mytinytodo_lang.php?v=<?php mttinfo('version'); ?>"></script>
 <script type="text/javascript" src="<?php mttinfo('includes_url'); ?>mytinytodo_ajax_storage.js?v=<?php mttinfo('version'); ?>"></script>
 
 <script type="text/javascript">
 $().ready(function(){
-
-	<?php if(Config::get('mobile')): ?>
-/*
-	$('body').width(screen.width);
-	$(window).resize(function() {
-		$('body').width(screen.width);
-	});
-*/
-	<?php endif; ?>
+		
+	<?php echo "mytinytodo.lang.init(". Lang::instance()->makeJS() .");"; ?>
 
 	mytinytodo.mttUrl = "<?php mttinfo('mtt_url'); ?>";
 	mytinytodo.templateUrl = "<?php mttinfo('template_url'); ?>";
