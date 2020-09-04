@@ -15,7 +15,7 @@ if (version_compare(PHP_VERSION, '5.4.0') < 0) {
 if(!defined('MTTPATH')) define('MTTPATH', dirname(__FILE__) .'/');
 if(!defined('MTTINC'))  define('MTTINC', MTTPATH. 'includes/');
 
-require_once(MTTPATH. 'common.php');
+require_once(MTTINC. 'common.php');
 require_once(MTTPATH. 'db/config.php');
 
 ini_set('display_errors', 'On');

@@ -37,7 +37,7 @@ else
 {
 	if(!defined('MTTPATH')) define('MTTPATH', dirname(__FILE__) .'/');
 	if(!defined('MTTINC'))  define('MTTINC', MTTPATH. 'includes/');
-	require_once(MTTPATH. 'common.php');
+	require_once(MTTINC. 'common.php');
 	Config::loadConfig($config);
 	unset($config); 
 
