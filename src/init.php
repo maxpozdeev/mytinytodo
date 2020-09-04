@@ -165,7 +165,7 @@ function get_mttinfo($v)
 		case 'mobile_url':
 			$_mttinfo['mobile_url'] = Config::get('mobile_url');
 			if ($_mttinfo['mobile_url'] == '') {
-				$_mttinfo['mobile_url'] = get_mttinfo('url'). '?pda';
+				$_mttinfo['mobile_url'] = get_mttinfo('url'). '?mobile';
 			}
 			return $_mttinfo['mobile_url'];
 		case 'mtt_url':

@@ -10,7 +10,7 @@
 <?php endif; ?>
 <?php if(Config::get('mobile')): ?>
 <meta name="viewport" id="viewport" content="width=device-width" />
-<link rel="stylesheet" type="text/css" href="<?php mttinfo('template_url'); ?>pda.css?v=<?php mttinfo('version'); ?>" media="all" />
+<link rel="stylesheet" type="text/css" href="<?php mttinfo('template_url'); ?>mobile.css?v=<?php mttinfo('version'); ?>" media="all" />
 <?php else: ?>
 <link rel="stylesheet" type="text/css" href="<?php mttinfo('template_url'); ?>print.css?v=<?php mttinfo('version'); ?>" media="print" />
 <?php endif; ?>
