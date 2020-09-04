@@ -150,6 +150,9 @@ function get_mttinfo($v)
 		case 'template_url':
 			$_mttinfo['template_url'] = get_mttinfo('mtt_url'). 'themes/'. Config::get('template') . '/';
 			return $_mttinfo['template_url'];
+		case 'includes_url':
+			$_mttinfo['includes_url'] = get_mttinfo('mtt_url'). 'includes/';
+			return $_mttinfo['includes_url'];
 		case 'url':
 			$_mttinfo['url'] = Config::get('url');
 			if ($_mttinfo['url'] == '') {
