@@ -97,7 +97,7 @@ function getLangs($withContents = 0)
 /* deprecated */
 function getOldLangs($withContents = 0)
 {
-    if (!$h = opendir(MTTPATH. 'lang')) return false;
+    if (!$h = @opendir(MTTPATH. 'lang')) return false;
     $a = array();
     while(false !== ($file = readdir($h)))
 	{
