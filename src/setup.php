@@ -36,6 +36,7 @@ if($config['db'] != '')
 else
 {
 	if(!defined('MTTPATH')) define('MTTPATH', dirname(__FILE__) .'/');
+	if(!defined('MTTINC'))  define('MTTINC', MTTPATH. 'includes/');
 	require_once(MTTPATH. 'common.php');
 	Config::loadConfig($config);
 	unset($config); 
@@ -335,7 +336,7 @@ function testConnect(&$error)
 	{
 		if(Config::get('db') == 'mysql')
 		{
-			require_once(MTTPATH. 'class.db.mysql.php');
+			require_once(MTTINC. 'class.db.mysql.php');
 			$db = new Database_Mysql;
 			$db->connect(Config::get('mysql.host'), Config::get('mysql.user'), Config::get('mysql.password'), Config::get('mysql.db'));
 		} else
@@ -345,7 +346,7 @@ function testConnect(&$error)
 
 			if(!is_writable(MTTPATH. 'db/')) throw new Exception("database directory ('db') is not writable");
 
-			require_once(MTTPATH. 'class.db.sqlite3.php');
+			require_once(MTTINC. 'class.db.sqlite3.php');
 			$db = new Database_Sqlite3;
 			$db->connect(MTTPATH. 'db/todolist.db');
 		}

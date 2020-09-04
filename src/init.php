@@ -29,7 +29,7 @@ date_default_timezone_set(Config::get('timezone'));
 # MySQL Database Connection
 if(Config::get('db') == 'mysql')
 {
-	require_once(MTTPATH. 'class.db.mysql.php');
+	require_once(MTTINC. 'class.db.mysql.php');
 	$db = DBConnection::init(new Database_Mysql);
 	try {
 		$db->connect(Config::get('mysql.host'), Config::get('mysql.user'), Config::get('mysql.password'), Config::get('mysql.db'));
@@ -43,7 +43,7 @@ if(Config::get('db') == 'mysql')
 # SQLite3 (pdo_sqlite)
 elseif(Config::get('db') == 'sqlite')
 {
-	require_once(MTTPATH. 'class.db.sqlite3.php');
+	require_once(MTTINC. 'class.db.sqlite3.php');
 	$db = DBConnection::init(new Database_Sqlite3);
 	$db->connect(MTTPATH. 'db/todolist.db');
 }
