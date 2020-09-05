@@ -378,7 +378,7 @@ elseif(isset($_GET['addList']))
 	stop_gpc($_POST);
 	$t = array();
 	$t['total'] = 0;
-	$name = str_replace(array('"',"'",'<','>','&','@','#'),array('','','','','','',''),trim(_post('name')));
+	$name = str_replace( array('"',"'",'<','>','&'), '', trim(_post('name')) );
 	$ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->prefix}lists");
 	$db->dq("INSERT INTO {$db->prefix}lists (uuid,name,ow,d_created,d_edited,taskview) VALUES (?,?,?,?,?,?)",
 				array(generateUUID(), $name, $ow, time(), time(), 1) );
