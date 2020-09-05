@@ -5,6 +5,8 @@
 */
 
 (function(){
+	
+"use strict";
 
 var taskList = new Array(), taskOrder = new Array();
 var filter = { compl:0, search:'', due:'' };
@@ -33,6 +35,7 @@ var tabLists = {
 };
 var curList = 0;
 var tagsList = [];
+var _mtt; /* internal alias for window.mytinytodo */
 
 var mytinytodo = window.mytinytodo = _mtt = {
 

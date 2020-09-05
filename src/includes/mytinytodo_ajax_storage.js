@@ -7,6 +7,8 @@
 // AJAX myTinyTodo Storage
 
 (function(){
+	
+"use strict";
 
 var mtt;
 
