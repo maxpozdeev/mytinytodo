@@ -621,7 +621,7 @@ function prepareTags($tagsStr)
 	$aTags = array('tags'=>array(), 'ids'=>array());
 	foreach($tags as $tag)
 	{
-		$tag = str_replace(array('"',"'",'<','>','&','/','\\','^'),'',trim($tag));
+		$tag = str_replace(array('"',"'",'<','>','&','/','\\','^','#'),'',trim($tag));
 		if($tag == '') continue;
 
 		$aTag = getOrCreateTag($tag);
