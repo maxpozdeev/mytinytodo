@@ -53,6 +53,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		openList: 0,
 		singletab: false,
 		autotag: false,
+		instantSearch: true,
 		tagPreview: true,
 		tagPreviewDelay: 700, //milliseconds
 		saveShowNotes: false,
@@ -150,11 +151,6 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		});
 
 
-		$('#search_form').submit(function(){
-			searchTasks(1);
-			return false;
-		});
-
 		$('#search_close').click(function(){
 			liveSearchToggle(0);
 			return false;
@@ -164,8 +160,10 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			if(event.keyCode == 27) return;
 			if($(this).val() == '') $('#search_close').hide();	//actual value is only on keyup
 			else $('#search_close').show();
-			clearTimeout(searchTimer);
-			searchTimer = setTimeout(function(){searchTasks()}, 400);
+			if (_mtt.options.instantSearch) {
+				clearTimeout(searchTimer);
+				searchTimer = setTimeout(function(){searchTasks()}, 400);
+			}
 		})
 		.keydown(function(event){
 			if(event.keyCode == 27) { // cancel on Esc (NB: no esc event on keypress in Chrome and on keyup in Opera)
@@ -178,7 +176,11 @@ var mytinytodo = window.mytinytodo = _mtt = {
 					liveSearchToggle(0);
 				}
 				return false; //need to return false in firefox (for AJAX?)
-			}		
+			}
+			else if ( event.keyCode == 13 ) {
+				searchTasks(1);
+				return false;
+			}
 		}).focusin(function(){
 			$('#toolbar').addClass('mtt-insearch');
 		}).focusout(function(){
@@ -1494,8 +1496,10 @@ function searchTasks(force)
 	var newkeyword = $('#search').val();
 	if(newkeyword == filter.search && !force) return false;
 	filter.search = newkeyword;
-	$('#searchbarkeyword').text(filter.search);
-	if(filter.search != '') $('#searchbar').fadeIn('fast');
+	if (filter.search != '') {
+		$('#searchbarkeyword').text(filter.search);
+		$('#searchbar').fadeIn('fast');
+	}
 	else $('#searchbar').fadeOut('fast');
 	loadTasks();
 	return false;
