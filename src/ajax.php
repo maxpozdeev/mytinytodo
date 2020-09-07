@@ -83,7 +83,11 @@ elseif(isset($_GET['loadTasks']))
 	}
 
 	$s = trim(_get('s'));
-	if($s != '') $sqlWhere .= " AND (title LIKE ". $db->quoteForLike("%%%s%%",$s). " OR note LIKE ". $db->quoteForLike("%%%s%%",$s). ")";
+	if ($s != '') {
+		if (preg_match("|^#(\d+)$|", $s, $m)) $sqlWhere .= " AND {$db->prefix}todolist.id = ". (int)$m[1];
+		else $sqlWhere .= " AND (title LIKE ". $db->quoteForLike("%%%s%%",$s). " OR note LIKE ". $db->quoteForLike("%%%s%%",$s). ")";
+	}
+	
 	$sort = (int)_get('sort');
 	$sqlSort = "ORDER BY compl ASC, ";
 	if($sort == 1) $sqlSort .= "prio DESC, ddn ASC, duedate ASC, ow ASC";		// byPrio
