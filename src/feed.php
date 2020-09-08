@@ -14,7 +14,7 @@ $lang = Lang::instance();
 $listId = (int)_get('list');
 
 $listData = $db->sqa("SELECT * FROM {$db->prefix}lists WHERE id=$listId");
-if($needAuth && (!$listData || !$listData['published'])) {
+if (need_auth() && (!$listData || !$listData['published'])) {
 	die("Access denied!<br> List is not published.");
 }
 if(!$listData) {

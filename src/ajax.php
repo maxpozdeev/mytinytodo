@@ -15,7 +15,7 @@ $db = DBConnection::instance();
 
 if(isset($_GET['loadLists']))
 {
-	if($needAuth && !is_logged()) $sqlWhere = 'WHERE published=1';
+	if (need_auth() && !is_logged()) $sqlWhere = 'WHERE published=1';
 	else $sqlWhere = '';
 	$t = array();
 	$t['total'] = 0;
@@ -297,7 +297,7 @@ elseif(isset($_GET['changeOrder']))
 elseif(isset($_POST['login']))
 {
 	$t = array('logged' => 0);
-	if(!$needAuth) {
+	if (!need_auth()) {
 		$t['disabled'] = 1;
 		jsonExit($t);
 	}

@@ -63,8 +63,7 @@ Lang::loadLang(Config::get('lang'));
 
 $_mttinfo = array();
 
-$needAuth = (Config::get('password') != '') ? 1 : 0;
-if($needAuth && !isset($dontStartSession))
+if (need_auth() && !isset($dontStartSession))
 {
 	if(Config::get('session') == 'files')
 	{
@@ -81,16 +80,21 @@ if($needAuth && !isset($dontStartSession))
 	session_start();
 }
 
+function need_auth()
+{
+	return (Config::get('password') != '') ? 1 : 0;
+}
+
 function is_logged()
 {
-	if(!isset($_SESSION['logged']) || !$_SESSION['logged']) return false;
-	return true;
+	if ( !need_auth() ) return true;
+	if ( isset($_SESSION['logged']) && $_SESSION['logged'] ) return true;
+	return false;
 }
 
 function is_readonly()
 {
-	$needAuth = (Config::get('password') != '') ? 1 : 0;
-	if($needAuth && !is_logged()) return true;
+	if (need_auth() && !is_logged()) return true;
 	return false;
 }
 
