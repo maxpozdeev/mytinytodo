@@ -38,7 +38,6 @@ else printCSV($listData, $data);
 
 function have_write_access()
 {
-	if(Config::get('password') == '') return true;
 	if(is_logged()) return true;
 	return false;
 }

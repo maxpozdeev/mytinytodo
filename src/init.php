@@ -94,7 +94,7 @@ function is_logged()
 
 function is_readonly()
 {
-	if (need_auth() && !is_logged()) return true;
+	if ( !is_logged() ) return true;
 	return false;
 }
 

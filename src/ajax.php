@@ -15,7 +15,7 @@ $db = DBConnection::instance();
 
 if(isset($_GET['loadLists']))
 {
-	if (need_auth() && !is_logged()) $sqlWhere = 'WHERE published=1';
+	if (!is_logged()) $sqlWhere = 'WHERE published=1';
 	else $sqlWhere = '';
 	$t = array();
 	$t['total'] = 0;
@@ -571,7 +571,6 @@ function prepareTaskRow($r)
 function check_read_access($listId = null)
 {
 	$db = DBConnection::instance();
-	if(Config::get('password') == '') return true;
 	if(is_logged()) return true;
 	if($listId !== null)
 	{

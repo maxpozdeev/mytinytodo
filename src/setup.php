@@ -27,7 +27,7 @@ if(!isset($config['db']))
 if($config['db'] != '') 
 {
 	require_once('./init.php');
-	if (need_auth() && !is_logged())
+	if ( !is_logged() )
 	{
 		die("Access denied!<br> Disable password protection or Log in.");
 	}

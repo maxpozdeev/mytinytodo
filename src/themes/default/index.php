@@ -30,7 +30,7 @@ $().ready(function(){
 		mttUrl: "<?php mttinfo('mtt_url'); ?>",
 		db: mytinytodoStorageAjax,
 		needAuth: <?php echo need_auth() ? "true" : "false"; ?>,
-		isLogged: <?php echo (need_auth() && is_logged()) ? "true" : "false"; ?>,
+		isLogged: <?php echo is_logged() ? "true" : "false"; ?>,
 		showdate: <?php echo (Config::get('showdate') && !Config::get('mobile')) ? "true" : "false"; ?>,
 		singletab: <?php echo (isset($_GET['singletab']) || Config::get('mobile')) ? "true" : "false"; ?>,
 		duedatepickerformat: "<?php echo htmlspecialchars(Config::get('dateformat2')); ?>",
