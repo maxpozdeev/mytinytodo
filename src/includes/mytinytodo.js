@@ -48,7 +48,6 @@ var mytinytodo = window.mytinytodo = _mtt = {
 	actions: {},
 	menus: {},
 	mttUrl: '',
-	templateUrl: '',
 	options: {
 		openList: 0,
 		singletab: false,
@@ -97,6 +96,20 @@ var mytinytodo = window.mytinytodo = _mtt = {
 	// procs
 	init: function(options)
 	{
+		// required properties
+		if (options.hasOwnProperty('lang')) {
+			this.lang.init(options.lang);
+			delete options.lang;
+		}
+		if (options.hasOwnProperty('mttUrl')) {
+			this.mttUrl = options.mttUrl;
+			delete options.mttUrl;
+		}
+		if (options.hasOwnProperty('db')) {
+			this.db = new options.db(this);
+			delete options.db;
+		}
+		
 		jQuery.extend(this.options, options);
 
 		flag.needAuth = options.needAuth ? true : false;
@@ -555,6 +568,11 @@ var mytinytodo = window.mytinytodo = _mtt = {
 
 	setOptions: function(opts) {
 		jQuery.extend(this.options, opts);
+	},
+
+	loadListsAtStart: function()
+	{
+		this.loadLists(1);
 	},
 
 	loadLists: function(onInit)

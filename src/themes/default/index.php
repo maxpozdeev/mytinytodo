@@ -25,25 +25,21 @@
 
 <script type="text/javascript">
 $().ready(function(){
-		
-	<?php echo "mytinytodo.lang.init(". Lang::instance()->makeJS() .");"; ?>
-
-	mytinytodo.mttUrl = "<?php mttinfo('mtt_url'); ?>";
-	mytinytodo.templateUrl = "<?php mttinfo('template_url'); ?>";
-	mytinytodo.db = new mytinytodoStorageAjax(mytinytodo);
 	mytinytodo.init({
+		lang: <?php echo Lang::instance()->makeJS() ?>,
+		mttUrl: "<?php mttinfo('mtt_url'); ?>",
+		db: mytinytodoStorageAjax,
 		needAuth: <?php echo $needAuth ? "true" : "false"; ?>,
 		isLogged: <?php echo ($needAuth && is_logged()) ? "true" : "false"; ?>,
 		showdate: <?php echo (Config::get('showdate') && !Config::get('mobile')) ? "true" : "false"; ?>,
 		singletab: <?php echo (isset($_GET['singletab']) || Config::get('mobile')) ? "true" : "false"; ?>,
 		duedatepickerformat: "<?php echo htmlspecialchars(Config::get('dateformat2')); ?>",
 		firstdayofweek: <?php echo (int) Config::get('firstdayofweek'); ?>,
-		calendarIcon: mytinytodo.templateUrl + 'images/calendar.svg',
+		calendarIcon: '<?php mttinfo('template_url'); ?>images/calendar.svg',
 		autotag: <?php echo Config::get('autotag') ? "true" : "false"; ?>
 		<?php if(isset($_GET['list'])) echo ",openList: ". (int)$_GET['list']; ?>
 		<?php if(Config::get('mobile')) echo ", touchDevice: true"; ?>
-
-	}).loadLists(1);
+	}).loadListsAtStart();
 });
 </script>
 
