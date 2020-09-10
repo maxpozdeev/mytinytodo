@@ -37,7 +37,6 @@ $().ready(function(){
 		firstdayofweek: <?php echo (int) Config::get('firstdayofweek'); ?>,
 		calendarIcon: '<?php mttinfo('template_url'); ?>images/calendar.svg',
 		autotag: <?php echo Config::get('autotag') ? "true" : "false"; ?>
-		<?php if(isset($_GET['list'])) echo ",openList: ". (int)$_GET['list']; ?>
 		<?php if(Config::get('mobile')) echo ", touchDevice: true"; ?>
 	}).loadListsAtStart();
 });
