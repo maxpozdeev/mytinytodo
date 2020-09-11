@@ -38,7 +38,7 @@ $().ready(function(){
 		calendarIcon: '<?php mttinfo('template_url'); ?>images/calendar.svg',
 		autotag: <?php echo Config::get('autotag') ? "true" : "false"; ?>
 		<?php if(Config::get('mobile')) echo ", touchDevice: true"; ?>
-	}).loadListsAtStart();
+	}).loadLists();
 });
 </script>
 

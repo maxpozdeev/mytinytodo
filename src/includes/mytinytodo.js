@@ -14,7 +14,7 @@ var sortOrder; //save task order before dragging
 var searchTimer;
 var objPrio = {};
 var selTask = 0;
-var flag = { needAuth:false, isLogged:false, tagsChanged:true, readOnly:false, editFormChanged:false };
+var flag = { needAuth:false, isLogged:false, tagsChanged:true, readOnly:false, editFormChanged:false, firstLoad:true };
 var taskCnt = { total:0, past: 0, today:0, soon:0 };
 var tabLists = {
 	_lists: {},
@@ -570,12 +570,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		jQuery.extend(this.options, opts);
 	},
 
-	loadListsAtStart: function()
-	{
-		this.loadLists(1);
-	},
-
-	loadLists: function(onInit)
+	loadLists: function()
 	{
 		if(filter.search != '') {
 			filter.search = '';
@@ -641,7 +636,10 @@ var mytinytodo = window.mytinytodo = _mtt = {
 
 		});
 
-		if(onInit) updateAccessStatus();
+		if (flag.firstLoad) {
+			updateAccessStatus();
+			flag.firstLoad = false;
+		}
 	},
 
 	duedatepickerformat: function()
