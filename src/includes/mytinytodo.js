@@ -14,7 +14,7 @@ var sortOrder; //save task order before dragging
 var searchTimer;
 var objPrio = {};
 var selTask = 0;
-var flag = { needAuth:false, isLogged:false, tagsChanged:true, readOnly:false, editFormChanged:false, firstLoad:true };
+var flag = { needAuth:false, isLogged:false, tagsChanged:true, readOnly:false, editFormChanged:false, firstLoad:true, historySkip:false };
 var taskCnt = { total:0, past: 0, today:0, soon:0 };
 var tabLists = {
 	_lists: {},
@@ -49,6 +49,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 	menus: {},
 	mttUrl: '',
 	options: {
+		title: '',
 		openList: 0,
 		singletab: false,
 		autotag: false,
@@ -58,7 +59,8 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		saveShowNotes: false,
 		firstdayofweek: 1,
 		touchDevice: false,
-		calendarIcon: 'calendar.png' // need templateUrl+icon
+		calendarIcon: 'calendar.png', // need templateUrl+icon
+		history: true
 	},
 
 	timers: {
@@ -543,6 +545,12 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		this.addAction('listAdded', slmenuOnListAdded);
 		this.addAction('listSelected', slmenuOnListSelected);
 		this.addAction('listHidden', slmenuOnListHidden);
+		
+		//History
+		if (this.options.history) {
+			window.onpopstate = historyOnPopState;
+			this.addAction('listSelected', historyListSelected);
+		}
 
 		return this;
 	},
@@ -632,13 +640,13 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			_mtt.doAction('listsLoaded');
 			tabSelect(openListId);
 
+			flag.firstLoad = false;
 			$('#page_tasks').show();
 
 		});
 
 		if (flag.firstLoad) {
 			updateAccessStatus();
-			flag.firstLoad = false;
 		}
 	},
 
@@ -1187,7 +1195,15 @@ function tabSelect(elementOrId)
 		if(!id) return;
 		id = parseInt(id.split('_', 2)[1]);
 	}
-	if(!tabLists.exists(id)) return;
+	if ( !tabLists.exists(id) ) {
+		// TODO: handle unknown list
+		return;
+	}
+	
+	var prevList = curList;
+	curList = tabLists.get(id);
+	document.title = curList.name + ' - ' + _mtt.options.title;
+	
 	$('#lists .mtt-tabs-selected').removeClass('mtt-tabs-selected');
 	$('#list_all').removeClass('mtt-tabs-selected');
 	
@@ -1200,14 +1216,14 @@ function tabSelect(elementOrId)
 		$('#listmenucontainer .mtt-need-real-list').removeClass('mtt-item-hidden');
 	}
 	
-	if(curList.id != id)
+	if(prevList.id != id)
 	{
 		if(id == -1) $('#mtt_body').addClass('show-all-tasks');
 		else $('#mtt_body').removeClass('show-all-tasks');
 		if(filter.search != '') liveSearchToggle(0, 1);
 		mytinytodo.doAction('listSelected', tabLists.get(id));
 	}
-	curList = tabLists.get(id);
+	
 	if(curList.hidden) {
 		curList.hidden = false;
 		if(curList.id > 0) _mtt.db.request('setHideList', {list:curList.id, hide:0});
@@ -2251,6 +2267,34 @@ function mttPrompt(msg, defaultValue, callbackOk, callbackCancel)
 	else {
 		if (typeof callbackCancel === 'function')
 			callbackCancel();
+	}
+}
+
+
+/*
+ *	History and Hash change
+ */
+function historyListSelected(list)
+{
+	if (flag.historySkip) {
+		flag.historySkip = false;
+		return;
+	}
+	
+	if (flag.firstLoad) {
+		history.replaceState( { list:list.id }, document.title, '#list/'+list.id)
+	}
+	else {
+		history.pushState( { list:list.id }, document.title, '#list/'+list.id);
+	}
+}
+
+
+function historyOnPopState(event)
+{
+	if (event.state.list) {
+		flag.historySkip = true;
+		tabSelect(event.state.list);
 	}
 }
 

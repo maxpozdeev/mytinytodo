@@ -26,6 +26,7 @@
 <script type="text/javascript">
 $().ready(function(){
 	mytinytodo.init({
+		title: "<?php mttinfo('title'); ?>",
 		lang: <?php echo Lang::instance()->makeJS() ?>,
 		mttUrl: "<?php mttinfo('mtt_url'); ?>",
 		db: mytinytodoStorageAjax,
