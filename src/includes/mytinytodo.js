@@ -633,6 +633,10 @@ var mytinytodo = window.mytinytodo = _mtt = {
 				$('#mtt_body').addClass('no-lists');
 				$('.mtt-need-list').addClass('mtt-item-disabled');
 			}
+			
+			if (_mtt.options.openList && openListId != _mtt.options.openList) {
+				//TODO: handle unknown list
+			}
 
 			_mtt.options.openList = 0;
 			$('#lists ul').html(ti);
@@ -1197,6 +1201,7 @@ function tabSelect(elementOrId)
 	}
 	if ( !tabLists.exists(id) ) {
 		// TODO: handle unknown list
+		flashError(_mtt.lang.get('denied'), id);
 		return;
 	}
 	
@@ -2100,7 +2105,7 @@ function hideTab(listId)
 	Errors and Info messages
 */
 
-function flashError(str, details)
+function flashError(str, details = '')
 {
 	$("#msg>.msg-text").text(str)
 	$("#msg>.msg-details").text(details);
@@ -2108,7 +2113,7 @@ function flashError(str, details)
 	$("#msg").addClass('mtt-error').effect("highlight", {color:_mtt.theme.msgFlashColor}, 700);
 }
 
-function flashInfo(str, details)
+function flashInfo(str, details = '')
 {
 	$("#msg>.msg-text").text(str)
 	$("#msg>.msg-details").text(details);
@@ -2292,7 +2297,7 @@ function historyListSelected(list)
 
 function historyOnPopState(event)
 {
-	if (event.state.list) {
+	if (event.state && event.state.list) {
 		flag.historySkip = true;
 		tabSelect(event.state.list);
 	}
