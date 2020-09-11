@@ -62,3 +62,7 @@ h2 { margin:0; margin-bottom:2px; font-size:1rem; }
 .mtt-notes-showhide { display:none; }
 
 #footer_content { padding:10px 4px; }
+
+.mtt-menu-container li { padding-top:0.3rem; padding-bottom:0.3rem; }
+#slmenucontainer { max-width:100vw; }
+#slmenucontainer a { overflow:hidden; text-overflow:ellipsis; }
