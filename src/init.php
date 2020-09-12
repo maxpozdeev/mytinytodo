@@ -75,7 +75,7 @@ if (need_auth() && !isset($dontStartSession))
 
 	ini_set('session.use_cookies', true);
 	ini_set('session.use_only_cookies', true);
-	session_set_cookie_params(1209600, url_dir(Config::get('url')=='' ? getRequestUri() : Config::get('url'))); # 14 days session cookie lifetime
+	session_set_cookie_params(1209600, url_dir(Config::get('url')=='' ? getRequestUri() : Config::getUrl('url'))); # 14 days session cookie lifetime
 	session_name('mtt-session');
 	session_start();
 }
@@ -133,17 +133,17 @@ function __($s)
 	return Lang::instance()->get($s);
 }
 
-function mttinfo($v)
+function mttinfo($v, $escape = true)
 {
 	global $_mttinfo;
-	if(!isset($_mttinfo[$v])) {
-		echo get_mttinfo($v);
-	} else {
-		echo $_mttinfo[$v];
-	}
+	echo $escape ? get_mttinfo($v) : get_unsafe_mttinfo($v);
 }
 
-function get_mttinfo($v)
+/*
+ * Returned values from get_unsafe_mttinfo() can be unsafe for html.
+ * But '\r' and '\n' in URLs taken from config are removed.
+ */
+function get_unsafe_mttinfo($v)
 {
 	global $_mttinfo;
 	if (isset($_mttinfo[$v])) {
@@ -152,13 +152,13 @@ function get_mttinfo($v)
 	switch($v)
 	{
 		case 'template_url':
-			$_mttinfo['template_url'] = get_mttinfo('mtt_url'). 'themes/'. Config::get('template') . '/';
+			$_mttinfo['template_url'] = get_unsafe_mttinfo('mtt_url'). 'themes/'. Config::get('template') . '/';
 			return $_mttinfo['template_url'];
 		case 'includes_url':
-			$_mttinfo['includes_url'] = get_mttinfo('mtt_url'). 'includes/';
+			$_mttinfo['includes_url'] = get_unsafe_mttinfo('mtt_url'). 'includes/';
 			return $_mttinfo['includes_url'];
 		case 'url':
-			$_mttinfo['url'] = Config::get('url'); // need to have a trailing slash
+			$_mttinfo['url'] = Config::getUrl('url'); // need to have a trailing slash
 			if ($_mttinfo['url'] == '') {
 				$proto = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != '' && $_SERVER['HTTPS'] != 'off') ? 'https://' : 'http://';
 				$defport = ($proto == 'https://') ? 443 : 80;
@@ -166,22 +166,22 @@ function get_mttinfo($v)
 			}
 			return $_mttinfo['url'];
 		case 'mobile_url':
-			$_mttinfo['mobile_url'] = Config::get('mobile_url');
+			$_mttinfo['mobile_url'] = Config::getUrl('mobile_url');
 			if ($_mttinfo['mobile_url'] == '') {
-				$_mttinfo['mobile_url'] = get_mttinfo('url'). '?mobile';
+				$_mttinfo['mobile_url'] = get_unsafe_mttinfo('url'). '?mobile';
 			}
 			return $_mttinfo['mobile_url'];
 		case 'desktop_url':
-			$_mttinfo['desktop_url'] = get_mttinfo('url'). '?desktop';
+			$_mttinfo['desktop_url'] = get_unsafe_mttinfo('url'). '?desktop';
 			return $_mttinfo['desktop_url'];
 		case 'mtt_url':
-			$_mttinfo['mtt_url'] = Config::get('mtt_url'); // need to have a trailing slash
+			$_mttinfo['mtt_url'] = Config::getUrl('mtt_url'); // need to have a trailing slash
 			if ($_mttinfo['mtt_url'] == '') {
 				$_mttinfo['mtt_url'] = url_dir(getRequestUri());
 			}
 			return $_mttinfo['mtt_url'];
 		case 'title':
-			$_mttinfo['title'] = (Config::get('title') != '') ? htmlarray(Config::get('title')) : __('My Tiny Todolist');
+			$_mttinfo['title'] = (Config::get('title') != '') ? Config::get('title') : __('My Tiny Todolist');
 			return $_mttinfo['title'];
 		case 'version':
 			if (MTT_VERSION != '@VERSION') {
@@ -190,6 +190,11 @@ function get_mttinfo($v)
 			}
 			return time(); //force no-cache for dev needs
 	}
+}
+
+function get_mttinfo($v)
+{
+	return htmlspecialchars( get_unsafe_mttinfo($v) );
 }
 
 function getRequestUri()

@@ -127,6 +127,15 @@ class Config
 		elseif(isset(self::$params[$key])) return self::$params[$key]['default'];
 		else return null;
 	}
+	
+	public static function getUrl($key)
+	{
+		$url = '';
+		if ( isset(self::$config[$key]) ) $url = self::$config[$key];
+		else if( isset(self::$params[$key]) ) $url = self::$params[$key]['default'];
+		else return null;
+		return str_replace( ["\r","\n"], '', $url );
+	}
 
 	public static function set($key, $value)
 	{

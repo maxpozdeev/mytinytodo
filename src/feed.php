@@ -69,7 +69,7 @@ printRss($listData, $data);
 
 function printRss($listData, $data)
 {
-	$link = get_mttinfo('url'). "?list=". $listData['id'];
+	$link = get_mttinfo('url'). "?list=". (int)$listData['id'];
 	$buildDate = gmdate('r');
 
 	$s = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<rss version=\"2.0\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\">\n<channel>\n".

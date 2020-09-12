@@ -50,7 +50,7 @@ require(TEMPLATEPATH. 'index.php');
 
 function redirectWithHashRoute(array $q, array $hash)
 {
-	$url = get_mttinfo('url');
+	$url = get_unsafe_mttinfo('url');
 	$query = http_build_query($q);
 	if ($query != '') $url .= "?$query";
 	if (count($hash) > 0) {
@@ -71,6 +71,6 @@ function is_mobile()
 
 function getDesktopUrl($escape = true)
 {
-	$url = (Config::get('detectmobile') && is_mobile()) ? get_mttinfo('desktop_url') : get_mttinfo('url');
+	$url = (Config::get('detectmobile') && is_mobile()) ? get_unsafe_mttinfo('desktop_url') : get_unsafe_mttinfo('url');
 	return $escape ? htmlspecialchars($url) : $url;
 }

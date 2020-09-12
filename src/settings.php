@@ -25,7 +25,7 @@ if(isset($_POST['save']))
 	
 	// in Demo mode we can set only language by cookies
 	if(defined('MTTDEMO')) {
-		setcookie('lang', Config::get('lang'), 0, url_dir(Config::get('url')=='' ? $_SERVER['REQUEST_URI'] : Config::get('url')));
+		setcookie('lang', Config::get('lang'), 0, url_dir(Config::get('url')=='' ? getRequestUri() : Config::getUrl('url')));
 		$t['saved'] = 1;
 		jsonExit($t);
 	}

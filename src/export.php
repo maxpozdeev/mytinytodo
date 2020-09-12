@@ -57,7 +57,7 @@ function printCSV($listData, $data)
 			($r['d_completed'] ? date('Y-m-d H:i:s O',$r['d_completed']) :''). "\n";
 	}
 	header('Content-type: text/csv; charset=utf-8');
-	header('Content-disposition: attachment; filename=list_'.$listData['id'].'.csv');
+	header('Content-disposition: attachment; filename=list_'.(int)$listData['id'].'.csv');
 	print $s;
 }
 
@@ -133,7 +133,7 @@ function printICal($listData, $data)
 	}
 	$s .= "END:VCALENDAR\r\n";
 	header('Content-type: text/calendar; charset=utf-8');
-	header('Content-disposition: attachment; filename=list_'.$listData['id'].'.ics');
+	header('Content-disposition: attachment; filename=list_'.(int)$listData['id'].'.ics');
 	print $s;
 }
 
