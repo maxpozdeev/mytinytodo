@@ -1243,7 +1243,7 @@ function tabSelect(elementOrId)
 
 function listMenu(el)
 {
-	if(!mytinytodo.menus.listMenu) mytinytodo.menus.listMenu = new mttMenu('listmenucontainer', {onclick:listMenuClick});
+	if(!mytinytodo.menus.listMenu) mytinytodo.menus.listMenu = new mttMenu('listmenucontainer', {onclick:listMenuClick, onhover:listMenuHover});
 	mytinytodo.menus.listMenu.show(el);
 };
 
@@ -1255,9 +1255,9 @@ function listMenuClick(el, menu)
 		case 'btnRenameList': renameCurList(); break;
 		case 'btnDeleteList': deleteCurList(); break;
 		case 'btnPublish': publishCurList(); break;
-		case 'btnExportCSV': exportCurList('csv'); break;
-		case 'btnExportICAL': exportCurList('ical'); break;
-		case 'btnRssFeed': feedCurList(); break;
+		case 'btnExportCSV': return true;
+		case 'btnExportICAL': return true;
+		case 'btnRssFeed': return true;
 		case 'btnShowCompleted': showCompletedToggle(); break;
 		case 'btnClearCompleted': clearCompleted(); break;
 		case 'sortByHand': setSort(0); break;
@@ -1266,7 +1266,18 @@ function listMenuClick(el, menu)
 		case 'sortByDateCreated': setSort(curList.sort==3 ? 103 : 3); break;
 		case 'sortByDateModified': setSort(curList.sort==4 ? 104 : 4); break;
 	}
+	return false;
 };
+
+function listMenuHover(el, menu)
+{
+	if(!el.id) return;
+	switch(el.id) {
+		case 'btnExportCSV': $('#'+el.id+'>a').attr('href', getCurListExport('csv')) ; break;
+		case 'btnExportICAL': $('#'+el.id+'>a').attr('href', getCurListExport('ical')) ; break;
+		case 'btnRssFeed': $('#'+el.id+'>a').attr('href', getCurListFeed()) ; break;
+	}
+}
 
 function deleteTask(id)
 {
@@ -1629,26 +1640,21 @@ function mttMenu(container, options)
 	this.container.mttmenu = this.ts;
 
 	this.$container.find('li').click(function(){
-		menu.onclick(this, menu);
-		return false;
+		var r = menu.onclick(this, menu);
+		return (typeof r === 'undefined') ? false : r;
 	})
 	.each(function(){
 
 		var submenu = 0;
 		if($(this).is('.mtt-menu-indicator'))
 		{
-			submenu = new mttMenu($(this).attr('submenu'));
+			submenu = new mttMenu($(this).attr('submenu'), menu.options);
 			submenu.$caller = $(this);
 			submenu.parent = menu;
 			if(menu.root) submenu.root = menu.root;	//!! be careful with circular references
 			else submenu.root = menu;
 			menu.submenu.push(submenu);
 			submenu.ts = submenu.container.mttmenu = submenu.root.ts;
-
-			submenu.$container.find('li').click(function(){
-				submenu.root.onclick(this, submenu);
-				return false;
-			});
 		}
 
 		$(this).hover(
@@ -1672,6 +1678,8 @@ function mttMenu(container, options)
 					}, 300);
 				}
 
+				if (menu.options.onhover) menu.options.onhover(this, menu);
+
 				if(!submenu || menu.curSubmenu == submenu && menu.curSubmenu.menuOpen)
 					return;
 			
@@ -1687,9 +1695,10 @@ function mttMenu(container, options)
 
 	this.onclick = function(item, fromMenu)
 	{
-		if($(item).is('.mtt-item-disabled,.mtt-menu-indicator,.mtt-item-hidden')) return;
-		menu.close();
-		if(this.options.onclick) this.options.onclick(item, fromMenu);
+		if ($(item).is('.mtt-item-disabled,.mtt-menu-indicator,.mtt-item-hidden')) return;
+		if (menu.root) menu.root.close();
+		else menu.close();
+		if (this.options.onclick) return this.options.onclick(item, fromMenu);
 	};
 
 	this.hide = function()
@@ -2044,18 +2053,17 @@ function slmenuSelect(el, menu)
 	return false;
 };
 
-
-function exportCurList(format)
+function getCurListExport(format)
 {
-	if(!curList) return;
-	if(!format.match(/^[a-z0-9-]+$/i)) return;
-	window.location.href = _mtt.mttUrl + 'export.php?list='+curList.id +'&format='+format;
-};
+	if (!curList) return '';
+	if (!format.match(/^[a-z0-9-]+$/i)) return '';
+	return _mtt.mttUrl + 'export.php?list='+curList.id +'&format='+format;
+}
 
-function feedCurList()
+function getCurListFeed()
 {
-	if(!curList) return;
-	window.location.href = _mtt.mttUrl + 'feed.php?list='+curList.id;
+	if (!curList) return '';
+	return _mtt.mttUrl + 'feed.php?list='+curList.id;
 }
 
 function hideTab(listId)
