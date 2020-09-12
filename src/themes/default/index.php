@@ -278,12 +278,12 @@ $().ready(function(){
 
 <div id="footer">
 	<div id="footer_content"> 
+		<span>Powered by <strong><a href="http://www.mytinytodo.net/">myTinyTodo</a></strong> <?php mttinfo('version'); ?></span>
 		<span id="mobileordesktop">
-			<?php if(Config::get('mobile')): ?><a href="<?php mttinfo('url'); ?>">Desktop</a>
+			<?php if(Config::get('mobile')): ?><a href="<?php echo getDesktopUrl(); ?>">Desktop</a>
 			<?php else: ?><a href="<?php mttinfo('mobile_url'); ?>">Mobile</a>
 			<?php endif; ?>
 		</span>
-		<span>Powered by <strong><a href="http://www.mytinytodo.net/">myTinyTodo</a></strong> <?php mttinfo('version'); ?></span> 
 	</div>
 </div>
 

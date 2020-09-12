@@ -75,7 +75,7 @@ if (need_auth() && !isset($dontStartSession))
 
 	ini_set('session.use_cookies', true);
 	ini_set('session.use_only_cookies', true);
-	session_set_cookie_params(1209600, url_dir(Config::get('url')=='' ? $_SERVER['REQUEST_URI'] : Config::get('url'))); # 14 days session cookie lifetime
+	session_set_cookie_params(1209600, url_dir(Config::get('url')=='' ? getRequestUri() : Config::get('url'))); # 14 days session cookie lifetime
 	session_name('mtt-session');
 	session_start();
 }
@@ -158,12 +158,11 @@ function get_mttinfo($v)
 			$_mttinfo['includes_url'] = get_mttinfo('mtt_url'). 'includes/';
 			return $_mttinfo['includes_url'];
 		case 'url':
-			$_mttinfo['url'] = Config::get('url');
+			$_mttinfo['url'] = Config::get('url'); // need to have a trailing slash
 			if ($_mttinfo['url'] == '') {
 				$proto = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != '' && $_SERVER['HTTPS'] != 'off') ? 'https://' : 'http://';
-				$defport = $proto == 'https://' ? 443 : 80;
-				$_mttinfo['url'] = $proto. $_SERVER['HTTP_HOST']. ($_SERVER['SERVER_PORT'] != $defport ? ':'.$_SERVER['SERVER_PORT'] : '').
-									url_dir(isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : $_SERVER['SCRIPT_NAME']);
+				$defport = ($proto == 'https://') ? 443 : 80;
+				$_mttinfo['url'] = $proto. $_SERVER['HTTP_HOST']. ($_SERVER['SERVER_PORT'] != $defport ? ':'.$_SERVER['SERVER_PORT'] : ''). url_dir(getRequestUri());
 			}
 			return $_mttinfo['url'];
 		case 'mobile_url':
@@ -172,10 +171,13 @@ function get_mttinfo($v)
 				$_mttinfo['mobile_url'] = get_mttinfo('url'). '?mobile';
 			}
 			return $_mttinfo['mobile_url'];
+		case 'desktop_url':
+			$_mttinfo['desktop_url'] = get_mttinfo('url'). '?desktop';
+			return $_mttinfo['desktop_url'];
 		case 'mtt_url':
-			$_mttinfo['mtt_url'] = Config::get('mtt_url');
+			$_mttinfo['mtt_url'] = Config::get('mtt_url'); // need to have a trailing slash
 			if ($_mttinfo['mtt_url'] == '') {
-				$_mttinfo['mtt_url'] = url_dir(isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : $_SERVER['SCRIPT_NAME']);
+				$_mttinfo['mtt_url'] = url_dir(getRequestUri());
 			}
 			return $_mttinfo['mtt_url'];
 		case 'title':
@@ -187,6 +189,21 @@ function get_mttinfo($v)
 				return $_mttinfo['version'];
 			}
 			return time(); //force no-cache for dev needs
+	}
+}
+
+function getRequestUri()
+{
+	// Do not use HTTP_X_REWRITE_URL due to CVE-2018-14773
+	// SCRIPT_NAME or PATH_INFO ?
+	if (isset($_SERVER['REQUEST_URI'])) {
+		return $_SERVER['REQUEST_URI'];
+	}
+	else if (isset($_SERVER['ORIG_PATH_INFO']))  // IIS 5.0 CGI
+	{
+		$uri = $_SERVER['ORIG_PATH_INFO']; //has no query
+		if (!empty($_SERVER['QUERY_STRING'])) $uri .= '?'. $_SERVER['QUERY_STRING'];
+		return $uri;
 	}
 }
 

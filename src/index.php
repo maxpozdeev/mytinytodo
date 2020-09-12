@@ -29,7 +29,16 @@ if (!is_int(Config::get('firstdayofweek')) || Config::get('firstdayofweek')<0 ||
 	Config::set('firstdayofweek', 1);
 }
 
-if ( isset($_GET['mobile']) || isset($_GET['pda'])) {
+if ( !isset($_GET['mobile']) && !isset($_GET['pda']) && !isset($_GET['desktop']) && Config::get('detectmobile') ) {
+	if (is_mobile()) {
+		Config::set('mobile', 1);
+	}
+}
+//TODO: if we have a desktop or mobile theme request we have to save it in cookies and redirect (if auto-detect mobiles is on)
+else if ( isset($_GET['desktop']) ) { //more priority than mobile
+	Config::set('mobile', 0);
+}
+else if ( isset($_GET['mobile']) || isset($_GET['pda']) ) {
 	Config::set('mobile', 1);
 }
 
@@ -41,7 +50,7 @@ require(TEMPLATEPATH. 'index.php');
 
 function redirectWithHashRoute(array $q, array $hash)
 {
-	$url = url_dir(isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : $_SERVER['SCRIPT_NAME']);
+	$url = get_mttinfo('url');
 	$query = http_build_query($q);
 	if ($query != '') $url .= "?$query";
 	if (count($hash) > 0) {
@@ -50,4 +59,18 @@ function redirectWithHashRoute(array $q, array $hash)
 	}
 	header("Location: ". $url);
 	exit;
+}
+
+function is_mobile()
+{	//basic detection
+	if (preg_match("/(iphone|ipad|android)/i", _server('HTTP_USER_AGENT'))) {
+		return true;
+	}
+	return false;
+}
+
+function getDesktopUrl($escape = true)
+{
+	$url = (Config::get('detectmobile') && is_mobile()) ? get_mttinfo('desktop_url') : get_mttinfo('url');
+	return $escape ? htmlspecialchars($url) : $url;
 }

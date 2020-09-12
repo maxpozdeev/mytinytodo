@@ -76,6 +76,16 @@ function _get($param,$defvalue = '')
 	}
 } 
 
+function _server($param, $defvalue = '')
+{
+	if ( !isset($_SERVER[$param]) ) {
+		return $defvalue;
+	}
+	else {
+		return $_SERVER[$param];
+	}
+}
+
 class Config
 {
 	public static $params = array(

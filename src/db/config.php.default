@@ -54,4 +54,7 @@ $config['dateformatshort'] = 'j M';
 # Show task date in list
 $config['showdate'] = 0;
 
+# Autodetect mobile devices and switch theme
+$config['detectmobile'] = 0;
+
 ?>
