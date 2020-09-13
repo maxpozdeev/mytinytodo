@@ -619,7 +619,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 				$.each(res.list, function(i,item){
 					tabLists.add(item);
 					ti += '<li id="list_'+item.id+'" class="mtt-tab'+(item.hidden?' mtt-tabs-hidden':'')+'">'+
-						'<a href="#list/'+item.id+'" title="'+item.name+'"><span>'+item.name+'</span>'+
+						'<a href="'+_mtt.urlForList(item)+'" title="'+item.name+'"><span>'+item.name+'</span>'+
 						'<div class="list-action"></div></a></li>';
 				});
 			}
@@ -780,6 +780,28 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		if(p.list) this.options.openList = p.list;
 		
 		return p;
+	},
+	
+	urlForList: function(list)
+	{
+		var l = list || curList;
+		if (l === undefined) return '';
+		return '#list/' + l.id;
+	},
+	
+	urlForExport: function(format, list)
+	{
+		var l = list || curList;
+		if (l === undefined) return '';
+		if (!format.match(/^[a-z0-9-]+$/i)) return '';
+		return this.mttUrl + 'export.php?list='+l.id +'&format='+format;
+	},
+
+	urlForFeed: function(list)
+	{
+		var l = list || curList;
+		if (l === undefined) return '';
+		return _mtt.mttUrl + 'feed.php?list='+l.id;
 	}
 
 };
@@ -1273,9 +1295,9 @@ function listMenuHover(el, menu)
 {
 	if(!el.id) return;
 	switch(el.id) {
-		case 'btnExportCSV': $('#'+el.id+'>a').attr('href', getCurListExport('csv')) ; break;
-		case 'btnExportICAL': $('#'+el.id+'>a').attr('href', getCurListExport('ical')) ; break;
-		case 'btnRssFeed': $('#'+el.id+'>a').attr('href', getCurListFeed()) ; break;
+		case 'btnExportCSV': $('#'+el.id+'>a').attr('href', _mtt.urlForExport('csv')) ; break;
+		case 'btnExportICAL': $('#'+el.id+'>a').attr('href', _mtt.urlForExport('ical')) ; break;
+		case 'btnRssFeed': $('#'+el.id+'>a').attr('href', _mtt.urlForFeed()) ; break;
 	}
 }
 
@@ -2006,7 +2028,7 @@ function slmenuOnListsLoaded()
 	var s = '';
 	var all = tabLists.getAll();
 	for(var i in all) {
-		s += '<li id="slmenu_list:'+all[i].id+'" class="'+(all[i].id==curList.id?'mtt-item-checked':'')+' list-id-'+all[i].id+(all[i].hidden?' mtt-list-hidden':'')+'"><div class="menu-icon"></div><a href="#list/'+all[i].id+'">'+all[i].name+'</a></li>';
+		s += '<li id="slmenu_list:'+all[i].id+'" class="'+(all[i].id==curList.id?'mtt-item-checked':'')+' list-id-'+all[i].id+(all[i].hidden?' mtt-list-hidden':'')+'"><div class="menu-icon"></div><a href="'+ _mtt.urlForList(all[i])+ '">'+all[i].name+'</a></li>';
 	}
 	$('#slmenucontainer ul>.slmenu-lists-begin').nextAll().remove();
 	$('#slmenucontainer ul>.slmenu-lists-begin').after(s);
@@ -2023,7 +2045,7 @@ function slmenuOnListAdded(list)
 		_mtt.menus.selectlist.destroy();
 		_mtt.menus.selectlist = null;
 	}
-	$('#slmenucontainer ul').append('<li id="slmenu_list:'+list.id+'" class="list-id-'+list.id+'"><div class="menu-icon"></div><a href="#list/'+list.id+'">'+list.name+'</a></li>');
+	$('#slmenucontainer ul').append('<li id="slmenu_list:'+list.id+'" class="list-id-'+list.id+'"><div class="menu-icon"></div><a href="'+ _mtt.urlForList(list)+ '">'+list.name+'</a></li>');
 };
 
 function slmenuOnListSelected(list)
@@ -2052,19 +2074,6 @@ function slmenuSelect(el, menu)
 	}
 	return false;
 };
-
-function getCurListExport(format)
-{
-	if (!curList) return '';
-	if (!format.match(/^[a-z0-9-]+$/i)) return '';
-	return _mtt.mttUrl + 'export.php?list='+curList.id +'&format='+format;
-}
-
-function getCurListFeed()
-{
-	if (!curList) return '';
-	return _mtt.mttUrl + 'feed.php?list='+curList.id;
-}
 
 function hideTab(listId)
 {
@@ -2295,10 +2304,10 @@ function historyListSelected(list)
 	}
 	
 	if (flag.firstLoad) {
-		history.replaceState( { list:list.id }, document.title, '#list/'+list.id)
+		history.replaceState( { list:list.id }, document.title, _mtt.urlForList(list))
 	}
 	else {
-		history.pushState( { list:list.id }, document.title, '#list/'+list.id);
+		history.pushState( { list:list.id }, document.title, _mtt.urlForList(list));
 	}
 }
 
