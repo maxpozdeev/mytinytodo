@@ -2155,20 +2155,15 @@ function updateAccessStatus()
 	// flag.needAuth is not changed after pageload
 	if(flag.needAuth)
 	{
-		$('#bar_auth').show();
-		if(flag.isLogged) {
-			showhide($("#bar_logout"),$("#bar_login"));
-			$('#bar .menu-owner').show();
-			$('#bar .bar-delim').show();
+		if (flag.isLogged) {
+			showhide( $("#bar_logout"), $("#bar_login") );
 		}
 		else {
-			showhide($("#bar_login"),$("#bar_logout"));
-			$('#bar .menu-owner').hide();
-			$('#bar .bar-delim').hide();
+			showhide( $("#bar_login"), $("#bar_logout") );
 		}
 	}
 	else {
-		$('#bar .menu-owner').show();
+		$('#mtt_body').addClass('no-need-auth');
 	}
 	if(flag.needAuth && !flag.isLogged) {
 		flag.readOnly = true;

@@ -15,31 +15,34 @@ body { margin:0px; padding:0px;  height:100%; min-height:100%; background-color:
 td, th, input, textarea, select { font-family:arial; font-size:1rem; }
 form { display: inline; }
 h2,h3 { margin:0; }
-h2 { font-size:1.5rem; float:left; padding-right:10px; background-color:#ffffff; }
+h2 { font-size:1.5rem; padding-right:10px; }
 h3 { border-bottom:2px solid #B5D5FF; margin-bottom:10px; padding:0.6rem 0; font-size:1.1rem; }
 a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 
+.topblock { display:flex; align-items:flex-start; margin-bottom:1rem; }
 #space { height:30px; }
 #footer { height:30px; margin-top:-30px; }
 #footer_content { background-color:#b5d5ff; padding:5px; font-size:0.85rem; }
 #footer_content a { color:#000000; }
 #mobileordesktop { float:right; }
 
-#bar { border-bottom:1px solid #b5d5ff; padding-bottom:5px; height:15px; }
-.bar-menu { float:right; }
+.topblock-title { display:flex; align-items:center; }
+.topblock-bar { flex-grow:1; display:flex; justify-content:flex-start; border-bottom:1px solid #b5d5ff; padding-bottom:5px; }
+#mtt_body.readonly .need-owner { display:none; }
+.bar-menu { flex-grow:1; text-align:right; }
 .nodecor { text-decoration:none; }
 #bar_logout { display:none; }
-#bar_auth { display:none; }
+#mtt_body.no-need-auth #bar_auth { display:none; }
 #authform { overflow: hidden; z-index:100; background-color:#f9f9f9; border:1px solid #cccccc; border-radius:2px; padding:10px; min-width:160px; box-shadow:1px 2px 5px rgba(0,0,0,0.5); }
 #authform div { padding:2px 0px; }
 #authform div.h { font-weight:bold; }
 #authform input { padding:3px; border:1px solid #ccc; border-radius:2px; }
 #authform input[type="submit"] { padding:4px; border-radius:3px; background-color:#efefef; }
-#loading { float:left; padding-top:5px; background-color:#ffffff; display:none; padding-right:6px; width:16px; height:16px; background:url(images/loading48.gif) no-repeat; background-size:16px 16px; }
+#loading { background-color:#ffffff; display:none; padding-right:6px; width:16px; height:16px; background:url(images/loading48.gif) no-repeat; background-size:16px 16px; }
 
-#msg { float:left; }
-#msg .msg-text {  padding:1px 4px; font-weight:bold; cursor:pointer; }
-#msg .msg-details { padding:1px 4px; background-color:#fff; display:none; max-width:700px;  }
+#msg {  }
+#msg .msg-text {  font-weight:bold; cursor:pointer; }
+#msg .msg-details { padding:1px 4px; background-color:#fff; display:none; max-width:700px; position:absolute; z-index:2; }
 #msg.mtt-error .msg-text { background-color:#ff3333; }
 #msg.mtt-error .msg-details { border:1px solid #ff3333;  }
 #msg.mtt-info .msg-text { background-color:#EFC300; }

@@ -47,26 +47,31 @@ $().ready(function(){
 <div id="container">
 <div id="mtt_body">
 
-<h2><?php mttinfo('title'); ?></h2>
+<!-- Top block -->
+<div class="topblock">
+ <div class="topblock-title">
+   <h2><?php mttinfo('title'); ?></h2>
+ </div>
 
-<div id="loading"></div>
-
-<div id="bar">
+<div class="topblock-bar">
+ <div id="loading"></div>
  <div id="msg"><span class="msg-text"></span><div class="msg-details"></div></div>
  <div class="bar-menu">
- <span class="menu-owner" style="display:none">
-   <a href="#settings" id="settings"><?php _e('a_settings');?></a>
- </span>
- <span class="bar-delim" style="display:none"> | </span>
- <span id="bar_auth">
-  <span id="bar_public" style="display:none"><?php _e('public_tasks');?> |</span>
-  <a href="#login" id="bar_login" class="nodecor"><u><?php _e('a_login');?></u> <span class="arrdown"></span></a>
-  <a href="#logout" id="bar_logout"><?php _e('a_logout');?></a>
- </span>
+   <span class="need-owner">
+     <a href="#settings" id="settings"><?php _e('a_settings');?></a>
+   </span>
+   <span id="bar_auth">
+	 <span class="need-owner"> | </span>
+     <span id="bar_public" style="display:none"><?php _e('public_tasks');?> |</span>
+     <a href="#login" id="bar_login" class="nodecor"><u><?php _e('a_login');?></u> <span class="arrdown"></span></a>
+     <a href="#logout" id="bar_logout"><?php _e('a_logout');?></a>
+   </span>
  </div>
 </div>
 
-<br clear="all" />
+</div>
+<!-- End of Top block -->
+
 
 <div id="page_tasks" style="display:none">
 
@@ -133,7 +138,8 @@ $().ready(function(){
  <ol id="tasklist" class="sortable"></ol>
 </div>
 
-</div> <!-- end of page_tasks -->
+</div>
+<!-- End of page_tasks -->
 
 
 <div id="page_taskedit" style="display:none">
