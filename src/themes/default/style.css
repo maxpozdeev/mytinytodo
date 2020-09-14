@@ -47,19 +47,19 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 #msg.mtt-info .msg-text { background-color:#EFC300; }
 #msg.mtt-info .msg-details { border:1px solid #EFC300;}
 
-#lists { font-size:0.95rem; }
+#lists { font-size:0.95rem; display:flex; align-items:flex-start; justify-content:flex-end; }
+.tabs-n-button { flex-grow:1; display:flex; align-items:flex-start; }
 .tab-height-wrapper { box-sizing:border-box; height:2.2rem; display:flex; align-items:center; }
-.mtt-tabs { list-style:none; padding:0; margin:0; }
-.mtt-tabs li { margin:1px 3px 0 0; float:left; }
+.mtt-tabs { list-style:none; padding:0; margin:0; display:flex; justify-content:flex-start; flex-wrap:wrap; }
+.mtt-tabs li { margin:1px 3px 0 0; }
 .mtt-tab { background-color:#fbfbfb; border:1px solid #ededed; border-bottom:none; border-top-right-radius:8px; transition:background-color 0.1s ease-in; }
 .mtt-tab a {
-  position:relative; margin:0; text-decoration:none; text-align:center; white-space:nowrap; color:#333333; display:block; 
-  box-sizing:border-box; height:2.2rem; padding:0.6rem 0.6rem 0 0.6rem; outline:none; vertical-align:top;
+  margin:0; text-decoration:none; white-space:nowrap; color:#333333; display:inline-block; outline:none;
+  box-sizing:border-box; height:2.2rem; padding:1px 0.3rem 0 0.3rem; display:flex; align-items:center; 
 }
-.mtt-tab a span { display:inline-block; min-width:75px; max-width:195px; cursor:pointer; padding:0; overflow:hidden; }
-.mtt-tab .list-action { display:none; float:left; position:absolute; top:0.631rem; right:5px; width:16px; height:16px; background:transparent url(images/arrdown.svg) no-repeat; cursor:pointer; }
+.mtt-tab a span { display:inline-block; text-align:center; min-width:75px; max-width:195px; cursor:pointer; padding:0; overflow:hidden; padding-left:0.3rem; padding-right:0.3rem;}
+.mtt-tab .list-action { display:none; width:16px; height:16px; background:transparent url(images/arrdown.svg) no-repeat; cursor:pointer; }
 .mtt-tab .list-action:hover, .mtt-tab .list-action.mtt-menu-button-active { background-image:url(images/arrdown-hover.svg); } 
-.mtt-tab.mtt-tabs-selected span { margin-right:16px; }
 .mtt-tab.mtt-tabs-selected .list-action { display:block; }
 .mtt-tab.mtt-tabs-selected { border-color:transparent; background-color:#ededed; }
 .mtt-tab:hover { background-color:#ddd; }
@@ -68,33 +68,16 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 .mtt-tabs.mtt-tabs-only-one li.mtt-tabs-selected { display:block; }
 .mtt-tabs-hidden { display:none; }
                      
-.mtt-tabs-alltasks { margin:1px 3px 0 3px; float:right;  }
+.mtt-tabs-alltasks { margin:1px 3px 0 3px; }
 .mtt-tabs-alltasks.mtt-tab { border-top-right-radius:0px; border-top-left-radius:8px; }
 
 #tabs_buttons {
- float:right;
  padding-left:2px; padding-right:2px;
  border-top:1px solid transparent;
  margin-top:1px;
 }
 
-.mtt-tabs-button {
- float:left;
- padding:1px; /* makes button bigger */
- border:1px solid transparent; /* preallocate space for :hover border */
-}
-
-.mtt-tabs-button span {
- display:block;
- width:16px;
- height:16px;
-}
-
-.mtt-tabs-button:hover, .mtt-tabs-button.mtt-menu-button-active {
- border:1px solid #ccc; border-radius:3px;
-}
-
-.mtt-tabs-add-button { float:left; margin-top:1px; border:1px solid #ededed; border-bottom:none; border-top-right-radius: 8px; background-color:#fbfbfb;
+.mtt-tabs-add-button { display:inline-block; margin-top:1px; border:1px solid #ededed; border-bottom:none; border-top-right-radius: 8px; background-color:#fbfbfb;
   padding-left:3px; padding-right:3px;
 }
 .mtt-tabs-add-button span { display:block; width:16px; height:16px; background:url(images/plus.svg) no-repeat; }
@@ -108,7 +91,7 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 .mtt-img-button span { display:block; width:16px; height:16px; }
 
 #mtt_body.no-lists #toolbar > * { visibility:hidden; }
-#toolbar  { clear:both; padding:8px; border-bottom:1px solid #DEDEDE; background:#ededed; }
+#toolbar  { padding:8px; border-bottom:1px solid #DEDEDE; background:#ededed; }
 #toolbar .mtt-img-button:hover { background-color:#ddd; }
 
 .arrdown { display:inline-block; height:9px; width:9px; background:url(images/arrdown2.svg) no-repeat; }
