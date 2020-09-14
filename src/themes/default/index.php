@@ -86,7 +86,7 @@ $().ready(function(){
 
 
 
-<div id="toolbar" class="mtt-htabs">
+<div id="toolbar">
 
 <div id="htab_search">
  <table class="mtt-searchbox"><tr><td>
@@ -126,6 +126,7 @@ $().ready(function(){
 </div>
 
 </div>
+
 
 
 <h3>
@@ -271,8 +272,8 @@ $().ready(function(){
 
 <div id="slmenucontainer" class="mtt-menu-container" style="display:none">
 <ul>
- <li id="slmenu_list:-1" class="list-id--1 mtt-need-list" <?php if(is_readonly()) echo 'style="display:none"' ?>><div class="menu-icon"></div><a href="#alltasks"><?php _e('alltasks'); ?></a></li>
- <li class="mtt-menu-delimiter slmenu-lists-begin mtt-need-list" <?php if(is_readonly()) echo 'style="display:none"' ?>></li>
+ <li id="slmenu_list:-1" class="list-id--1 mtt-need-list"><div class="menu-icon"></div><a href="#alltasks"><?php _e('alltasks'); ?></a></li>
+ <li class="mtt-menu-delimiter slmenu-lists-begin mtt-need-list"></li>
 </ul>
 </div>
 
