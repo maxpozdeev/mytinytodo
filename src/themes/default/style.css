@@ -204,7 +204,7 @@ li:hover a.taskactionbtn, a.taskactionbtn.mtt-menu-button-active { background-im
 #tasklist.filter-past li.past, #tasklist.filter-today li.today, #tasklist.filter-soon li.soon { display:block; }
 #tasklist.filter-past li.task-completed, #tasklist.filter-today li.task-completed, #tasklist.filter-soon li.task-completed { display:none; }
 
-.task-note-block { margin-left:2px; color:#777777; background:url(images/note.svg) left  0px no-repeat; padding-left:19px; min-height:16px; margin-top:6px; display:none; }
+.task-note-block { margin-left:2px; color:#777777; background:url(images/note.svg) left  0px no-repeat; background-size:16px 16px; padding-left:19px; min-height:16px; margin-top:6px; display:none; }
 li.task-expanded .task-note-block { display:block; }
 li.task-completed .task-note-block .task-note { text-decoration:line-through; }
 .task-note-area { display:none; margin-bottom:5px; }
@@ -283,7 +283,7 @@ a.mtt-back-button { font-size:0.8rem; }
 #tagcloudcancel span { background:url(images/close.svg) no-repeat; }
 
 .ui-datepicker { width:190px; z-index:202; border: 1px solid #cccccc; background: #ffffff; display:none; padding:2px; box-shadow:1px 2px 5px rgba(0,0,0,0.5); border-radius:5px; }
-.ui-datepicker-trigger { cursor:pointer; vertical-align:text-bottom; margin-left:2px; margin-right:2px; } 
+.ui-datepicker-trigger { cursor:pointer; vertical-align:text-bottom; margin-left:2px; margin-right:2px; width:16px; height:16px; } 
 .ui-datepicker-calendar { width:100%; border-collapse:collapse; }
 .ui-datepicker-calendar thead th { text-align:center; padding:0px; font-size:0.9rem; }
 .ui-datepicker-calendar tbody td { text-align:right; padding:1px;  }
