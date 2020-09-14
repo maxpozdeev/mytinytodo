@@ -2122,16 +2122,18 @@ function hideTab(listId)
 	Errors and Info messages
 */
 
-function flashError(str, details = '')
+function flashError(str, details)
 {
+	if (details === undefined) details = '';
 	$("#msg>.msg-text").text(str)
 	$("#msg>.msg-details").text(details);
 	$("#loading").hide();
 	$("#msg").addClass('mtt-error').effect("highlight", {color:_mtt.theme.msgFlashColor}, 700);
 }
 
-function flashInfo(str, details = '')
+function flashInfo(str, details)
 {
+	if (details === undefined) details = '';
 	$("#msg>.msg-text").text(str)
 	$("#msg>.msg-details").text(details);
 	$("#loading").hide();
