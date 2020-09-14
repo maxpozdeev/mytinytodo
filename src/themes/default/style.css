@@ -115,34 +115,29 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 .arrdown2 { display:inline-block; height:7px; width:7px; background:url(images/arrdown2.svg) no-repeat; }
 
 
-/* Quick Task Add */
+.newtask-n-search-container { display:flex; justify-content:flex-end; }
 
-.mtt-taskbox td { padding:0; }
-.mtt-taskbox td.mtt-tb-cell { width:450px; }
-.mtt-tb-c { position:relative; padding-left:22px; /*input padding+border*/ }
+/* Quick Task Add */
+.taskbox-c { flex-grow:1; display:flex; align-items:center; }
+.mtt-taskbox { position:relative; padding-left:22px; /*input padding+border*/ width:100%; max-width:430px; }
 #task { color:#444444; background:#fff; height:1.35rem; padding:2px 4px; padding-right:18px; border:1px solid #ccc; border-radius:3px; width:100%; margin-left:-22px; }
-#task_placeholder span { cursor:text; display:none; color:#ccc; position:absolute; left:0; top:0; height:1.35rem; line-height:1.35rem; padding:3px 5px; /*input top and left padding+border*/  }
-#task_placeholder.placeholding span { display:inline-block; }
+#mtt_body.show-all-tasks .taskbox-c, #mtt_body.readonly .taskbox-c { display:none; }
 
 .mtt-taskbox-icon { width:16px; height:16px; position:absolute; top:50%; margin-top:-8px; }
-.mtt-taskbox-icon.mtt-icon-submittask { background:url(images/add.svg) no-repeat; opacity:0.45; right:2px; cursor:pointer; transition:opacity .1s ease-in; }
-.mtt-taskbox-icon.mtt-icon-submittask:hover { opacity:0.7; }
-
+.mtt-taskbox-icon { background:url(images/add.svg) no-repeat; opacity:0.45; right:2px; cursor:pointer; transition:opacity .1s ease-in; }
+.mtt-taskbox-icon:hover { opacity:0.7; }
 #newtask_adv { margin-left:0.5rem; }
 #newtask_adv span { background:url(images/newtask-ext.svg) no-repeat; }
-#mtt_body.show-all-tasks #htab_newtask, #mtt_body.readonly #htab_newtask { display:none; }
 
 
 /* Live Search */
-#htab_search { float:right; }
 #search {
  color:#444444; background:#fff; height:1.35rem; padding:2px 20px; width:100%; margin-left:-42px; /*padding+border*/
  border:1px solid #ccc; border-radius:10px; 
 }
 #search_close { display:none; }
 
-.mtt-searchbox td { padding:0px; max-width:180px; }
-.mtt-searchbox-c { position:relative; padding-left:42px; /*input padding+border*/ }
+.mtt-searchbox { position:relative; padding-left:42px; /*input padding+border*/ }
 .mtt-searchbox-icon { width:16px; height:16px; position:absolute; top:50%; margin-top:-8px; }
 
 .mtt-searchbox-icon.mtt-icon-search { background:url(images/search.svg) no-repeat; left:4px; }

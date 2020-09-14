@@ -20,12 +20,10 @@ h2 { margin:0; margin-bottom:2px; font-size:1rem; }
 #task { padding:5px; padding-right:18px; margin-left:-22px; }
 #task_placeholder span { padding:6px; }
 
-#htab_search { width:30%; max-width:190px; }
-.mtt-searchbox { float:right; }
-.mtt-searchbox td { width:450px; max-width:100%; }
-#toolbar.mtt-intask #htab_search { display:none; }
-#toolbar.mtt-insearch #htab_newtask { display:none; }
-#toolbar.mtt-insearch #htab_search { width:100%; max-width:100%; }
+.searchbox-c { width:30%; max-width:190px; }
+#toolbar.mtt-intask .searchbox-c { display:none; }
+#toolbar.mtt-insearch .taskbox-c { display:none; }
+#toolbar.mtt-insearch .searchbox-c { width:100%; max-width:100%; }
 #search { padding:5px 20px; border-radius:15px; }
 
 #tasklist li { padding:0.5rem 3px; overflow:hidden;  }
