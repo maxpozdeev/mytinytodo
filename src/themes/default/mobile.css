@@ -32,7 +32,6 @@ h2 { margin:0; margin-bottom:2px; font-size:1rem; }
 .task-note-actions { display:block; padding-top:8px; }
 .task-note-block { margin-left:0px; border-left:1px solid #777777; background:none; padding-left:4px; display:none; } 
 .task-note-area textarea { width:95%; }
-.task-middle { margin-right:0px; }
 
 #tasklist li .task-through { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 #tasklist li:hover { background-color:#ffffff; }
@@ -45,7 +44,6 @@ h2 { margin:0; margin-bottom:2px; font-size:1rem; }
 /*#tasklist li.clicked.task-has-note .task-toggle { background-position:-48px 0; } */
 #tasklist li.clicked.doubleclicked.task-has-note .task-note-block { display:none; }
 .task-toggle { display:none; }
-.task-middle { margin-left:25px; }
 
 #page_taskedit { max-width:99.5%; border:none; position:static; padding:0; }
 #page_taskedit .form-table { width:100%; }

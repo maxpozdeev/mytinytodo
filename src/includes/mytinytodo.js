@@ -911,29 +911,44 @@ function loadTasks(opts)
 
 function prepareTaskStr(item, noteExp)
 {
-	// &mdash; = &#8212; = —
-	var id = item.id;
-	var prio = item.prio;
-	return '<li id="taskrow_'+id+'" class="' + (item.compl?'task-completed ':'') + item.dueClass + (item.note!=''?' task-has-note':'') +
+	return '<li id="taskrow_'+item.id+'" class="' + (item.compl?'task-completed ':'') + item.dueClass + (item.note!=''?' task-has-note':'') +
 				((curList.showNotes && item.note != '') || noteExp ? ' task-expanded' : '') + prepareTagsClass(item.tags_ids) + '">' +
-		'<div class="task-actions"><a href="#" class="taskactionbtn"></a></div>'+"\n"+
-		'<div class="task-left"><div class="task-toggle"></div>'+
-		'<input type="checkbox" '+(flag.readOnly?'disabled="disabled"':'')+(item.compl?'checked="checked"':'')+'/></div>'+"\n"+
-		'<div class="task-middle"><div class="task-through-right">'+prepareDuedate(item)+
-		'<span class="task-date-completed"><span title="'+item.dateInlineTitle+'">'+item.dateInline+'</span>&#8212;'+
-		'<span title="'+item.dateCompletedInlineTitle+'">'+item.dateCompletedInline+'</span></span></div>'+"\n"+
-		'<div class="task-through">'+preparePrio(prio,id)+'<span class="task-title">'+prepareHtml(item.title)+'</span> '+
-		(curList.id == -1 ? '<span class="task-listname">'+ tabLists.get(item.listId).name +'</span>' : '') +	"\n" +
-		prepareTagsStr(item)+'<span class="task-date">'+item.dateInlineTitle+'</span></div>'+
-		'<div class="task-note-block">'+
-			'<div id="tasknote'+id+'" class="task-note"><span>'+prepareHtml(item.note)+'</span></div>'+
-			'<div id="tasknotearea'+id+'" class="task-note-area"><textarea id="notetext'+id+'"></textarea>'+
-				'<span class="task-note-actions"><a href="#" class="mtt-action-note-save">'+_mtt.lang.get('actionNoteSave')+
-				'</a> | <a href="#" class="mtt-action-note-cancel">'+_mtt.lang.get('actionNoteCancel')+'</a></span></div>'+
-		'</div>'+
-		"</div></li>\n";
+					prepareTaskBlocks(item) + "</li>\n";
 };
 
+function prepareTaskBlocks(item)
+{
+	var id = item.id;
+	return	''+
+		'<div class="task-left">' + 
+			'<div class="task-toggle"></div>' +
+			'<label><input type="checkbox" '+(flag.readOnly?'disabled="disabled"':'')+(item.compl?'checked="checked"':'')+'/></label>' + 
+		"</div>\n" +
+		
+		'<div class="task-middle">' + 
+			
+			'<div class="task-middle-top">' +
+				'<div class="task-through">' + 
+					preparePrio(item.prio,id) + 
+					'<span class="task-title">' + prepareHtml(item.title) + '</span> ' +
+					(curList.id == -1 ? '<span class="task-listname">'+ tabLists.get(item.listId).name +'</span>' : '') +
+					prepareTagsStr(item) + 
+					'<span class="task-date">'+item.dateInlineTitle+'</span>' +
+				'</div>' +
+				'<div class="task-through-right">' + prepareDueDate(item) + prepareCompletedDate(item) + "</div>" +
+			'</div>' + 
+			
+			'<div class="task-note-block">' +
+				'<div id="tasknote'+id+'" class="task-note"><span>'+prepareHtml(item.note)+'</span></div>' +
+				'<div id="tasknotearea'+id+'" class="task-note-area"><textarea id="notetext'+id+'"></textarea>'+
+					'<span class="task-note-actions"><a href="#" class="mtt-action-note-save">'+_mtt.lang.get('actionNoteSave') +
+						'</a> | <a href="#" class="mtt-action-note-cancel">'+_mtt.lang.get('actionNoteCancel')+'</a></span>' +
+				'</div>' +
+			'</div>'+
+		"</div>" +
+
+		'<div class="task-actions"><div class="taskactionbtn"></div></div>';
+};
 
 function prepareHtml(s)
 {
@@ -974,10 +989,19 @@ function prepareTagsClass(ids)
 	return ' '+a.join(' ');
 };
 
-function prepareDuedate(item)
+function prepareDueDate(item)
 {
 	if(!item.duedate) return '';
 	return '<span class="duedate" title="'+item.dueTitle+'">'+item.dueStr+'</span>';
+};
+
+function prepareCompletedDate(item)
+{
+	// &mdash; = &#8212; = —
+	return	'<span class="task-date-completed">' + 
+				'<span title="' + item.dateInlineTitle + '">' + item.dateInline + '</span>&#8212;' +
+				'<span title="' + item.dateCompletedInlineTitle + '">' + item.dateCompletedInline + '</span>' +
+			'</span>';
 };
 
 
