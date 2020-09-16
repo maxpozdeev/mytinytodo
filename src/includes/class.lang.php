@@ -92,7 +92,8 @@ class Lang
 			'tasks',
 			'f_past',
 			'f_today',
-			'f_soon'
+			'f_soon',
+			'alltasks'
 		]);
 		
 		$opts = JSON_UNESCAPED_UNICODE;
