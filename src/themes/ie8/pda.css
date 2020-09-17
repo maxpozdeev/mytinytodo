@@ -1,0 +1,50 @@
+body { margin:0px; font-size:100%; }
+h2 { margin:0; margin-bottom:2px; font-size:1em; }
+h3 { margin-bottom:4px; padding:4px 0; }
+#body { margin-left:1px; margin-right:1px; padding:1px; padding-bottom:12px;}
+#bar_login, #bar_logout { padding-right:1px; }
+
+#tabs ul { margin-top:0px; }
+#tabs ul li { width:70px; margin-right: 1px; }
+.tab-content { padding:4px; }
+
+#htab_search { width:40%; max-width:190px; }
+.mtt-searchbox { float:right; }
+.mtt-searchbox td { width:40%; }
+#toolbar.mtt-intask #htab_search { display:none; }
+#toolbar.mtt-insearch #htab_newtask { display:none; }
+#toolbar.mtt-insearch #htab_search { width:100%; }
+#toolbar.mtt-insearch .mtt-searchbox td { width:40%; }
+
+#tasklist li { padding:0.5em 3px; overflow:hidden;  }
+.task-actions { display:none; }
+.task-date { display:none; }
+.task-note-actions { display:block; padding-top:8px; }
+.task-note-block { margin-left:0px; border-left:1px solid #777777; background:none; padding-left:4px; margin-top:1px; padding-top:0px; display:none; } 
+.task-note-area textarea { width:95%; }
+.task-middle { margin-right:0px; }
+
+#tasklist li .task-through { white-space:nowrap; overflow:hidden; }
+#tasklist li:hover { background-color:#ffffff; }
+#tasklist li.task-expanded .task-note-block { display:none; }
+/*#tasklist li.task-expanded .task-toggle { background-position:-32px 0; }*/
+#tasklist li.clicked { background-color:#f6f6f6; }
+#tasklist li.clicked .task-actions { display:block; }
+#tasklist li.clicked .task-through { white-space:normal; display:inline; }
+#tasklist li.clicked.task-has-note .task-note-block { display:block; }
+/*#tasklist li.clicked.task-has-note .task-toggle { background-position:-48px 0; } */
+#tasklist li.clicked.doubleclicked.task-has-note .task-note-block { display:none; }
+.task-toggle { display:none; }
+.task-middle { margin-left:25px; }
+
+#page_taskedit { max-width:99.5%; border:none; position:static; padding:0; }
+#page_taskedit .form-table { width:100%; }
+#page_taskedit .form-row .in500 { color:#444444; }
+#page_taskedit .form-row textarea { height: 70px; }
+
+#loading {  padding:0px; padding-top:1px; padding-right:1px; height:16px; overflow:hidden; }
+#loading img { /*width:8px; height:8px;*/ }
+
+#tagcloud { max-width:100%; }
+.mtt-settings-table .in350 { min-width:50px; }
+.mtt-notes-showhide { display:none; }

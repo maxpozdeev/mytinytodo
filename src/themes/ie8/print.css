@@ -1,0 +1,31 @@
+html { height:0; }
+body { height:0; min-height:0; margin:0; }
+h2{ display: none; }
+h3 { border-bottom:2px solid #777777; } 
+#lists { display: none; }
+#toolbar { display: none; }
+.small-bar { display:none; }
+.task-actions { display:none; }
+
+#bar { display:none; }
+#taskviewcontainer { border:none; }
+#taskviewcontainer img { display:none; }
+
+#tasklist { list-style-type: decimal; list-style-position: outside;  }
+#tasklist li { padding-left:0px; margin-left:30px; border-bottom:none; padding-bottom: 8px; } 
+div.task-note-block { border-left:1px solid #777777; background:none; padding-left:5px; margin-top:5px; padding-top:0px; font-size:9pt; color:#333333; } 
+.task-middle { margin-left:0px; margin-right:3px; }
+.task-left { display:none; }
+
+.task-date { white-space:nowrap; margin-left:10px; }
+#tasklist li.today, #tasklist li.past { background-color:#ffffff; border-color:#dedede; }
+.task-prio { font-weight:bold; }
+
+li.task-completed  { opacity:1; }
+
+#footer_content { border-top:1px solid #777777; background:none; }
+#footer_content a { text-decoration:none; color:#000000; }
+
+#tagcloudbtn { display:none; }
+.mtt-notes-showhide { display:none; }
+#taskview img { display:none; }
