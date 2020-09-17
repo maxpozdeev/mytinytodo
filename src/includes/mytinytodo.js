@@ -94,6 +94,12 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		current: { page:'tasks', pageClass:'' },
 		prev: []
 	},
+	
+	curList: function(){
+		return curList;
+	},
+	
+	flag: flag,
 
 	// procs
 	init: function(options)
@@ -805,7 +811,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		return _mtt.mttUrl + 'feed.php?list='+l.id;
 	}
 
-};
+}; // End of mytinytodo object
 
 function addList()
 {
@@ -896,7 +902,7 @@ function loadTasks(opts)
 		taskCnt.total = taskCnt.past = taskCnt.today = taskCnt.soon = 0;
 		var tasks = '';
 		$.each(json.list, function(i,item){
-			tasks += prepareTaskStr(item);
+			tasks += _mtt.prepareTaskStr(item);
 			taskList[item.id] = item;
 			taskOrder.push(parseInt(item.id));
 			changeTaskCnt(item, 1);
@@ -916,6 +922,7 @@ function prepareTaskStr(item, noteExp)
 				((curList.showNotes && item.note != '') || noteExp ? ' task-expanded' : '') + prepareTagsClass(item.tags_ids) + '">' +
 					prepareTaskBlocks(item) + "</li>\n";
 };
+_mtt.prepareTaskStr = prepareTaskStr;
 
 function prepareTaskBlocks(item)
 {
@@ -950,6 +957,7 @@ function prepareTaskBlocks(item)
 
 		'<div class="task-actions"><div class="taskactionbtn"></div></div>';
 };
+_mtt.prepareTaskBlocks = prepareTaskBlocks;
 
 function prepareHtml(s)
 {
@@ -957,6 +965,7 @@ function prepareHtml(s)
 	s = s.replace(/(^|\s|>)(www\.([\w\#$%&~\/.\-\+;:=,\?\[\]@]+?))(,|\.|:|)?(?=\s|&quot;|&lt;|&gt;|\"|<|>|$)/gi, '$1<a href="http://$2" target="_blank">$2</a>$4');
 	return s.replace(/(^|\s|>)((?:http|https|ftp):\/\/([\w\#$%&~\/.\-\+;:=,\?\[\]@]+?))(,|\.|:|)?(?=\s|&quot;|&lt;|&gt;|\"|<|>|$)/ig, '$1<a href="$2" target="_blank">$2</a>$4');
 };
+_mtt.prepareHtml = prepareHtml;
 
 function preparePrio(prio,id)
 {
@@ -966,6 +975,7 @@ function preparePrio(prio,id)
 	else { cl = 'prio-zero'; v = '&#177;0'; }													// &#177; = &plusmn; = ±
 	return '<span class="task-prio '+cl+'">'+v+'</span>';
 };
+_mtt.preparePrio = preparePrio;
 
 function prepareTagsStr(item)
 {
@@ -978,6 +988,7 @@ function prepareTagsStr(item)
 	}
 	return '<span class="task-tags">'+a.join(', ')+'</span>';
 };
+_mtt.prepareTagsStr = prepareTagsStr;
 
 function prepareTagsClass(ids)
 {
@@ -989,12 +1000,14 @@ function prepareTagsClass(ids)
 	}
 	return ' '+a.join(' ');
 };
+_mtt.prepareTagsClass = prepareTagsClass;
 
 function prepareDueDate(item)
 {
 	if(!item.duedate) return '';
 	return '<span class="duedate" title="'+item.dueTitle+'">'+item.dueStr+'</span>';
 };
+_mtt.prepareDueDate = prepareDueDate;
 
 function prepareCompletedDate(item)
 {
@@ -1004,6 +1017,7 @@ function prepareCompletedDate(item)
 				'<span title="' + item.dateCompletedInlineTitle + '">' + item.dateCompletedInline + '</span>' +
 			'</span>';
 };
+_mtt.prepareCompletedDate = prepareCompletedDate;
 
 
 function submitNewTask(form)
@@ -1017,7 +1031,7 @@ function submitNewTask(form)
 		var item = json.list[0];
 		taskList[item.id] = item;
 		taskOrder.push(parseInt(item.id));
-		$('#tasklist').append(prepareTaskStr(item));
+		$('#tasklist').append(_mtt.prepareTaskStr(item));
 		changeTaskOrder(item.id);
 		$('#taskrow_'+item.id).effect("highlight", {color:_mtt.theme.newTaskFlashColor}, 2000);
 		refreshTaskCnt();
@@ -1362,7 +1376,7 @@ function completeTask(id, ch)
 			$('#taskrow_'+id).fadeOut('normal', function(){ $(this).remove() });
 		}
 		else if(curList.showCompl) {
-			$('#taskrow_'+item.id).replaceWith(prepareTaskStr(taskList[id]));
+			$('#taskrow_'+item.id).replaceWith(_mtt.prepareTaskStr(taskList[id]));
 			$('#taskrow_'+id).fadeOut('fast', function(){	
 				changeTaskOrder(id);				
 				$(this).effect("highlight", {color:_mtt.theme.editTaskFlashColor}, 'normal', function(){$(this).css('display','')});
@@ -1488,7 +1502,7 @@ function saveTask(form)
 			changeTaskCnt(item, 0, taskList[item.id]);
 			taskList[item.id] = item;
 			var noteExpanded = (item.note != '' && $('#taskrow_'+item.id).is('.task-expanded')) ? 1 : 0;
-			$('#taskrow_'+item.id).replaceWith(prepareTaskStr(item, noteExpanded));
+			$('#taskrow_'+item.id).replaceWith(_mtt.prepareTaskStr(item, noteExpanded));
 			if(curList.sort != 0) changeTaskOrder(item.id);
 			_mtt.pageBack(); //back to list
 			refreshTaskCnt();
@@ -1612,7 +1626,7 @@ function submitFullTask(form)
 		var item = json.list[0];
 		taskList[item.id] = item;
 		taskOrder.push(parseInt(item.id));
-		$('#tasklist').append(prepareTaskStr(item));
+		$('#tasklist').append(_mtt.prepareTaskStr(item));
 		changeTaskOrder(item.id);
 		_mtt.pageBack();
 		$('#taskrow_'+item.id).effect("highlight", {color:_mtt.theme.newTaskFlashColor}, 2000);
@@ -1880,7 +1894,7 @@ function moveTaskToList(taskId, listId)
 			changeTaskCnt(item, 0, taskList[item.id]);
 			taskList[item.id] = item;
 			var noteExpanded = (item.note != '' && $('#taskrow_'+item.id).is('.task-expanded')) ? 1 : 0;
-			$('#taskrow_'+item.id).replaceWith(prepareTaskStr(item, noteExpanded));
+			$('#taskrow_'+item.id).replaceWith(_mtt.prepareTaskStr(item, noteExpanded));
 			if(curList.sort != 0) changeTaskOrder(item.id);
 			refreshTaskCnt();
 			$('#taskrow_'+item.id).effect("highlight", {color:_mtt.theme.editTaskFlashColor}, 'normal', function(){$(this).css('display','')});

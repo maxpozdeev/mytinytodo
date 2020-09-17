@@ -215,7 +215,8 @@ li:hover .taskactionbtn { display:block; }
 #tasklist.filter-past li.past, #tasklist.filter-today li.today, #tasklist.filter-soon li.soon { display:block; }
 #tasklist.filter-past li.task-completed, #tasklist.filter-today li.task-completed, #tasklist.filter-soon li.task-completed { display:none; }
 
-.task-note-block { margin-left:2px; color:#777777; background:url(images/note.svg) left  0px no-repeat; background-size:16px 16px; padding-left:19px; min-height:16px; margin-top:6px; display:none; }
+.task-note-block { margin-left:2px; color:#777777; background:url(images/note.svg) left  0px no-repeat; background-size:16px 16px;
+	padding-left:19px; min-height:16px; margin-top:6px; display:none; white-space:normal; word-wrap:break-word; }
 li.task-expanded .task-note-block { display:block; }
 li.task-completed .task-note-block .task-note { text-decoration:line-through; }
 .task-note-area { display:none; margin-bottom:5px; }
