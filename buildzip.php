@@ -4,7 +4,7 @@
 // PHP 5.4 is required
 
 if ( !isset($argv) || !isset($argv[1]) ) {
-	die("Usage: buildzip.php <path_to_repo> [-o source.zip] [-v VERSION]");
+	die("Usage: buildzip.php <path_to_repo> [-o source.zip] [-v VERSION]\n");
 }
 
 $repo = $argv[1];
@@ -30,7 +30,6 @@ if (!is_dir($dir)) {
 }
 print "> Repository was cloned to temp dir: $dir\n";
 
-
 #get current version number if not specified
 if (!$ver)
 {
@@ -41,9 +40,9 @@ if (!$ver)
 }
 chdir($dir. DIRECTORY_SEPARATOR. 'src');
 $rev = trim(`git show --format=format:%H --summary`);
+$rev = substr($rev, 0, 8);
 ##$ver = str_replace('@REV', $rev, $ver);
 print "> Version is $ver\n";
-
 
 rename('db/todolist.db.empty', 'db/todolist.db');
 rename('db/config.php.default', 'db/config.php');
@@ -53,32 +52,48 @@ $fh = fopen("./themes/default/index.php", 'a') or die("cant write index.php\n");
 fwrite($fh, "\n<!-- $rev -->");
 fclose($fh);
 
+$fh = fopen("./themes/ie8/index.php", 'a') or die("cant write index.php\n");
+fwrite($fh, "\n<!-- $rev -->");
+fclose($fh);
+
 #replace @VERSION
-replaceVer('./themes/default/index.php', $ver);
 replaceVer('./setup.php', $ver);
 replaceVer('./init.php', $ver);
 
 unlink('./tmp/sessions/empty');
 
 # save only 2 languages
-$dh = opendir('./lang/') or die("Cant opendir lang\n");
+$dh = opendir('./includes/lang/') or die("Cant opendir lang\n");
 while (false !== ($f = readdir($dh))) {
-	if (!in_array($f, ['.', '..', '.htaccess', 'class.default.php', 'en.php', 'ru.php'])) {
-		unlink('./lang/'. $f);
+	if (!in_array($f, ['.', '..', '.htaccess', 'en.json', 'ru.json'])) {
+		unlink('./includes/lang/'. $f);
 	}
 }
 closedir($dh);
+
+
+# pack ie8 theme
+chdir('themes');
+`zip -9 -r ie8.zip ie8`; #OS dep.!!!
+deleteTreeIfDir('ie8');
+chdir('..');
+
 
 chdir('..'); # to the root of repo
 rename('src', 'mytinytodo') or die("Cant rename 'src'\n");
 
 `zip -9 -r mytinytodo.zip mytinytodo`;	#OS dep.!!!
+if (!file_exists('mytinytodo.zip')) {
+	die("Failed to pack files (no output zip file)\n");
+}
 
 $zipfile = str_replace('@VERSION', $ver, $zipfile);
 $zipfile = str_replace('@REV', $rev, $zipfile);
 
 chdir($curdir);
-rename("$dir/mytinytodo.zip", $zipfile);
+if ( ! rename("$dir/mytinytodo.zip", $zipfile) ) {
+	die("Failed to move mytinytodo.zip to $zipfile");
+}
 
 deleteTreeIfDir($dir);
 echo("> Temp dir was cleaned\n");
