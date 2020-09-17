@@ -5,8 +5,8 @@
 
 /*	default style	*/
 
-html { height:100%; overflow-y:scroll; font-size:14px; }
-body { margin:0px; padding:0px;  height:100%; min-height:100%; background-color:#fff; font-family:helvetica,arial; font-size:14px; }
+html { height:100%; overflow-y:scroll; font-size:14px; /* =1rem */ }
+body { margin:0px; padding:0px;  height:100%; min-height:100%; background-color:#fff; font-family:helvetica,arial; }
 #wrapper { margin:0px auto; max-width:1000px;  height:100%; }
 #container { height:auto !important;height:100%;min-height:100%;    }
 #mtt_body { padding:8px; padding-bottom:16px; }
@@ -152,8 +152,8 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 #mtt-tag-toolbar-close span { background:url(images/close.svg) no-repeat; }
 
 
-.task-toggle { visibility:hidden; cursor:pointer; width:14px; height:14px; flex:0 0 14px; /* =1rem */ margin-right:2px;
-  background:url(images/note-toggle.svg) no-repeat; background-size:14px 14px; background-position:center; opacity:0.45;
+.task-toggle { visibility:hidden; cursor:pointer; width:1rem; height:1rem; flex:0 0 1rem; margin-right:2px;
+  background:url(images/note-toggle.svg) no-repeat; background-size:cover; opacity:0.45;
   transition:transform .1s linear, opacity .1s ease-in;
 }
 .task-toggle::after { content:'_'; visibility:hidden; } /* for baseline */
@@ -165,12 +165,12 @@ li.task-expanded .task-toggle { transform:rotate(90deg); }
 
 #tasklist { list-style-type: none; margin: 0; padding: 0;}
 #tasklist li { padding:6px 2px 6px 6px; border-bottom:1px solid #DEDEDE; min-height:18px; margin-bottom:1px; background-color:#fff; 
-	 display:flex; justify-content:start; align-items:baseline; }
+	 display:flex; justify-content:flex-start; align-items:baseline; }
 #tasklist li:hover { background-color:#f6f6f6; }
-.task-left { display:flex; align-items:baseline; }
-.task-middle { flex-grow:1; margin-left: 5px; min-width:0; }
+.task-left { display:flex; align-items:baseline; flex-shrink:0; /* IE11 */}
+.task-middle { flex-grow:1; margin-left: 5px; min-width:0; /*for long text*/ flex-basis:0; /* IE11 */}
 .task-middle-top { display:flex; align-items:baseline; }
-.task-actions { flex:0 0 16px; margin-left:5px; }
+.task-actions { flex:0 0 1rem; margin-left:5px; }
 
 .task-left label { min-width:18px; text-align:center; } /* Safari has small checkboxes */
 .task-date { color:#999999; font-size:0.8rem; margin-left:4px; display:none; }
