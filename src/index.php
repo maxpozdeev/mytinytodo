@@ -42,7 +42,7 @@ else if ( isset($_GET['mobile']) || isset($_GET['pda']) ) {
 	Config::set('mobile', 1);
 }
 
-define('TEMPLATEPATH', MTTPATH. 'themes/'. Config::get('template'). '/');
+define('TEMPLATEPATH', MTTTHEMES. Config::get('template'). '/');
 
 require(TEMPLATEPATH. 'index.php');
 

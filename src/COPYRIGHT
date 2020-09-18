@@ -16,7 +16,7 @@ http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 myTinyTodo
 --------------
 Url:		http://www.mytinytodo.net/
-Copyright:	2009-2010,2020 Max Pozdeev <maxpozdeev@gmail.com>
+Copyright:	2009-2011,2019-2020 Max Pozdeev <maxpozdeev@gmail.com>
 License:	GPL version 2 (see LICENSE file)
 
 
@@ -35,4 +35,4 @@ Copyright:	Copyright jQuery Foundation and other contributors
 License:	MIT license. Compatible with GNU GPL.
 
 
-This software contains images by 3d-parties. See file themes/default/images/COPYRIGHT for details. 
+This software contains images by 3d-parties. See files content/themes/default/images/COPYRIGHT and content/themes/ie8/images/COPYRIGHT for details. 

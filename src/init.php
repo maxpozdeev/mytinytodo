@@ -16,6 +16,7 @@ if(!defined('MTTPATH')) define('MTTPATH', dirname(__FILE__) .'/');
 if(!defined('MTTINC'))  define('MTTINC', MTTPATH. 'includes/');
 if(!defined('MTTCONTENT'))  define('MTTCONTENT', MTTPATH. 'content/');
 if(!defined('MTTLANG'))  define('MTTLANG', MTTCONTENT. 'lang/');
+if(!defined('MTTTHEMES'))  define('MTTTHEMES', MTTCONTENT. 'themes/');
 
 require_once(MTTINC. 'common.php');
 require_once(MTTPATH. 'db/config.php');
@@ -154,7 +155,7 @@ function get_unsafe_mttinfo($v)
 	switch($v)
 	{
 		case 'template_url':
-			$_mttinfo['template_url'] = get_unsafe_mttinfo('mtt_url'). 'themes/'. Config::get('template') . '/';
+			$_mttinfo['template_url'] = get_unsafe_mttinfo('mtt_url'). 'content/themes/'. Config::get('template') . '/';
 			return $_mttinfo['template_url'];
 		case 'includes_url':
 			$_mttinfo['includes_url'] = get_unsafe_mttinfo('mtt_url'). 'includes/';

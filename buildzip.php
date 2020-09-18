@@ -47,14 +47,15 @@ print "> Version is $ver\n";
 rename('db/todolist.db.empty', 'db/todolist.db');
 rename('db/config.php.default', 'db/config.php');
 
-
-$fh = fopen("./themes/default/index.php", 'a') or die("cant write index.php\n");
+/*
+$fh = fopen("./content/themes/default/index.php", 'a') or die("cant write index.php\n");
 fwrite($fh, "\n<!-- $rev -->");
 fclose($fh);
 
-$fh = fopen("./themes/ie8/index.php", 'a') or die("cant write index.php\n");
+$fh = fopen("./content/themes/ie8/index.php", 'a') or die("cant write ie8/index.php\n");
 fwrite($fh, "\n<!-- $rev -->");
 fclose($fh);
+*/
 
 #replace @VERSION
 replaceVer('./setup.php', $ver);
@@ -73,10 +74,10 @@ closedir($dh);
 
 
 # pack ie8 theme
-chdir('themes');
+chdir('content/themes');
 `zip -9 -r ie8.zip ie8`; #OS dep.!!!
 deleteTreeIfDir('ie8');
-chdir('..');
+chdir('../..');
 
 
 chdir('..'); # to the root of repo
