@@ -14,6 +14,8 @@ if (version_compare(PHP_VERSION, '5.4.0') < 0) {
 
 if(!defined('MTTPATH')) define('MTTPATH', dirname(__FILE__) .'/');
 if(!defined('MTTINC'))  define('MTTINC', MTTPATH. 'includes/');
+if(!defined('MTTCONTENT'))  define('MTTCONTENT', MTTPATH. 'content/');
+if(!defined('MTTLANG'))  define('MTTLANG', MTTCONTENT. 'lang/');
 
 require_once(MTTINC. 'common.php');
 require_once(MTTPATH. 'db/config.php');
@@ -54,7 +56,7 @@ else {
 $db->prefix = Config::get('prefix');
 
 //User can override language setting by cookies
-if(isset($_COOKIE['lang']) && preg_match("/^[a-z-]+$/i", $_COOKIE['lang']) && file_exists(MTTPATH. 'lang/'. $_COOKIE['lang']. '.php')) {
+if(isset($_COOKIE['lang']) && preg_match("/^[a-z-]+$/i", $_COOKIE['lang']) && file_exists(MTTLANG. $_COOKIE['lang']. '.php')) {
 	Config::set('lang', $_COOKIE['lang']);
 }
 

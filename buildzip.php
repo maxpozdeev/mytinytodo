@@ -63,10 +63,10 @@ replaceVer('./init.php', $ver);
 unlink('./tmp/sessions/empty');
 
 # save only 2 languages
-$dh = opendir('./includes/lang/') or die("Cant opendir lang\n");
+$dh = opendir('./content/lang/') or die("Cant opendir lang\n");
 while (false !== ($f = readdir($dh))) {
 	if (!in_array($f, ['.', '..', '.htaccess', 'en.json', 'ru.json'])) {
-		unlink('./includes/lang/'. $f);
+		unlink('./content/lang/'. $f);
 	}
 }
 closedir($dh);

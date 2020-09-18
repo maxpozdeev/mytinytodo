@@ -9,7 +9,7 @@ class Lang
 	protected static $instance;
 	protected $code = 'en';
 	protected $default = 'en';
-	protected $langDir = MTTINC. 'lang/';
+	protected $langDir = MTTLANG;
 	protected $strings;
 	
 	public static function instance()

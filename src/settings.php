@@ -195,7 +195,7 @@ header('Content-type:text/html; charset=utf-8');
 	<select name="lang"><?php echo selectOptionsA(getLangs(), _c('lang')); ?></select> 
 	<?php if ($oldLangs) { ?>
 	<br><br>
-	<b>Notice!</b> You can use old language files after downloading in the new format and copying to the <i>/includes/lang/</i> folder.<br>
+	<b>Notice!</b> You can use old language files after downloading in the new format and copying to the <i>/content/lang/</i> folder.<br>
 	<select id="mtt_old_langs"><?php echo selectOptionsA( $oldLangs, _c('lang'), 'en'); ?></select> 
 	<a id="mtt_old_langs_link" href="<?php mttinfo('mtt_url')?>mytinytodo_lang.php?jsonfile">Download json file</a>
 	<script type="text/javascript">
