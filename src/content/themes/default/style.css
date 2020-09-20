@@ -335,7 +335,7 @@ a.mtt-back-button { font-size:0.8rem; }
 	user-select:none;
 } 
 .mtt-menu-container ul { list-style: none; padding:0; margin:0; }
-.mtt-menu-container li { margin:1px 0px; cursor:default; color:#000; white-space:nowrap; padding-top:0.20rem; padding-bottom:0.20rem; padding-left:28px; padding-right:18px; position:relative; }
+.mtt-menu-container li { margin:1px 0px; cursor:default; color:#000; white-space:nowrap; padding-top:0.20rem; padding-bottom:0.20rem; padding-left:28px; padding-right:28px; position:relative; }
 .mtt-menu-container li:hover, .mtt-menu-container li.mtt-menu-item-active { 
   background-color:#5a8df0; color:white;
  }
@@ -346,7 +346,7 @@ a.mtt-back-button { font-size:0.8rem; }
 .mtt-menu-container .menu-icon { width:16px; height:16px; position:absolute; left:6px; top:50%; margin-top:-8px; }
 li.mtt-item-checked .menu-icon { background:url(images/checkmark.svg) no-repeat; }
 li.mtt-menu-indicator .submenu-icon {
-	position:absolute; right:2px; top:50%; margin-top:-8px;
+	position:absolute; right:6px; top:50%; margin-top:-8px;
 	width:16px; height:16px; background:url(images/arr-right.svg) no-repeat;
 }
 li.mtt-item-hidden { display:none; }
