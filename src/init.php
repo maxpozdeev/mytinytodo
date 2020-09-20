@@ -56,9 +56,13 @@ else {
 }
 $db->prefix = Config::get('prefix');
 
-//User can override language setting by cookies
-if(isset($_COOKIE['lang']) && preg_match("/^[a-z-]+$/i", $_COOKIE['lang']) && file_exists(MTTLANG. $_COOKIE['lang']. '.php')) {
-	Config::set('lang', $_COOKIE['lang']);
+//User can override language setting by cookies or query
+$forceLang = '';
+if( isset($_COOKIE['lang']) ) $forceLang = $_COOKIE['lang'];
+else if ( isset($_GET['lang']) ) $forceLang = $_GET['lang'];
+
+if ( $forceLang != '' && preg_match("/^[a-z-]+$/i", $forceLang) && file_exists(MTTLANG. $forceLang. '.json') ) {
+	Config::set('lang', $forceLang);
 }
 
 require_once(MTTINC. 'class.lang.php');
