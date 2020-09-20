@@ -134,6 +134,7 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 #searchbarkeyword { font-weight:bold; }
 
 /* */
+#page_tasks h3 { display:flex; align-items:baseline; }
 #mtt_body.no-lists #page_tasks h3 > * { visibility:hidden; }
 .mtt-notes-showhide { font-size:0.8rem; font-weight:normal; margin-left:2px; margin-right:2px; }
 .mtt-notes-showhide a { text-decoration:none; border-bottom:1px dotted; }
@@ -274,7 +275,7 @@ a.mtt-back-button { font-size:0.8rem; }
 #priopopup .prio-pos:hover { border-color:#ff3333; }
 #priopopup .prio-pos-1:hover { border-color:#ff7700; }
 
-#tagcloudbtn { margin-right:2px; font-size:0.8rem; font-weight:normal; float:right; }
+#tagcloudbtn { font-size:0.8rem; font-weight:normal; margin-left:auto; }
 #mtt_body.show-all-tasks #tagcloudbtn { display:none; }
 #tagcloudload { display:none; height:24px; background:url(images/loading48.gif) center no-repeat; background-size:24px 24px; }
 #tagcloud {

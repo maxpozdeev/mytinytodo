@@ -11,6 +11,8 @@ h2 { padding-left:10px; padding-right:0px; }
 .mtt-searchbox-icon.mtt-icon-search  { right:4px; left:auto; }
 .mtt-searchbox-icon.mtt-icon-cancelsearch { left:4px; right:auto; }
 
+#tagcloudbtn { margin-left:0; margin-right:auto; }
+
 .task-toggle { margin-left:2px; margin-right:0; transform:rotate(180deg); }
 .task-middle { margin-left:0; margin-right:5px; }
 .task-actions { margin-left:0; margin-right:5px; }
