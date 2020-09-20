@@ -95,6 +95,7 @@ class Lang
 			'f_soon',
 			'alltasks'
 		]);
+		$a['_rtl'] = $this->rtl() ? 1 : 0;
 		
 		$opts = JSON_UNESCAPED_UNICODE;
 		if ($pretty) {
