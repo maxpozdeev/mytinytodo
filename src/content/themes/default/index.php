@@ -61,7 +61,6 @@ $().ready(function(){
      <a href="#settings" id="settings"><?php _e('a_settings');?></a>
    </span>
    <span id="bar_auth">
-	 <span class="need-owner"> | </span>
      <span id="bar_public" style="display:none"><?php _e('public_tasks');?> |</span>
      <a href="#login" id="bar_login" class="nodecor"><u><?php _e('a_login');?></u> <span class="arrdown"></span></a>
      <a href="#logout" id="bar_logout"><?php _e('a_logout');?></a>

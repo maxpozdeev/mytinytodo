@@ -1,0 +1,11 @@
+{
+    "_header": {
+        "ver": "v1.6",
+        "date": "2020-09-04",
+        "language": "English (for RTL test)",
+        "original_name": "English RTL",
+        "author": "Max Pozdeev",
+        "author_url": "http://www.mytinytodo.net"
+    },
+	"_rtl": 1
+}
