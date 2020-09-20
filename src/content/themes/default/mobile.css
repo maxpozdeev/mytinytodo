@@ -31,6 +31,7 @@ h2 { margin:0; margin-bottom:2px; font-size:1rem; }
 .task-date { display:none; }
 .task-note-actions { display:block; padding-top:8px; }
 .task-note-block { margin-left:0px; border-left:1px solid #777777; background:none; padding-left:4px; display:none; } 
+body[dir="rtl"] .task-note-block { border-left:none; border-right:1px solid #777777; padding-left:0; padding-right:4px; }
 .task-note-area textarea { width:95%; }
 
 #tasklist li .task-through { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
@@ -53,7 +54,7 @@ h2 { margin:0; margin-bottom:2px; font-size:1rem; }
 #loading {  padding:0px; padding-top:1px; padding-right:1px; height:16px; overflow:hidden; }
 #loading img { /*width:8px; height:8px;*/ }
 
-#tagcloud { max-width:100%; }
+#tagcloud { max-width:100%; margin:0px 5px 5px 5px; }
 .mtt-settings-table .in350 { min-width:50px; }
 .mtt-notes-showhide { display:none; }
 
@@ -62,3 +63,5 @@ h2 { margin:0; margin-bottom:2px; font-size:1rem; }
 .mtt-menu-container li { padding-top:0.3rem; padding-bottom:0.3rem; }
 #slmenucontainer { max-width:100vw; }
 #slmenucontainer a { overflow:hidden; text-overflow:ellipsis; }
+#cmenulistscontainer { max-width:100vw; }
+#cmenulistscontainer li { overflow:hidden; text-overflow:ellipsis; }

@@ -16,7 +16,7 @@
 <?php endif; ?>
 </head>
 
-<body>
+<body <?php if (Lang::instance()->rtl()) echo 'dir="rtl"'; ?>>
 
 <script type="text/javascript" src="<?php mttinfo('includes_url'); ?>jquery/jquery-3.5.1.min.js"></script>
 <script type="text/javascript" src="<?php mttinfo('includes_url'); ?>jquery/jquery-ui-1.12.1.min.js"></script>

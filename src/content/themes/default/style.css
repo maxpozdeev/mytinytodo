@@ -280,9 +280,12 @@ a.mtt-back-button { font-size:0.8rem; }
 #tagcloudload { display:none; height:24px; background:url(images/loading48.gif) center no-repeat; background-size:24px 24px; }
 #tagcloud {
  overflow: hidden; z-index:100; background-color:#fff; border:1px solid #cccccc; padding:5px;
- width:100%; max-width:450px; margin:0px 7px 7px 7px; text-align:center;
+ width:100%; max-width:450px; text-align:center;
  box-shadow:1px 2px 5px rgba(0,0,0,0.5);
-} 
+}
+#tagcloud.mtt-left-adjusted { margin-left:5px; }
+#tagcloud.mtt-right-adjusted { margin-right:5px; }
+#tagcloud.mtt-left-adjusted.mtt-right-adjusted { margin-bottom:5px; }
 #tagcloud .tag { margin:1px 0px; padding:2px; line-height:140%; color:black; }
 #tagcloud .tag:hover { background-color:#999988; color:white; }
 #tagcloud .w0 { font-size:80%; }
@@ -331,9 +334,11 @@ a.mtt-back-button { font-size:0.8rem; }
 	background-color:#f9f9f9; border:1px solid #cccccc; padding:2px 0px;
 	box-shadow:1px 2px 5px rgba(0,0,0,0.5); 
 	border-radius:5px;
-	margin:0px 7px 7px 0px; /* for shadows */
 	user-select:none;
-} 
+}
+.mtt-menu-container.mtt-left-adjusted { margin-left:5px; }
+.mtt-menu-container.mtt-right-adjusted { margin-right:5px; }
+.mtt-menu-container.mtt-right-adjusted.mtt-left-adjusted { margin-bottom:5px; }
 .mtt-menu-container ul { list-style: none; padding:0; margin:0; }
 .mtt-menu-container li { margin:1px 0px; cursor:default; color:#000; white-space:nowrap; padding-top:0.20rem; padding-bottom:0.20rem; padding-left:28px; padding-right:28px; position:relative; }
 .mtt-menu-container li:hover, .mtt-menu-container li.mtt-menu-item-active { 

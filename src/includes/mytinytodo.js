@@ -143,7 +143,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 				_mtt.applySingletab(!_mtt.options.singletab);
 				return false;
 			}
-			if(!_mtt.menus.selectlist) _mtt.menus.selectlist = new mttMenu('slmenucontainer', {onclick:slmenuSelect});
+			if(!_mtt.menus.selectlist) _mtt.menus.selectlist = new mttMenu('slmenucontainer', {onclick:slmenuSelect, adjustWidth:true, alignRight:true});
 			_mtt.menus.selectlist.show(this);
 		});
 
@@ -234,7 +234,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 						$('#tagcloudload').show();
 						loadTags(curList.id, function(){$('#tagcloudload').hide();});
 					}
-				}, adjustWidth:true
+				}, adjustWidth:true, alignRight:true
 			});
 			_mtt.menus.tagcloud.show(this);
 		});
@@ -1704,6 +1704,16 @@ function mttMenu(container, options)
 	this.showTimer = null;
 	this.ts = (new Date).getTime();
 	this.container.mttmenu = this.ts;
+	
+	if (!this.options.hasOwnProperty('isRTL')) {
+		this.options.isRTL = ($('body').css('direction') == 'rtl') ? true : false;
+	}
+	if (!this.options.hasOwnProperty('alignRight')) {
+		this.options.alignRight = false;
+	}
+	if (!this.options.hasOwnProperty('adjustWidth')) {
+		this.options.adjustWidth = true;
+	}	
 
 	this.$container.find('li').click(function(){
 		var r = menu.onclick(this, menu);
@@ -1810,17 +1820,33 @@ function mttMenu(container, options)
 			this.options.beforeShow();
 
 		// adjust width
-		if(this.options.adjustWidth && this.$container.outerWidth(true) > $(window).width())
-			this.$container.width($(window).width() - (this.$container.outerWidth(true) - this.$container.width()));
+		this.$container.removeClass('mtt-left-adjusted mtt-right-adjusted');
+		if ( this.options.adjustWidth && this.$container.outerWidth(true) > $(window).width() ) {
+			this.$container.addClass('mtt-left-adjusted mtt-right-adjusted');
+			this.$container.width( $(window).width() - (this.$container.outerWidth(true) - this.$container.width()) );
+		}
 
 		$caller.addClass('mtt-menu-button-active');
 		var offset = $caller.offset();
-		var x2 = $(window).width() + $(document).scrollLeft() - this.$container.outerWidth(true) - 1;
-		var x = offset.left < x2 ? offset.left : x2;
-		if(x<0) x=0;
-		var y = offset.top+caller.offsetHeight-1;
+		var containerWidth = this.$container.outerWidth(true);
+		var alignRight = this.options.isRTL ^ this.options.alignRight; //alignRight is not for submenu
+
+		var x2 = $(window).width() + $(document).scrollLeft() - containerWidth - 1; // TODO: rtl?
+		var x = alignRight ? offset.left + $caller.outerWidth() - containerWidth : offset.left;
+
+		if (x > x2) {
+			x = x2; //move left if container overflows right edge
+			this.$container.addClass('mtt-right-adjusted');
+		} 
+		if (x < 0) {
+			x = 0; //do not cross left edge
+			this.$container.addClass('mtt-left-adjusted');
+		} 
+		
+		var y = offset.top + caller.offsetHeight - 1;
 		if(y + this.$container.outerHeight(true) > $(window).height() + $(document).scrollTop()) y = offset.top - this.$container.outerHeight();
 		if(y<0) y=0;
+		
 		this.$container.css({ position: 'absolute', top: y, left: x, width:this.$container.width() /*, 'min-width': $caller.width()*/ }).show();
 		var menu = this;
 		$(document).bind('mousedown.mttmenuclose', function(e){ menu.close(e) });
@@ -1829,14 +1855,42 @@ function mttMenu(container, options)
 
 	this.showSub = function()
 	{
+		// adjust width
+		this.$container.removeClass('mtt-left-adjusted mtt-right-adjusted');
+		if ( this.options.adjustWidth && this.$container.outerWidth(true) > $(window).width() ) {
+			this.$container.addClass('mtt-left-adjusted mtt-right-adjusted');
+			this.$container.width( $(window).width() - (this.$container.outerWidth(true) - this.$container.width()) );
+		}
 		this.$caller.addClass('mtt-menu-item-active');
 		var offset = this.$caller.offset();
-		var x = offset.left+this.$caller.outerWidth();
-		if(x + this.$container.outerWidth(true) > $(window).width() + $(document).scrollLeft()) x = offset.left - this.$container.outerWidth() - 1;
-		if(x<0) x=0;
+		var containerWidth = this.$container.outerWidth(true);
+
+		var x = 0;
+		if (this.options.isRTL) {
+			x = offset.left - containerWidth - 1;
+			if (x < 0) {
+				x = offset.left + this.$caller.outerWidth();
+			}
+			if ( x + containerWidth > $(window).width() + $(document).scrollLeft() ) {
+				x = $(window).width() + $(document).scrollLeft() - containerWidth; // TODO: rtl?
+				this.$container.addClass('mtt-right-adjusted');
+			}
+		}
+		else {
+			x = offset.left + this.$caller.outerWidth();
+			if ( x + containerWidth > $(window).width() + $(document).scrollLeft() ) { // TODO: rtl?
+				x = offset.left - containerWidth - 1;
+			}
+			if (x < 0) {
+				x = 0; 
+				this.$container.addClass('mtt-left-adjusted');
+			} 
+		}
+		
 		var y = offset.top + this.parent.$container.offset().top-this.parent.$container.find('li:first').offset().top;
 		if(y +  this.$container.outerHeight(true) > $(window).height() + $(document).scrollTop()) y = $(window).height() + $(document).scrollTop()- this.$container.outerHeight(true) - 1;
 		if(y<0) y=0;
+		
 		this.$container.css({ position: 'absolute', top: y, left: x, width:this.$container.width() /*, 'min-width': this.$caller.outerWidth()*/ }).show();
 		this.menuOpen = true;
 	};
@@ -1859,7 +1913,8 @@ function taskContextMenu(el, id)
 		beforeShow: function() {
 			$('#cmenupriocontainer li').removeClass('mtt-item-checked');
 			$('#cmenu_prio\\:'+ taskList[_mtt.menus.cmenu.tag].prio).addClass('mtt-item-checked');
-		} 
+		},
+		alignRight: true
 	});
 	_mtt.menus.cmenu.tag = id;
 	_mtt.menus.cmenu.show(el);
