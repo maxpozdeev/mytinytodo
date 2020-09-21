@@ -177,10 +177,8 @@ li.task-expanded .task-toggle { transform:rotate(90deg); }
 .task-actions { flex:0 0 1rem; margin-left:5px; }
 
 .task-left label { min-width:18px; text-align:center; } /* Safari has small checkboxes */
-.task-title { display:inline-block; }
-.task-date { color:#999999; font-size:0.8rem; margin-left:4px; display:inline-block; display:none; }
+.task-date { color:#999999; font-size:0.8rem; margin-left:4px; display:none; }
 .task-date-completed { color:#999999; display:none; margin-left:5px; }
-.show-inline-date .task-date { display:inline-block; }
 .show-inline-date li.task-completed .task-date-completed { display:inline; }
 .show-inline-date li.task-completed .task-date { display:none; }
 .task-through { overflow:hidden; flex-grow:1; }
@@ -189,7 +187,7 @@ li.task-expanded .task-toggle { transform:rotate(90deg); }
 .task-title a:hover { color:#af0000; }
 #mtt_body.readonly #tasklist li .task-actions { display:none; }
 .task-listname { background-color:#eee; color:#555; padding:0px 3px; }
-.task-tags { padding:0px 2px; display:inline-block; }
+.task-tags { padding:0px 2px; }
 .task-tags .tag { font-size:0.8rem; font-weight:bold; color:#333333; text-decoration:underline;  }
 .task-tags .tag:hover {  }
 .duedate { color:#333333; padding:0px; padding-left:1px; margin-left:5px; white-space:nowrap; }
@@ -234,7 +232,7 @@ li.task-completed .task-note-block .task-note { text-decoration:line-through; }
 .task-note span a { color:#777777; }
 .task-note span a:hover { color:#af0000; }
 
-.task-prio { padding-left:2px; padding-right:2px; margin-left:0px; margin-right:5px; cursor:default; display:inline-block; }
+.task-prio { padding-left:2px; padding-right:2px; margin-left:0px; margin-right:5px; cursor:default; }
 .prio-neg { background-color:#3377ff; color:#ffffff; }
 .prio-pos { background-color:#ff3333; color:#ffffff; }
 .prio-pos-1 { background-color:#ff7700; color:#ffffff; }
