@@ -928,8 +928,8 @@ function loadTasks(opts)
 function prepareTaskStr(item, noteExp)
 {
 	return '<li id="taskrow_'+item.id+'" class="' + (item.compl?'task-completed ':'') + item.dueClass + (item.note!=''?' task-has-note':'') +
-				((curList.showNotes && item.note != '') || noteExp ? ' task-expanded' : '') + prepareTagsClass(item.tags_ids) + '">' +
-					prepareTaskBlocks(item) + "</li>\n";
+				((curList.showNotes && item.note != '') || noteExp ? ' task-expanded' : '') + prepareTagsClass(item.tags_ids) + '"><div class="task-container">' +
+					prepareTaskBlocks(item) + "</div></li>\n";
 };
 _mtt.prepareTaskStr = prepareTaskStr;
 
