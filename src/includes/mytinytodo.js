@@ -85,7 +85,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			this.__lang = lang;
 			this.daysMin = this.__lang.daysMin;
 			this.daysLong = this.__lang.daysLong;
-			this.monthsShort = this.__lang.monthsMin;
+			this.monthsShort = this.__lang.monthsShort;
 			this.monthsLong = this.__lang.monthsLong;
 		},
 		
@@ -352,7 +352,8 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			duration:'',
 			dayNamesMin:_mtt.lang.daysMin,
 			dayNames:_mtt.lang.daysLong,
-			monthNamesShort:_mtt.lang.monthsLong,
+			monthNamesShort:_mtt.lang.monthsShort,
+			monthNames:_mtt.lang.monthsLong,
 			isRTL: _mtt.lang.isRTL()
 		});
 		

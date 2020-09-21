@@ -301,12 +301,12 @@ a.mtt-back-button { font-size:0.8rem; }
 #tagcloudcancel { float:right; }
 #tagcloudcancel span { background:url(images/close.svg) no-repeat; }
 
-.ui-datepicker { width:190px; z-index:202; border: 1px solid #cccccc; background: #ffffff; display:none; padding:2px; box-shadow:1px 2px 5px rgba(0,0,0,0.5); border-radius:5px; }
+.ui-datepicker { width:220px; z-index:202; border: 1px solid #cccccc; background: #ffffff; display:none; padding:2px; box-shadow:1px 2px 5px rgba(0,0,0,0.5); border-radius:5px; }
 .ui-datepicker-trigger { cursor:pointer; vertical-align:text-bottom; margin-left:2px; margin-right:2px; width:16px; height:16px; } 
 .ui-datepicker-calendar { width:100%; border-collapse:collapse; }
 .ui-datepicker-calendar thead th { text-align:center; padding:0px; font-size:0.9rem; }
 .ui-datepicker-calendar tbody td { text-align:right; padding:1px;  }
-.ui-datepicker-calendar td a { display:block; text-decoration:none; color:#444444; border:1px solid #cccccc; background-color:#f9f9f9; color:#111; padding:1px; }
+.ui-datepicker-calendar td a { display:block; text-decoration:none; color:#444444; border:1px solid #cccccc; background-color:#f9f9f9; color:#111; padding:2px; }
 .ui-datepicker-calendar td.ui-datepicker-current-day a { background-color:#EAF5FF; color:#222222; border-color:#5980FF; }
 .ui-datepicker-calendar td.ui-datepicker-today a { color:#fff; background-color:#ccc;  }
 .ui-datepicker-calendar td a:hover { border-color:#5980FF; }
