@@ -142,17 +142,18 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 
 /* Tag Toolbar */
 #mtt-tag-toolbar { font-size:1.0rem; font-weight:normal; margin-top:0.5rem; line-height:1.5rem; display:flex; }
-.tag-toolbar-content { flex:auto; }
+.tag-toolbar-content { flex:auto; margin-bottom:-3px; }
 .tag-toolbar-close { flex-shrink:0; }
 .tag-toolbar-header { font-weight:normal; }
 .tag-filter { margin-left:3px; margin-right:3px; display:inline-flex; align-items:center;
-  border:1px solid #ddd; border-radius:2rem; background-color:#ddd; padding:0.1rem 0.5rem; margin-bottom:3px; }
+  border:1px solid #ddd; border-radius:2rem; background-color:#fff; padding:0.1rem 0.5rem; margin-bottom:3px; cursor:pointer;
+}
 .tag-filter-exclude { text-decoration:line-through; }
 .mtt-filter-header { font-weight:bold; margin-right:.33rem; }
-.mtt-filter-close { cursor:pointer; /*position:relative; bottom:1px; */ margin-left:3px; display:inline-block; width:1em; height:1em; /* em! */
+.tag-filter-btn { margin-left:3px; display:inline-block; width:1em; height:1em; /* em! */
   background:url(images/closetag.svg) no-repeat; background-size:1em 1em; background-position:bottom center;
   opacity:0.45; transition:opacity .1s ease-in; }
-.mtt-filter-close:hover { opacity:0.7; }
+.tag-filter:hover .tag-filter-btn { opacity:0.7; }
 #mtt-tag-toolbar-close span { background:url(images/close.svg) no-repeat; }
 
 

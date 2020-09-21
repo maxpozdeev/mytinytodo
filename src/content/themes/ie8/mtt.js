@@ -25,6 +25,10 @@ if (window !== undefined && window.mytinytodo !== undefined)
 			'</div>'+
 			"</div></li>\n";
 	};
+	
+	mytinytodo.filter.prepareTagHtml = function(tagId, tag, classes) {
+		return '<span class="' + classes.join(' ') + '">' + tag + '<span class="mtt-filter-close" tagid="' + tagId + '"></span></span>';
+	}
 }
 
 function prepareHtml(s)

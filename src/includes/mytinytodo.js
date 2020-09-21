@@ -218,7 +218,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			_mtt.menus.taskview.show(this);
 		});
 
-		$('#mtt-tag-filters').on('click', '.tag-filter .mtt-filter-close', function(){
+		$('#mtt-tag-filters').on('click', '.mtt-filter-close', function(){
 			cancelTagFilter($(this).attr('tagid'));
 		});
 		
@@ -739,8 +739,8 @@ var mytinytodo = window.mytinytodo = _mtt = {
 				if(this._filters[i].tagId && this._filters[i].tagId == tagId) return false;
 			}
 			this._filters.push({tagId:tagId, tag:tag, exclude:exclude});
-			$('#mtt-tag-filters').append('<span class="tag-filter tag-id-'+tagId+
-				(exclude ? ' tag-filter-exclude' : '')+'">'+tag+'<span class="mtt-filter-close" tagid="'+tagId+'"></span></span>');
+			var tagHtml = this.prepareTagHtml(tagId, tag, ['tag-filter', 'tag-id-'+tagId, exclude ? 'tag-filter-exclude' : '']) ;
+			$('#mtt-tag-filters').append(tagHtml);
 			$('#mtt-tag-toolbar').show();
 			return true;
 		},
@@ -768,6 +768,10 @@ var mytinytodo = window.mytinytodo = _mtt = {
 				}
 			}
 			return a.join(', ');
+		},
+		prepareTagHtml: function(tagId, tag, classes)
+		{
+			return '<span class="' + classes.join(' ') + ' mtt-filter-close" tagid="' + tagId + '">' + tag + '<span class="tag-filter-btn"></span></span>';
 		}
 	},
 	
