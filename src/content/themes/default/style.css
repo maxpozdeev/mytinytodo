@@ -22,7 +22,7 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 .topblock { display:flex; align-items:flex-start; margin-bottom:1rem; }
 #space { height:30px; }
 #footer { height:30px; margin-top:-30px; }
-#footer_content { background-color:#b5d5ff; padding:5px; font-size:0.85rem; display:flex; justify-content:space-between; }
+#footer_content { background-color:#b5d5ff; padding:5px; font-size:0.9rem; display:flex; justify-content:space-between; }
 #footer_content a { color:#000000; }
 
 .topblock-title { display:flex; align-items:center; }
@@ -136,7 +136,7 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 /* */
 #page_tasks h3 { display:flex; align-items:baseline; }
 #mtt_body.no-lists #page_tasks h3 > * { visibility:hidden; }
-.mtt-notes-showhide { font-size:0.8rem; font-weight:normal; margin-left:2px; margin-right:2px; }
+.mtt-notes-showhide { font-size:1rem; font-weight:normal; margin-left:5px; margin-right:5px; }
 .mtt-notes-showhide a { text-decoration:none; border-bottom:1px dotted; }
 
 
@@ -189,7 +189,7 @@ li.task-expanded .task-toggle { transform:rotate(90deg); }
 #mtt_body.readonly #tasklist li .task-actions { display:none; }
 .task-listname { background-color:#eee; color:#555; padding:0px 3px; }
 .task-tags { padding:0px 2px; }
-.task-tags .tag { font-size:0.8rem; font-weight:bold; color:#333333; text-decoration:underline;  }
+.task-tags .tag { font-size:0.9rem; font-weight:bold; color:#333333; text-decoration:underline;  }
 .task-tags .tag:hover {  }
 .duedate { color:#333333; padding:0px; padding-left:1px; margin-left:5px; white-space:nowrap; }
 .duedate:before { content:'\2192\20'; }
@@ -274,7 +274,7 @@ a.mtt-back-button { font-size:0.8rem; }
 #priopopup .prio-pos:hover { border-color:#ff3333; }
 #priopopup .prio-pos-1:hover { border-color:#ff7700; }
 
-#tagcloudbtn { font-size:0.8rem; font-weight:normal; margin-left:auto; }
+#tagcloudbtn { font-size:1rem; font-weight:normal; margin-left:auto; }
 #mtt_body.show-all-tasks #tagcloudbtn { display:none; }
 #tagcloudload { display:none; height:24px; background:url(images/loading48.gif) center no-repeat; background-size:24px 24px; }
 #tagcloud {

@@ -58,7 +58,7 @@ body[dir="rtl"] .task-note-block { border-left:none; border-right:1px solid #777
 .mtt-settings-table .in350 { min-width:50px; }
 .mtt-notes-showhide { display:none; }
 
-#footer_content { padding:10px 4px; }
+#footer_content { padding:0.7rem 0.35rem; }
 
 .mtt-menu-container li { padding-top:0.3rem; padding-bottom:0.3rem; }
 #slmenucontainer { max-width:100vw; }
