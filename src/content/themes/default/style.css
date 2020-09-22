@@ -171,7 +171,7 @@ li.task-expanded .task-toggle { transform:rotate(90deg); }
 #tasklist { list-style-type: none; margin: 0; padding: 0;}
 #tasklist li { padding:6px 2px 6px 6px; border-bottom:1px solid #DEDEDE; min-height:18px; margin-bottom:1px; background-color:#fff; }
 #tasklist .task-container { display:flex; justify-content:flex-start; align-items:baseline; }
-#tasklist li:hover { background-color:#f6f6f6; }
+#tasklist li:hover, #tasklist li.menu-active { background-color:#f6f6f6; }
 .task-left { display:flex; align-items:baseline; flex-shrink:0; /* IE11 */}
 .task-middle { flex-grow:1; margin-left: 5px; min-width:0; /*for long text*/ flex-basis:0; /* IE11 */}
 .task-middle-top { display:flex; align-items:baseline; }
@@ -240,7 +240,7 @@ li.task-completed .task-note-block .task-note { text-decoration:line-through; }
 .prio-zero { /*background-color:#dedede;*/ }
 .task-prio.prio-zero { display:none; } 
 
-.form-row { margin-top:8px; }
+.form-row { margin-top:0.6rem; }
 .form-row .h { font-weight:bold; color:#333333; }
 .form-row div.h { margin-bottom:3px; }
 .form-row-short-end { clear:both; }
@@ -250,7 +250,7 @@ li.task-completed .task-note-block .task-note { text-decoration:line-through; }
 #page_taskedit .form-row .in500 { width:100%; box-sizing:border-box; }
 #page_taskedit .form-row textarea.in500 { height:200px; /*resize:none;*/ }
 #page_taskedit .form-row-short { float:left; margin-right:12px; }
-#page_taskedit .form-bottom-buttons { text-align:center; }
+#page_taskedit .form-bottom-buttons { text-align:center; margin-top:1rem; }
 #alltags .tag { font-weight:bold; color:#333333; }
 #alltags .tag:hover { background-color:#999988; color:white; }
 .alltags-cell { width:1%; white-space:nowrap; padding-left:5px; }
@@ -258,7 +258,7 @@ li.task-completed .task-note-block .task-note { text-decoration:line-through; }
 #page_taskedit.mtt-inedit .mtt-inadd { display:none; }
 #taskedit-date { font-size:1rem; font-weight:normal; display:inline; color:#777; margin-left:8px; }
 
-a.mtt-back-button { font-size:0.8rem; }
+a.mtt-back-button { font-size:1rem; }
 
 /* autocomplete */
 .ui-helper-hidden-accessible { border: 0; clip: rect(0 0 0 0); height: 1px; margin: -1px; overflow: hidden; padding: 0; position: absolute; width: 1px; }
@@ -302,14 +302,14 @@ a.mtt-back-button { font-size:0.8rem; }
 #tagcloudcancel span { background:url(images/close.svg) no-repeat; }
 
 .ui-datepicker { width:220px; z-index:202; border: 1px solid #cccccc; background: #ffffff; display:none; padding:2px; box-shadow:1px 2px 5px rgba(0,0,0,0.5); border-radius:5px; }
-.ui-datepicker-trigger { cursor:pointer; vertical-align:text-bottom; margin-left:2px; margin-right:2px; width:16px; height:16px; } 
+.ui-datepicker-trigger { cursor:pointer; vertical-align:text-bottom; margin-left:4px; margin-right:4px; width:16px; height:16px; } 
 .ui-datepicker-calendar { width:100%; border-collapse:collapse; }
 .ui-datepicker-calendar thead th { text-align:center; padding:0px; font-size:0.9rem; }
 .ui-datepicker-calendar tbody td { text-align:right; padding:1px;  }
 .ui-datepicker-calendar td a { display:block; text-decoration:none; color:#444444; border:1px solid #cccccc; background-color:#f9f9f9; color:#111; padding:2px; }
 .ui-datepicker-calendar td.ui-datepicker-current-day a { background-color:#EAF5FF; color:#222222; border-color:#5980FF; }
 .ui-datepicker-calendar td.ui-datepicker-today a { color:#fff; background-color:#ccc;  }
-.ui-datepicker-calendar td a:hover { border-color:#5980FF; }
+.ui-datepicker-calendar td a:hover { border-color:#5a8df0; }
 .ui-datepicker-header { padding:3px 0px; }
 .ui-datepicker-prev { position:absolute; left:2px; height:20px; text-decoration:none; }
 .ui-datepicker-next { position:absolute; right:2px; height:20px; text-decoration:none; }
@@ -362,6 +362,9 @@ li.mtt-item-hidden { display:none; }
 #btnRssFeed .menu-icon { background:url(images/rss.svg) no-repeat; }
 #btnRssFeed.mtt-item-disabled .menu-icon { background:url(images/rss-disabled.svg) no-repeat; }
 
+#task:focus, #search:focus, #page_taskedit .form-input:focus,
+	#page_taskedit .form-bottom-buttons input:focus { outline:none; border-color:#5a8df0; box-shadow:0 0 0 2px rgba(90,141,240,0.7); }
+
 .mtt-settings-table { width:100%; border-collapse:collapse; }
 .mtt-settings-table th, .mtt-settings-table td { border-bottom:1px solid #dedede; padding:8px; vertical-align:top; }
 .mtt-settings-table .form-bottom-buttons { border-bottom:none; text-align:center; }
@@ -371,3 +374,4 @@ li.mtt-item-hidden { display:none; }
 .mtt-settings-table input { padding:3px; border:1px solid #ccc; border-radius:2px; }
 .mtt-settings-table select { padding:2px; border:1px solid #ccc; border-radius:2px; }
 .mtt-settings-table .form-bottom-buttons input { padding:4px; border:1px solid #ccc; border-radius:3px; background-color:#efefef; margin:2px; }
+.mtt-settings-table input:focus, .mtt-settings-table select:focus { outline:none; border-color:#5a8df0; box-shadow:0 0 0 2px rgba(90,141,240,0.7); }

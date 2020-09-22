@@ -42,6 +42,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 	theme: {
 		newTaskFlashColor: '#ffffaa',
 		editTaskFlashColor: '#bbffaa',
+		deleteTaskFlashColor: '#ffaaaa',
 		msgFlashColor: '#ffffff'
 	},
 
@@ -1359,7 +1360,7 @@ function deleteTask(id)
 			if (!parseInt(json.total)) return;
 			var item = json.list[0];
 			taskOrder.splice($.inArray(id,taskOrder), 1);
-			$('#taskrow_'+id).fadeOut('normal', function(){ $(this).remove() });
+			$('#taskrow_'+id).effect("highlight", {color:_mtt.theme.deleteTaskFlashColor}, 'normal', function(){ $(this).remove() });
 			changeTaskCnt(taskList[id], -1);
 			refreshTaskCnt();
 			delete taskList[id];
@@ -1807,6 +1808,11 @@ function mttMenu(container, options)
 		this.hide();
 		$(this.caller).removeClass('mtt-menu-button-active');
 		$(document).unbind('mousedown.mttmenuclose');
+		
+		// onClose trigger
+		if(this.options.onClose && this.options.onClose.call) {
+			this.options.onClose();
+		}
 	};
 
 	this.show = function(caller)
@@ -1916,8 +1922,14 @@ function taskContextMenu(el, id)
 	if(!_mtt.menus.cmenu) _mtt.menus.cmenu = new mttMenu('taskcontextcontainer', {
 		onclick: taskContextClick,
 		beforeShow: function() {
+			var taskId = _mtt.menus.cmenu.tag;
+			$('#taskrow_'+taskId).addClass('menu-active');
 			$('#cmenupriocontainer li').removeClass('mtt-item-checked');
 			$('#cmenu_prio\\:'+ taskList[_mtt.menus.cmenu.tag].prio).addClass('mtt-item-checked');
+		},
+		onClose: function() {
+			var taskId = _mtt.menus.cmenu.tag;
+			$('#taskrow_'+taskId).removeClass('menu-active');
 		},
 		alignRight: true
 	});
