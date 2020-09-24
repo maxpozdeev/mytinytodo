@@ -143,11 +143,11 @@ function selectOptions($a, $value, $default=null)
 	return $s;
 }
 
-/*
-    @param array $a             array of id=>array(name, optional title)
-    @param mixed $key           Key of OPTION to be selected
-    @param mixed $default       Default key if $key is not present in $a
-*/
+/**
+ * @param array $a             array of id=>array(name, optional title)
+ * @param mixed $key           Key of OPTION to be selected
+ * @param mixed $default       Default key if $key is not present in $a
+ */
 function selectOptionsA($a, $key, $default=null)
 {
 	if(!$a) return '';

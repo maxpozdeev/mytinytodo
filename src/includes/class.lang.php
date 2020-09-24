@@ -7,9 +7,9 @@
 class Lang
 {
 	protected static $instance;
+	protected static $langDir = MTTLANG;
 	protected $code = 'en';
 	protected $default = 'en';
-	protected $langDir = MTTLANG;
 	protected $strings;
 	
 	public static function instance()
@@ -21,18 +21,33 @@ class Lang
 		return self::$instance;	
 	}
 	
-	public static function loadLang($code)
+	public static function loadLangOrDie($code, $die = 1)
 	{
 		$lang = self::instance();
 		
-		//check if new format (json)
-		if (file_exists("{$lang->langDir}{$code}.json")) {
-			$jsonString = file_get_contents("{$lang->langDir}{$code}.json");
+		//check if json file exists
+		if ( self::langExists($code) ) {
+			$jsonString = file_get_contents( $this->langDir(). "{$code}.json" );
 			$lang->loadJsonString($code, $jsonString);
 		}
-		else {
+		else if ( $die == 0 ) {
+			//notice?
+			$lang->code = $lang->default; //sure?
+			$lang->loadDefaultStrings();
+		}
+		else if ( $die == 1 ) {
 			die("Language file not found ($code.json)");
 		}
+	}
+	
+	public static function loadLang($code)
+	{
+		self::loadLangOrDie($code, 0);
+	}
+	
+	public static function langExists($code)
+	{
+		return file_exists(self::$langDir. $code. '.json');
 	}
 	
 	function loadJsonString($code, $jsonString)
@@ -42,13 +57,21 @@ class Lang
 		
 		//load default language
 		if ( $code != $this->default ) {
-			$defStr = file_get_contents("{$this->langDir}{$this->default}.json");
-			$default_json = json_decode($defStr, true);
-			$this->strings = array_replace($default_json, $json);
+			$this->loadDefaultStrings();
+			$this->strings = array_replace($this->strings, $json);
 		}
 		else {
 			$this->strings = $json;
 		}
+	}
+	
+	function loadDefaultStrings()
+	{
+		if ( ! self::langExists($this->default) ) {
+			die("Default language file not found ({$this->default}.json)");
+		}
+		$defStr = file_get_contents($this->langDir(). "{$this->default}.json");
+		$this->strings = json_decode($defStr, true);
 	}
 	
 	function get($key)
@@ -114,7 +137,12 @@ class Lang
 	
 	function langDir()
 	{
-		return $this->langDir;
+		return self::$langDir;
+	}
+	
+	function langCode()
+	{
+		return $this->code;
 	}
 
 }

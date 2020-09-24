@@ -59,14 +59,14 @@ $db->prefix = Config::get('prefix');
 //User can override language setting by cookies or query
 $forceLang = '';
 if( isset($_COOKIE['lang']) ) $forceLang = $_COOKIE['lang'];
-else if ( isset($_GET['lang']) ) $forceLang = $_GET['lang'];
+//else if ( isset($_GET['lang']) ) $forceLang = $_GET['lang'];
 
-if ( $forceLang != '' && preg_match("/^[a-z-]+$/i", $forceLang) && file_exists(MTTLANG. $forceLang. '.json') ) {
-	Config::set('lang', $forceLang);
+if ( $forceLang != '' && preg_match("/^[a-z-]+$/i", $forceLang) ) {
+	Config::set('lang', $forceLang); //TODO: special for demo, do not change config
 }
 
 require_once(MTTINC. 'class.lang.php');
-Lang::loadLang(Config::get('lang'));
+Lang::loadLang( Config::get('lang') );
 
 $_mttinfo = array();
 

@@ -4,6 +4,8 @@
 
 if(!defined('MTTPATH')) define('MTTPATH', dirname(__FILE__) .'/');
 if(!defined('MTTINC'))  define('MTTINC', MTTPATH. 'includes/');
+if(!defined('MTTCONTENT'))  define('MTTCONTENT', MTTPATH. 'content/');
+if(!defined('MTTLANG'))  define('MTTLANG', MTTCONTENT. 'lang/');
 
 require_once(MTTPATH. 'db/config.php');
 
