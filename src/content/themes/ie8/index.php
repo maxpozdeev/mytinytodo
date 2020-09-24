@@ -40,7 +40,7 @@ $().ready(function(){
 		calendarIcon: '<?php mttinfo('template_url'); ?>images/calendar.png',
 		autotag: <?php echo Config::get('autotag') ? "true" : "false"; ?>
 		<?php if(Config::get('mobile')) echo ", touchDevice: true"; ?>
-	}).loadLists();
+	}).run();
 });
 </script>
 

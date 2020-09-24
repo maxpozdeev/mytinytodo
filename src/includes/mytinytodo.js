@@ -131,8 +131,6 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		if(this.options.showdate) $('#page_tasks').addClass('show-inline-date');
 		if(this.options.singletab) $('#lists .mtt-tabs').addClass('mtt-tabs-only-one');
 
-		this.parseAnchor();
-
 		// handlers
 		$('.mtt-tabs-add-button').click(function(){
 			addList();
@@ -590,6 +588,23 @@ var mytinytodo = window.mytinytodo = _mtt = {
 	setOptions: function(opts) {
 		jQuery.extend(this.options, opts);
 	},
+	
+	run: function()
+	{
+		var path = this.parseAnchor();
+		
+		if (flag.firstLoad) {
+			updateAccessStatus();
+		}
+		
+		if (path.settings) {
+			this.pages.current.onBack = function(){ this.loadLists(); }
+			showSettings();
+		}
+		else {
+			this.loadLists();
+		}
+	},
 
 	loadLists: function()
 	{
@@ -661,10 +676,6 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			$('#page_tasks').show();
 
 		});
-
-		if (flag.firstLoad) {
-			updateAccessStatus();
-		}
 	},
 
 	duedatepickerformat: function()
@@ -711,6 +722,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		this.pages.current = this.pages.prev.pop();
 		showhide($('#page_'+ this.pages.current.page), $('#page_'+ prev.page).removeClass('mtt-page-'+prev.page.pageClass));
 		$(window).scrollTop(this.pages.current.lastScrollTop);
+		if (this.pages.current.onBack) this.pages.current.onBack.call(this);
 	},
 	
 	applySingletab: function(yesno)
@@ -791,6 +803,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			switch(s) {
 				case "list": if(a[++i].match(/^-?\d+$/)) { p[s] = a[i]; } break;
 				case "alltasks": p.list = '-1'; break;
+				case "settings": p.settings = true; break;
 			}
 		}
 
@@ -2371,7 +2384,9 @@ function saveSettings(frm)
 	$.post(_mtt.mttUrl+'settings.php', params, function(json){
 		if(json.saved) {
 			flashInfo(_mtt.lang.get('settingsSaved'));
-			setTimeout('window.location.reload();', 1000);
+			setTimeout( function(){
+				window.location.assign(_mtt.mttUrl); //window.location.reload();
+			}, 1000);
 		}
 	}, 'json');
 } 
