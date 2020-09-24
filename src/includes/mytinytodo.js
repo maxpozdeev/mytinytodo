@@ -1703,7 +1703,7 @@ function mttMenu(container, options)
 	var menu = this;
 	this.container = document.getElementById(container);
 	this.$container = $(this.container);
-	this.menuOpen = false;
+	this.isOpen = false;
 	this.options = options || {};
 	this.submenu = [];
 	this.curSubmenu = null;
@@ -1750,7 +1750,7 @@ function mttMenu(container, options)
 					clearTimeout(menu.parent.showTimer);
 				}
 
-				if(menu.curSubmenu && menu.curSubmenu.menuOpen && menu.curSubmenu != submenu && !menu.curSubmenu.hideTimer)
+				if(menu.curSubmenu && menu.curSubmenu.isOpen && menu.curSubmenu != submenu && !menu.curSubmenu.hideTimer)
 				{
 					menu.$container.find('li').removeClass('mtt-menu-item-active');
 					var curSubmenu = menu.curSubmenu;
@@ -1762,7 +1762,7 @@ function mttMenu(container, options)
 
 				if (menu.options.onhover) menu.options.onhover(this, menu);
 
-				if(!submenu || menu.curSubmenu == submenu && menu.curSubmenu.menuOpen)
+				if(!submenu || menu.curSubmenu == submenu && menu.curSubmenu.isOpen)
 					return;
 			
 				menu.showTimer = setTimeout(function(){
@@ -1778,9 +1778,11 @@ function mttMenu(container, options)
 	this.onclick = function(item, fromMenu)
 	{
 		if ($(item).is('.mtt-item-disabled,.mtt-menu-indicator,.mtt-item-hidden')) return;
+		var r = undefined;
+		if (this.options.onclick) r = this.options.onclick(item, fromMenu);
 		if (menu.root) menu.root.close();
 		else menu.close();
-		if (this.options.onclick) return this.options.onclick(item, fromMenu);
+		return r;
 	};
 
 	this.hide = function()
@@ -1789,12 +1791,12 @@ function mttMenu(container, options)
 		clearTimeout(this.showTimer);
 		this.$container.hide();
 		this.$container.find('li').removeClass('mtt-menu-item-active');
-		this.menuOpen = false;
+		this.isOpen = false;
 	};
 
 	this.close = function(event)
 	{
-		if(!this.menuOpen) return;
+		if(!this.isOpen) return;
 		if(event)
 		{
 			// ignore if event (click) was on caller or container
@@ -1811,13 +1813,13 @@ function mttMenu(container, options)
 		
 		// onClose trigger
 		if(this.options.onClose && this.options.onClose.call) {
-			this.options.onClose();
+			this.options.onClose.call(this);
 		}
 	};
 
 	this.show = function(caller)
 	{
-		if(this.menuOpen)
+		if(this.isOpen)
 		{
 			this.close();
 			if(this.caller && this.caller == caller) return;
@@ -1827,8 +1829,9 @@ function mttMenu(container, options)
 		var $caller = $(caller);
 		
 		// beforeShow trigger
-		if(this.options.beforeShow && this.options.beforeShow.call)
-			this.options.beforeShow();
+		if(this.options.beforeShow && this.options.beforeShow.call) {
+			this.options.beforeShow.call(this);
+		}
 
 		// adjust width
 		this.$container.removeClass('mtt-left-adjusted mtt-right-adjusted');
@@ -1861,7 +1864,7 @@ function mttMenu(container, options)
 		this.$container.css({ position: 'absolute', top: y, left: x, width:this.$container.width() /*, 'min-width': $caller.width()*/ }).show();
 		var menu = this;
 		$(document).bind('mousedown.mttmenuclose', function(e){ menu.close(e) });
-		this.menuOpen = true;
+		this.isOpen = true;
 	};
 
 	this.showSub = function()
@@ -1903,7 +1906,7 @@ function mttMenu(container, options)
 		if(y<0) y=0;
 		
 		this.$container.css({ position: 'absolute', top: y, left: x, width:this.$container.width() /*, 'min-width': this.$caller.outerWidth()*/ }).show();
-		this.menuOpen = true;
+		this.isOpen = true;
 	};
 
 	this.destroy = function()
@@ -1922,14 +1925,13 @@ function taskContextMenu(el, id)
 	if(!_mtt.menus.cmenu) _mtt.menus.cmenu = new mttMenu('taskcontextcontainer', {
 		onclick: taskContextClick,
 		beforeShow: function() {
-			var taskId = _mtt.menus.cmenu.tag;
+			var taskId = this.tag;
 			$('#taskrow_'+taskId).addClass('menu-active');
 			$('#cmenupriocontainer li').removeClass('mtt-item-checked');
-			$('#cmenu_prio\\:'+ taskList[_mtt.menus.cmenu.tag].prio).addClass('mtt-item-checked');
+			$('#cmenu_prio\\:'+ taskList[taskId].prio).addClass('mtt-item-checked');
 		},
 		onClose: function() {
-			var taskId = _mtt.menus.cmenu.tag;
-			$('#taskrow_'+taskId).removeClass('menu-active');
+			$('#tasklist li').removeClass('menu-active');
 		},
 		alignRight: true
 	});
