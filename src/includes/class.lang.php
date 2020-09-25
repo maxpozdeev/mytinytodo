@@ -27,7 +27,7 @@ class Lang
 		
 		//check if json file exists
 		if ( self::langExists($code) ) {
-			$jsonString = file_get_contents( $this->langDir(). "{$code}.json" );
+			$jsonString = file_get_contents( self::$langDir. "{$code}.json" );
 			$lang->loadJsonString($code, $jsonString);
 		}
 		else if ( $die == 0 ) {
