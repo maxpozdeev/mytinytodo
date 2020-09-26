@@ -363,6 +363,7 @@ li.mtt-item-hidden { display:none; }
 #btnRssFeed .menu-icon { background:url(images/rss.svg) no-repeat; }
 #btnRssFeed.mtt-item-disabled .menu-icon { background:url(images/rss-disabled.svg) no-repeat; }
 
+#task, #search, #page_taskedit .form-input, #page_taskedit .form-bottom-buttons input { transition: box-shadow .15s ease-in-out; }
 #task:focus, #search:focus, #page_taskedit .form-input:focus,
 	#page_taskedit .form-bottom-buttons input:focus { outline:none; border-color:#5a8df0; box-shadow:0 0 0 2px rgba(90,141,240,0.7); }
 
