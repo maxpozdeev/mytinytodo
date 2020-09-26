@@ -180,6 +180,7 @@ li.task-expanded .task-toggle { transform:rotate(90deg); }
 .task-left label { min-width:18px; text-align:center; } /* Safari has small checkboxes */
 .task-date { color:#999999; font-size:0.8rem; margin-left:4px; display:none; }
 .task-date-completed { color:#999999; display:none; margin-left:5px; }
+.show-inline-date .task-date { display:inline; }
 .show-inline-date li.task-completed .task-date-completed { display:inline; }
 .show-inline-date li.task-completed .task-date { display:none; }
 .task-through { overflow:hidden; flex-grow:1; }
