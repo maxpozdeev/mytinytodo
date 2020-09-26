@@ -112,6 +112,7 @@ class Config
 		'dateformatshort' => array('default'=>'j M', 'type'=>'s'),
 		'template' => array('default'=>'default', 'type'=>'s'),
 		'showdate' => array('default'=>0, 'type'=>'i'),
+		'detectmobile' => array('default'=>1, 'type'=>'i')
 	);
 
 	public static $config;

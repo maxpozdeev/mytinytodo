@@ -281,10 +281,10 @@ $().ready(function(){
 
 <div id="footer">
 	<div id="footer_content"> 
-		<span>Powered by <strong><a href="http://www.mytinytodo.net/">myTinyTodo</a></strong> <?php mttinfo('version'); ?></span>
+		<span><?php _e('powered_by');?> <a href="http://www.mytinytodo.net/" class="powered-by-link">myTinyTodo</a>&nbsp;<?php mttinfo('version'); ?></span>
 		<span id="mobileordesktop">
-			<?php if(Config::get('mobile')): ?><a href="<?php echo getDesktopUrl(); ?>">Desktop</a>
-			<?php else: ?><a href="<?php mttinfo('mobile_url'); ?>">Mobile</a>
+			<?php if(Config::get('mobile')): ?><a href="<?php echo getDesktopUrl(); ?>"><?php _e('desktop_version');?></a>
+			<?php else: ?><a href="<?php mttinfo('mobile_url'); ?>"><?php _e('mobile_version');?></a>
 			<?php endif; ?>
 		</span>
 	</div>

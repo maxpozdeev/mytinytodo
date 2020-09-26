@@ -23,7 +23,9 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 #space { height:30px; }
 #footer { height:30px; margin-top:-30px; }
 #footer_content { background-color:#b5d5ff; padding:5px; font-size:0.9rem; display:flex; justify-content:space-between; }
+#footer_content span:last-child { text-align:center; }
 #footer_content a { color:#000000; }
+#footer_content a.powered-by-link { font-weight:bold; }
 
 .topblock-title { display:flex; align-items:center; }
 .topblock-bar { flex-grow:1; display:flex; justify-content:flex-start; border-bottom:1px solid #b5d5ff; padding-bottom:5px; }
