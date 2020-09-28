@@ -1,3 +1,5 @@
+@media print {
+
 html { height:0; }
 body { height:0; min-height:0; margin:0; }
 h2{ display: none; }
@@ -37,3 +39,5 @@ li.task-completed  { opacity:1; }
 #tagcloudbtn { display:none; }
 .mtt-notes-showhide { display:none; }
 #taskview img { display:none; }
+
+}

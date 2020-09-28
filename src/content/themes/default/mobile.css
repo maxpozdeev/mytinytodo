@@ -26,7 +26,7 @@ h2 { margin:0; margin-bottom:2px; font-size:1rem; }
 #toolbar.mtt-insearch .searchbox-c { width:100%; max-width:100%; }
 #search { padding:5px 20px; border-radius:15px; }
 
-#tasklist li { padding:0px 3px; overflow:hidden;  }
+#tasklist li { padding:0px 3px; }
 .task-actions { display:none; }
 .task-date { display:none; }
 .task-note-actions { display:block; padding-top:8px; }

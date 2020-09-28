@@ -5,14 +5,13 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title><?php mttinfo('title'); ?></title>
 <link rel="stylesheet" type="text/css" href="<?php mttinfo('template_url'); ?>style.css?v=<?php mttinfo('version'); ?>" media="all" />
+<link rel="stylesheet" type="text/css" href="<?php mttinfo('template_url'); ?>print.css?v=<?php mttinfo('version'); ?>" media="print" />
 <?php if(Config::get('rtl')): ?>
 <link rel="stylesheet" type="text/css" href="<?php mttinfo('template_url'); ?>style_rtl.css?v=<?php mttinfo('version'); ?>" media="all" />
 <?php endif; ?>
 <?php if(Config::get('mobile')): ?>
 <meta name="viewport" id="viewport" content="width=device-width" />
 <link rel="stylesheet" type="text/css" href="<?php mttinfo('template_url'); ?>mobile.css?v=<?php mttinfo('version'); ?>" media="all" />
-<?php else: ?>
-<link rel="stylesheet" type="text/css" href="<?php mttinfo('template_url'); ?>print.css?v=<?php mttinfo('version'); ?>" media="print" />
 <?php endif; ?>
 </head>
 
