@@ -164,11 +164,11 @@ $().ready(function(){
  <input name="duedate" id="duedate" value="" class="in100 form-input" title="Y-M-D, M/D/Y, D.M.Y, M/D, D.M" autocomplete="off" type="text" />
 </div>
 <div class="form-row-short-end"></div>
-<div class="form-row"><div class="h"><?php _e('task');?></div> <input type="text" name="task" value="" class="in500 form-input" maxlength="250" /></div>
+<div class="form-row"><div class="h"><?php _e('task');?></div> <input type="text" name="task" value="" class="in500 form-input" maxlength="250" autocomplete="off" /></div>
 <div class="form-row"><div class="h"><?php _e('note');?></div> <textarea name="note" class="in500 form-input"></textarea></div>
 <div class="form-row"><div class="h"><?php _e('tags');?></div>
  <table cellspacing="0" cellpadding="0" width="100%"><tr>
-  <td><input type="text" name="tags" id="edittags" value="" class="in500 form-input" maxlength="250" /></td>
+  <td><input type="text" name="tags" id="edittags" value="" class="in500 form-input" maxlength="250" autocomplete="off" /></td>
   <td class="alltags-cell">
    <a href="#" id="alltags_show"><?php _e('alltags_show');?></a>
    <a href="#" id="alltags_hide" style="display:none"><?php _e('alltags_hide');?></a></td>
