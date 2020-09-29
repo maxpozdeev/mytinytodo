@@ -457,7 +457,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			return false;
 		});
 
-		if(this.options.tagPreview) {
+		if (this.options.tagPreview && !this.options.touchDevice) {
 			$('#tasklist').on('mouseover mouseout', '.tag', function(event){
 				var cl = 'tag-id-' + $(this).attr('tagid');
 				var sel = (event.metaKey || event.ctrlKey) ? 'li.'+cl : 'li:not(.'+cl+')';
@@ -472,10 +472,24 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		}
 
 		$("#tasklist").sortable({
-				items:'> :not(.task-completed)', cancel:'span,input,a,textarea',
-		 		delay:150, start:sortStart, update:orderChanged, 
-				placeholder:'mtt-task-placeholder'
+				items: '> :not(.task-completed)',
+				cancel: 'span,input,a,textarea',
+		 		delay: 150,
+				start: sortStart,
+				update: orderChanged, 
+				placeholder: 'mtt-task-placeholder',
+				cursor: 'grabbing'
 		});
+		
+		if (options.touchDevice) {
+			$("#tasklist").disableSelection();
+			$("#tasklist").sortable('option', { 
+				axis: 'y',
+				delay: 0,
+				cancel: 'input',
+				distance: 0
+			});
+		}
 
 		$("#lists ul").sortable({delay:150, update:listOrderChanged}); 
 		this.applySingletab();

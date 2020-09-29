@@ -45,6 +45,8 @@ body[dir="rtl"] .task-note-block { border-left:none; border-right:1px solid #777
 /*#tasklist li.clicked.task-has-note .task-toggle { background-position:-48px 0; } */
 #tasklist li.clicked.doubleclicked.task-has-note .task-note-block { display:none; }
 .task-toggle { display:none; }
+#tasklist .mtt-task-placeholder { line-height:1rem; padding-top:0.6rem; padding-bottom:0.6rem; }
+#tasklist .ui-sortable-helper { box-shadow:0px 0px 3px #333; }
 
 #page_taskedit { max-width:99.5%; border:none; position:static; padding:0; }
 #page_taskedit .form-table { width:100%; }
