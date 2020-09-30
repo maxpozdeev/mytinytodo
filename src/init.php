@@ -165,11 +165,11 @@ function get_unsafe_mttinfo($v)
 			$_mttinfo['includes_url'] = get_unsafe_mttinfo('mtt_url'). 'includes/';
 			return $_mttinfo['includes_url'];
 		case 'url':
+			/* homepage, directory with root index.php. Used in external links. Have to be set in config if custom port is used or wrong detection. */
 			$_mttinfo['url'] = Config::getUrl('url'); // need to have a trailing slash
 			if ($_mttinfo['url'] == '') {
-				$proto = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != '' && $_SERVER['HTTPS'] != 'off') ? 'https://' : 'http://';
-				$defport = ($proto == 'https://') ? 443 : 80;
-				$_mttinfo['url'] = $proto. $_SERVER['HTTP_HOST']. ($_SERVER['SERVER_PORT'] != $defport ? ':'.$_SERVER['SERVER_PORT'] : ''). url_dir(getRequestUri());
+				$is_https = (isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) == 'on') ? true : false;
+				$_mttinfo['url'] = ($is_https ? 'https://' : 'http://'). $_SERVER['HTTP_HOST']. url_dir(getRequestUri());
 			}
 			return $_mttinfo['url'];
 		case 'mobile_url':
@@ -182,6 +182,7 @@ function get_unsafe_mttinfo($v)
 			$_mttinfo['desktop_url'] = get_unsafe_mttinfo('url'). '?desktop';
 			return $_mttinfo['desktop_url'];
 		case 'mtt_url':
+			/* directory with ajax.php */
 			$_mttinfo['mtt_url'] = Config::getUrl('mtt_url'); // need to have a trailing slash
 			if ($_mttinfo['mtt_url'] == '') {
 				$_mttinfo['mtt_url'] = url_dir(getRequestUri());
