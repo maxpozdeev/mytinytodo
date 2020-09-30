@@ -192,7 +192,6 @@ function get_unsafe_mttinfo($v)
 			$_mttinfo['title'] = (Config::get('title') != '') ? Config::get('title') : __('My Tiny Todolist');
 			return $_mttinfo['title'];
 		case 'version':
-			error_log('mtt-version'. MTT_VERSION);
 			if (MTT_VERSION != '@'.'VERSION') {
 				$_mttinfo['version'] = MTT_VERSION;
 				return $_mttinfo['version'];
