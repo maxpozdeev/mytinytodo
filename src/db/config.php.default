@@ -55,6 +55,6 @@ $config['dateformatshort'] = 'j M';
 $config['showdate'] = 0;
 
 # Autodetect mobile devices and switch theme
-$config['detectmobile'] = 0;
+$config['detectmobile'] = 1;
 
 ?>
