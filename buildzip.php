@@ -63,6 +63,8 @@ replaceVer('./init.php', $ver);
 
 unlink('./tmp/sessions/empty');
 
+unlink('./content/lang/en-rtl.json');
+/*
 # save only 2 languages
 $dh = opendir('./content/lang/') or die("Cant opendir lang\n");
 while (false !== ($f = readdir($dh))) {
@@ -71,6 +73,7 @@ while (false !== ($f = readdir($dh))) {
 	}
 }
 closedir($dh);
+ */
 
 
 # pack ie8 theme
