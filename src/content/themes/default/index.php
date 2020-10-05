@@ -31,6 +31,7 @@ $().ready(function(){
 		title: "<?php mttinfo('title', false); ?>",
 		lang: <?php echo Lang::instance()->makeJS() ?>,
 		mttUrl: "<?php mttinfo('mtt_url'); ?>",
+		homeUrl: "<?php mttinfo('url'); ?>",
 		db: mytinytodoStorageAjax,
 		needAuth: <?php echo need_auth() ? "true" : "false"; ?>,
 		isLogged: <?php echo is_logged() ? "true" : "false"; ?>,

@@ -165,8 +165,10 @@ function get_unsafe_mttinfo($v)
 			$_mttinfo['includes_url'] = get_unsafe_mttinfo('mtt_url'). 'includes/';
 			return $_mttinfo['includes_url'];
 		case 'url':
-			/* homepage, directory with root index.php. Used in external links. Have to be set in config if custom port is used or wrong detection. */
-			$_mttinfo['url'] = Config::getUrl('url'); // need to have a trailing slash
+			/* full url to homepage: directory with root index.php or custom index file in the root. */
+			/* ex: http://my.site/mytinytodo/   or  https://my.site/mytinytodo/home_for_2nd_theme.php  */
+			/* Should not contain a query string. Have to be set in config if custom port is used or wrong detection. */
+			$_mttinfo['url'] = Config::getUrl('url');
 			if ($_mttinfo['url'] == '') {
 				$is_https = (isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) == 'on') ? true : false;
 				$_mttinfo['url'] = ($is_https ? 'https://' : 'http://'). $_SERVER['HTTP_HOST']. url_dir(getRequestUri());
@@ -182,10 +184,10 @@ function get_unsafe_mttinfo($v)
 			$_mttinfo['desktop_url'] = get_unsafe_mttinfo('url'). '?desktop';
 			return $_mttinfo['desktop_url'];
 		case 'mtt_url':
-			/* directory with ajax.php */
+			/* Directory with ajax.php. No need to set if you use default directory structure. */
 			$_mttinfo['mtt_url'] = Config::getUrl('mtt_url'); // need to have a trailing slash
 			if ($_mttinfo['mtt_url'] == '') {
-				$_mttinfo['mtt_url'] = url_dir(getRequestUri());
+				$_mttinfo['mtt_url'] = url_dir( get_unsafe_mttinfo('url'), 0 );
 			}
 			return $_mttinfo['mtt_url'];
 		case 'title':
@@ -203,6 +205,12 @@ function get_unsafe_mttinfo($v)
 function get_mttinfo($v)
 {
 	return htmlspecialchars( get_unsafe_mttinfo($v) );
+}
+
+function reset_mttinfo($key)
+{
+	global $_mttinfo;
+	unset( $_mttinfo[$key] );
 }
 
 function getRequestUri()

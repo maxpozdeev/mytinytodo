@@ -49,6 +49,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 	actions: {},
 	menus: {},
 	mttUrl: '',
+	homeUrl: '',
 	options: {
 		title: '',
 		openList: 0,
@@ -121,6 +122,13 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		if (options.hasOwnProperty('db')) {
 			this.db = new options.db(this);
 			delete options.db;
+		}
+		if (options.hasOwnProperty('homeUrl')) {
+			this.homeUrl = options.homeUrl;
+			delete options.homeUrl;
+		}
+		else {
+			this.homeUrl = this.mttUrl;
 		}
 		
 		jQuery.extend(this.options, options);
@@ -2399,7 +2407,7 @@ function saveSettings(frm)
 		if(json.saved) {
 			flashInfo(_mtt.lang.get('settingsSaved'));
 			setTimeout( function(){
-				window.location.assign(_mtt.mttUrl); //window.location.reload();
+				window.location.assign(_mtt.homeUrl); //window.location.reload();
 			}, 1000);
 		}
 	}, 'json');

@@ -193,13 +193,23 @@ function formatDate3($format, $ay, $am, $ad, $lang)
 	return strtr($format, array('Y'=>$Y, 'y'=>$y, 'F'=>$F, 'M'=>$M, 'n'=>$n, 'm'=>$m, 'd'=>$d, 'j'=>$j));
 }
 
-function url_dir($url)
+function url_dir($url, $onlyPath = 1)
 {
-	if(false !== $p = strpos($url, '?')) $url = substr($url,0,$p); # to avoid parse errors on strange query strings
-	$p = parse_url($url, PHP_URL_PATH);
-	if($p == '') return '/';
-	if(substr($p,-1) == '/') return $p;
-	if(false !== $pos = strrpos($p,'/')) return substr($p,0,$pos+1);
+	if (false !== $p = strpos($url, '?')) {
+		$url = substr($url, 0, $p); # to avoid parse errors on strange query strings
+	}
+	if ($onlyPath) {
+		$url = parse_url($url, PHP_URL_PATH);
+	}
+	if ($url == '') {
+		return '/';
+	}
+	if (substr($url, -1) == '/') {
+		return $url;
+	}
+	if (false !== $p = strrpos($url, '/')) {
+		return substr($url, 0, $p+1);
+	}
 	return '/';
 }
 
