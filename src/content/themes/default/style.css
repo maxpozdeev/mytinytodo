@@ -6,13 +6,13 @@
 /*	default style	*/
 
 html { height:100%; overflow-y:scroll; font-size:14px; /* =1rem */ }
-body { margin:0px; padding:0px;  height:100%; background-color:#fff; font-family:helvetica,arial; }
+body { margin:0px; padding:0px;  height:100%; background-color:#fff; font-family:"Helvetica Neue",helvetica,arial,sans-serif; }
 #wrapper { display:flex; flex-direction:column; align-items:center; height:100%; }
 #container { flex: 1 0 auto; width:100%; max-width:1000px; }
 #mtt_body { padding:8px; margin-bottom:8px; } /* TODO: can combine container and mtt_body */
 #footer { flex-shrink:0; width:100%; max-width:1000px; }
 
-td, th, input, textarea, select { font-family:arial; font-size:1rem; }
+td, th, input, textarea, select { font-family:"Helvetica Neue",helvetica,arial,sans-serif; font-size:1rem; }
 form { display: inline; }
 h2,h3 { margin:0; }
 h2 { font-size:1.5rem; padding-right:10px; }
