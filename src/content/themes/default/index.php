@@ -278,9 +278,8 @@ $().ready(function(){
 
 <div id="page_ajax" style="display:none"></div>
 
-</div>
-<div id="space"></div>
-</div>
+</div><!-- end of #mtt_body -->
+</div><!-- end of #container -->
 
 <div id="footer">
 	<div id="footer_content"> 

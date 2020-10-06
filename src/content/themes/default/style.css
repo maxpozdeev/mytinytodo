@@ -6,11 +6,11 @@
 /*	default style	*/
 
 html { height:100%; overflow-y:scroll; font-size:14px; /* =1rem */ }
-body { margin:0px; padding:0px;  height:100%; min-height:100%; background-color:#fff; font-family:helvetica,arial; }
-#wrapper { margin:0px auto; max-width:1000px;  height:100%; }
-#container { height:auto !important;height:100%;min-height:100%;    }
-#mtt_body { padding:8px; padding-bottom:16px; }
-
+body { margin:0px; padding:0px;  height:100%; background-color:#fff; font-family:helvetica,arial; }
+#wrapper { display:flex; flex-direction:column; align-items:center; height:100%; }
+#container { flex: 1 0 auto; width:100%; max-width:1000px; }
+#mtt_body { padding:8px; margin-bottom:8px; } /* TODO: can combine container and mtt_body */
+#footer { flex-shrink:0; width:100%; max-width:1000px; }
 
 td, th, input, textarea, select { font-family:arial; font-size:1rem; }
 form { display: inline; }
@@ -20,16 +20,14 @@ h3 { border-bottom:2px solid #B5D5FF; margin-bottom:10px; padding:0.6rem 0; font
 a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 
 .topblock { display:flex; align-items:flex-start; margin-bottom:1rem; }
-#space { height:30px; }
-#footer { height:30px; margin-top:-30px; }
-#footer_content { background-color:#b5d5ff; padding:5px; font-size:0.9rem; display:flex; justify-content:space-between; }
+#footer_content { background-color:#b5d5ff; padding:0.6rem; font-size:0.9rem; display:flex; justify-content:space-between; }
 #footer_content span:last-child { text-align:center; }
 #footer_content a { color:#000000; }
 #footer_content a.powered-by-link { font-weight:bold; }
 
 .topblock-title { display:flex; align-items:center; }
 .topblock-bar { flex-grow:1; display:flex; justify-content:flex-start; border-bottom:1px solid #b5d5ff; padding-bottom:5px; }
-.bar-menu { flex-grow:1; display:flex; justify-content:flex-end; text-align:right; }
+.bar-menu { flex-grow:1; display:flex; justify-content:flex-end; text-align:right; min-height:16px; /* for loading.gif */ }
 .nodecor { text-decoration:none; }
 #bar_auth::before { content:'\00a0| '; } /* &nbsp; = \00a0 */
 #bar_logout { display:none; }
@@ -107,7 +105,7 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 
 /* Quick Task Add */
 .taskbox-c { flex-grow:1; display:flex; align-items:center; }
-.mtt-taskbox { position:relative; padding-left:22px; /*input padding+border*/ width:100%; max-width:430px; }
+.mtt-taskbox { position:relative; padding-left:22px; /*input padding+border*/ flex-grow:1; max-width:430px; }
 #task { color:#444444; background:#fff; height:1.35rem; padding:2px 4px; padding-right:20px; border:1px solid #ccc; border-radius:3px; width:100%; margin-left:-24px; }
 #mtt_body.show-all-tasks .taskbox-c, #mtt_body.readonly .taskbox-c { display:none; }
 
@@ -159,11 +157,11 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 #mtt-tag-toolbar-close span { background:url(images/close.svg) no-repeat; }
 
 
-.task-toggle { visibility:hidden; cursor:pointer; width:1rem; height:1rem; flex:0 0 1rem; margin-right:2px;
+.task-toggle { visibility:hidden; cursor:pointer; width:1rem; height:1rem; display:inline-block; margin-right:2px;
   background:url(images/note-toggle.svg) no-repeat; background-size:cover; opacity:0.45;
   transition:transform .1s linear, opacity .1s ease-in;
 }
-.task-toggle::after { content:'_'; visibility:hidden; } /* for baseline */
+.task-toggle::after { content:'0'; color:transparent; } /* for baseline */
 .task-toggle:hover { opacity:0.7; }
 li.task-has-note .task-toggle { visibility:visible; }
 li.task-expanded .task-toggle { transform:rotate(90deg); }
@@ -174,7 +172,7 @@ li.task-expanded .task-toggle { transform:rotate(90deg); }
 #tasklist li { padding:0px 2px; border-bottom:1px solid #DEDEDE; min-height:18px; margin-bottom:1px; background-color:#fff; }
 #tasklist .task-container { display:flex; justify-content:flex-start; align-items:baseline; }
 #tasklist li:hover, #tasklist li.menu-active { background-color:#f6f6f6; }
-.task-left { display:flex; align-items:baseline; flex-shrink:0; /* IE11 */}
+.task-left { display:inline-block; }
 .task-middle { flex-grow:1; margin:0.6rem 0px;  margin-left:5px; min-width:0; /*for long text*/ flex-basis:0; /* IE11 */}
 .task-middle-top { display:flex; align-items:baseline; }
 .task-actions { flex:0 0 1rem; margin-left:5px; }
@@ -203,20 +201,20 @@ li.task-completed .duedate { /*font-size:0.8rem;*/ display:none; }
 li.task-completed .task-middle { color:#777777;}
 li.task-completed .task-through { text-decoration:line-through; }
 li.task-completed .task-title a { color:#777777; }
-#tasklist li.task-completed  { opacity:0.6; filter:alpha(opacity=60); }
-#tasklist li.task-completed:hover { opacity:1.0; filter:alpha(opacity=100); }
-#tasklist li.not-in-tagpreview  { opacity:0.1; filter: alpha(opacity=10); }
+#tasklist li.task-completed  { opacity:0.6; }
+#tasklist li.task-completed:hover { opacity:1.0; }
+#tasklist li.not-in-tagpreview  { opacity:0.1; }
 #tasklist .mtt-task-placeholder {
  min-height:0px; padding:0px; height:18px; line-height:18px;
  background-color:#ddd; border:1px solid #aaa;
  border-radius:5px;
 }
 
-.taskactionbtn { height:1rem; width:1rem; background:url(images/task-menu2.svg) center no-repeat; background-size:1rem; display:none;
+.taskactionbtn { height:1rem; width:1rem; background:url(images/task-menu2.svg) center no-repeat; background-size:1rem; visibility:hidden; /* allocate space */
 	opacity:0.45; transition:opacity .1s ease-in; }
-.taskactionbtn::after { content:'_'; visibility:hidden; } /* for baseline */
-li:hover .taskactionbtn { display:block; }
-.taskactionbtn:hover, .taskactionbtn.mtt-menu-button-active { opacity:0.7; cursor:pointer; display:block; }
+.taskactionbtn::after { content:'0'; color:transparent; } /* for baseline */
+li:hover .taskactionbtn { visibility:visible; } 
+.taskactionbtn:hover, .taskactionbtn.mtt-menu-button-active { opacity:0.7; cursor:pointer; visibility:visible; }
 
 #tasklist.filter-past li, #tasklist.filter-today li, #tasklist.filter-soon li { display:none; }
 #tasklist.filter-past li.past, #tasklist.filter-today li.today, #tasklist.filter-soon li.soon { display:block; }
