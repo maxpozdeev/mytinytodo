@@ -483,8 +483,8 @@ var mytinytodo = window.mytinytodo = _mtt = {
 				items: '> :not(.task-completed)',
 				cancel: 'span,input,a,textarea',
 		 		delay: 150,
-				start: sortStart,
-				update: orderChanged, 
+				start: tasklistSortStart,
+				update: tasklistSortUpdated, 
 				placeholder: 'mtt-task-placeholder',
 				cursor: 'grabbing'
 		});
@@ -497,6 +497,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 				cancel: 'input',
 				distance: 0
 			});
+			$('#cmenu_note').hide();
 		}
 
 		$("#lists ul").sortable({delay:150, update:listOrderChanged}); 
@@ -584,6 +585,8 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			window.onpopstate = historyOnPopState;
 			this.addAction('listSelected', historyListSelected);
 		}
+		
+		this.doAction( 'init' );
 
 		return this;
 	},
@@ -964,7 +967,7 @@ function loadTasks(opts)
 
 function prepareTaskStr(item, noteExp)
 {
-	return '<li id="taskrow_'+item.id+'" class="' + (item.compl?'task-completed ':'') + item.dueClass + (item.note!=''?' task-has-note':'') +
+	return '<li id="taskrow_'+item.id+'" class="task-row ' + (item.compl?'task-completed ':'') + item.dueClass + (item.note!=''?' task-has-note':'') +
 				((curList.showNotes && item.note != '') || noteExp ? ' task-expanded' : '') + prepareTagsClass(item.tags_ids) + '"><div class="task-container">' +
 					prepareTaskBlocks(item) + "</div></li>\n";
 };
@@ -1685,13 +1688,13 @@ function submitFullTask(form)
 };
 
 
-function sortStart(event,ui)
+function tasklistSortStart(event, ui)
 {
 	// remember initial order before sorting
 	sortOrder = $(this).sortable('toArray');
 };
 
-function orderChanged(event,ui)
+function tasklistSortUpdated(event, ui)
 {
 	if(!ui.item[0]) return;
 	var itemId = ui.item[0].id;
