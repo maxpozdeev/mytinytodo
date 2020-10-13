@@ -1877,6 +1877,8 @@ function mttMenu(container, options)
 			this.$container.addClass('mtt-left-adjusted mtt-right-adjusted');
 			this.$container.width( $(window).width() - (this.$container.outerWidth(true) - this.$container.width()) );
 		}
+		//round the width to avoid overflow issues
+		this.$container.width( Math.ceil(this.$container.width()) );
 
 		$caller.addClass('mtt-menu-button-active');
 		var offset = $caller.offset();
