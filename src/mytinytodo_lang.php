@@ -118,7 +118,7 @@ class DefaultLang
 		'list_select' => "Select list",
 		'list_export' => "Export",
 		'list_export_csv' => "CSV",
-		'list_export_ical' => "iCalendar",		
+		'list_export_ical' => "iCalendar",
 		'list_rssfeed' => "RSS Feed",
 		'alltags' => "All tags:",
 		'alltags_show' => "Show all",
@@ -219,29 +219,29 @@ class DefaultLang
 			$c = 'Lang';
 			self::$instance = new $c;
         }
-		return self::$instance;	
+		return self::$instance;
 	}
-	
+
 	public function json($langFile = '', $pretty = 0)
 	{
 		$a = array();
-		
+
 		if ($langFile != '') {
 			$ah = $this->loadLangHeader($langFile);
 			$a['_header'] = $ah;
 		}
-		
+
 		if ($this->rtl()) {
 			$a['_rtl'] = $this->rtl();
 		}
-		
+
 		foreach ( $this->default_inc as $k=>$v ) {
 			if ( isset($this->inc[$k]) ) {
 				$v = $this->inc[$k];
 			}
 			$a[$k] = $v;
 		}
-		
+
 		foreach ( $this->default_js as $k=>$v ) {
 			if ( isset($this->js[$k]) ) {
 				$v = $this->js[$k];
@@ -249,14 +249,14 @@ class DefaultLang
 			$v = str_replace("\\n", "\n", $v);
 			$a[$k] = $v;
 		}
-		
+
 		$encOptions = JSON_UNESCAPED_UNICODE;;
 		if ($pretty) {
 			$encOptions |= JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES;
 		}
 		return json_encode($a, $encOptions);
 	}
-	
+
 	function loadLangHeader($langFile)
 	{
 		if (!file_exists($langFile)) {
@@ -265,7 +265,7 @@ class DefaultLang
 		$contents = file_get_contents($langFile);
 
 		$a = array();
-		
+
 		# parse head comment
 		if(preg_match("|/\\*\s*myTinyTodo language pack([\s\S]+?)\\*/|", $contents, $m))
 		{
@@ -296,6 +296,6 @@ class DefaultLang
 			}
 		}
 
-		return $a;	
+		return $a;
 	}
 }

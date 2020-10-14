@@ -3,7 +3,7 @@
 html { height:0; }
 body { height:0; min-height:0; margin:0; }
 h2{ display: none; }
-h3 { border-bottom:2px solid #777777; } 
+h3 { border-bottom:2px solid #777777; }
 #toolbar { display: none; }
 
 .topblock { display:none; }
@@ -22,7 +22,7 @@ h3 { border-bottom:2px solid #777777; }
 #tasklist { list-style-type: decimal; list-style-position: outside; }
 #tasklist li { border-bottom:none; margin-left:2.5rem; /*border-bottom:1px solid #f0f0f0;*/ }
 
-div.task-note-block { border-left:1px solid #777777; background:none; padding-left:5px; margin-top:5px; padding-top:0px; font-size:9pt; color:#333333; } 
+div.task-note-block { border-left:1px solid #777777; background:none; padding-left:5px; margin-top:5px; padding-top:0px; font-size:9pt; color:#333333; }
 .task-middle { margin-left:0px; margin-right:3px; }
 .task-left { display:none; }
 .task-actions { display:none; }

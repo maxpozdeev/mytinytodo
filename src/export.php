@@ -25,13 +25,13 @@ else $sqlSort .= "ow ASC";
 
 $data = array();
 $q = $db->dq("SELECT *, duedate IS NULL AS ddn FROM {$db->prefix}todolist WHERE list_id=$listId $sqlSort");
-while($r = $q->fetch_assoc($q)) 
+while($r = $q->fetch_assoc($q))
 {
-	$data[] = $r; 
+	$data[] = $r;
 }
 
 $format = _get('format');
-	
+
 if($format == 'ical') printICal($listData, $data);
 else printCSV($listData, $data);
 
@@ -94,7 +94,7 @@ function printICal($listData, $data)
 		# Apple's iCal priorities: low-9, medium-5, high-1
 		if($r['prio'] > 0 && isset($mttToIcalPrio[$r['prio']])) $a[] = "PRIORITY:". $mttToIcalPrio[$r['prio']];
 		$a[] = "X-MTT-PRIORITY:". $r['prio'];
-		
+
 		$descr = array();
 		if($r['tags'] != '') $descr[] = Lang::instance()->get('tags'). ": ". str_replace(',', ', ', $r['tags']);
 		if($r['note'] != '') $descr[] = Lang::instance()->get('note'). ": ". $r['note'];
@@ -112,7 +112,7 @@ function printICal($listData, $data)
 	# events
 	foreach($data as $r)
 	{
-		if(!$r['duedate'] || $r['compl']) continue;	# skip tasks completed and without duedate 
+		if(!$r['duedate'] || $r['compl']) continue;	# skip tasks completed and without duedate
 		$a = array();
 		$a[] = "BEGIN:VEVENT";
 		$a[] = "UID:_". $r['uuid'];	# do not duplicate VTODO UID

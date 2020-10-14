@@ -1,5 +1,5 @@
 /*
-	This file is a part of myTinyTodo. 
+	This file is a part of myTinyTodo.
 	Copyright 2009-2010,2020 Max Pozdeev <maxpozdeev@gmail.com>
 */
 
@@ -30,19 +30,17 @@ h2 { margin:0; margin-bottom:2px; font-size:1rem; }
 .task-actions { display:none; }
 .task-date { display:none; }
 .task-note-actions { display:block; padding-top:8px; }
-.task-note-block { margin-left:0px; border-left:1px solid #777777; background:none; padding-left:4px; display:none; } 
+.task-note-block { margin-left:0px; border-left:1px solid #777777; background:none; padding-left:4px; display:none; }
 body[dir="rtl"] .task-note-block { border-left:none; border-right:1px solid #777777; padding-left:0; padding-right:4px; }
 .task-note-area textarea { width:95%; }
 
 #tasklist li .task-through { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 #tasklist li:hover { background-color:#ffffff; }
 #tasklist li.task-expanded .task-note-block { display:none; }
-/*#tasklist li.task-expanded .task-toggle { background-position:-32px 0; }*/
 #tasklist li.clicked { background-color:#f6f6f6; }
 #tasklist li.clicked .task-actions { display:block; }
 #tasklist li.clicked .task-through { white-space:normal; display:inline; }
 #tasklist li.clicked.task-has-note .task-note-block { display:block; }
-/*#tasklist li.clicked.task-has-note .task-toggle { background-position:-48px 0; } */
 #tasklist li.clicked.doubleclicked.task-has-note .task-note-block { display:none; }
 .task-toggle { display:none; }
 #tasklist .mtt-task-placeholder { line-height:1rem; padding-top:0.6rem; padding-bottom:0.6rem; }
@@ -54,7 +52,6 @@ body[dir="rtl"] .task-note-block { border-left:none; border-right:1px solid #777
 #page_taskedit .form-row textarea { height: 70px; }
 
 #loading {  padding:0px; padding-top:1px; padding-right:1px; height:16px; overflow:hidden; }
-#loading img { /*width:8px; height:8px;*/ }
 
 #tagcloud { max-width:100%; margin:0px 5px 5px 5px; }
 .mtt-settings-table .in350 { min-width:50px; }

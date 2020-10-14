@@ -91,7 +91,7 @@ $().ready(function(){
    <input type="text" name="search" value="" maxlength="250" id="search" autocomplete="off" />
    <div class="mtt-searchbox-icon mtt-icon-search"></div>
    <div id="search_close" class="mtt-searchbox-icon mtt-icon-cancelsearch"></div>
-  </div> 
+  </div>
  </td></tr></table>
 </div>
 
@@ -110,7 +110,7 @@ $().ready(function(){
  <td><a href="#" id="newtask_adv" class="mtt-img-button" title="<?php _e('advanced_add');?>"><span></span></a></td>
  </tr></table>
 </div>
- 
+
 <div id="searchbar" style="display:none"><?php _e('searching');?> <span id="searchbarkeyword"></span></div>
 
 <div style="clear:both"></div>
@@ -169,7 +169,7 @@ $().ready(function(){
 </div>
 <div class="form-row" id="alltags" style="display:none;"><?php _e('alltags');?> <span class="tags-list"></span></div>
 <div class="form-row form-bottom-buttons">
- <input type="submit" value="<?php _e('save');?>" /> 
+ <input type="submit" value="<?php _e('save');?>" />
  <input type="button" id="mtt_edit_cancel" class="mtt-back-button" value="<?php _e('cancel');?>" />
 </div>
 </form>

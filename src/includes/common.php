@@ -35,14 +35,14 @@ function stop_gpc(&$arr)
 	if (!is_array($arr)) {
 		return 1;
 	}
-	
+
 	// Since PHP v5.4.0 magic quotes feature was removed from PHP
 	// In PHP v7.4 get_magic_quotes_gpc is deprecated
 	// TODO: do not use get_magic_quotes_gpc() and stop_gpc()
 	if (!@get_magic_quotes_gpc()) {
 		return 1;
 	}
-	
+
 	reset($arr);
 	foreach ($arr as $k=>$v)
 	{
@@ -74,7 +74,7 @@ function _get($param,$defvalue = '')
 	else {
 		return $_GET[$param];
 	}
-} 
+}
 
 function _server($param, $defvalue = '')
 {
@@ -128,7 +128,7 @@ class Config
 		elseif(isset(self::$params[$key])) return self::$params[$key]['default'];
 		else return null;
 	}
-	
+
 	public static function getUrl($key)
 	{
 		$url = '';
@@ -162,7 +162,7 @@ class Config
 		if($f === false) throw new Exception("Error while saving config file");
 		fwrite($f, "<?php\n\$config = array();\n$s?>");
 		fclose($f);
-/*		
+/*
 		//Reset Zend OPcache
 		//opcache_get_status() sometimes crashes
 		//TODO: save config in database!
@@ -218,7 +218,7 @@ function escapeTags($s)
 	$c1 = chr(1);
 	$c2 = chr(2);
 	$s = preg_replace("~<b>([\s\S]*?)</b>~i", "${c1}b${c2}\$1${c1}/b${c2}", $s);
-	$s = preg_replace("~<i>([\s\S]*?)</i>~i", "${c1}i${c2}\$1${c1}/i${c2}", $s);	
+	$s = preg_replace("~<i>([\s\S]*?)</i>~i", "${c1}i${c2}\$1${c1}/i${c2}", $s);
 	$s = preg_replace("~<u>([\s\S]*?)</u>~i", "${c1}u${c2}\$1${c1}/u${c2}", $s);
 	$s = preg_replace("~<s>([\s\S]*?)</s>~i", "${c1}s${c2}\$1${c1}/s${c2}", $s);
 	$s = str_replace(array($c1, $c2), array('<','>'), htmlspecialchars($s));
@@ -253,7 +253,7 @@ class DBConnection
 			$c = 'DBConnection';
 			self::$instance = new $c;
         }
-		return self::$instance;	
+		return self::$instance;
 	}
 }
 

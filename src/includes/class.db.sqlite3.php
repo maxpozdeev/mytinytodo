@@ -22,7 +22,7 @@ class DatabaseResult_Sqlite3
 			$r = $this->parent->dbh->exec($query);
 			if($r === false) {
 				$ei = $this->parent->dbh->errorInfo();
-				throw new Exception("SQLSTATE[$ei[0]] [$ei[1]] $ei[2]");	
+				throw new Exception("SQLSTATE[$ei[0]] [$ei[1]] $ei[2]");
 			}
 			$this->parent->affected = $r;
 		}
@@ -91,13 +91,13 @@ class Database_Sqlite3
 		if(sizeof($res) > 1) return $res;
 		else return $res[0];
 	}
-	
+
 	function dq($query, $p = NULL)
 	{
 		return $this->_dq($query, $p);
 	}
 
-	/* 
+	/*
 		for resultless queries like INSERT,UPDATE
 	*/
 	function ex($query, $p = NULL)

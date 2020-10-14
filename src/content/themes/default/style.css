@@ -1,5 +1,5 @@
 /*
-	This file is a part of myTinyTodo. 
+	This file is a part of myTinyTodo.
 	Copyright 2009-2010,2020 Max Pozdeev <maxpozdeev@gmail.com>
 */
 
@@ -58,11 +58,11 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 .mtt-tab { background-color:#fbfbfb; border:1px solid #ededed; border-bottom:none; border-top-right-radius:8px; transition:background-color 0.1s ease-in; }
 .mtt-tab a {
   margin:0; text-decoration:none; white-space:nowrap; color:#333333; display:inline-block; outline:none;
-  box-sizing:border-box; height:2.2rem; padding:1px 0.3rem 0 0.3rem; display:flex; align-items:center; 
+  box-sizing:border-box; height:2.2rem; padding:1px 0.3rem 0 0.3rem; display:flex; align-items:center;
 }
 .mtt-tab a span { display:inline-block; text-align:center; min-width:75px; max-width:195px; cursor:pointer; padding:0; overflow:hidden; padding-left:0.3rem; padding-right:0.3rem;}
 .mtt-tab .list-action { display:none; width:16px; height:16px; background:transparent url(images/arrdown.svg) no-repeat; cursor:pointer; }
-.mtt-tab .list-action:hover, .mtt-tab .list-action.mtt-menu-button-active { background-image:url(images/arrdown-hover.svg); } 
+.mtt-tab .list-action:hover, .mtt-tab .list-action.mtt-menu-button-active { background-image:url(images/arrdown-hover.svg); }
 .mtt-tab.mtt-tabs-selected .list-action { display:block; }
 .mtt-tab.mtt-tabs-selected { border-color:transparent; background-color:#ededed; }
 .mtt-tab:hover { background-color:#ddd; }
@@ -70,7 +70,7 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 .mtt-tabs.mtt-tabs-only-one li { display:none; }
 .mtt-tabs.mtt-tabs-only-one li.mtt-tabs-selected { display:block; }
 .mtt-tabs-hidden { display:none; }
-                     
+
 .mtt-tabs-alltasks { margin:1px 3px 0 3px; }
 .mtt-tabs-alltasks.mtt-tab { border-top-right-radius:0px; border-top-left-radius:8px; }
 
@@ -119,7 +119,7 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 /* Live Search */
 #search {
  color:#444444; background:#fff; height:1.35rem; padding:2px 20px; width:100%; margin-left:-42px; /*padding+border*/
- border:1px solid #ccc; border-radius:10px; 
+ border:1px solid #ccc; border-radius:10px;
 }
 #search_close { display:none; }
 
@@ -196,8 +196,8 @@ li.task-expanded .task-toggle { transform:rotate(90deg); }
 .duedate:before { content:'\2192\20'; }
 li.task-completed .duedate { /*font-size:0.8rem;*/ display:none; }
 #tasklist li.soon .duedate { color:#008000; }
-#tasklist li.today .duedate { color:#FF0000; } 
-#tasklist li.past .duedate { color:#A52A2A; } 
+#tasklist li.today .duedate { color:#FF0000; }
+#tasklist li.past .duedate { color:#A52A2A; }
 li.task-completed .task-middle { color:#777777;}
 li.task-completed .task-through { text-decoration:line-through; }
 li.task-completed .task-title a { color:#777777; }
@@ -213,7 +213,7 @@ li.task-completed .task-title a { color:#777777; }
 .taskactionbtn { height:1rem; width:1rem; background:url(images/task-menu2.svg) center no-repeat; background-size:1rem; visibility:hidden; /* allocate space */
 	opacity:0.45; transition:opacity .1s ease-in; }
 .taskactionbtn::after { content:'0'; color:transparent; } /* for baseline */
-li:hover .taskactionbtn { visibility:visible; } 
+li:hover .taskactionbtn { visibility:visible; }
 .taskactionbtn:hover, .taskactionbtn.mtt-menu-button-active { opacity:0.7; cursor:pointer; visibility:visible; }
 
 #tasklist.filter-past li, #tasklist.filter-today li, #tasklist.filter-soon li { display:none; }
@@ -239,7 +239,7 @@ li.task-completed .task-note-block .task-note { text-decoration:line-through; }
 .prio-pos { background-color:#ff3333; color:#ffffff; }
 .prio-pos-1 { background-color:#ff7700; color:#ffffff; }
 .prio-zero { /*background-color:#dedede;*/ }
-.task-prio.prio-zero { display:none; } 
+.task-prio.prio-zero { display:none; }
 
 .form-row { margin-top:0.6rem; }
 .form-row .h { font-weight:bold; color:#333333; }
@@ -268,7 +268,7 @@ a.mtt-back-button { font-size:1rem; }
 .ui-autocomplete .ui-menu-item-wrapper { position: relative; padding:0.3rem 4px; }
 .ui-autocomplete .ui-menu-item-wrapper.ui-state-active { background-color:#5a8df0; color:white; }
 
-#priopopup { overflow: hidden; z-index:100; background-color:#f9f9f9; border:1px solid #cccccc; padding:5px; } 
+#priopopup { overflow: hidden; z-index:100; background-color:#f9f9f9; border:1px solid #cccccc; padding:5px; }
 #priopopup span { cursor:pointer; border:1px solid #f9f9f9; padding:1px; }
 #priopopup .prio-zero:hover { border-color:#dedede; }
 #priopopup .prio-neg:hover { border-color:#3377ff; }
@@ -303,7 +303,7 @@ a.mtt-back-button { font-size:1rem; }
 #tagcloudcancel span { background:url(images/close.svg) no-repeat; }
 
 .ui-datepicker { width:220px; z-index:202; border: 1px solid #cccccc; background: #ffffff; display:none; padding:2px; box-shadow:1px 2px 5px rgba(0,0,0,0.5); border-radius:5px; }
-.ui-datepicker-trigger { cursor:pointer; vertical-align:text-bottom; margin-left:4px; margin-right:4px; width:16px; height:16px; } 
+.ui-datepicker-trigger { cursor:pointer; vertical-align:text-bottom; margin-left:4px; margin-right:4px; width:16px; height:16px; }
 .ui-datepicker-calendar { width:100%; border-collapse:collapse; }
 .ui-datepicker-calendar thead th { text-align:center; padding:0px; font-size:0.9rem; }
 .ui-datepicker-calendar tbody td { text-align:right; padding:1px;  }
@@ -325,14 +325,14 @@ a.mtt-back-button { font-size:1rem; }
  padding:4px;
  transition:background-color 0.1s ease-in;
 }
-.mtt-menu-button:hover, .mtt-menu-button.mtt-menu-button-active { 
+.mtt-menu-button:hover, .mtt-menu-button.mtt-menu-button-active {
  background-color:#efefef; border-radius:4px;
 }
 
-.mtt-menu-container { 
+.mtt-menu-container {
 	overflow:hidden; z-index:100;
 	background-color:#f9f9f9; border:1px solid #cccccc; padding:2px 0px;
-	box-shadow:1px 2px 5px rgba(0,0,0,0.5); 
+	box-shadow:1px 2px 5px rgba(0,0,0,0.5);
 	border-radius:5px;
 	user-select:none;
 }
@@ -341,7 +341,7 @@ a.mtt-back-button { font-size:1rem; }
 .mtt-menu-container.mtt-right-adjusted.mtt-left-adjusted { margin-bottom:5px; }
 .mtt-menu-container ul { list-style: none; padding:0; margin:0; }
 .mtt-menu-container li { margin:1px 0px; cursor:default; color:#000; white-space:nowrap; padding-top:0.20rem; padding-bottom:0.20rem; padding-left:28px; padding-right:28px; position:relative; }
-.mtt-menu-container li:hover, .mtt-menu-container li.mtt-menu-item-active { 
+.mtt-menu-container li:hover, .mtt-menu-container li.mtt-menu-item-active {
   background-color:#5a8df0; color:white;
  }
 .mtt-menu-container li.mtt-item-disabled, .mtt-menu-container li.mtt-item-disabled a { color:#ACA899; }

@@ -4,7 +4,7 @@
 	This file is part of myTinyTodo.
 	(C) Copyright 2009-2010 Max Pozdeev <maxpozdeev@gmail.com>
 	Licensed under the GNU GPL v2 license. See file COPYRIGHT for details.
-*/ 
+*/
 
 set_error_handler('myErrorHandler');
 set_exception_handler('myExceptionHandler');
@@ -46,7 +46,7 @@ elseif(isset($_GET['loadTasks']))
 	if (_get('compl') == 0) {
 		$sqlWhere .= ' AND compl=0';
 	}
-	
+
 	$tag = trim(_get('t'));
 	if($tag != '')
 	{
@@ -87,7 +87,7 @@ elseif(isset($_GET['loadTasks']))
 		if (preg_match("|^#(\d+)$|", $s, $m)) $sqlWhere .= " AND {$db->prefix}todolist.id = ". (int)$m[1];
 		else $sqlWhere .= " AND (title LIKE ". $db->quoteForLike("%%%s%%",$s). " OR note LIKE ". $db->quoteForLike("%%%s%%",$s). ")";
 	}
-	
+
 	$sort = (int)_get('sort');
 	$sqlSort = "ORDER BY compl ASC, ";
 	if($sort == 1) $sqlSort .= "prio DESC, ddn ASC, duedate ASC, ow ASC";		// byPrio
@@ -524,7 +524,7 @@ elseif(isset($_GET['setHideList']))
 	$flag = (int)_post('hide');
 	$bitwise = ($flag == 0) ? 'taskview & ~4' : 'taskview | 4';
 	$db->dq("UPDATE {$db->prefix}lists SET taskview=$bitwise WHERE id=$listId");
-	jsonExit(array('total'=>1));	
+	jsonExit(array('total'=>1));
 }
 
 
@@ -718,9 +718,9 @@ function parse_duedate($s)
 		$d = (int)$ma[1]; $m = (int)$ma[2]; $y = (int)$ma[3];
 	}
 	elseif(preg_match("|^(\d+)\.(\d+)\b|", $s, $ma)) {
-		$d = (int)$ma[1]; $m = (int)$ma[2]; 
+		$d = (int)$ma[1]; $m = (int)$ma[2];
 		$a = explode(',', date('Y,m,d'));
-		if( $m<(int)$a[1] || ($m==(int)$a[1] && $d<(int)$a[2]) ) $y = (int)$a[0]+1; 
+		if( $m<(int)$a[1] || ($m==(int)$a[1] && $d<(int)$a[2]) ) $y = (int)$a[0]+1;
 		else $y = (int)$a[0];
 	}
 	elseif(preg_match("|^(\d+)\/(\d+)\b|", $s, $ma))
@@ -731,7 +731,7 @@ function parse_duedate($s)
 			$m = (int)$ma[1]; $d = (int)$ma[2];
 		}
 		$a = explode(',', date('Y,m,d'));
-		if( $m<(int)$a[1] || ($m==(int)$a[1] && $d<(int)$a[2]) ) $y = (int)$a[0]+1; 
+		if( $m<(int)$a[1] || ($m==(int)$a[1] && $d<(int)$a[2]) ) $y = (int)$a[0]+1;
 		else $y = (int)$a[0];
 	}
 	else return null;
@@ -853,7 +853,7 @@ function moveTask($id, $listId)
 		return false;
 
 	$ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->prefix}todolist WHERE list_id=? AND compl=?", array($listId, $r['compl']?1:0));
-	
+
 	$db->ex("BEGIN");
 	$db->ex("UPDATE {$db->prefix}tag2task SET list_id=? WHERE task_id=?", array($listId, $id));
 	$db->dq("UPDATE {$db->prefix}todolist SET list_id=?, ow=?, d_edited=? WHERE id=?", array($listId, $ow, time(), $id));

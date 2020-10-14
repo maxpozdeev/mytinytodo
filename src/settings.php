@@ -22,14 +22,14 @@ if(isset($_POST['save']))
 	$langs = getLangs();
 	Config::$params['lang']['options'] = array_keys($langs);
 	Config::set('lang', _post('lang'));
-	
+
 	// in Demo mode we can set only language by cookies
 	if(defined('MTTDEMO')) {
 		setcookie('lang', Config::get('lang'), 0, url_dir(Config::get('url')=='' ? getRequestUri() : Config::getUrl('url')));
 		$t['saved'] = 1;
 		jsonExit($t);
 	}
-	
+
 	if(isset($_POST['password']) && $_POST['password'] != '') Config::set('password', $_POST['password']);
 	elseif(!_post('allowpassword')) Config::set('password', '');
 	Config::set('smartsyntax', (int)_post('smartsyntax'));
@@ -191,12 +191,12 @@ header('Content-type:text/html; charset=utf-8');
 
 <tr>
 <th><?php _e('set_language');?>:</th>
-<td> 
-	<select name="lang"><?php echo selectOptionsA(getLangs(), _c('lang')); ?></select> 
+<td>
+	<select name="lang"><?php echo selectOptionsA(getLangs(), _c('lang')); ?></select>
 	<?php if ($oldLangs) { ?>
 	<br><br>
 	<b>Notice!</b> You can use old language files after downloading in the new format and copying to the <i>/content/lang/</i> folder.<br>
-	<select id="mtt_old_langs"><?php echo selectOptionsA( $oldLangs, _c('lang'), 'en'); ?></select> 
+	<select id="mtt_old_langs"><?php echo selectOptionsA( $oldLangs, _c('lang'), 'en'); ?></select>
 	<a id="mtt_old_langs_link" href="<?php mttinfo('mtt_url')?>mytinytodo_lang.php?jsonfile">Download json file</a>
 	<script type="text/javascript">
 	$('#mtt_old_langs').on('change', function(){

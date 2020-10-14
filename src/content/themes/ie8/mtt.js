@@ -4,7 +4,7 @@ if (window !== undefined && window.mytinytodo !== undefined)
 
 	mytinytodo.prepareTaskStr = function(item, noteExp) {
 		// &mdash; = &#8212; = —
-		var id = item.id; 
+		var id = item.id;
 		var prio = item.prio;
 		return '<li id="taskrow_'+id+'" class="' + (item.compl?'task-completed ':'') + item.dueClass + (item.note!=''?' task-has-note':'') +
 					((this.curList.showNotes && item.note != '') || noteExp ? ' task-expanded' : '') + this.prepareTagsClass(item.tags_ids) + '">' +
@@ -25,7 +25,7 @@ if (window !== undefined && window.mytinytodo !== undefined)
 			'</div>'+
 			"</div></li>\n";
 	};
-	
+
 	mytinytodo.filter.prepareTagHtml = function(tagId, tag, classes) {
 		return '<span class="' + classes.join(' ') + '">' + tag + '<span class="mtt-filter-close" tagid="' + tagId + '"></span></span>';
 	}

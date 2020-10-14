@@ -7,19 +7,19 @@
 // AJAX myTinyTodo Storage
 
 (function(){
-	
+
 "use strict";
 
 var mtt;
 
-function mytinytodoStorageAjax(amtt) 
+function mytinytodoStorageAjax(amtt)
 {
 	this.mtt = mtt = amtt;
 }
 
 window.mytinytodoStorageAjax = mytinytodoStorageAjax;
 
-mytinytodoStorageAjax.prototype = 
+mytinytodoStorageAjax.prototype =
 {
 	/* required method */
 	request:function(action, params, callback)
@@ -61,7 +61,7 @@ mytinytodoStorageAjax.prototype =
 		$.post(this.mtt.mttUrl+'ajax.php?newTask',
 			{ list:params.list, title: params.title, tag:params.tag }, callback, 'json');
 	},
-	
+
 
 	fullNewTask: function(params, callback)
 	{
@@ -102,7 +102,7 @@ mytinytodoStorageAjax.prototype =
 		$.getJSON(this.mtt.mttUrl+'ajax.php?setPrio='+params.id+'&prio='+params.prio+'&rnd='+Math.random(), callback);
 	},
 
-	
+
 	setSort: function(params, callback)
 	{
 		$.post(this.mtt.mttUrl+'ajax.php?setSort', { list:params.list, sort:params.sort }, callback, 'json');
@@ -116,7 +116,7 @@ mytinytodoStorageAjax.prototype =
 		}
 		$.post(this.mtt.mttUrl+'ajax.php?changeOrder', { order:order }, callback, 'json');
 	},
-	
+
 	suggestTags: function(params, callback)
 	{
 		$.getJSON(this.mtt.mttUrl+'ajax.php?suggestTags', {list:params.list, q:params.q, rnd:Math.random()}, callback);
@@ -136,12 +136,12 @@ mytinytodoStorageAjax.prototype =
 	{
 		$.post(this.mtt.mttUrl+'ajax.php?parseTaskStr', { list:params.list, title:params.title, tag:params.tag }, callback, 'json');
 	},
-	
+
 
 	// Lists
 	addList: function(params, callback)
 	{
-		$.post(this.mtt.mttUrl+'ajax.php?addList', { name:params.name }, callback, 'json'); 
+		$.post(this.mtt.mttUrl+'ajax.php?addList', { name:params.name }, callback, 'json');
 
 	},
 
@@ -159,12 +159,12 @@ mytinytodoStorageAjax.prototype =
 	{
 		$.post(this.mtt.mttUrl+'ajax.php?publishList', { list:params.list, publish:params.publish },  callback, 'json');
 	},
-	
+
 	setShowNotesInList: function(params, callback)
 	{
 	    $.post(this.mtt.mttUrl+'ajax.php?setShowNotesInList', { list:params.list, shownotes:params.shownotes },  callback, 'json');
 	},
-	
+
 	setHideList: function(params, callback)
 	{
 		$.post(this.mtt.mttUrl+'ajax.php?setHideList', { list:params.list, hide:params.hide }, callback, 'json');

@@ -5,7 +5,7 @@
 */
 
 (function(){
-	
+
 "use strict";
 
 var taskList = new Array(), taskOrder = new Array();
@@ -23,7 +23,7 @@ var tabLists = {
 	_alltasks: {},
 	clear: function(){
 		this._lists = {}; this._length = 0; this._order = [];
-		this._alltasks = { id:-1, showCompl:0, sort:3, name:_mtt.lang.get('alltasks') }; 
+		this._alltasks = { id:-1, showCompl:0, sort:3, name:_mtt.lang.get('alltasks') };
 	},
 	length: function(){ return this._length; },
 	exists: function(id){ if(this._lists[id] || id==-1) return true; else return false; },
@@ -81,7 +81,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			if(this.__lang[v]) return this.__lang[v];
 			else return v;
 		},
-		
+
 		init: function(lang)
 		{
 			this.__lang = lang;
@@ -90,21 +90,21 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			this.monthsShort = this.__lang.monthsShort;
 			this.monthsLong = this.__lang.monthsLong;
 		},
-		
+
 		isRTL: function() {
 			return this.get('_rtl') > 0 ? true : false;
 		}
 	},
 
-	pages: { 
+	pages: {
 		current: { page:'tasks', pageClass:'' },
 		prev: []
 	},
-	
+
 	curList: function(){
 		return curList;
 	},
-	
+
 	flag: flag,
 
 	// procs
@@ -130,7 +130,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		else {
 			this.homeUrl = this.mttUrl;
 		}
-		
+
 		jQuery.extend(this.options, options);
 
 		flag.needAuth = options.needAuth ? true : false;
@@ -159,7 +159,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			submitNewTask(this);
 			return false;
 		});
-		
+
 		$('#newtask_submit').mousedown(function(e){
 			e.preventDefault(); //keep the focus in #task
 			$('#newtask_form').submit();
@@ -169,7 +169,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			showEditForm(1);
 			return false;
 		});
-		
+
 		$('#task').keydown(function(event){
 			if(event.keyCode == 27) {
 				$(this).val('');
@@ -228,7 +228,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		$('#mtt-tag-filters').on('click', '.mtt-filter-close', function(){
 			cancelTagFilter($(this).attr('tagid'));
 		});
-		
+
 		$('#mtt-tag-toolbar-close').click(function(){
 			cancelTagFilter(0);
 		});
@@ -254,7 +254,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			addFilterTag( $(this).attr('tag'), $(this).attr('tagid'), (event.metaKey || event.ctrlKey ? true : false) );
 			if(_mtt.menus.tagcloud) _mtt.menus.tagcloud.close();
 			return false;
-		});	
+		});
 
 		$('#mtt-notes-show').click(function(){
 			toggleAllNotes(1);
@@ -275,7 +275,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			else if(this.id == 'view_soon') setTaskview('soon');
 		});
 
-		
+
 		// Tabs
 		$('#lists').on('click', 'li.mtt-tab', function(event){
 			if(event.metaKey || event.ctrlKey) {
@@ -286,7 +286,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			tabSelect(this);
 			return false;
 		});
-		
+
 		$('#list_all').click(function(event){
 			if(event.metaKey || event.ctrlKey) {
 				// hide the tab
@@ -301,7 +301,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			listMenu(this);
 			return false;	//stop bubble to tab click
 		});
-		
+
 		$('#list_all .list-action').click(function(event){
 			listMenu(this);
 			return false;	//stop bubble to tab click
@@ -348,7 +348,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			addEditTag($(this).attr('tag'));
 			return false;
 		});
-		
+
 		$("#duedate").datepicker({
 			dateFormat: _mtt.duedatepickerformat(),
 			firstDay: _mtt.options.firstdayofweek,
@@ -363,7 +363,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			monthNames:_mtt.lang.monthsLong,
 			isRTL: _mtt.lang.isRTL()
 		});
-		
+
 		function ac_split( val ) {
 			return val.split( /,\s*/ );
 		}
@@ -406,12 +406,12 @@ var mytinytodo = window.mytinytodo = _mtt = {
 
 		// tasklist handlers
 		$("#tasklist").bind("click", tasklistClick);
-		
+
 		$('#tasklist').on('dblclick', 'li', function(){
 			//clear selection
 			if(document.selection && document.selection.empty && document.selection.createRange().text) document.selection.empty();
 			else if(window.getSelection) window.getSelection().removeAllRanges();
-			
+
 			var li = findParentNode(this, 'LI');
 			if(li && li.id) {
 				var id = li.id.split('_',2)[1];
@@ -484,14 +484,14 @@ var mytinytodo = window.mytinytodo = _mtt = {
 				cancel: 'span,input,a,textarea',
 		 		delay: 150,
 				start: tasklistSortStart,
-				update: tasklistSortUpdated, 
+				update: tasklistSortUpdated,
 				placeholder: 'mtt-task-placeholder',
 				cursor: 'grabbing'
 		});
-		
+
 		if (options.touchDevice) {
 			$("#tasklist").disableSelection();
-			$("#tasklist").sortable('option', { 
+			$("#tasklist").sortable('option', {
 				axis: 'y',
 				delay: 0,
 				cancel: 'input',
@@ -500,7 +500,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			$('#cmenu_note').hide();
 		}
 
-		$("#lists ul").sortable({delay:150, update:listOrderChanged}); 
+		$("#lists ul").sortable({delay:150, update:listOrderChanged});
 		this.applySingletab();
 
 
@@ -519,8 +519,8 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			if(request.status == 0) errtxt = 'Bad connection';
 			else if(request.status != 200) errtxt = 'HTTP: '+request.status+'/'+request.statusText;
 			else errtxt = request.responseText;
-			flashError(_mtt.lang.get('error'), errtxt); 
-		}); 
+			flashError(_mtt.lang.get('error'), errtxt);
+		});
 
 
 		// Error Message details
@@ -552,7 +552,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			saveSettings(this);
 			return false;
 		});
-		
+
 		$(document).on('click', '.mtt-back-button', function(){ _mtt.pageBack(); this.blur(); return false; } );
 
 		$(window).bind('beforeunload', function() {
@@ -579,13 +579,13 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		this.addAction('listAdded', slmenuOnListAdded);
 		this.addAction('listSelected', slmenuOnListSelected);
 		this.addAction('listHidden', slmenuOnListHidden);
-		
+
 		//History
 		if (this.options.history) {
 			window.onpopstate = historyOnPopState;
 			this.addAction('listSelected', historyListSelected);
 		}
-		
+
 		this.doAction( 'init' );
 
 		return this;
@@ -613,15 +613,15 @@ var mytinytodo = window.mytinytodo = _mtt = {
 	setOptions: function(opts) {
 		jQuery.extend(this.options, opts);
 	},
-	
+
 	run: function()
 	{
 		var path = this.parseAnchor();
-		
+
 		if (flag.firstLoad) {
 			updateAccessStatus();
 		}
-		
+
 		if (path.settings) {
 			this.pages.current.onBack = function(){ this.loadLists(); }
 			showSettings();
@@ -640,9 +640,9 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		}
 		$('#page_tasks').hide();
 		$('#tasklist').html('');
-		
+
 		tabLists.clear();
-		
+
 		this.db.loadLists(null, function(res)
 		{
 			var ti = '';
@@ -662,13 +662,13 @@ var mytinytodo = window.mytinytodo = _mtt = {
 						break;
 					}
 				}
-				
+
 				// open all tasks tab
 				if(_mtt.options.openList == -1) openListId = -1;
-				
+
 				// or open first if all list are hidden
 				if(!openListId) openListId = res.list[0].id;
-				
+
 				$.each(res.list, function(i,item){
 					tabLists.add(item);
 					ti += '<li id="list_'+item.id+'" class="mtt-tab'+(item.hidden?' mtt-tabs-hidden':'')+'">'+
@@ -676,7 +676,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 						'<div class="list-action"></div></a></li>';
 				});
 			}
-			
+
 			if(openListId) {
 				$('#mtt_body').removeClass('no-lists');
 				$('.mtt-need-list').removeClass('mtt-item-disabled');
@@ -686,7 +686,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 				$('#mtt_body').addClass('no-lists');
 				$('.mtt-need-list').addClass('mtt-item-disabled');
 			}
-			
+
 			if (_mtt.options.openList && openListId != _mtt.options.openList) {
 				//TODO: handle unknown list
 			}
@@ -706,7 +706,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 	duedatepickerformat: function()
 	{
 		if(!this.options.duedatepickerformat) return 'yy-mm-dd';
-	
+
 		var s = this.options.duedatepickerformat.replace(/(.)/g, function(t,s) {
 			switch(t) {
 				case 'Y': return 'yy';
@@ -730,7 +730,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 	{
 		flashError(this.lang.get('denied'));
 	},
-	
+
 	pageSet: function(page, pageClass)
 	{
 		var prev = this.pages.current;
@@ -739,7 +739,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		this.pages.current = {page:page, pageClass:pageClass};
 		showhide($('#page_'+ this.pages.current.page).addClass('mtt-page-'+ this.pages.current.pageClass), $('#page_'+ prev.page));
 	},
-	
+
 	pageBack: function()
 	{
 		if(this.pages.current.page == 'tasks') return false;
@@ -749,12 +749,12 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		$(window).scrollTop(this.pages.current.lastScrollTop);
 		if (this.pages.current.onBack) this.pages.current.onBack.call(this);
 	},
-	
+
 	applySingletab: function(yesno)
 	{
 		if(yesno == null) yesno = this.options.singletab;
 		else this.options.singletab = yesno;
-		
+
 		if(yesno) {
 			$('#lists .mtt-tabs').addClass('mtt-tabs-only-one');
 			$("#lists ul").sortable('disable');
@@ -764,7 +764,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			$("#lists ul").sortable('enable');
 		}
 	},
-	
+
 	filter: {
 		_filters: [],
 		clear: function() {
@@ -813,7 +813,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			return '<span class="' + classes.join(' ') + ' mtt-filter-close" tagid="' + tagId + '">' + tag + '<span class="tag-filter-btn"></span></span>';
 		}
 	},
-	
+
 	parseAnchor: function()
 	{
 		if(location.hash == '') return false;
@@ -821,7 +821,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		var a = h.split("/");
 		var p = {};
 		var s = '';
-		
+
 		for(var i=0; i<a.length; i++)
 		{
 			s = a[i];
@@ -833,10 +833,10 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		}
 
 		if(p.list) this.options.openList = p.list;
-		
+
 		return p;
 	},
-	
+
 	urlForList: function(list)
 	{
 		var l = list || curList;
@@ -844,7 +844,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		if (l.id == -1) return '#alltasks';
 		return '#list/' + l.id;
 	},
-	
+
 	urlForExport: function(format, list)
 	{
 		var l = list || curList;
@@ -891,7 +891,7 @@ function renameCurList()
 			if (!parseInt(json.total)) return;
 			var item = json.list[0];
 			curList = item;
-			tabLists.replace(item); 
+			tabLists.replace(item);
 			$('#lists ul>.mtt-tabs-selected>a').attr('title', item.name).find('span').html(item.name);
 			mytinytodo.doAction('listRenamed', item);
 		});
@@ -901,7 +901,7 @@ function renameCurList()
 function deleteCurList()
 {
 	if (!curList) return false;
-	mttConfirm( _mtt.lang.get('deleteList'), function() 
+	mttConfirm( _mtt.lang.get('deleteList'), function()
 	{
 		_mtt.db.request('deleteList', {list:curList.id}, function(json){
 			if (!parseInt(json.total)) return;
@@ -977,24 +977,24 @@ function prepareTaskBlocks(item)
 {
 	var id = item.id;
 	return	''+
-		'<div class="task-left">' + 
+		'<div class="task-left">' +
 			'<div class="task-toggle"></div>' +
-			'<label><input type="checkbox" '+(flag.readOnly?'disabled="disabled"':'')+(item.compl?'checked="checked"':'')+'/></label>' + 
+			'<label><input type="checkbox" '+(flag.readOnly?'disabled="disabled"':'')+(item.compl?'checked="checked"':'')+'/></label>' +
 		"</div>\n" +
-		
-		'<div class="task-middle">' + 
-			
+
+		'<div class="task-middle">' +
+
 			'<div class="task-middle-top">' +
-				'<div class="task-through">' + 
-					preparePrio(item.prio,id) + 
+				'<div class="task-through">' +
+					preparePrio(item.prio,id) +
 					'<span class="task-title">' + prepareHtml(item.title) + '</span> ' +
 					(curList.id == -1 ? '<span class="task-listname">'+ tabLists.get(item.listId).name +'</span>' : '') +
-					prepareTagsStr(item) + 
+					prepareTagsStr(item) +
 					'<span class="task-date">'+item.dateInlineTitle+'</span>' +
 				'</div>' +
 				'<div class="task-through-right">' + prepareDueDate(item) + prepareCompletedDate(item) + "</div>" +
-			'</div>' + 
-			
+			'</div>' +
+
 			'<div class="task-note-block">' +
 				'<div id="tasknote'+id+'" class="task-note"><span>'+prepareHtml(item.note)+'</span></div>' +
 				'<div id="tasknotearea'+id+'" class="task-note-area"><textarea id="notetext'+id+'"></textarea>'+
@@ -1061,7 +1061,7 @@ _mtt.prepareDueDate = prepareDueDate;
 function prepareCompletedDate(item)
 {
 	// &mdash; = &#8212; = —
-	return	'<span class="task-date-completed">' + 
+	return	'<span class="task-date-completed">' +
 				'<span title="' + item.dateInlineTitle + '">' + item.dateInline + '</span>&#8212;' +
 				'<span title="' + item.dateCompletedInlineTitle + '">' + item.dateCompletedInline + '</span>' +
 			'</span>';
@@ -1084,7 +1084,7 @@ function submitNewTask(form)
 		changeTaskOrder(item.id);
 		$('#taskrow_'+item.id).effect("highlight", {color:_mtt.theme.newTaskFlashColor}, 2000);
 		refreshTaskCnt();
-	}); 
+	});
 	flag.tagsChanged = true;
 	return false;
 };
@@ -1096,7 +1096,7 @@ function changeTaskOrder(id)
 	if(taskOrder.length < 2) return;
 	var oldOrder = taskOrder.slice();
 	// sortByHand
-	if(curList.sort == 0) taskOrder.sort( function(a,b){ 
+	if(curList.sort == 0) taskOrder.sort( function(a,b){
 			if(taskList[a].compl != taskList[b].compl) return taskList[a].compl-taskList[b].compl;
 			return taskList[a].ow-taskList[b].ow
 		});
@@ -1105,57 +1105,57 @@ function changeTaskOrder(id)
 			if(taskList[a].compl != taskList[b].compl) return taskList[a].compl-taskList[b].compl;
 			if(taskList[a].prio != taskList[b].prio) return taskList[b].prio-taskList[a].prio;
 			if(taskList[a].dueInt != taskList[b].dueInt) return taskList[a].dueInt-taskList[b].dueInt;
-			return taskList[a].ow-taskList[b].ow; 
+			return taskList[a].ow-taskList[b].ow;
 		});
 	// sortByPrio (reverse)
 	else if(curList.sort == 101) taskOrder.sort( function(a,b){
 			if(taskList[a].compl != taskList[b].compl) return taskList[a].compl-taskList[b].compl;
 			if(taskList[a].prio != taskList[b].prio) return taskList[a].prio-taskList[b].prio;
 			if(taskList[a].dueInt != taskList[b].dueInt) return taskList[b].dueInt-taskList[a].dueInt;
-			return taskList[b].ow-taskList[a].ow; 
-		});		
+			return taskList[b].ow-taskList[a].ow;
+		});
 	// sortByDueDate
 	else if(curList.sort == 2) taskOrder.sort( function(a,b){
 			if(taskList[a].compl != taskList[b].compl) return taskList[a].compl-taskList[b].compl;
 			if(taskList[a].dueInt != taskList[b].dueInt) return taskList[a].dueInt-taskList[b].dueInt;
 			if(taskList[a].prio != taskList[b].prio) return taskList[b].prio-taskList[a].prio;
-			return taskList[a].ow-taskList[b].ow; 
+			return taskList[a].ow-taskList[b].ow;
 		});
 	// sortByDueDate (reverse)
 	else if(curList.sort == 102) taskOrder.sort( function(a,b){
 			if(taskList[a].compl != taskList[b].compl) return taskList[a].compl-taskList[b].compl;
 			if(taskList[a].dueInt != taskList[b].dueInt) return taskList[b].dueInt-taskList[a].dueInt;
 			if(taskList[a].prio != taskList[b].prio) return taskList[a].prio-taskList[b].prio;
-			return taskList[b].ow-taskList[a].ow; 
-		});		
+			return taskList[b].ow-taskList[a].ow;
+		});
 	// sortByDateCreated
 	else if(curList.sort == 3) taskOrder.sort( function(a,b){
 			if(taskList[a].compl != taskList[b].compl) return taskList[a].compl-taskList[b].compl;
 			if(taskList[a].dateInt != taskList[b].dateInt) return taskList[a].dateInt-taskList[b].dateInt;
 			if(taskList[a].prio != taskList[b].prio) return taskList[b].prio-taskList[a].prio;
-			return taskList[a].ow-taskList[b].ow; 
+			return taskList[a].ow-taskList[b].ow;
 		});
 	// sortByDateCreated (reverse)
 	else if(curList.sort == 103) taskOrder.sort( function(a,b){
 			if(taskList[a].compl != taskList[b].compl) return taskList[a].compl-taskList[b].compl;
 			if(taskList[a].dateInt != taskList[b].dateInt) return taskList[b].dateInt-taskList[a].dateInt;
 			if(taskList[a].prio != taskList[b].prio) return taskList[a].prio-taskList[b].prio;
-			return taskList[b].ow-taskList[a].ow; 
+			return taskList[b].ow-taskList[a].ow;
 		});
 	// sortByDateModified
 	else if(curList.sort == 4) taskOrder.sort( function(a,b){
 			if(taskList[a].compl != taskList[b].compl) return taskList[a].compl-taskList[b].compl;
 			if(taskList[a].dateEditedInt != taskList[b].dateEditedInt) return taskList[a].dateEditedInt-taskList[b].dateEditedInt;
 			if(taskList[a].prio != taskList[b].prio) return taskList[b].prio-taskList[a].prio;
-			return taskList[a].ow-taskList[b].ow; 
+			return taskList[a].ow-taskList[b].ow;
 		});
 	// sortByDateModified (reverse)
 	else if(curList.sort == 104) taskOrder.sort( function(a,b){
 			if(taskList[a].compl != taskList[b].compl) return taskList[a].compl-taskList[b].compl;
 			if(taskList[a].dateEditedInt != taskList[b].dateEditedInt) return taskList[b].dateEditedInt-taskList[a].dateEditedInt;
 			if(taskList[a].prio != taskList[b].prio) return taskList[a].prio-taskList[b].prio;
-			return taskList[b].ow-taskList[a].ow; 
-		});		
+			return taskList[b].ow-taskList[a].ow;
+		});
 	else return;
 	if(oldOrder.toString() == taskOrder.toString()) return;
 	if(id && taskList[id])
@@ -1222,7 +1222,7 @@ function setSort(v, init)
 	curList.sort = v;
 	if(v == 0 && !flag.readOnly) $("#tasklist").sortable('enable');
 	else $("#tasklist").sortable('disable');
-	
+
 	if(!init)
 	{
 		changeTaskOrder();
@@ -1314,14 +1314,14 @@ function tabSelect(elementOrId)
 		flashError(_mtt.lang.get('denied'), id);
 		return;
 	}
-	
+
 	var prevList = curList;
 	curList = tabLists.get(id);
 	document.title = curList.name + ' - ' + _mtt.options.title;
-	
+
 	$('#lists .mtt-tabs-selected').removeClass('mtt-tabs-selected');
 	$('#list_all').removeClass('mtt-tabs-selected');
-	
+
 	if(id == -1) {
 		$('#list_all').addClass('mtt-tabs-selected').removeClass('mtt-tabs-hidden');
 		$('#listmenucontainer .mtt-need-real-list').addClass('mtt-item-hidden');
@@ -1330,7 +1330,7 @@ function tabSelect(elementOrId)
 		$('#list_'+id).addClass('mtt-tabs-selected').removeClass('mtt-tabs-hidden');
 		$('#listmenucontainer .mtt-need-real-list').removeClass('mtt-item-hidden');
 	}
-	
+
 	if(prevList.id != id)
 	{
 		if(id == -1) $('#mtt_body').addClass('show-all-tasks');
@@ -1338,7 +1338,7 @@ function tabSelect(elementOrId)
 		if(filter.search != '') liveSearchToggle(0, 1);
 		mytinytodo.doAction('listSelected', tabLists.get(id));
 	}
-	
+
 	if(curList.hidden) {
 		curList.hidden = false;
 		if(curList.id > 0) _mtt.db.request('setHideList', {list:curList.id, hide:0});
@@ -1426,8 +1426,8 @@ function completeTask(id, ch)
 		}
 		else if(curList.showCompl) {
 			$('#taskrow_'+item.id).replaceWith(_mtt.prepareTaskStr(taskList[id]));
-			$('#taskrow_'+id).fadeOut('fast', function(){	
-				changeTaskOrder(id);				
+			$('#taskrow_'+id).fadeOut('fast', function(){
+				changeTaskOrder(id);
 				$(this).effect("highlight", {color:_mtt.theme.editTaskFlashColor}, 'normal', function(){$(this).css('display','')});
 			});
 		}
@@ -1582,7 +1582,7 @@ function toggleEditAllTags(show)
 function fillEditAllTags()
 {
 	var a = [];
-	for(var i=tagsList.length-1; i>=0; i--) { 
+	for(var i=tagsList.length-1; i>=0; i--) {
 		a.push('<a href="#" class="tag" tag="'+tagsList[i].tag+'">'+tagsList[i].tag+'</a>');
 	}
 	$('#alltags .tags-list').html(a.join(', '));
@@ -1592,7 +1592,7 @@ function fillEditAllTags()
 function addEditTag(tag)
 {
 	var v = $('#edittags').val();
-	if(v == '') { 
+	if(v == '') {
 		$('#edittags').val(tag);
 		return;
 	}
@@ -1644,7 +1644,7 @@ function liveSearchToggle(toSearch, dontLoad)
 			$('#search_close').hide();
 			if(!dontLoad) loadTasks();
 		}
-		
+
 		$('#search').blur();
 	}
 };
@@ -1748,7 +1748,7 @@ function mttMenu(container, options)
 	this.showTimer = null;
 	this.ts = (new Date).getTime();
 	this.container.mttmenu = this.ts;
-	
+
 	if (!this.options.hasOwnProperty('isRTL')) {
 		this.options.isRTL = ($('body').css('direction') == 'rtl') ? true : false;
 	}
@@ -1757,7 +1757,7 @@ function mttMenu(container, options)
 	}
 	if (!this.options.hasOwnProperty('adjustWidth')) {
 		this.options.adjustWidth = true;
-	}	
+	}
 
 	this.$container.find('li').click(function(){
 		var r = menu.onclick(this, menu);
@@ -1802,7 +1802,7 @@ function mttMenu(container, options)
 
 				if(!submenu || menu.curSubmenu == submenu && menu.curSubmenu.isOpen)
 					return;
-			
+
 				menu.showTimer = setTimeout(function(){
 					menu.curSubmenu = submenu;
 					submenu.showSub();
@@ -1848,7 +1848,7 @@ function mttMenu(container, options)
 		this.hide();
 		$(this.caller).removeClass('mtt-menu-button-active');
 		$(document).unbind('mousedown.mttmenuclose');
-		
+
 		// onClose trigger
 		if(this.options.onClose && this.options.onClose.call) {
 			this.options.onClose.call(this);
@@ -1865,7 +1865,7 @@ function mttMenu(container, options)
 		$(document).triggerHandler('mousedown.mttmenuclose'); //close any other open menu
 		this.caller = caller;
 		var $caller = $(caller);
-		
+
 		// beforeShow trigger
 		if(this.options.beforeShow && this.options.beforeShow.call) {
 			this.options.beforeShow.call(this);
@@ -1891,16 +1891,16 @@ function mttMenu(container, options)
 		if (x > x2) {
 			x = x2; //move left if container overflows right edge
 			this.$container.addClass('mtt-right-adjusted');
-		} 
+		}
 		if (x < 0) {
 			x = 0; //do not cross left edge
 			this.$container.addClass('mtt-left-adjusted');
-		} 
-		
+		}
+
 		var y = offset.top + caller.offsetHeight - 1;
 		if(y + this.$container.outerHeight(true) > $(window).height() + $(document).scrollTop()) y = offset.top - this.$container.outerHeight();
 		if(y<0) y=0;
-		
+
 		this.$container.css({ position: 'absolute', top: y, left: x, width:this.$container.width() /*, 'min-width': $caller.width()*/ }).show();
 		var menu = this;
 		$(document).bind('mousedown.mttmenuclose', function(e){ menu.close(e) });
@@ -1936,15 +1936,15 @@ function mttMenu(container, options)
 				x = offset.left - containerWidth - 1;
 			}
 			if (x < 0) {
-				x = 0; 
+				x = 0;
 				this.$container.addClass('mtt-left-adjusted');
-			} 
+			}
 		}
-		
+
 		var y = offset.top + this.parent.$container.offset().top-this.parent.$container.find('li:first').offset().top;
 		if(y +  this.$container.outerHeight(true) > $(window).height() + $(document).scrollTop()) y = $(window).height() + $(document).scrollTop()- this.$container.outerHeight(true) - 1;
 		if(y<0) y=0;
-		
+
 		this.$container.css({ position: 'absolute', top: y, left: x, width:this.$container.width() /*, 'min-width': this.$caller.outerWidth()*/ }).show();
 		this.isOpen = true;
 	};
@@ -2113,7 +2113,7 @@ function showCompletedToggle()
 function clearCompleted()
 {
 	if (!curList) return false;
-	mttConfirm( _mtt.lang.get('clearCompleted'), function() 
+	mttConfirm( _mtt.lang.get('clearCompleted'), function()
 	{
 		_mtt.db.request('clearCompletedInList', {list:curList.id}, function(json){
 			if(!parseInt(json.total)) return;
@@ -2240,7 +2240,7 @@ function hideTab(listId)
 		if(!id) return;
 		listId = parseInt(id.split('_', 2)[1]);
 	}
-	
+
 	if(!tabLists.get(listId)) return false;
 
 	// if we hide current tab
@@ -2263,14 +2263,14 @@ function hideTab(listId)
 	else {
 		$('#list_'+listId).addClass('mtt-tabs-hidden').removeClass('mtt-tabs-selected');
 	}
-	
+
 	tabLists.get(listId).hidden = true;
-	
+
 	if(listId > 0) {
 		_mtt.db.request('setHideList', {list:listId, hide:1});
 		_mtt.doAction('listHidden', tabLists.get(listId));
 	}
-	
+
 	if(listIdToSelect) {
 		tabSelect(listIdToSelect);
 	}
@@ -2385,7 +2385,7 @@ function logout()
 		window.location.reload();
 	}, 'json');
 	return false;
-} 
+}
 
 
 /*
@@ -2395,7 +2395,7 @@ function logout()
 function showSettings()
 {
 	if(_mtt.pages.current.page == 'ajax' && _mtt.pages.current.pageClass == 'settings') return false;
-	$('#page_ajax').load(_mtt.mttUrl+'settings.php?ajax=yes',null,function(){ 
+	$('#page_ajax').load(_mtt.mttUrl+'settings.php?ajax=yes',null,function(){
 		//showhide($('#page_ajax').addClass('mtt-page-settings'), $('#page_tasks'));
 		_mtt.pageSet('ajax','settings');
 	})
@@ -2406,7 +2406,7 @@ function saveSettings(frm)
 {
 	if(!frm) return false;
 	var params = { save:'ajax' };
-	$(frm).find("input:text,input:password,input:checked,select").filter(":enabled").each(function() { params[this.name || '__'] = this.value; }); 
+	$(frm).find("input:text,input:password,input:checked,select").filter(":enabled").each(function() { params[this.name || '__'] = this.value; });
 	$(frm).find(":submit").attr('disabled','disabled').blur();
 	$.post(_mtt.mttUrl+'settings.php', params, function(json){
 		if(json.saved) {
@@ -2416,7 +2416,7 @@ function saveSettings(frm)
 			}, 1000);
 		}
 	}, 'json');
-} 
+}
 
 
 /*
@@ -2427,7 +2427,7 @@ function mttConfirm(msg, callbackOk, callbackCancel)
 {
 	var r = confirm(msg);
 	if (r) {
-		if (typeof callbackOk === 'function') 
+		if (typeof callbackOk === 'function')
 			callbackOk();
 	}
 	else {
@@ -2440,7 +2440,7 @@ function mttPrompt(msg, defaultValue, callbackOk, callbackCancel)
 {
 	var r = prompt(msg, defaultValue);
 	if (r !== null) {
-		if (typeof callbackOk === 'function') 
+		if (typeof callbackOk === 'function')
 			callbackOk(r);
 	}
 	else {
@@ -2459,7 +2459,7 @@ function historyListSelected(list)
 		flag.historySkip = false;
 		return;
 	}
-	
+
 	if (flag.firstLoad) {
 		history.replaceState( { list:list.id }, document.title, _mtt.urlForList(list))
 	}

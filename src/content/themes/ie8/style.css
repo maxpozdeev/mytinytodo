@@ -1,5 +1,5 @@
 /*
-	This file is a part of myTinyTodo. 
+	This file is a part of myTinyTodo.
 	Copyright 2009-2010 Max Pozdeev <maxpozdeev@gmail.com>
 */
 
@@ -49,7 +49,7 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 .mtt-tab a { position:relative; margin:0; font-size:0.9em; font-weight:bold; text-decoration:none; text-align:center; white-space:nowrap; color:#444444; display:block; height:21px; padding:6px 6px 0px 2px; outline:none; vertical-align:top; }
 .mtt-tab a span { display:inline-block; min-width:75px; max-width:195px; cursor:pointer; padding:0; overflow:hidden; }
 .mtt-tab .list-action { display:none; float:left; position:absolute; top:6px; right:5px; width:15px; height:15px; background:transparent url(images/icons.gif) 0 0 no-repeat; cursor:pointer; }
-.mtt-tab .list-action:hover, .mtt-tab .list-action.mtt-menu-button-active { background-position:-16px 0; } 
+.mtt-tab .list-action:hover, .mtt-tab .list-action.mtt-menu-button-active { background-position:-16px 0; }
 .mtt-tab.mtt-tabs-selected span { margin-right:16px; }
 .mtt-tab.mtt-tabs-selected .list-action { display:block; }
 .mtt-tab.mtt-tabs-selected { background:#ededed url(images/corner_right.gif) no-repeat top right; border-left:1px solid #ededed; }
@@ -57,7 +57,7 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 .mtt-tabs.mtt-tabs-only-one li { display:none; }
 .mtt-tabs.mtt-tabs-only-one li.mtt-tabs-selected { display:block; }
 .mtt-tabs-hidden { display:none; }
-                     
+
 .mtt-tabs-alltasks { margin:1px 3px 0 3px; float:right; border-right:1px solid #ededed; background:#fbfbfb url(images/tab_hover.gif) no-repeat top left; }
 .mtt-tabs-alltasks.mtt-tab a { padding:6px 2px 0px 6px; }
 .mtt-tabs-alltasks.mtt-tab.mtt-tabs-selected { border-left:none; border-right:1px solid #ededed; background:#ededed url(images/corner_left.gif) no-repeat top left; }
@@ -66,7 +66,7 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 #tabs_buttons {
  float:right;
  padding-top:4px;
- padding-bottom:2px; 
+ padding-bottom:2px;
  padding-left:2px;
  padding-right:2px;
  border:1px solid #ededed;
@@ -133,7 +133,7 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 #htab_search { float:right; }
 #search {
  color:#444444; background:#fff; height:1.35em; padding:2px 18px; width:100%; margin-left:-38px; /*padding+border*/
- border:1px inset #F0F0F0; -moz-border-radius:10px; -webkit-border-radius:10px; border-radius:10px; 
+ border:1px inset #F0F0F0; -moz-border-radius:10px; -webkit-border-radius:10px; border-radius:10px;
 }
 #search_close { display:none; }
 
@@ -185,8 +185,8 @@ li.task-expanded .task-toggle { background-position:-80px -16px; }
 .duedate { color:#333333; padding:0px; padding-left:1px; margin-left:5px;  }
 li.task-completed .duedate { /*font-size:0.8em;*/ display:none; }
 #tasklist li.soon .duedate { color:#008000; }
-#tasklist li.today .duedate { color:#FF0000; } 
-#tasklist li.past .duedate { color:#A52A2A; } 
+#tasklist li.today .duedate { color:#FF0000; }
+#tasklist li.past .duedate { color:#A52A2A; }
 li.task-completed .task-middle { color:#777777;}
 li.task-completed .task-through { text-decoration:line-through; }
 li.task-completed .task-title a { color:#777777; }
@@ -206,7 +206,7 @@ li:hover a.taskactionbtn, a.taskactionbtn.mtt-menu-button-active { background-po
 #tasklist.filter-past li.past, #tasklist.filter-today li.today, #tasklist.filter-soon li.soon { display:block; }
 #tasklist.filter-past li.task-completed, #tasklist.filter-today li.task-completed, #tasklist.filter-soon li.task-completed { display:none; }
 
-.task-note-block { margin-left:2px; color:#777777; background:url(images/page_white_text.png) left  2px no-repeat; 
+.task-note-block { margin-left:2px; color:#777777; background:url(images/page_white_text.png) left  2px no-repeat;
 	padding-left:19px; padding-top:2px; min-height:16px; margin-top:2px; display:none; word-wrap:break-word; white-space:noraml; }
 li.task-expanded .task-note-block { display:block; }
 li.task-completed .task-note-block .task-note { text-decoration:line-through; }
@@ -225,7 +225,7 @@ li.task-completed .task-note-block .task-note { text-decoration:line-through; }
 .prio-pos { background-color:#ff3333; color:#ffffff; }
 .prio-pos-1 { background-color:#ff7700; color:#ffffff; }
 .prio-zero { /*background-color:#dedede;*/ }
-.task-prio.prio-zero { display:none; } 
+.task-prio.prio-zero { display:none; }
 
 .form-row { margin-top:8px; }
 .form-row .h { font-weight:bold; color:#333333; }
@@ -251,7 +251,7 @@ a.mtt-back-button { font-size:0.8em; }
 .ui-autocomplete .ui-menu-item-wrapper.ui-state-active { background-color:#5373fc; background:linear-gradient(#5373fc, #3157f4); color:white; }
 
 
-#priopopup { overflow: hidden; z-index:100; background-color:#f9f9f9; border:1px solid #cccccc; padding:5px; } 
+#priopopup { overflow: hidden; z-index:100; background-color:#f9f9f9; border:1px solid #cccccc; padding:5px; }
 #priopopup span { cursor:pointer; border:1px solid #f9f9f9; }
 #priopopup .prio-zero:hover { border-color:#dedede; }
 #priopopup .prio-neg:hover { border-color:#3377ff; }
@@ -265,7 +265,7 @@ a.mtt-back-button { font-size:0.8em; }
  overflow: hidden; z-index:100; background-color:#f9f9f9; border:1px solid #cccccc; padding:5px;
  width:100%; max-width:450px; margin:0px 7px 7px 7px; text-align:center;
  -moz-box-shadow:1px 2px 5px rgba(0,0,0,0.5); -webkit-box-shadow:1px 2px 5px rgba(0,0,0,0.5);
-} 
+}
 #tagcloud .tag { margin:1px 0px; padding:2px; line-height:140%; color:black; }
 #tagcloud .tag:hover { background-color:#999988; color:white; }
 #tagcloud .w0 { font-size:80%; }
@@ -285,11 +285,11 @@ a.mtt-back-button { font-size:0.8em; }
 
 #taskview { padding:2px; }
 
-.ui-datepicker { width:190px; z-index:202; border: 1px solid #cccccc; background: #ffffff; display:none; padding:2px; 
- -moz-box-shadow:1px 2px 5px rgba(0,0,0,0.5); -webkit-box-shadow:1px 2px 5px rgba(0,0,0,0.5); box-shadow:1px 2px 5px rgba(0,0,0,0.5); 
+.ui-datepicker { width:190px; z-index:202; border: 1px solid #cccccc; background: #ffffff; display:none; padding:2px;
+ -moz-box-shadow:1px 2px 5px rgba(0,0,0,0.5); -webkit-box-shadow:1px 2px 5px rgba(0,0,0,0.5); box-shadow:1px 2px 5px rgba(0,0,0,0.5);
  -moz-border-radius:5px; -webkit-border-radius:5px; border-radius:5px;
 }
-.ui-datepicker-trigger { cursor:pointer; vertical-align:text-bottom; margin-left:1px; } 
+.ui-datepicker-trigger { cursor:pointer; vertical-align:text-bottom; margin-left:1px; }
 .ui-datepicker-calendar { width:100%; border-collapse:collapse; }
 .ui-datepicker-calendar thead th { text-align:center; padding:0px; font-size:0.9em; }
 .ui-datepicker-calendar tbody td { text-align:right; padding:1px;  }
@@ -310,22 +310,22 @@ a.mtt-back-button { font-size:0.8em; }
  cursor:pointer;
  border:1px solid transparent;
 }
-.mtt-menu-button:hover, .mtt-menu-button.mtt-menu-button-active { 
+.mtt-menu-button:hover, .mtt-menu-button.mtt-menu-button-active {
  border:1px solid #ccc; -moz-border-radius:3px; -webkit-border-radius:3px; border-radius:3px;
 }
 
-.mtt-menu-container { 
+.mtt-menu-container {
 	overflow:hidden; z-index:100;
 	background-color:#f9f9f9; border:1px solid #cccccc; padding:2px 0px;
-	-moz-box-shadow:1px 2px 5px rgba(0,0,0,0.5); -webkit-box-shadow:1px 2px 5px rgba(0,0,0,0.5); box-shadow:1px 2px 5px rgba(0,0,0,0.5); 
+	-moz-box-shadow:1px 2px 5px rgba(0,0,0,0.5); -webkit-box-shadow:1px 2px 5px rgba(0,0,0,0.5); box-shadow:1px 2px 5px rgba(0,0,0,0.5);
 	-moz-border-radius:5px; -webkit-border-radius:5px; border-radius:5px;
 	margin:0px 7px 7px 0px; /* for shadows */
-} 
+}
 .mtt-menu-container ul { list-style: none; padding:0; margin:0; }
 .mtt-menu-container li { margin:1px 0px; cursor:default; color:#000; white-space:nowrap; padding:0.15em 0px; padding-left:24px; padding-right:18px; position:relative; }
-.mtt-menu-container li:hover, .mtt-menu-container li.mtt-menu-item-active { 
+.mtt-menu-container li:hover, .mtt-menu-container li.mtt-menu-item-active {
  background-color:#316AC5;
- color:white; 
+ color:white;
  background:-moz-linear-gradient(#5373fc,  #3157f4);
  background:-webkit-gradient(linear, left top, left bottom, from(#5373fc), to(#3157f4));
 }

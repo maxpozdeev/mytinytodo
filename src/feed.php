@@ -47,7 +47,7 @@ htmlarray_ref($listData);
 
 $data = array();
 $q = $db->dq("SELECT * FROM {$db->prefix}todolist WHERE list_id=$listId $sqlWhere ORDER BY ". $listData['_uid_field'] ." DESC LIMIT 100");
-while($r = $q->fetch_assoc($q)) 
+while($r = $q->fetch_assoc($q))
 {
 	if($r['prio'] > 0) $r['prio'] = '+'.$r['prio'];
 	$a = array();

@@ -3,7 +3,7 @@
 /*
 	(C) Copyright 2009,2019 Max Pozdeev <maxpozdeev@gmail.com>
 	Licensed under the GNU GPL v2 license. See file COPYRIGHT for details.
-*/ 
+*/
 
 // ---------------------------------------------------------------------------- //
 class DatabaseResult_Mysql
@@ -82,8 +82,8 @@ class Database_Mysql
 	function last_insert_id()
 	{
 		return mysqli_insert_id($this->dbh);
-	}	
-	
+	}
+
 	function error()
 	{
 		return mysqli_error($this->dbh);

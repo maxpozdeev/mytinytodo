@@ -103,18 +103,18 @@ $().ready(function(){
      <input type="text" name="task" value="" maxlength="250" id="task" autocomplete="off" placeholder="<?php _e('htab_newtask');?>"/>
      <div id="newtask_submit" class="mtt-taskbox-icon" title="<?php _e('btn_add');?>"></div>
    </form>
-  </div>	
-  <a href="#" id="newtask_adv" class="mtt-img-button" title="<?php _e('advanced_add');?>"><span></span></a>	
+  </div>
+  <a href="#" id="newtask_adv" class="mtt-img-button" title="<?php _e('advanced_add');?>"><span></span></a>
 </div>
 <div class="searchbox-c">
   <div class="mtt-searchbox">
     <input type="text" name="search" value="" maxlength="250" id="search" autocomplete="off" />
     <div class="mtt-searchbox-icon mtt-icon-search"></div>
     <div id="search_close" class="mtt-searchbox-icon mtt-icon-cancelsearch"></div>
-  </div> 
+  </div>
 </div>
 </div>
- 
+
 <div id="searchbar" style="display:none"><?php _e('searching');?> <span id="searchbarkeyword"></span></div>
 
 <div id="mtt-tag-toolbar" style="display:none">
@@ -179,7 +179,7 @@ $().ready(function(){
 </div>
 <div class="form-row" id="alltags" style="display:none;"><?php _e('alltags');?> <span class="tags-list"></span></div>
 <div class="form-row form-bottom-buttons">
- <input type="submit" value="<?php _e('save');?>" class="form-input-button" /> 
+ <input type="submit" value="<?php _e('save');?>" class="form-input-button" />
  <input type="button" id="mtt_edit_cancel" class="mtt-back-button form-input-button" value="<?php _e('cancel');?>" />
 </div>
 </form>
@@ -282,7 +282,7 @@ $().ready(function(){
 </div><!-- end of #container -->
 
 <div id="footer">
-	<div id="footer_content"> 
+	<div id="footer_content">
 		<span><?php _e('powered_by');?> <a href="http://www.mytinytodo.net/" class="powered-by-link">myTinyTodo</a>&nbsp;<?php mttinfo('version'); ?></span>
 		<span id="mobileordesktop">
 			<?php if(Config::get('mobile')): ?><a href="<?php echo getDesktopUrl(); ?>"><?php _e('desktop_version');?></a>
