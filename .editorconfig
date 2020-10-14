@@ -1,0 +1,20 @@
+# top-most EditorConfig file
+root = true
+
+# 'insert_final_newline = false' should not remove last empty line
+
+[*]
+charset = utf-8
+end_of_line = lf
+indent_style = tab
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[*.php]
+insert_final_newline = false
+
+[*.md]
+trim_trailing_whitespace = false
+
+[/version.txt]
+insert_final_newline = false
