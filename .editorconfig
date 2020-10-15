@@ -15,6 +15,7 @@ insert_final_newline = false
 
 [*.md]
 trim_trailing_whitespace = false
+insert_final_newline = false
 
 [/version.txt]
 insert_final_newline = false
