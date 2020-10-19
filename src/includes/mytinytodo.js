@@ -280,7 +280,8 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		$('#lists').on('click', 'li.mtt-tab', function(event){
 			if(event.metaKey || event.ctrlKey) {
 				// hide the tab
-				hideTab(this);
+				var listId = parseInt(this.id.split('_', 2)[1]);
+				hideList(listId);
 				return false;
 			}
 			tabSelect(this);
@@ -290,7 +291,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		$('#list_all').click(function(event){
 			if(event.metaKey || event.ctrlKey) {
 				// hide the tab
-				hideTab(-1);
+				hideList(-1);
 				return false;
 			}
 			tabSelect(-1);
@@ -1371,6 +1372,7 @@ function listMenuClick(el, menu)
 		case 'btnRenameList': renameCurList(); break;
 		case 'btnDeleteList': deleteCurList(); break;
 		case 'btnPublish': publishCurList(); break;
+		case 'btnHideList': hideList(curList.id); break;
 		case 'btnExportCSV': return true;
 		case 'btnExportICAL': return true;
 		case 'btnRssFeed': return true;
@@ -2239,12 +2241,13 @@ function slmenuSelect(el, menu)
 	return false;
 };
 
-function hideTab(listId)
+function hideList(listId)
 {
-	if(typeof listId != 'number') {
-		var id = $(listId).attr('id');
-		if(!id) return;
-		listId = parseInt(id.split('_', 2)[1]);
+	if (typeof listId === 'string') {
+		listId = parseInt(listId);
+	}
+	else if (typeof listId !== 'number') {
+		return;
 	}
 
 	if(!tabLists.get(listId)) return false;
