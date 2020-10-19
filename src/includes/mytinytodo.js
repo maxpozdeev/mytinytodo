@@ -500,7 +500,13 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			$('#cmenu_note').hide();
 		}
 
-		$("#lists ul").sortable({delay:150, update:listOrderChanged});
+		$("#lists ul").sortable({
+			delay:150,
+			update:listOrderChanged,
+			placeholder: 'mtt-list-sort-placeholder',
+			cursor: 'grabbing'
+		});
+
 		this.applySingletab();
 
 

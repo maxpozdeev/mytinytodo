@@ -70,6 +70,7 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 .mtt-tabs.mtt-tabs-only-one li { display:none; }
 .mtt-tabs.mtt-tabs-only-one li.mtt-tabs-selected { display:block; }
 .mtt-tabs-hidden { display:none; }
+.mtt-tabs .mtt-list-sort-placeholder { background-color:#ddd; border:1px solid #aaa; }
 
 .mtt-tabs-alltasks { margin:1px 3px 0 3px; }
 .mtt-tabs-alltasks.mtt-tab { border-top-right-radius:0px; border-top-left-radius:8px; }
