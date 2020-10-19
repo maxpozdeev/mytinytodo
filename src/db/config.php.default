@@ -10,7 +10,7 @@ $config['db'] = '';
 $config['mysql.host'] = "localhost";
 $config['mysql.db'] = "mytinytodo";
 $config['mysql.user'] = "user";
-$config['mysql.password'] = ""; 
+$config['mysql.password'] = "";
 
 # Tables prefix
 $config['prefix'] = "mtt_";
@@ -19,7 +19,7 @@ $config['prefix'] = "mtt_";
 # 'url' - URL where index.php is called from (ex.: http://site.com/todo.php)
 # 'mtt_url' - directory URL where mytinytodo is installed (with trailing slash) (ex.: http://site.com/lib/mytinytodo/)
 $config['url'] = '';
-$config['mtt_url'] = ''; 
+$config['mtt_url'] = '';
 
 # Language pack
 $config['lang'] = "en";
@@ -53,8 +53,5 @@ $config['dateformatshort'] = 'j M';
 
 # Show task date in list
 $config['showdate'] = 0;
-
-# Autodetect mobile devices and switch theme
-$config['detectmobile'] = 1;
 
 ?>
