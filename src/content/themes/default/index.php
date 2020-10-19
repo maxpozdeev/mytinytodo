@@ -1,29 +1,25 @@
 <?php header("Content-type: text/html; charset=utf-8"); ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!doctype html>
+<html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title><?php mttinfo('title'); ?></title>
-<link rel="stylesheet" type="text/css" href="<?php mttinfo('template_url'); ?>style.css?v=<?php mttinfo('version'); ?>" media="all" />
-<link rel="stylesheet" type="text/css" href="<?php mttinfo('template_url'); ?>print.css?v=<?php mttinfo('version'); ?>" media="print" />
-<?php if(Config::get('rtl')): ?>
-<link rel="stylesheet" type="text/css" href="<?php mttinfo('template_url'); ?>style_rtl.css?v=<?php mttinfo('version'); ?>" media="all" />
-<?php endif; ?>
-<?php if(Config::get('mobile')): ?>
-<meta name="viewport" id="viewport" content="width=device-width" />
-<link rel="stylesheet" type="text/css" href="<?php mttinfo('template_url'); ?>mobile.css?v=<?php mttinfo('version'); ?>" media="all" />
-<?php endif; ?>
+	<meta charset="utf-8">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title><?php mttinfo('title'); ?></title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link rel="stylesheet" type="text/css" href="<?php mttinfo('template_url'); ?>style.css?v=<?php mttinfo('version'); ?>" media="all" />
+	<link rel="stylesheet" type="text/css" href="<?php mttinfo('template_url'); ?>print.css?v=<?php mttinfo('version'); ?>" media="print" />
+	<?php if(Config::get('rtl')): ?>
+	<link rel="stylesheet" type="text/css" href="<?php mttinfo('template_url'); ?>style_rtl.css?v=<?php mttinfo('version'); ?>" media="all" />
+	<?php endif; ?>
 </head>
 
 <body <?php if (Lang::instance()->rtl()) echo 'dir="rtl"'; ?>>
 
 <script type="text/javascript" src="<?php mttinfo('includes_url'); ?>jquery/jquery-3.5.1.min.js"></script>
 <script type="text/javascript" src="<?php mttinfo('includes_url'); ?>jquery/jquery-ui-1.12.1.min.js"></script>
+<script type="text/javascript" src="<?php mttinfo('includes_url'); ?>jquery/jquery.ui.touch-punch.js"></script>
 <script type="text/javascript" src="<?php mttinfo('includes_url'); ?>mytinytodo.js?v=<?php mttinfo('version'); ?>"></script>
 <script type="text/javascript" src="<?php mttinfo('includes_url'); ?>mytinytodo_ajax_storage.js?v=<?php mttinfo('version'); ?>"></script>
-<?php if(Config::get('mobile')): ?>
-<script type="text/javascript" src="<?php mttinfo('includes_url'); ?>jquery/jquery.ui.touch-punch.js"></script>
-<?php endif; ?>
 
 <script type="text/javascript">
 $().ready(function(){
@@ -35,13 +31,11 @@ $().ready(function(){
 		db: mytinytodoStorageAjax,
 		needAuth: <?php echo need_auth() ? "true" : "false"; ?>,
 		isLogged: <?php echo is_logged() ? "true" : "false"; ?>,
-		showdate: <?php echo (Config::get('showdate') && !Config::get('mobile')) ? "true" : "false"; ?>,
-		singletab: <?php echo (isset($_GET['singletab']) || Config::get('mobile')) ? "true" : "false"; ?>,
+		showdate: <?php echo Config::get('showdate') ? "true" : "false"; ?>,
 		duedatepickerformat: "<?php echo htmlspecialchars(Config::get('dateformat2')); ?>",
 		firstdayofweek: <?php echo (int) Config::get('firstdayofweek'); ?>,
 		calendarIcon: '<?php mttinfo('template_url'); ?>images/calendar.svg',
 		autotag: <?php echo Config::get('autotag') ? "true" : "false"; ?>
-		<?php if(Config::get('mobile')) echo ", touchDevice: true"; ?>
 	}).run();
 });
 </script>
@@ -285,11 +279,6 @@ $().ready(function(){
 <div id="footer">
 	<div id="footer_content">
 		<span><?php _e('powered_by');?> <a href="http://www.mytinytodo.net/" class="powered-by-link">myTinyTodo</a>&nbsp;<?php mttinfo('version'); ?></span>
-		<span id="mobileordesktop">
-			<?php if(Config::get('mobile')): ?><a href="<?php echo getDesktopUrl(); ?>"><?php _e('desktop_version');?></a>
-			<?php else: ?><a href="<?php mttinfo('mobile_url'); ?>"><?php _e('mobile_version');?></a>
-			<?php endif; ?>
-		</span>
 	</div>
 </div>
 

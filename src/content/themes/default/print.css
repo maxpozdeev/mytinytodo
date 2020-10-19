@@ -34,7 +34,6 @@ li.task-completed  { opacity:1; }
 
 #footer_content { border-top:1px solid #777777; background:none; }
 #footer_content a { text-decoration:none; color:#000000; }
-#mobileordesktop { display: none; }
 
 #tagcloudbtn { display:none; }
 .mtt-notes-showhide { display:none; }

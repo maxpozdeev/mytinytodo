@@ -29,14 +29,6 @@ if (!is_int(Config::get('firstdayofweek')) || Config::get('firstdayofweek')<0 ||
 	Config::set('firstdayofweek', 1);
 }
 
-
-if ( isset($_GET['desktop']) ) { //more priority than mobile
-	Config::set('mobile', 0);
-}
-else if ( isset($_GET['mobile']) || isset($_GET['pda']) ) {
-	Config::set('mobile', 1);
-}
-
 define('TEMPLATEPATH', MTTTHEMES. Config::get('template'). '/');
 
 require(TEMPLATEPATH. 'index.php');
@@ -54,18 +46,4 @@ function redirectWithHashRoute(array $q, array $hash)
 	}
 	header("Location: ". $url);
 	exit;
-}
-
-function is_mobile()
-{	//basic detection
-	if (preg_match("/(iphone|ipad|android)/i", _server('HTTP_USER_AGENT'))) {
-		return true;
-	}
-	return false;
-}
-
-function getDesktopUrl($escape = true)
-{
-	$url = is_mobile() ? get_unsafe_mttinfo('desktop_url') : get_unsafe_mttinfo('url');
-	return $escape ? htmlspecialchars($url) : $url;
 }

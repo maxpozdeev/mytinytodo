@@ -53,7 +53,6 @@ var mytinytodo = window.mytinytodo = _mtt = {
 	options: {
 		title: '',
 		openList: 0,
-		singletab: false,
 		autotag: false,
 		instantSearch: true,
 		tagPreview: true,
@@ -130,6 +129,9 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		else {
 			this.homeUrl = this.mttUrl;
 		}
+		if ( ! options.hasOwnProperty('touchDevice') ) {
+			this.options.touchDevice = ('ontouchend' in document);
+		}
 
 		jQuery.extend(this.options, options);
 
@@ -137,7 +139,6 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		flag.isLogged = options.isLogged ? true : false;
 
 		if(this.options.showdate) $('#page_tasks').addClass('show-inline-date');
-		if(this.options.singletab) $('#lists .mtt-tabs').addClass('mtt-tabs-only-one');
 
 		// handlers
 		$('.mtt-tabs-add-button').click(function(){
@@ -145,11 +146,6 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		});
 
 		$('.mtt-tabs-select-button').click(function(event){
-			if(event.metaKey || event.ctrlKey) {
-				// toggle singetab interface
-				_mtt.applySingletab(!_mtt.options.singletab);
-				return false;
-			}
 			if(!_mtt.menus.selectlist) _mtt.menus.selectlist = new mttMenu('slmenucontainer', {onclick:slmenuSelect, adjustWidth:true, alignRight:true});
 			_mtt.menus.selectlist.show(this);
 		});
@@ -490,16 +486,6 @@ var mytinytodo = window.mytinytodo = _mtt = {
 				cursor: 'grabbing'
 		});
 
-		if (options.touchDevice) {
-			$("#tasklist").disableSelection();
-			$("#tasklist").sortable('option', {
-				axis: 'y',
-				delay: 0,
-				cancel: 'input',
-				distance: 0
-			});
-			$('#cmenu_note').hide();
-		}
 
 		$("#lists ul").sortable({
 			delay:150,
@@ -508,7 +494,18 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			cursor: 'grabbing'
 		});
 
-		this.applySingletab();
+
+		if (this.options.touchDevice) {
+			$("#tasklist").disableSelection();
+			$("#tasklist").sortable('option', {
+				axis: 'y',
+				delay: 0,
+				cancel: 'input',
+				distance: 0
+			});
+			$('#cmenu_note').hide();
+			$("#lists ul").sortable('disable');
+		}
 
 
 		// AJAX Errors
@@ -757,20 +754,6 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		if (this.pages.current.onBack) this.pages.current.onBack.call(this);
 	},
 
-	applySingletab: function(yesno)
-	{
-		if(yesno == null) yesno = this.options.singletab;
-		else this.options.singletab = yesno;
-
-		if(yesno) {
-			$('#lists .mtt-tabs').addClass('mtt-tabs-only-one');
-			$("#lists ul").sortable('disable');
-		}
-		else {
-			$('#lists .mtt-tabs').removeClass('mtt-tabs-only-one');
-			$("#lists ul").sortable('enable');
-		}
-	},
 
 	filter: {
 		_filters: [],
