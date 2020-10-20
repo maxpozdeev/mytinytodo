@@ -128,9 +128,7 @@ $().ready(function(){
 <span id="tagcloudbtn" class="mtt-menu-button"><?php _e('tagcloud');?> <span class="arrdown2"></span></span>
 </h3>
 
-<div id="taskcontainer">
- <ol id="tasklist" class="sortable"></ol>
-</div>
+<ol id="tasklist" class="sortable"></ol>
 
 </div>
 <!-- End of page_tasks -->

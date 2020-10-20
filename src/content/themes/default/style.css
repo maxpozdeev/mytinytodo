@@ -329,7 +329,9 @@ a.mtt-back-button { font-size:1rem; }
 }
 
 .mtt-menu-container {
-	overflow:hidden; z-index:100;
+  overflow:hidden;
+  max-width:100vw;
+  z-index:100;
 	background-color:#f9f9f9; border:1px solid #cccccc; padding:2px 0px;
 	box-shadow:1px 2px 5px rgba(0,0,0,0.5);
 	border-radius:5px;
@@ -339,12 +341,27 @@ a.mtt-back-button { font-size:1rem; }
 .mtt-menu-container.mtt-right-adjusted { margin-right:5px; }
 .mtt-menu-container.mtt-right-adjusted.mtt-left-adjusted { margin-bottom:5px; }
 .mtt-menu-container ul { list-style: none; padding:0; margin:0; }
-.mtt-menu-container li { margin:1px 0px; cursor:default; color:#000; white-space:nowrap; padding-top:0.20rem; padding-bottom:0.20rem; padding-left:28px; padding-right:28px; position:relative; }
+.mtt-menu-container li {
+  margin:1px 0px;
+  cursor:default;
+  color:#000;
+  white-space:nowrap;
+  padding-top:0.20rem; padding-bottom:0.20rem; padding-left:28px; padding-right:28px;
+  position:relative;
+  overflow:hidden; text-overflow:ellipsis;
+}
 .mtt-menu-container li:hover, .mtt-menu-container li.mtt-menu-item-active {
   background-color:#5a8df0; color:white;
  }
 .mtt-menu-container li.mtt-item-disabled, .mtt-menu-container li.mtt-item-disabled a { color:#ACA899; }
-.mtt-menu-container a { display:block; cursor:default; text-decoration:none; outline:none; color:#000; }
+.mtt-menu-container a {
+  display:block;
+  cursor:default;
+  text-decoration:none;
+  outline:none;
+  color:#000;
+  overflow:hidden; text-overflow:ellipsis;
+  }
 .mtt-menu-container li:hover a { color:white; }
 .mtt-menu-container li.mtt-menu-delimiter { height:0px; line-height:0; border-bottom:1px solid #cccccc; margin:2px -1px; padding:0px; font-size:0px; }
 .mtt-menu-container .menu-icon { width:16px; height:16px; position:absolute; left:6px; top:50%; margin-top:-8px; }
@@ -377,21 +394,26 @@ li.mtt-item-hidden { display:none; }
 .mtt-settings-table .form-bottom-buttons input { padding:4px; border:1px solid #ccc; border-radius:3px; background-color:#efefef; margin:2px; }
 .mtt-settings-table input:focus, .mtt-settings-table select:focus { outline:none; border-color:#5a8df0; box-shadow:0 0 0 2px rgba(90,141,240,0.7); }
 
+
+/* font for small screens */
+@media only screen and (max-width: 600px), only screen and (max-height: 600px) {
+  html {
+    font-size: 16px;
+    -webkit-text-size-adjust: 100%; /* Dont increase font-size in horizontal orientation on ios */
+  }
+}
+
+/* narrow screens */
 @media only screen and (max-width: 600px) {
 
-	html { font-size:100%; }
-	body { font-size:100%; }
-	h2 { margin:0; margin-bottom:2px; font-size:1rem; }
+	h2 { font-size:1rem; }
 
-	#body { margin-left:1px; margin-right:1px; padding:1px; padding-bottom:12px;}
 	#bar_login, #bar_logout { padding-right:1px; }
 
 	.mtt-img-button { padding:4px; }
 	.mtt-menu-button { padding:4px; }
 
-	#tabs ul { margin-top:0px; }
-	#tabs ul li { width:70px; margin-right: 1px; }
-  .mtt-tabs-add-button { padding-left:0.4rem; padding-right:0.4rem; }
+  .mtt-tabs-add-button { padding-left:0.4rem; padding-right:0.4rem; } /* make thiсker */
 
   /* singletab */
   .mtt-tabs li { display:none; }
@@ -437,12 +459,6 @@ li.mtt-item-hidden { display:none; }
 	.mtt-settings-table .in350 { min-width:50px; }
 	.mtt-notes-showhide { display:none; }
 
-	#footer_content { padding:0.7rem 0.35rem; }
-
 	.mtt-menu-container li { padding-top:0.3rem; padding-bottom:0.3rem; }
-	#slmenucontainer { max-width:100vw; }
-	#slmenucontainer a { overflow:hidden; text-overflow:ellipsis; }
-	#cmenulistscontainer { max-width:100vw; }
-	#cmenulistscontainer li { overflow:hidden; text-overflow:ellipsis; }
 
 } /* end of @media min 600px */
