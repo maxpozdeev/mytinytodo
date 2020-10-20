@@ -1836,7 +1836,8 @@ function mttMenu(container, options)
 		}
 		this.hide();
 		$(this.caller).removeClass('mtt-menu-button-active');
-		$(document).unbind('mousedown.mttmenuclose');
+		$(document).off('mousedown.mttmenu');
+		$(document).off('keydown.mttmenu');
 
 		// onClose trigger
 		if(this.options.onClose && this.options.onClose.call) {
@@ -1851,7 +1852,12 @@ function mttMenu(container, options)
 			this.close();
 			if(this.caller && this.caller == caller) return;
 		}
-		$(document).triggerHandler('mousedown.mttmenuclose'); //close any other open menu
+		$(document).triggerHandler('mousedown.mttmenu'); //close any other open menu
+		$(document).on('keydown.mttmenu', function(event) {
+			if (event.keyCode == 27) {
+				menu.close(); //close the menu on Esc pressed
+			}
+		});
 		this.caller = caller;
 		var $caller = $(caller);
 
@@ -1896,7 +1902,7 @@ function mttMenu(container, options)
 
 		this.$container.css({ position: 'absolute', top: y, left: x, width:this.$container.width() /*, 'min-width': $caller.width()*/ }).show();
 		var menu = this;
-		$(document).bind('mousedown.mttmenuclose', function(e){ menu.close(e) });
+		$(document).on('mousedown.mttmenu', function(e) { menu.close(e) });
 		this.isOpen = true;
 	};
 
