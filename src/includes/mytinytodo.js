@@ -1912,6 +1912,9 @@ function mttMenu(container, options)
 			}
 		}
 
+		//round the width to avoid overflow issues
+		this.$container.width( Math.ceil(this.$container.width()) );
+
 		this.$caller.addClass('mtt-menu-item-active');
 		var offset = this.$caller.offset();
 		var containerWidth = this.$container.outerWidth(true);
