@@ -273,33 +273,19 @@ var mytinytodo = window.mytinytodo = _mtt = {
 
 
 		// Tabs
-		$('#lists').on('click', 'li.mtt-tab', function(event){
+		$('#lists').on('click', 'li.mtt-tab', function(event) {
+			var listId = this.id.split('_', 2)[1];
+			if (listId === 'all') listId = -1;
 			if(event.metaKey || event.ctrlKey) {
 				// hide the tab
-				var listId = parseInt(this.id.split('_', 2)[1]);
 				hideList(listId);
 				return false;
 			}
-			tabSelect(this);
-			return false;
-		});
-
-		$('#list_all').click(function(event){
-			if(event.metaKey || event.ctrlKey) {
-				// hide the tab
-				hideList(-1);
-				return false;
-			}
-			tabSelect(-1);
+			tabSelect(listId);
 			return false;
 		});
 
 		$('#lists').on('click', 'li.mtt-tab .list-action', function(){
-			listMenu(this);
-			return false;	//stop bubble to tab click
-		});
-
-		$('#list_all .list-action').click(function(event){
 			listMenu(this);
 			return false;	//stop bubble to tab click
 		});
@@ -1320,7 +1306,6 @@ function tabSelect(elementOrId)
 	document.title = curList.name + ' - ' + _mtt.options.title;
 
 	$('#lists .mtt-tabs-selected').removeClass('mtt-tabs-selected');
-	$('#list_all').removeClass('mtt-tabs-selected');
 
 	if(id == -1) {
 		$('#list_all').addClass('mtt-tabs-selected').removeClass('mtt-tabs-hidden');

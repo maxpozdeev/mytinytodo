@@ -73,10 +73,6 @@ $().ready(function(){
 
 <div id="lists">
  <div class="tabs-n-button">
-<!--
-   <div id="list_all" class="mtt-tab mtt-tabs-alltasks mtt-tabs-hidden">
-    <a href="#alltasks" title="<?php _e('alltasks'); ?>"><span><?php _e('alltasks'); ?></span><div class="list-action"></div></a>
-   </div>-->
    <ul class="mtt-tabs"></ul>
    <div class="mtt-tabs-add-button" title="<?php _e('list_new'); ?>"><div class="tab-height-wrapper"><span></span></div></div>
  </div>
@@ -218,8 +214,8 @@ $().ready(function(){
  <li class="mtt-need-list mtt-need-real-list" id="btnDeleteList"><?php _e('list_delete');?></li>
  <li class="mtt-need-list mtt-need-real-list" id="btnClearCompleted"><?php _e('list_clearcompleted');?></li>
  <li class="mtt-need-list mtt-need-real-list mtt-menu-indicator" submenu="listexportmenucontainer"><div class="submenu-icon"></div><?php _e('list_export'); ?></li>
- <li class="mtt-need-list mtt-need-real-list" id="btnHideList"><?php _e('list_hide');?></li>
- <li class="mtt-menu-delimiter mtt-need-real-list"></li>
+ <li class="mtt-need-list" id="btnHideList"><?php _e('list_hide');?></li>
+ <li class="mtt-menu-delimiter"></li>
  <li class="mtt-need-list mtt-need-real-list" id="btnPublish"><div class="menu-icon"></div><?php _e('list_publish');?></li>
  <li class="mtt-need-list mtt-need-real-list" id="btnRssFeed"><div class="menu-icon"></div><a href="#"><?php _e('list_rssfeed');?></a></li>
  <li class="mtt-menu-delimiter mtt-need-real-list"></li>
