@@ -477,20 +477,22 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		}
 
 		$("#tasklist").sortable({
-				items: '> :not(.task-completed)',
-				cancel: 'span,input,a,textarea',
-		 		delay: 150,
-				start: tasklistSortStart,
-				update: tasklistSortUpdated,
-				placeholder: 'mtt-task-placeholder',
-				cursor: 'grabbing'
+			items: '> :not(.task-completed)',
+			cancel: 'span,input,a,textarea',
+			delay: 150,
+			start: tasklistSortStart,
+			update: tasklistSortUpdated,
+			placeholder: 'mtt-task-placeholder',
+			cursor: 'grabbing'
 		});
 
 
 		$("#lists ul").sortable({
-			delay:150,
-			update:listOrderChanged,
-			placeholder: 'mtt-list-sort-placeholder',
+			delay: 150,
+			update: listOrderChanged,
+			items: '> :not(.mtt-tabs-alltasks)',
+			forcePlaceholderSize : true,
+			placeholder: 'mtt-tab mtt-tab-sort-placeholder',
 			cursor: 'grabbing'
 		});
 
@@ -673,11 +675,18 @@ var mytinytodo = window.mytinytodo = _mtt = {
 				// or open first if all list are hidden
 				if(!openListId) openListId = res.list[0].id;
 
-				$.each(res.list, function(i,item){
-					tabLists.add(item);
-					ti += '<li id="list_'+item.id+'" class="mtt-tab'+(item.hidden?' mtt-tabs-hidden':'')+'">'+
-						'<a href="'+_mtt.urlForList(item)+'" title="'+item.name+'"><span>'+item.name+'</span>'+
-						'<div class="list-action"></div></a></li>';
+				$.each(res.list, function(i,item) {
+					if ( item.id == -1) {
+						ti += '<li id="list_all" class="mtt-tab mtt-tabs-alltasks'+(item.hidden?' mtt-tabs-hidden':'')+'">'+
+							'<a href="'+_mtt.urlForList(item)+'" title="'+item.name+'"><span>'+item.name+'</span>'+
+							'<div class="list-action"></div></a></li>';
+					}
+					else {
+						tabLists.add(item);
+						ti += '<li id="list_'+item.id+'" class="mtt-tab'+(item.hidden?' mtt-tabs-hidden':'')+'">'+
+							'<a href="'+_mtt.urlForList(item)+'" title="'+item.name+'"><span>'+item.name+'</span>'+
+							'<div class="list-action"></div></a></li>';
+					}
 				});
 			}
 
@@ -1292,12 +1301,13 @@ function toggleAllNotes(show)
 function tabSelect(elementOrId)
 {
 	var id;
-	if(typeof elementOrId == 'number') id = elementOrId;
+	if (typeof elementOrId == 'number') id = elementOrId;
 	else if(typeof elementOrId == 'string') id = parseInt(elementOrId);
 	else {
 		id = $(elementOrId).attr('id');
-		if(!id) return;
-		id = parseInt(id.split('_', 2)[1]);
+		if (!id ) return;
+		id = id.split('_', 2)[1];
+		if (id === 'all') id = -1;
 	}
 	if ( !tabLists.exists(id) ) {
 		// TODO: handle unknown list

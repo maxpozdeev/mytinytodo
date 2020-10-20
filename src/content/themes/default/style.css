@@ -54,8 +54,7 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 .tabs-n-button { flex-grow:1; display:flex; align-items:flex-start; }
 .tab-height-wrapper { box-sizing:border-box; height:2.2rem; display:flex; align-items:center; }
 .mtt-tabs { list-style:none; padding:0; margin:0; display:flex; justify-content:flex-start; flex-wrap:wrap; }
-.mtt-tabs li { margin:1px 3px 0 0; }
-.mtt-tab { background-color:#fbfbfb; border:1px solid #ededed; border-bottom:none; border-top-right-radius:8px; transition:background-color 0.1s ease-in; }
+.mtt-tab { margin:1px 3px 0 0; background-color:#fbfbfb; border:1px solid #ededed; border-bottom:none; border-top-right-radius:8px; transition:background-color 0.1s ease-in; }
 .mtt-tab a {
   margin:0; text-decoration:none; white-space:nowrap; color:#333333; display:inline-block; outline:none;
   box-sizing:border-box; height:2.2rem; padding:1px 0.3rem 0 0.3rem; display:flex; align-items:center;
@@ -68,10 +67,7 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 .mtt-tab:hover { background-color:#ddd; }
 .mtt-tab.mtt-tabs-selected:hover { background-color:#ededed; }
 .mtt-tabs-hidden { display:none; }
-.mtt-tabs .mtt-list-sort-placeholder { background-color:#ddd; border:1px solid #aaa; }
-
-.mtt-tabs-alltasks { margin:1px 3px 0 3px; }
-.mtt-tabs-alltasks.mtt-tab { border-top-right-radius:0px; border-top-left-radius:8px; }
+.mtt-tab-sort-placeholder { background-color:#ddd; border-color:#aaa; }
 
 #tabs_buttons {
  padding-left:2px; padding-right:2px;

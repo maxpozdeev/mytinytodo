@@ -18,7 +18,8 @@ if(isset($_GET['loadLists']))
 	if (!is_logged()) $sqlWhere = 'WHERE published=1';
 	else $sqlWhere = '';
 	$t = array();
-	$t['total'] = 0;
+	$t['list'][] = prepareAllTasksList();
+	$t['total'] = 1;
 	$q = $db->dq("SELECT * FROM {$db->prefix}lists $sqlWhere ORDER BY ow ASC, id ASC");
 	while($r = $q->fetch_assoc($q))
 	{
@@ -872,6 +873,19 @@ function prepareList($row)
 		'showCompl' => $taskview & 1 ? 1 : 0,
 		'showNotes' => $taskview & 2 ? 1 : 0,
 		'hidden' => $taskview & 4 ? 1 : 0,
+	);
+}
+
+function prepareAllTasksList()
+{
+	return array(
+		'id' => -1,
+		'name' => htmlarray(__('alltasks')),
+		'sort' => 3,
+		'published' => 0,
+		'showCompl' => 1,
+		'showNotes' => 0,
+		'hidden' => 1,
 	);
 }
 
