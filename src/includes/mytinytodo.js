@@ -146,7 +146,9 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		});
 
 		$('.mtt-tabs-select-button').click(function(event){
-			if(!_mtt.menus.selectlist) _mtt.menus.selectlist = new mttMenu('slmenucontainer', {onclick:slmenuSelect, adjustWidth:true, alignRight:true});
+			if (!_mtt.menus.selectlist) {
+				_mtt.menus.selectlist = new mttMenu( 'slmenucontainer', { onclick:slmenuSelect, alignRight: true } );
+			}
 			_mtt.menus.selectlist.show(this);
 		});
 
@@ -237,7 +239,8 @@ var mytinytodo = window.mytinytodo = _mtt = {
 						$('#tagcloudload').show();
 						loadTags(curList.id, function(){$('#tagcloudload').hide();});
 					}
-				}, adjustWidth:true, alignRight:true
+				},
+				alignRight:true
 			});
 			_mtt.menus.tagcloud.show(this);
 		});
@@ -1858,11 +1861,15 @@ function mttMenu(container, options)
 		}
 
 		// adjust width
-		this.$container.removeClass('mtt-left-adjusted mtt-right-adjusted');
-		if ( this.options.adjustWidth && this.$container.outerWidth(true) > $(window).width() ) {
-			this.$container.addClass('mtt-left-adjusted mtt-right-adjusted');
-			this.$container.width( $(window).width() - (this.$container.outerWidth(true) - this.$container.width()) );
+		if (this.options.adjustWidth) {
+			this.$container.width('');
+			this.$container.removeClass('mtt-left-adjusted mtt-right-adjusted');
+			if ( this.$container.outerWidth(true) > $(window).width() ) {
+				this.$container.addClass('mtt-left-adjusted mtt-right-adjusted');
+				this.$container.width( $(window).width() - (this.$container.outerWidth(true) - this.$container.width()) );
+			}
 		}
+
 		//round the width to avoid overflow issues
 		this.$container.width( Math.ceil(this.$container.width()) );
 
@@ -1896,11 +1903,15 @@ function mttMenu(container, options)
 	this.showSub = function()
 	{
 		// adjust width
-		this.$container.removeClass('mtt-left-adjusted mtt-right-adjusted');
-		if ( this.options.adjustWidth && this.$container.outerWidth(true) > $(window).width() ) {
-			this.$container.addClass('mtt-left-adjusted mtt-right-adjusted');
-			this.$container.width( $(window).width() - (this.$container.outerWidth(true) - this.$container.width()) );
+		if (this.options.adjustWidth) {
+			this.$container.width('');
+			this.$container.removeClass('mtt-left-adjusted mtt-right-adjusted');
+			if ( this.$container.outerWidth(true) > $(window).width() ) {
+				this.$container.addClass('mtt-left-adjusted mtt-right-adjusted');
+				this.$container.width( $(window).width() - (this.$container.outerWidth(true) - this.$container.width()) );
+			}
 		}
+
 		this.$caller.addClass('mtt-menu-item-active');
 		var offset = this.$caller.offset();
 		var containerWidth = this.$container.outerWidth(true);
