@@ -58,9 +58,9 @@ while($r = $q->fetch_assoc($q))
 	}
 	if($r['tags'] != '') $a[] = $lang->get('tags'). ": ". str_replace(',', ', ', $r['tags']);
 	if($r['compl']) $a[] = $lang->get('taskdate_completed'). ": ". timestampToDatetime($r['d_completed']);
-	$r['title'] = strip_tags($r['title']);
-	$r['note'] = escapeTags($r['note']);
-	$r['_descr'] = nl2br($r['note']). ($a && $r['note']!='' ? "<br/><br/>" : "").  implode("<br/>", htmlarray($a));
+	$r['title'] = htmlspecialchars( $r['title'] );
+	$r['note'] = mttMarkup_v1($r['note']);
+	$r['_descr'] = $r['note']. ($a && $r['note']!='' ? "<br/><br/>" : "").  implode("<br/>", htmlarray($a));
 	$data[] = $r;
 }
 
@@ -81,7 +81,7 @@ function printRss($listData, $data)
 		$d = gmdate('r', $v[$listData['_uid_field']]);
 		$guid = $listData['id'].'-'.$v['id'].'-'.$v[$listData['_uid_field']];
 
-		$s .= "<item>\n<title><![CDATA[". str_replace("]]>", "]]]]><![CDATA[>", $v['title']). "]]></title>\n".
+		$s .= "<item>\n<title>${v['title']}</title>\n".
 			"<link>$link</link>\n".
 			"<pubDate>$d</pubDate>\n".
 			"<description><![CDATA[". $v['_descr']. "]]></description>\n".

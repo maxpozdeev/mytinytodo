@@ -231,7 +231,7 @@ elseif(isset($_GET['editNote']))
 	$db->dq("UPDATE {$db->prefix}todolist SET note=?,d_edited=? WHERE id=$id", array($note, time()) );
 	$t = array();
 	$t['total'] = 1;
-	$t['list'][] = array('id'=>$id, 'note'=>nl2br(escapeTags($note)), 'noteText'=>(string)$note);
+	$t['list'][] = array('id'=>$id, 'note'=>mttMarkup_v1($note), 'noteText'=>(string)$note);
 	jsonExit($t);
 }
 elseif(isset($_GET['editTask']))
@@ -544,7 +544,7 @@ function prepareTaskRow($r)
 
 	return array(
 		'id' => $r['id'],
-		'title' => escapeTags($r['title']),
+		'title' => htmlspecialchars( $r['title'] ),
 		'listId' => $r['list_id'],
 		'date' => htmlarray($dCreated),
 		'dateInt' => (int)$r['d_created'],
@@ -556,7 +556,7 @@ function prepareTaskRow($r)
 		'dateCompletedInlineTitle' => htmlarray(sprintf($lang->get('taskdate_inline_completed'), $dCompleted)),
 		'compl' => (int)$r['compl'],
 		'prio' => $r['prio'],
-		'note' => nl2br(escapeTags($r['note'])),
+		'note' => mttMarkup_v1($r['note']),
 		'noteText' => (string)$r['note'],
 		'ow' => (int)$r['ow'],
 		'tags' => htmlarray($r['tags']),

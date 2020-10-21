@@ -956,7 +956,7 @@ function loadTasks(opts)
 function prepareTaskStr(item, noteExp)
 {
 	return '<li id="taskrow_'+item.id+'" class="task-row ' + (item.compl?'task-completed ':'') + item.dueClass + (item.note!=''?' task-has-note':'') +
-				((curList.showNotes && item.note != '') || noteExp ? ' task-expanded' : '') + prepareTagsClass(item.tags_ids) + '"><div class="task-container">' +
+				((curList.showNotes && item.note != '') || noteExp ? ' task-expanded' : '') + prepareDomClassOfTags(item.tags_ids) + '"><div class="task-container">' +
 					prepareTaskBlocks(item) + "</div></li>\n";
 };
 _mtt.prepareTaskStr = prepareTaskStr;
@@ -975,7 +975,7 @@ function prepareTaskBlocks(item)
 			'<div class="task-middle-top">' +
 				'<div class="task-through">' +
 					preparePrio(item.prio,id) +
-					'<span class="task-title">' + prepareHtml(item.title) + '</span> ' +
+					'<span class="task-title">' + prepareTaskTitleInlineHtml(item.title) + '</span> ' +
 					(curList.id == -1 ? '<span class="task-listname">'+ tabLists.get(item.listId).name +'</span>' : '') +
 					prepareTagsStr(item) +
 					'<span class="task-date">'+item.dateInlineTitle+'</span>' +
@@ -984,7 +984,7 @@ function prepareTaskBlocks(item)
 			'</div>' +
 
 			'<div class="task-note-block">' +
-				'<div id="tasknote'+id+'" class="task-note"><span>'+prepareHtml(item.note)+'</span></div>' +
+				'<div id="tasknote' + id + '" class="task-note">' + prepareTaskNoteInlineHtml(item.note) + '</div>' +
 				'<div id="tasknotearea'+id+'" class="task-note-area"><textarea id="notetext'+id+'"></textarea>'+
 					'<span class="task-note-actions"><a href="#" class="mtt-action-note-save">'+_mtt.lang.get('actionNoteSave') +
 						'</a> | <a href="#" class="mtt-action-note-cancel">'+_mtt.lang.get('actionNoteCancel')+'</a></span>' +
@@ -996,13 +996,19 @@ function prepareTaskBlocks(item)
 };
 _mtt.prepareTaskBlocks = prepareTaskBlocks;
 
-function prepareHtml(s)
+function prepareTaskTitleInlineHtml(s)
 {
-	// make URLs clickable
-	s = s.replace(/(^|\s|>)(www\.([\w\#$%&~\/.\-\+;:=,\?\[\]@]+?))(,|\.|:|)?(?=\s|&quot;|&lt;|&gt;|\"|<|>|$)/gi, '$1<a href="http://$2" target="_blank">$2</a>$4');
-	return s.replace(/(^|\s|>)((?:http|https|ftp):\/\/([\w\#$%&~\/.\-\+;:=,\?\[\]@]+?))(,|\.|:|)?(?=\s|&quot;|&lt;|&gt;|\"|<|>|$)/ig, '$1<a href="$2" target="_blank">$2</a>$4');
+	// Task title is already escaped on php back-end
+	return s;
+}
+_mtt.prepareTaskTitleInlineHtml = prepareTaskTitleInlineHtml;
+
+function prepareTaskNoteInlineHtml(s)
+{
+	// Task note is already escaped on php back-end
+	return s;
 };
-_mtt.prepareHtml = prepareHtml;
+_mtt.prepareTaskNoteInlineHtml = prepareTaskNoteInlineHtml;
 
 function preparePrio(prio,id)
 {
@@ -1027,7 +1033,7 @@ function prepareTagsStr(item)
 };
 _mtt.prepareTagsStr = prepareTagsStr;
 
-function prepareTagsClass(ids)
+function prepareDomClassOfTags(ids)
 {
 	if(!ids || ids == '') return '';
 	var a = ids.split(',');
@@ -1037,7 +1043,7 @@ function prepareTagsClass(ids)
 	}
 	return ' '+a.join(' ');
 };
-_mtt.prepareTagsClass = prepareTagsClass;
+_mtt.prepareDomClassOfTags = prepareDomClassOfTags;
 
 function prepareDueDate(item)
 {
@@ -1456,7 +1462,7 @@ function saveTaskNote(id)
 		var item = json.list[0];
 		taskList[id].note = item.note;
 		taskList[id].noteText = item.noteText;
-		$('#tasknote'+id+'>span').html(prepareHtml(item.note));
+		$('#tasknote'+id).html(prepareTaskNoteInlineHtml(item.note));
 		if(item.note == '') $('#taskrow_'+id).removeClass('task-has-note task-expanded');
 		else $('#taskrow_'+id).addClass('task-has-note task-expanded');
 		cancelTaskNote(id);

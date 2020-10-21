@@ -226,8 +226,8 @@ li.task-completed .task-note-block .task-note { text-decoration:line-through; }
 .invisible { visibility:hidden; }
 .in500 { width:500px; color:#444444; }
 .in100 { width:100px; color:#444444; }
-.task-note span a { color:#777777; }
-.task-note span a:hover { color:#af0000; }
+.task-note a { color:#777777; }
+.task-note a:hover { color:#af0000; }
 
 .task-prio { padding-left:2px; padding-right:2px; margin-left:0px; margin-right:5px; cursor:default; }
 .prio-neg { background-color:#3377ff; color:#ffffff; }
