@@ -678,15 +678,32 @@ function addTaskTags($taskId, $tagIds, $listId)
 
 function parse_smartsyntax($title)
 {
-	$a = array();
-	if(!preg_match("|^(/([+-]{0,1}\d+)?/)?(.*?)(\s+/([^/]*)/$)?$|", $title, $m)) return false;
-	$a['prio'] = isset($m[2]) ? (int)$m[2] : 0;
-	$a['title'] = isset($m[3]) ? trim($m[3]) : '';
-	$a['tags'] = isset($m[5]) ? trim($m[5]) : '';
-	if($a['prio'] < -1) $a['prio'] = -1;
-	elseif($a['prio'] > 2) $a['prio'] = 2;
+	$a = [
+		'prio' => 0,
+		'title' => $title,
+		'tags' => ''
+	];
+	if ( preg_match("|^([-+]{1}\d+)(.+)|", $a['title'], $m) ) {
+		$a['prio'] = (int) $m[1];
+		if ( $a['prio'] < -1 ) $a['prio'] = -1;
+		elseif ( $a['prio'] > 2 ) $a['prio'] = 2;
+		$a['title'] = trim($m[2]);
+	}
+	$tags = [];
+	$a['title'] = trim( preg_replace_callback(
+		"/(?:^|\s+)#([^#\s]+)/",
+		function ($matches) use (&$tags) {
+			$tags[] = $matches[1];
+			return '';
+		},
+		$a['title']
+	) );
+	if (count($tags) > 0) {
+		$a['tags'] = implode( ',' , $tags );
+	}
 	return $a;
 }
+
 
 function tag_size($qmin, $q, $step)
 {
