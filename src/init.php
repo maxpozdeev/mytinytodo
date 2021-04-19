@@ -9,6 +9,7 @@ define('MTT_VERSION', '@VERSION');
 
 ##### MyTinyTodo requires php 5.4.0 and above! #####
 if (version_compare(PHP_VERSION, '5.4.0') < 0) {
+	# If you adopt the script for old php version, look at stop_gpc() function in the sources of MTT v1.6
 	die("PHP 5.4+ is required");
 }
 
