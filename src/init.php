@@ -175,15 +175,6 @@ function get_unsafe_mttinfo($v)
 				$_mttinfo['url'] = ($is_https ? 'https://' : 'http://'). $_SERVER['HTTP_HOST']. url_dir(getRequestUri());
 			}
 			return $_mttinfo['url'];
-		case 'mobile_url':
-			$_mttinfo['mobile_url'] = Config::getUrl('mobile_url');
-			if ($_mttinfo['mobile_url'] == '') {
-				$_mttinfo['mobile_url'] = get_unsafe_mttinfo('url'). '?mobile';
-			}
-			return $_mttinfo['mobile_url'];
-		case 'desktop_url':
-			$_mttinfo['desktop_url'] = get_unsafe_mttinfo('url'). '?desktop';
-			return $_mttinfo['desktop_url'];
 		case 'mtt_url':
 			/* Directory with ajax.php. No need to set if you use default directory structure. */
 			$_mttinfo['mtt_url'] = Config::getUrl('mtt_url'); // need to have a trailing slash

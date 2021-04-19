@@ -14,7 +14,6 @@ h3 { border-bottom:2px solid #777777; }
 .mtt-tab a span { text-align:left; padding:0; max-width:none; font-size:1.3rem; color:#000; }
 
 .mtt-tabs-add-button { display:none; }
-#list_all { display:none; }
 #tabs_buttons { display:none; }
 #taskview { padding-left:0; font-weight:normal; }
 #taskview .arrdown { display:none; }
@@ -34,7 +33,6 @@ li.task-completed  { opacity:1; }
 
 #footer_content { border-top:1px solid #777777; background:none; }
 #footer_content a { text-decoration:none; color:#000000; }
-#mobileordesktop { display: none; }
 
 #tagcloudbtn { display:none; }
 .mtt-notes-showhide { display:none; }
