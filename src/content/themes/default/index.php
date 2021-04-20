@@ -120,7 +120,7 @@ $().ready(function(){
 
 
 
-<h3>
+<h3 class="page-title">
 <span id="taskview" class="mtt-menu-button"><span class="btnstr"><?php _e('tasks');?></span> (<span id="total">0</span>) <span class="arrdown"></span></span>
 <span class="mtt-notes-showhide"><?php _e('notes');?> <a href="#" id="mtt-notes-show"><?php _e('notes_show');?></a> / <a href="#" id="mtt-notes-hide"><?php _e('notes_hide');?></a></span>
 <span id="tagcloudbtn" class="mtt-menu-button"><?php _e('tagcloud');?> <span class="arrdown2"></span></span>
@@ -136,8 +136,8 @@ $().ready(function(){
 
 <div><a href="#" class="mtt-back-button"><?php _e('go_back');?></a></div>
 
-<h3 class="mtt-inadd"><?php _e('add_task');?></h3>
-<h3 class="mtt-inedit"><?php _e('edit_task');?>
+<h3 class="page-title mtt-inadd"><?php _e('add_task');?></h3>
+<h3 class="page-title mtt-inedit"><?php _e('edit_task');?>
  <div id="taskedit-date" class="mtt-inedit">
   (<span class="date-created" title="<?php _e('taskdate_created');?>"><span></span></span><span class="date-completed" title="<?php _e('taskdate_completed');?>"> &mdash; <span></span></span>)
  </div>
