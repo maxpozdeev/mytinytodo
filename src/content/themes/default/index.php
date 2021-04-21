@@ -23,20 +23,7 @@
 
 <script type="text/javascript">
 $().ready(function(){
-	mytinytodo.init({
-		title: "<?php mttinfo('title', false); ?>",
-		lang: <?php echo Lang::instance()->makeJS() ?>,
-		mttUrl: "<?php mttinfo('mtt_url'); ?>",
-		homeUrl: "<?php mttinfo('url'); ?>",
-		db: mytinytodoStorageAjax,
-		needAuth: <?php echo need_auth() ? "true" : "false"; ?>,
-		isLogged: <?php echo is_logged() ? "true" : "false"; ?>,
-		showdate: <?php echo Config::get('showdate') ? "true" : "false"; ?>,
-		duedatepickerformat: "<?php echo htmlspecialchars(Config::get('dateformat2')); ?>",
-		firstdayofweek: <?php echo (int) Config::get('firstdayofweek'); ?>,
-		calendarIcon: '<?php mttinfo('template_url'); ?>images/calendar.svg',
-		autotag: <?php echo Config::get('autotag') ? "true" : "false"; ?>
-	}).run();
+	mytinytodo.setApi(mytinytodoStorageAjax).init(<?php js_options(); ?>).run();
 });
 </script>
 

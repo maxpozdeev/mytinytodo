@@ -107,6 +107,12 @@ var mytinytodo = window.mytinytodo = _mtt = {
 	flag: flag,
 
 	// procs
+	setApi: function(storage)
+	{
+		this.db = new storage(this);
+		return this;
+	},
+
 	init: function(options)
 	{
 		// required properties

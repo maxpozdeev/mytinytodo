@@ -47,3 +47,22 @@ function redirectWithHashRoute(array $q, array $hash)
 	header("Location: ". $url);
 	exit;
 }
+
+function js_options()
+{
+	$a = array(
+		"title" => get_mttinfo('title', false),
+		"lang" => Lang::instance()->jsStrings(),
+		"mttUrl" => get_mttinfo('mtt_url'),
+		"homeUrl" => get_mttinfo('url'),
+		"needAuth" => need_auth() ? true : false,
+		"isLogged" => is_logged() ? true : false,
+		"showdate" => Config::get('showdate') ? true : false,
+		"duedatepickerformat" => htmlspecialchars(Config::get('dateformat2')),
+		"firstdayofweek" => (int) Config::get('firstdayofweek'),
+		"calendarIcon" => get_mttinfo('template_url'). 'images/calendar.svg',
+		"autotag" => Config::get('autotag') ? true : false,
+		"markdown" => Config::get('markup') == 'v1' ? false : true
+	);
+	echo json_encode($a, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+}

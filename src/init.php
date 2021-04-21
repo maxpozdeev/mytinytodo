@@ -143,7 +143,6 @@ function __($s)
 
 function mttinfo($v, $escape = true)
 {
-	global $_mttinfo;
 	echo $escape ? get_mttinfo($v) : get_unsafe_mttinfo($v);
 }
 

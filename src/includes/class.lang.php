@@ -90,7 +90,8 @@ class Lang
 		return 0;
 	}
 
-	function makeJS($pretty = 0)
+	/* minimal number of translated strings to use in js front-end */
+	function jsStrings()
 	{
 		$a = array();
 		$a['daysMin'] = $this->get('days_min');
@@ -121,6 +122,12 @@ class Lang
 		]);
 		$a['_rtl'] = $this->rtl() ? 1 : 0;
 
+		return $a;
+	}
+
+	function makeJS($pretty = 0)
+	{
+		$a = $this->jsStrings();
 		$opts = JSON_UNESCAPED_UNICODE;
 		if ($pretty) {
 			$opts |= JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES;
