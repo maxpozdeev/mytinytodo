@@ -467,7 +467,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 
 		$("#tasklist").sortable({
 			items: '> :not(.task-completed)',
-			cancel: 'span,input,a,textarea',
+			cancel: 'span,input,a,textarea,.task-note',
 			delay: 150,
 			start: tasklistSortStart,
 			update: tasklistSortUpdated,
