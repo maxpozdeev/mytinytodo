@@ -1,29 +1,25 @@
 <?php header("Content-type: text/html; charset=utf-8"); ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!doctype html>
+<html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title><?php mttinfo('title'); ?></title>
-<link rel="stylesheet" type="text/css" href="<?php mttinfo('template_url'); ?>style.css?v=<?php mttinfo('version'); ?>" media="all" />
-<link rel="stylesheet" type="text/css" href="<?php mttinfo('template_url'); ?>print.css?v=<?php mttinfo('version'); ?>" media="print" />
-<?php if(Config::get('rtl')): ?>
-<link rel="stylesheet" type="text/css" href="<?php mttinfo('template_url'); ?>style_rtl.css?v=<?php mttinfo('version'); ?>" media="all" />
-<?php endif; ?>
-<?php if(Config::get('mobile')): ?>
-<meta name="viewport" id="viewport" content="width=device-width" />
-<link rel="stylesheet" type="text/css" href="<?php mttinfo('template_url'); ?>mobile.css?v=<?php mttinfo('version'); ?>" media="all" />
-<?php endif; ?>
+	<meta charset="utf-8">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title><?php mttinfo('title'); ?></title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link rel="stylesheet" type="text/css" href="<?php mttinfo('template_url'); ?>style.css?v=<?php mttinfo('version'); ?>" media="all" />
+	<link rel="stylesheet" type="text/css" href="<?php mttinfo('template_url'); ?>print.css?v=<?php mttinfo('version'); ?>" media="print" />
+	<?php if(Config::get('rtl')): ?>
+	<link rel="stylesheet" type="text/css" href="<?php mttinfo('template_url'); ?>style_rtl.css?v=<?php mttinfo('version'); ?>" media="all" />
+	<?php endif; ?>
 </head>
 
 <body <?php if (Lang::instance()->rtl()) echo 'dir="rtl"'; ?>>
 
 <script type="text/javascript" src="<?php mttinfo('includes_url'); ?>jquery/jquery-3.5.1.min.js"></script>
 <script type="text/javascript" src="<?php mttinfo('includes_url'); ?>jquery/jquery-ui-1.12.1.min.js"></script>
+<script type="text/javascript" src="<?php mttinfo('includes_url'); ?>jquery/jquery.ui.touch-punch.js"></script>
 <script type="text/javascript" src="<?php mttinfo('includes_url'); ?>mytinytodo.js?v=<?php mttinfo('version'); ?>"></script>
 <script type="text/javascript" src="<?php mttinfo('includes_url'); ?>mytinytodo_ajax_storage.js?v=<?php mttinfo('version'); ?>"></script>
-<?php if(Config::get('mobile')): ?>
-<script type="text/javascript" src="<?php mttinfo('includes_url'); ?>jquery/jquery.ui.touch-punch.js"></script>
-<?php endif; ?>
 
 <script type="text/javascript">
 $().ready(function(){
@@ -35,13 +31,11 @@ $().ready(function(){
 		db: mytinytodoStorageAjax,
 		needAuth: <?php echo need_auth() ? "true" : "false"; ?>,
 		isLogged: <?php echo is_logged() ? "true" : "false"; ?>,
-		showdate: <?php echo (Config::get('showdate') && !Config::get('mobile')) ? "true" : "false"; ?>,
-		singletab: <?php echo (isset($_GET['singletab']) || Config::get('mobile')) ? "true" : "false"; ?>,
+		showdate: <?php echo Config::get('showdate') ? "true" : "false"; ?>,
 		duedatepickerformat: "<?php echo htmlspecialchars(Config::get('dateformat2')); ?>",
 		firstdayofweek: <?php echo (int) Config::get('firstdayofweek'); ?>,
 		calendarIcon: '<?php mttinfo('template_url'); ?>images/calendar.svg',
 		autotag: <?php echo Config::get('autotag') ? "true" : "false"; ?>
-		<?php if(Config::get('mobile')) echo ", touchDevice: true"; ?>
 	}).run();
 });
 </script>
@@ -82,9 +76,7 @@ $().ready(function(){
    <ul class="mtt-tabs"></ul>
    <div class="mtt-tabs-add-button" title="<?php _e('list_new'); ?>"><div class="tab-height-wrapper"><span></span></div></div>
  </div>
- <div id="list_all" class="mtt-tab mtt-tabs-alltasks mtt-tabs-hidden">
-	 <a href="#alltasks" title="<?php _e('alltasks'); ?>"><span><?php _e('alltasks'); ?></span><div class="list-action"></div></a>
- </div>
+
  <div id="tabs_buttons">
    <div class="tab-height-wrapper">
      <div class="mtt-tabs-select-button mtt-img-button" title="<?php _e('list_select'); ?>"><span></span></div>
@@ -128,15 +120,13 @@ $().ready(function(){
 
 
 
-<h3>
+<h3 class="page-title">
 <span id="taskview" class="mtt-menu-button"><span class="btnstr"><?php _e('tasks');?></span> (<span id="total">0</span>) <span class="arrdown"></span></span>
 <span class="mtt-notes-showhide"><?php _e('notes');?> <a href="#" id="mtt-notes-show"><?php _e('notes_show');?></a> / <a href="#" id="mtt-notes-hide"><?php _e('notes_hide');?></a></span>
 <span id="tagcloudbtn" class="mtt-menu-button"><?php _e('tagcloud');?> <span class="arrdown2"></span></span>
 </h3>
 
-<div id="taskcontainer">
- <ol id="tasklist" class="sortable"></ol>
-</div>
+<ol id="tasklist" class="sortable"></ol>
 
 </div>
 <!-- End of page_tasks -->
@@ -146,8 +136,8 @@ $().ready(function(){
 
 <div><a href="#" class="mtt-back-button"><?php _e('go_back');?></a></div>
 
-<h3 class="mtt-inadd"><?php _e('add_task');?></h3>
-<h3 class="mtt-inedit"><?php _e('edit_task');?>
+<h3 class="page-title mtt-inadd"><?php _e('add_task');?></h3>
+<h3 class="page-title mtt-inedit"><?php _e('edit_task');?>
  <div id="taskedit-date" class="mtt-inedit">
   (<span class="date-created" title="<?php _e('taskdate_created');?>"><span></span></span><span class="date-completed" title="<?php _e('taskdate_completed');?>"> &mdash; <span></span></span>)
  </div>
@@ -224,8 +214,8 @@ $().ready(function(){
  <li class="mtt-need-list mtt-need-real-list" id="btnDeleteList"><?php _e('list_delete');?></li>
  <li class="mtt-need-list mtt-need-real-list" id="btnClearCompleted"><?php _e('list_clearcompleted');?></li>
  <li class="mtt-need-list mtt-need-real-list mtt-menu-indicator" submenu="listexportmenucontainer"><div class="submenu-icon"></div><?php _e('list_export'); ?></li>
- <li class="mtt-need-list mtt-need-real-list" id="btnHideList"><?php _e('list_hide');?></li>
- <li class="mtt-menu-delimiter mtt-need-real-list"></li>
+ <li class="mtt-need-list" id="btnHideList"><?php _e('list_hide');?></li>
+ <li class="mtt-menu-delimiter"></li>
  <li class="mtt-need-list mtt-need-real-list" id="btnPublish"><div class="menu-icon"></div><?php _e('list_publish');?></li>
  <li class="mtt-need-list mtt-need-real-list" id="btnRssFeed"><div class="menu-icon"></div><a href="#"><?php _e('list_rssfeed');?></a></li>
  <li class="mtt-menu-delimiter mtt-need-real-list"></li>
@@ -285,11 +275,6 @@ $().ready(function(){
 <div id="footer">
 	<div id="footer_content">
 		<span><?php _e('powered_by');?> <a href="http://www.mytinytodo.net/" class="powered-by-link">myTinyTodo</a>&nbsp;<?php mttinfo('version'); ?></span>
-		<span id="mobileordesktop">
-			<?php if(Config::get('mobile')): ?><a href="<?php echo getDesktopUrl(); ?>"><?php _e('desktop_version');?></a>
-			<?php else: ?><a href="<?php mttinfo('mobile_url'); ?>"><?php _e('mobile_version');?></a>
-			<?php endif; ?>
-		</span>
 	</div>
 </div>
 

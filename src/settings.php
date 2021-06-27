@@ -175,7 +175,7 @@ header('Content-type:text/html; charset=utf-8');
 
 <div><a href="#" class="mtt-back-button"><?php _e('go_back');?></a></div>
 
-<h3><?php _e('set_header');?></h3>
+<h3 class="page-title"><?php _e('set_header');?></h3>
 
 <div id="settings_msg" style="display:none"></div>
 

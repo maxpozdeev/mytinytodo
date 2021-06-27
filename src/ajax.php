@@ -18,7 +18,8 @@ if(isset($_GET['loadLists']))
 	if (!is_logged()) $sqlWhere = 'WHERE published=1';
 	else $sqlWhere = '';
 	$t = array();
-	$t['total'] = 0;
+	$t['list'][] = prepareAllTasksList();
+	$t['total'] = 1;
 	$q = $db->dq("SELECT * FROM {$db->prefix}lists $sqlWhere ORDER BY ow ASC, id ASC");
 	while($r = $q->fetch_assoc($q))
 	{
@@ -226,7 +227,7 @@ elseif(isset($_GET['editNote']))
 	$db->dq("UPDATE {$db->prefix}todolist SET note=?,d_edited=? WHERE id=$id", array($note, time()) );
 	$t = array();
 	$t['total'] = 1;
-	$t['list'][] = array('id'=>$id, 'note'=>nl2br(escapeTags($note)), 'noteText'=>(string)$note);
+	$t['list'][] = array('id'=>$id, 'note'=>mttMarkup_v1($note), 'noteText'=>(string)$note);
 	jsonExit($t);
 }
 elseif(isset($_GET['editTask']))
@@ -530,7 +531,7 @@ function prepareTaskRow($r)
 
 	return array(
 		'id' => $r['id'],
-		'title' => escapeTags($r['title']),
+		'title' => htmlspecialchars( $r['title'] ),
 		'listId' => $r['list_id'],
 		'date' => htmlarray($dCreated),
 		'dateInt' => (int)$r['d_created'],
@@ -542,7 +543,7 @@ function prepareTaskRow($r)
 		'dateCompletedInlineTitle' => htmlarray(sprintf($lang->get('taskdate_inline_completed'), $dCompleted)),
 		'compl' => (int)$r['compl'],
 		'prio' => $r['prio'],
-		'note' => nl2br(escapeTags($r['note'])),
+		'note' => mttMarkup_v1($r['note']),
 		'noteText' => (string)$r['note'],
 		'ow' => (int)$r['ow'],
 		'tags' => htmlarray($r['tags']),
@@ -664,15 +665,32 @@ function addTaskTags($taskId, $tagIds, $listId)
 
 function parse_smartsyntax($title)
 {
-	$a = array();
-	if(!preg_match("|^(/([+-]{0,1}\d+)?/)?(.*?)(\s+/([^/]*)/$)?$|", $title, $m)) return false;
-	$a['prio'] = isset($m[2]) ? (int)$m[2] : 0;
-	$a['title'] = isset($m[3]) ? trim($m[3]) : '';
-	$a['tags'] = isset($m[5]) ? trim($m[5]) : '';
-	if($a['prio'] < -1) $a['prio'] = -1;
-	elseif($a['prio'] > 2) $a['prio'] = 2;
+	$a = [
+		'prio' => 0,
+		'title' => $title,
+		'tags' => ''
+	];
+	if ( preg_match("|^([-+]{1}\d+)(.+)|", $a['title'], $m) ) {
+		$a['prio'] = (int) $m[1];
+		if ( $a['prio'] < -1 ) $a['prio'] = -1;
+		elseif ( $a['prio'] > 2 ) $a['prio'] = 2;
+		$a['title'] = trim($m[2]);
+	}
+	$tags = [];
+	$a['title'] = trim( preg_replace_callback(
+		"/(?:^|\s+)#([^#\s]+)/",
+		function ($matches) use (&$tags) {
+			$tags[] = $matches[1];
+			return '';
+		},
+		$a['title']
+	) );
+	if (count($tags) > 0) {
+		$a['tags'] = implode( ',' , $tags );
+	}
 	return $a;
 }
+
 
 function tag_size($qmin, $q, $step)
 {
@@ -859,6 +877,19 @@ function prepareList($row)
 		'showCompl' => $taskview & 1 ? 1 : 0,
 		'showNotes' => $taskview & 2 ? 1 : 0,
 		'hidden' => $taskview & 4 ? 1 : 0,
+	);
+}
+
+function prepareAllTasksList()
+{
+	return array(
+		'id' => -1,
+		'name' => htmlarray(__('alltasks')),
+		'sort' => 3,
+		'published' => 0,
+		'showCompl' => 1,
+		'showNotes' => 0,
+		'hidden' => 1,
 	);
 }
 

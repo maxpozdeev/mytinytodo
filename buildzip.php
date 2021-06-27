@@ -51,10 +51,6 @@ rename('db/config.php.default', 'db/config.php');
 $fh = fopen("./content/themes/default/index.php", 'a') or die("cant write index.php\n");
 fwrite($fh, "\n<!-- $rev -->");
 fclose($fh);
-
-$fh = fopen("./content/themes/ie8/index.php", 'a') or die("cant write ie8/index.php\n");
-fwrite($fh, "\n<!-- $rev -->");
-fclose($fh);
 */
 
 #replace @VERSION
@@ -74,13 +70,6 @@ while (false !== ($f = readdir($dh))) {
 }
 closedir($dh);
  */
-
-
-# pack ie8 theme
-chdir('content/themes');
-`zip -9 -r ie8.zip ie8`; #OS dep.!!!
-deleteTreeIfDir('ie8');
-chdir('../..');
 
 
 chdir('..'); # to the root of repo
