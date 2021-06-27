@@ -19,3 +19,6 @@ insert_final_newline = false
 
 [/version.txt]
 insert_final_newline = false
+
+[*.yml]
+indent_style = space
