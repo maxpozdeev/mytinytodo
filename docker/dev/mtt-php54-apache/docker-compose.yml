@@ -7,5 +7,5 @@ services:
     ports:
     - "8080:80"
     volumes:
-    - ../../src:/var/www/html
+    - ../../../src:/var/www/html
     - ./php-mtt.ini:/usr/local/etc/php/conf.d/php-mtt.ini
