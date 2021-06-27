@@ -24,3 +24,6 @@ indent_size = 2
 
 [/version.txt]
 insert_final_newline = false
+
+[*.yml]
+indent_style = space

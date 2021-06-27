@@ -152,10 +152,15 @@ class Database_Sqlite3
 
 	function table_exists($table)
 	{
-		$table = $this->dbh->quote($table);
-		$q = $this->dbh->query("SELECT 1 FROM $table WHERE 1=0");
-		if($q === false) return false;
-		else return true;
+		$exists = $this->sq("SELECT 1 FROM sqlite_master WHERE type='table' AND name=?", $table);
+		if ($exists == "1") {
+		  return true;
+		}
+		$exists = $this->sq("SELECT 1 FROM sqlite_temp_master WHERE type='table' AND name=?", $table);
+		if ($exists == "1") {
+		  return true;
+		}
+		return false;
 	}
 }
 

@@ -164,14 +164,14 @@ class Config
 		if($f === false) throw new Exception("Error while saving config file");
 		fwrite($f, "<?php\n\$config = array();\n$s?>");
 		fclose($f);
-/*
+
 		//Reset Zend OPcache
 		//opcache_get_status() sometimes crashes
 		//TODO: save config in database!
 		if (function_exists("opcache_invalidate") && 0 != (int)opcache_get_configuration()["directives"]["opcache.enable"]) {
 			opcache_invalidate(MTTPATH. 'db/config.php', true);
 		}
- */
+
 	}
 }
 
