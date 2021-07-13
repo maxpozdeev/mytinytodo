@@ -1,0 +1,123 @@
+/* Markdown notes */
+
+.markdown-note {
+  line-height: 1.3;
+}
+/*
+.markdown-note > *:first-child { margin-top: 0 !important; }
+.markdown-note > *:last-child { margin-bottom: 0 !important; }
+*/
+
+.markdown-note h1 { font-size:2rem; }
+.markdown-note h2 { font-size:1.5rem; }
+.markdown-note h3 { font-size:1.2rem; }
+.markdown-note h4 { font-size:1rem; }
+.markdown-note h5 { font-size:1rem; }
+.markdown-note h6 { font-size:1rem; }
+
+.markdown-note hr {
+  height: 1px;
+  border: 0;
+  background-color: #ccc;
+}
+
+.markdown-note p,
+.markdown-note blockquote,
+.markdown-note ul,
+.markdown-note ol,
+.markdown-note dl,
+.markdown-note table,
+.markdown-note pre {
+  margin: 10px 0;
+}
+.markdown-note ul,
+.markdown-note ol {
+  padding-left: 20px;
+}
+.markdown-note ul.no-list,
+.markdown-note ol.no-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.markdown-note blockquote {
+  margin:15px 0;
+  border-left: 4px solid #DDD;
+  padding: 0 15px;
+  color: #777;
+}
+.markdown-note blockquote > :first-child {
+  margin-top: 0px;
+}
+.markdown-note blockquote > :last-child {
+  margin-bottom: 0px;
+}
+
+.markdown-note table {
+  width: 100%;
+  overflow: auto;
+  display: block;
+  border-spacing: 0;
+  border-collapse: collapse;
+}
+.markdown-note table th {
+  font-weight: bold;
+}
+.markdown-note table th,
+.markdown-note table td {
+  border: 1px solid #ddd;
+  padding: 6px 13px;
+}
+.markdown-note table tr {
+  border-top: 1px solid #ccc;
+  background-color: #fff;
+}
+.markdown-note table tr:nth-child(2n) {
+  background-color: #f8f8f8;
+}
+
+
+.markdown-note code, /* inline code */
+.markdown-note tt {
+  font-size: 0.95rem;
+  margin: 0 2px;
+  padding: 0px 5px;
+  border: 1px solid #ddd;
+  background-color: #f8f8f8;
+  border-radius: 3px;
+}
+.markdown-note code {
+  white-space: nowrap;
+}
+.markdown-note pre {
+  font-size: 0.95rem;
+  line-height: 1.2rem;
+  padding: 6px 10px;
+  background-color: #f8f8f8;
+  border: 1px solid #ddd;
+  overflow: auto;
+  border-radius: 3px;
+}
+.markdown-note pre code, /* block of code */
+.markdown-note pre tt {
+  margin: 0;
+  padding: 0;
+  background-color: transparent;
+  border: none;
+}
+.markdown-note pre > code {
+  white-space: pre;
+}
+
+
+/* narrow screens */
+@media only screen and (max-width: 600px) {
+
+  .markdown-note { padding-top: 0.5rem; }
+
+  .markdown-note pre,
+  .markdown-note code,
+  .markdown-note tt {
+    font-size: 0.9rem;
+  }
+}

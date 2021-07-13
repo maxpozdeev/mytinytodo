@@ -61,7 +61,8 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		firstdayofweek: 1,
 		touchDevice: false,
 		calendarIcon: 'calendar.png', // need templateUrl+icon
-		history: true
+		history: true,
+		markdown: true,
 	},
 
 	timers: {
@@ -125,7 +126,6 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			delete options.mttUrl;
 		}
 		if (options.hasOwnProperty('db')) {
-			this.db = new options.db(this);
 			delete options.db;
 		}
 		if (options.hasOwnProperty('homeUrl')) {
@@ -699,6 +699,10 @@ var mytinytodo = window.mytinytodo = _mtt = {
 				//TODO: handle unknown list
 			}
 
+			if (_mtt.options.markdown == true) {
+				$('#mtt_body').addClass('markdown-enabled');
+			}
+
 			_mtt.options.openList = 0;
 			$('#lists ul').html(ti);
 			$('#lists').show();
@@ -970,6 +974,8 @@ _mtt.prepareTaskStr = prepareTaskStr;
 function prepareTaskBlocks(item)
 {
 	var id = item.id;
+	var markdown = '';
+	if (_mtt.options.markdown == true) markdown = 'markdown-note';
 	return	''+
 		'<div class="task-left">' +
 			'<div class="task-toggle"></div>' +
@@ -990,7 +996,7 @@ function prepareTaskBlocks(item)
 			'</div>' +
 
 			'<div class="task-note-block">' +
-				'<div id="tasknote' + id + '" class="task-note">' + prepareTaskNoteInlineHtml(item.note) + '</div>' +
+				'<div id="tasknote' + id + '" class="task-note ' + markdown + '">' + prepareTaskNoteInlineHtml(item.note, item.noteText) + '</div>' +
 				'<div id="tasknotearea'+id+'" class="task-note-area"><textarea id="notetext'+id+'"></textarea>'+
 					'<span class="task-note-actions"><a href="#" class="mtt-action-note-save">'+_mtt.lang.get('actionNoteSave') +
 						'</a> | <a href="#" class="mtt-action-note-cancel">'+_mtt.lang.get('actionNoteCancel')+'</a></span>' +
@@ -1009,7 +1015,7 @@ function prepareTaskTitleInlineHtml(s)
 }
 _mtt.prepareTaskTitleInlineHtml = prepareTaskTitleInlineHtml;
 
-function prepareTaskNoteInlineHtml(s)
+function prepareTaskNoteInlineHtml(s, rawText)
 {
 	// Task note is already escaped on php back-end
 	return s;
@@ -1468,7 +1474,7 @@ function saveTaskNote(id)
 		var item = json.list[0];
 		taskList[id].note = item.note;
 		taskList[id].noteText = item.noteText;
-		$('#tasknote'+id).html(prepareTaskNoteInlineHtml(item.note));
+		$('#tasknote'+id).html(prepareTaskNoteInlineHtml(item.note, item.noteText));
 		if(item.note == '') $('#taskrow_'+id).removeClass('task-has-note task-expanded');
 		else $('#taskrow_'+id).addClass('task-has-note task-expanded');
 		cancelTaskNote(id);

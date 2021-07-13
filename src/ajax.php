@@ -10,6 +10,7 @@ set_error_handler('myErrorHandler');
 set_exception_handler('myExceptionHandler');
 
 require_once('./init.php');
+require_once(MTTINC. 'markup.php');
 
 $db = DBConnection::instance();
 
@@ -227,7 +228,7 @@ elseif(isset($_GET['editNote']))
 	$db->dq("UPDATE {$db->prefix}todolist SET note=?,d_edited=? WHERE id=$id", array($note, time()) );
 	$t = array();
 	$t['total'] = 1;
-	$t['list'][] = array('id'=>$id, 'note'=>mttMarkup_v1($note), 'noteText'=>(string)$note);
+	$t['list'][] = array('id'=>$id, 'note'=> noteMarkup($note), 'noteText'=>(string)$note);
 	jsonExit($t);
 }
 elseif(isset($_GET['editTask']))
@@ -543,7 +544,7 @@ function prepareTaskRow($r)
 		'dateCompletedInlineTitle' => htmlarray(sprintf($lang->get('taskdate_inline_completed'), $dCompleted)),
 		'compl' => (int)$r['compl'],
 		'prio' => $r['prio'],
-		'note' => mttMarkup_v1($r['note']),
+		'note' => noteMarkup($r['note']),
 		'noteText' => (string)$r['note'],
 		'ow' => (int)$r['ow'],
 		'tags' => htmlarray($r['tags']),
