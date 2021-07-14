@@ -13,7 +13,7 @@ var filter = { compl:0, search:'', due:'' };
 var sortOrder; //save task order before dragging
 var searchTimer;
 var objPrio = {};
-var selTask = 0;
+var lastClickedNodeId = 0;
 var flag = { needAuth:false, isLogged:false, tagsChanged:true, readOnly:false, editFormChanged:false, firstLoad:true, historySkip:false };
 var taskCnt = { total:0, past: 0, today:0, soon:0 };
 var tabLists = {
@@ -2150,14 +2150,15 @@ function clearCompleted()
 function tasklistClick(e)
 {
 	var node = e.target.nodeName.toUpperCase();
-	if(node=='SPAN' || node=='LI' || node=='DIV')
+	if (node=='SPAN' || node=='LI' || node=='DIV')
 	{
-		var li =  findParentNode(e.target, 'LI');
-		if(li) {
-			if(selTask && li.id != selTask) $('#'+selTask).removeClass('clicked doubleclicked');
-			selTask = li.id;
-			if($(li).is('.clicked')) $(li).toggleClass('doubleclicked');
-			else $(li).addClass('clicked');
+		var li = findParentNode(e.target, 'LI');
+		if (li) {
+			if (lastClickedNodeId && li.id != lastClickedNodeId) {
+				$('#'+lastClickedNodeId).removeClass('clicked');
+			}
+			lastClickedNodeId = li.id;
+			$(li).toggleClass('clicked');
 		}
 	}
 };

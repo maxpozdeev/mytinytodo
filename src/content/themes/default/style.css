@@ -476,7 +476,6 @@ li.mtt-item-hidden { display:none; }
   #tasklist li.task-row.clicked .task-actions { display:block; }
   #tasklist li.task-row.clicked .task-through { white-space:normal; display:inline; }
   #tasklist li.task-row.clicked.task-has-note .task-note-block { display:block; }
-  /*#tasklist li.task-row.clicked.doubleclicked.task-has-note .task-note-block { display:none; }*/
   .task-toggle { display:none; }
   #tasklist .mtt-task-placeholder { line-height:1rem; padding-top:0.6rem; padding-bottom:0.6rem; }
   #tasklist .ui-sortable-helper { box-shadow:0px 0px 3px #333; }
