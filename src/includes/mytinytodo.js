@@ -397,17 +397,25 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		});
 
 		// tasklist handlers
-		$("#tasklist").bind("click", tasklistClick);
+		$("#tasklist").on('click', '> li.task-row .task-middle-top', function() {
+			var li = findParentNode(this, 'LI');
+			if (li && li.id) {
+				if (lastClickedNodeId && li.id != lastClickedNodeId) {
+					$('#'+lastClickedNodeId).removeClass('clicked');
+				}
+				lastClickedNodeId = this.id;
+				$(li).toggleClass('clicked');
+			}
+		});
 
-		$('#tasklist').on('dblclick', 'li', function(){
+		$('#tasklist').on('dblclick', '> li.task-row', function(){
 			//clear selection
 			if(document.selection && document.selection.empty && document.selection.createRange().text) document.selection.empty();
 			else if(window.getSelection) window.getSelection().removeAllRanges();
 
-			var li = findParentNode(this, 'LI');
-			if(li && li.id) {
-				var id = li.id.split('_',2)[1];
-				if(id) editTask(parseInt(id));
+			if (this.id) {
+				var id = this.id.split('_',2)[1];
+				if (id) editTask(parseInt(id));
 			}
 		});
 
@@ -2147,23 +2155,6 @@ function clearCompleted()
 	});
 };
 
-function tasklistClick(e)
-{
-	var node = e.target.nodeName.toUpperCase();
-	if (node=='SPAN' || node=='LI' || node=='DIV')
-	{
-		var li = findParentNode(e.target, 'LI');
-		if (li) {
-			if (lastClickedNodeId && li.id != lastClickedNodeId) {
-				$('#'+lastClickedNodeId).removeClass('clicked');
-			}
-			lastClickedNodeId = li.id;
-			$(li).toggleClass('clicked');
-		}
-	}
-};
-
-
 function showhide(a,b)
 {
 	a.show();
@@ -2173,12 +2164,12 @@ function showhide(a,b)
 function findParentNode(el, node)
 {
 	// in html nodename is in uppercase, in xhtml nodename in in lowercase
-	if(el.nodeName.toUpperCase() == node) return el;
-	if(!el.parentNode) return null;
-	while(el.parentNode) {
+	if (el.nodeName.toUpperCase() == node) return el;
+	while (el.parentNode) {
 		el = el.parentNode;
-		if(el.nodeName.toUpperCase() == node) return el;
+		if (el.nodeName.toUpperCase() == node) return el;
 	}
+	return null;
 };
 
 function getLiTaskId(el)
