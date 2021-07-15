@@ -397,7 +397,10 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		});
 
 		// tasklist handlers
-		$("#tasklist").on('click', '> li.task-row .task-middle-top', function() {
+		$("#tasklist").on('click', '> li.task-row .task-middle-top', function(e) {
+			if ( findParentNode(e.target, 'A') ) {
+				return; //ignore clicks on links
+			}
 			var li = findParentNode(this, 'LI');
 			if (li && li.id) {
 				if (lastClickedNodeId && li.id != lastClickedNodeId) {
@@ -898,7 +901,7 @@ function renameCurList()
 			var item = json.list[0];
 			curList = item;
 			tabLists.replace(item);
-			$('#lists ul>.mtt-tabs-selected>a').attr('title', item.name).find('span').html(item.name);
+			$('#lists ul>.mtt-tabs-selected>a').attr('title', item.name).find('span').html(item.name); //FIXME: wft?
 			mytinytodo.doAction('listRenamed', item);
 		});
 	});
