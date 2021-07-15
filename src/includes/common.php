@@ -30,35 +30,6 @@ function htmlarray_ref(&$a, $exclude=null)
 	return;
 }
 
-/*
-function stop_gpc(&$arr)
-{
-	if (!is_array($arr)) {
-		return 1;
-	}
-
-	// Since PHP v5.4.0 magic quotes config option was removed from PHP.
-	// In PHP v7.4 get_magic_quotes_gpc() is deprecated, in v8.0 is removed.
-	// TODO: do not use get_magic_quotes_gpc() and stop_gpc()
-	if (!@get_magic_quotes_gpc()) {
-		return 1;
-	}
-
-	reset($arr);
-	foreach ($arr as $k=>$v)
-	{
-		if (is_array($arr[$k])) {
-			stop_gpc($arr[$k]);
-		}
-		elseif (is_string($arr[$k])) {
-			$arr[$k] = stripslashes($v);
-		}
-	}
-
-	return 1;
-}
-*/
-
 function _post($param,$defvalue = '')
 {
 	if(!isset($_POST[$param])) 	{
