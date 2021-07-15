@@ -532,7 +532,8 @@ function prepareTaskRow($r)
 
 	return array(
 		'id' => $r['id'],
-		'title' => htmlspecialchars( $r['title'] ),
+		'title' => titleMarkup( $r['title'] ),
+		'titleText' => (string)$r['title'],
 		'listId' => $r['list_id'],
 		'date' => htmlarray($dCreated),
 		'dateInt' => (int)$r['d_created'],

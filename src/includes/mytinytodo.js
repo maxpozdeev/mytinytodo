@@ -1496,7 +1496,7 @@ function editTask(id)
 	if(!item) return false;
 	// no need to clear form
 	var form = document.getElementById('taskedit_form');
-	form.task.value = dehtml(item.title);
+	form.task.value = item.titleText;
 	form.note.value = item.noteText;
 	form.id.value = item.id;
 	form.tags.value = item.tags.split(',').join(', ');
