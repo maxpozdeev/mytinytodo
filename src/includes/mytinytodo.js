@@ -406,7 +406,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 				if (lastClickedNodeId && li.id != lastClickedNodeId) {
 					$('#'+lastClickedNodeId).removeClass('clicked');
 				}
-				lastClickedNodeId = this.id;
+				lastClickedNodeId = li.id;
 				$(li).toggleClass('clicked');
 			}
 		});
