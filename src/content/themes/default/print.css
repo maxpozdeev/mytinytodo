@@ -19,9 +19,25 @@
   #taskview .arrdown { display:none; }
 
   #tasklist { list-style-type: decimal; list-style-position: outside; }
-  #tasklist li { border-bottom:none; margin-left:2.5rem; /*border-bottom:1px solid #f0f0f0;*/ }
+  #tasklist li.task-row {
+    border-bottom:none;
+    margin-left:2.5rem;
+    /*border-bottom:1px solid #f0f0f0;*/
+    border: none;
+  }
+  #tasklist li.task-row:hover { box-shadow: none; }
+  #tasklist li.task-row.task-has-note.task-expanded .task-block,
+  #tasklist li.task-row.task-has-note.clicked .task-block,
+  #tasklist li.task-row.task-expanded { border: none; }
 
-  div.task-note-block { border-left:1px solid #777777; background:none; padding-left:5px; margin-top:5px; padding-top:0px; font-size:9pt; color:#333333; }
+  div.task-note-block {
+    border-left:1px solid #777777;
+    padding-left:10px;
+    margin-left:3px;
+    padding-top:0px;
+    font-size:9pt;
+    color:#333333;
+  }
   .task-middle { margin-left:0px; margin-right:3px; }
   .task-left { display:none; }
   .task-actions { display:none; }

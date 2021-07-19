@@ -113,8 +113,6 @@
 /* narrow screens */
 @media only screen and (max-width: 600px) {
 
-  .markdown-note { padding-top: 0.5rem; }
-
   .markdown-note pre,
   .markdown-note code,
   .markdown-note tt {

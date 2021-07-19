@@ -397,7 +397,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		});
 
 		// tasklist handlers
-		$("#tasklist").on('click', '> li.task-row .task-middle-top', function(e) {
+		$("#tasklist").on('click', '> li.task-row .task-middle', function(e) {
 			if ( findParentNode(e.target, 'A') ) {
 				return; //ignore clicks on links
 			}
@@ -977,8 +977,8 @@ function loadTasks(opts)
 function prepareTaskStr(item, noteExp)
 {
 	return '<li id="taskrow_'+item.id+'" class="task-row ' + (item.compl?'task-completed ':'') + item.dueClass + (item.note!=''?' task-has-note':'') +
-				((curList.showNotes && item.note != '') || noteExp ? ' task-expanded' : '') + prepareDomClassOfTags(item.tags_ids) + '"><div class="task-container">' +
-					prepareTaskBlocks(item) + "</div></li>\n";
+				((curList.showNotes && item.note != '') || noteExp ? ' task-expanded' : '') + prepareDomClassOfTags(item.tags_ids) + '">' +
+					prepareTaskBlocks(item) + "</li>\n";
 };
 _mtt.prepareTaskStr = prepareTaskStr;
 
@@ -987,15 +987,14 @@ function prepareTaskBlocks(item)
 	var id = item.id;
 	var markdown = '';
 	if (_mtt.options.markdown == true) markdown = 'markdown-note';
-	return	''+
-		'<div class="task-left">' +
-			'<div class="task-toggle"></div>' +
-			'<label><input type="checkbox" '+(flag.readOnly?'disabled="disabled"':'')+(item.compl?'checked="checked"':'')+'/></label>' +
-		"</div>\n" +
+	return '' +
+		'<div class="task-block">' +
+			'<div class="task-left">' +
+				'<div class="task-toggle"></div>' +
+				'<label><input type="checkbox" '+(flag.readOnly?'disabled="disabled"':'')+(item.compl?'checked="checked"':'')+'/></label>' +
+			"</div>\n" +
 
-		'<div class="task-middle">' +
-
-			'<div class="task-middle-top">' +
+			'<div class="task-middle">' +
 				'<div class="task-through">' +
 					preparePrio(item.prio,id) +
 					'<span class="task-title">' + prepareTaskTitleInlineHtml(item.title) + '</span> ' +
@@ -1004,18 +1003,18 @@ function prepareTaskBlocks(item)
 					'<span class="task-date">'+item.dateInlineTitle+'</span>' +
 				'</div>' +
 				'<div class="task-through-right">' + prepareDueDate(item) + prepareCompletedDate(item) + "</div>" +
+			"</div>" +
+
+			'<div class="task-actions"><div class="taskactionbtn"></div></div>' +
+		'</div>' +
+
+		'<div class="task-note-block">' +
+			'<div id="tasknote' + id + '" class="task-note ' + markdown + '">' + prepareTaskNoteInlineHtml(item.note, item.noteText) + '</div>' +
+			'<div id="tasknotearea'+id+'" class="task-note-area"><textarea id="notetext'+id+'"></textarea>'+
+				'<span class="task-note-actions"><a href="#" class="mtt-action-note-save">'+_mtt.lang.get('actionNoteSave') +
+					'</a> | <a href="#" class="mtt-action-note-cancel">'+_mtt.lang.get('actionNoteCancel')+'</a></span>' +
 			'</div>' +
-
-			'<div class="task-note-block">' +
-				'<div id="tasknote' + id + '" class="task-note ' + markdown + '">' + prepareTaskNoteInlineHtml(item.note, item.noteText) + '</div>' +
-				'<div id="tasknotearea'+id+'" class="task-note-area"><textarea id="notetext'+id+'"></textarea>'+
-					'<span class="task-note-actions"><a href="#" class="mtt-action-note-save">'+_mtt.lang.get('actionNoteSave') +
-						'</a> | <a href="#" class="mtt-action-note-cancel">'+_mtt.lang.get('actionNoteCancel')+'</a></span>' +
-				'</div>' +
-			'</div>'+
-		"</div>" +
-
-		'<div class="task-actions"><div class="taskactionbtn"></div></div>';
+		'</div>';
 };
 _mtt.prepareTaskBlocks = prepareTaskBlocks;
 

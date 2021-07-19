@@ -164,7 +164,6 @@ li.task-row.task-expanded .task-toggle { transform:rotate(90deg); }
 
 #tasklist { list-style-type: none; margin: 0; padding: 0;}
 #tasklist li.task-row {
-  padding:0px 2px;
   border:1px solid transparent; /* allocate space for expanded border */
   border-bottom:1px solid #DEDEDE;
   margin-bottom: 4px;
@@ -178,11 +177,30 @@ li.task-row.task-expanded .task-toggle { transform:rotate(90deg); }
   /* transition: box-shadow .1s ease-in; */
   z-index: 1;
 }
-#tasklist .task-container { display:flex; justify-content:flex-start; align-items:baseline; }
-#tasklist li.task-row.task-expanded { border:1px solid #DEDEDE; border-radius: 3px; }
+#tasklist .task-block {
+   display:flex;
+   justify-content:flex-start;
+   align-items:baseline;
+   padding:0px 3px;
+}
+#tasklist li.task-row.task-expanded {
+  border:1px solid #DEDEDE;
+  border-radius: 3px;
+}
+#tasklist li.task-row.task-has-note.task-expanded .task-block,
+#tasklist li.task-row.task-has-note.clicked .task-block {
+  border-bottom: 1px solid #f0f0f0;
+}
 .task-left { display:inline-block; }
-.task-middle { flex-grow:1; margin:0.6rem 0px;  margin-left:5px; min-width:0; /*for long text*/ flex-basis:0; /* IE11 */}
-.task-middle-top { display:flex; align-items:baseline; }
+.task-middle {
+  flex-grow:1;
+  margin:0.6rem 0px;
+  margin-left:5px;
+  min-width:0; /*for long text*/
+  flex-basis:0; /* IE11 */
+  display:flex;
+  align-items:baseline;
+}
 .task-actions { flex:0 0 1rem; margin-left:5px; }
 
 .task-left label { min-width:18px; text-align:center; } /* Safari has small checkboxes */
@@ -239,13 +257,10 @@ li.task-row:hover .taskactionbtn { visibility:visible; }
 }
 
 .task-note-block {
-  margin-left:2px;
+  padding: 0px 2rem;
   color:#444;
-  background:url(images/note.svg) left  0px no-repeat;
   background-size:16px 16px;
-  padding-left:19px;
   min-height:16px;
-  margin-top:6px;
   display:none;
   white-space:normal;
   word-wrap:break-word;
@@ -462,11 +477,14 @@ li.mtt-item-hidden { display:none; }
   #toolbar.mtt-insearch .searchbox-c { width:100%; max-width:100%; }
   #search { padding:5px 20px; border-radius:15px; }
 
-  #tasklist li.task-row { padding:0px 3px; }
   .task-actions { display:none; }
   .task-date { display:none; }
   .task-note-actions { display:block; padding-top:8px; }
-  .task-note-block { margin-left:0px; background:none; display:none; padding-left:0px; padding-right:0px; border-top:1px solid #f0f0f0; }
+  .task-note-block {
+    padding-left: 0.9rem;
+    padding-right: 0.9rem;
+    display: none;
+  }
   .task-note-area textarea { width:95%; }
 
   #tasklist li.task-row .task-through { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
