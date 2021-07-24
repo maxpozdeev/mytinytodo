@@ -42,7 +42,7 @@ date_default_timezone_set(Config::get('timezone'));
 # MySQL Database Connection
 if(Config::get('db') == 'mysql')
 {
-	require_once(MTTINC. 'class.db.mysql.php');
+	require_once(MTTINC. 'class.db.mysqli.php');
 	$db = DBConnection::init(new Database_Mysql);
 	try {
 		$db->connect(Config::get('mysql.host'), Config::get('mysql.user'), Config::get('mysql.password'), Config::get('mysql.db'));

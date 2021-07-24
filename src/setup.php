@@ -339,7 +339,7 @@ function testConnect(&$error)
 			if ( !function_exists("mysqli_connect") ) {
 				throw new Exception("Required PHP extension 'mysqli' is not installed");
 			}
-			require_once(MTTINC. 'class.db.mysql.php');
+			require_once(MTTINC. 'class.db.mysqli.php');
 			$db = new Database_Mysql;
 			$db->connect(Config::get('mysql.host'), Config::get('mysql.user'), Config::get('mysql.password'), Config::get('mysql.db'));
 		} else
