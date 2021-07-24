@@ -30,6 +30,7 @@ class DatabaseResult_Mysql
 class Database_Mysql
 {
 	private $dbh; //mysqli
+	private $dbname;
 
 	function __construct()
 	{
@@ -39,6 +40,7 @@ class Database_Mysql
 
 	function connect($host, $user, $pass, $db)
 	{
+		$this->dbname = $db;
 		$this->dbh = new mysqli($host, $user, $pass, $db); //throws mysqli_sql_exception
 		return true;
 	}
@@ -126,10 +128,10 @@ class Database_Mysql
 
 	function table_exists($table)
 	{
-		$table = addslashes($table);
-		$q = $this->dbh->query("SELECT 1 FROM `$table` WHERE 1=0");
-		if ($q === false || $q === null) return false;
-		else return true;
+		$r = $this->sq("SELECT 1 FROM information_schema.tables WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ?",
+						array($this->dbname, $table) );
+		if ($r === false || $r === null) return false;
+		return true;
 	}
 }
 
