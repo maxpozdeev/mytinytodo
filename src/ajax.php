@@ -6,11 +6,16 @@
 	Licensed under the GNU GPL v2 license. See file COPYRIGHT for details.
 */
 
-set_error_handler('myErrorHandler');
-set_exception_handler('myExceptionHandler');
-
 require_once('./init.php');
 require_once(MTTINC. 'markup.php');
+
+if (MTT_DEBUG) {
+	set_error_handler('myErrorHandler'); //catch Notices, Warnings
+	set_exception_handler('myExceptionHandler');
+}
+else {
+	ini_set('display_errors', '0');
+}
 
 $db = DBConnection::instance();
 
@@ -802,15 +807,15 @@ function daysInMonth($m, $y=0)
 
 function myErrorHandler($errno, $errstr, $errfile, $errline)
 {
-	if($errno==E_ERROR || $errno==E_CORE_ERROR || $errno==E_COMPILE_ERROR || $errno==E_USER_ERROR || $errno==E_PARSE) $error = 'Error';
-	elseif($errno==E_WARNING || $errno==E_CORE_WARNING || $errno==E_COMPILE_WARNING || $errno==E_USER_WARNING || $errno==E_STRICT) {
-		if(error_reporting() & $errno) $error = 'Warning'; else return;
+	if ($errno==E_ERROR || $errno==E_CORE_ERROR || $errno==E_COMPILE_ERROR || $errno==E_USER_ERROR || $errno==E_PARSE) $error = 'Error';
+	elseif ($errno==E_WARNING || $errno==E_CORE_WARNING || $errno==E_COMPILE_WARNING || $errno==E_USER_WARNING || $errno==E_STRICT) {
+		if (error_reporting() & $errno) $error = 'Warning'; else return;
 	}
-	elseif($errno==E_NOTICE || $errno==E_USER_NOTICE) {
-		if(error_reporting() & $errno) $error = 'Notice'; else return;
+	elseif ($errno==E_NOTICE || $errno==E_USER_NOTICE) {
+		if (error_reporting() & $errno) $error = 'Notice'; else return;
 	}
-	elseif(defined('E_DEPRECATED') && ($errno==E_DEPRECATED || $errno==E_USER_DEPRECATED)) { # since 5.3.0
-		if(error_reporting() & $errno) $error = 'Notice'; else return;
+	elseif (defined('E_DEPRECATED') && ($errno==E_DEPRECATED || $errno==E_USER_DEPRECATED)) { # since 5.3.0
+		if (error_reporting() & $errno) $error = 'Notice'; else return;
 	}
 	else $error = "Error ($errno)";	# here may be E_RECOVERABLE_ERROR
 	throw new Exception("$error: '$errstr' in $errfile:$errline", -1);
@@ -821,14 +826,23 @@ function myExceptionHandler($e)
 	// to avoid Exception thrown without a stack frame
 	try
 	{
-		if(-1 == $e->getCode()) {
+		if (-1 == $e->getCode()) {
 			//thrown in myErrorHandler
-			die2($e->getMessage()."\n". $e->getTraceAsString(), $e->getMessage());
+			logAndDie( $e->getMessage() );
 		}
-		die2('Exception: \''. $e->getMessage() .'\' in '. $e->getFile() .':'. $e->getLine());
+
+		$c = get_class($e);
+		$errText = "Exception ($c): '". $e->getMessage(). "' in ". $e->getFile(). ":". $e->getLine() ;
+
+		if (MTT_DEBUG) {
+			if ( count($e->getTrace()) > 0 ) {
+				$errText .= "\n". $e->getTraceAsString() ;
+			}
+		}
+		logAndDie($errText);
 	}
-	catch(Exception $e) {
-		die2('Exception in ExceptionHandler: \''. $e->getMessage() .'\' in '. $e->getFile() .':'. $e->getLine());
+	catch (Exception $e) {
+		logAndDie('Exception in ExceptionHandler: \''. $e->getMessage() .'\' in '. $e->getFile() .':'. $e->getLine());
 	}
 	exit;
 }

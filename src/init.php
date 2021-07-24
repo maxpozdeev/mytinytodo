@@ -19,10 +19,20 @@ if(!defined('MTTCONTENT'))  define('MTTCONTENT', MTTPATH. 'content/');
 if(!defined('MTTLANG'))  define('MTTLANG', MTTCONTENT. 'lang/');
 if(!defined('MTTTHEMES'))  define('MTTTHEMES', MTTCONTENT. 'themes/');
 
+if (getenv('MTT_ENABLE_DEBUG') == 'YES') {
+	define('MTT_DEBUG', true);
+	error_reporting(E_ALL);
+	ini_set('display_errors', '1');
+	ini_set('log_errors', '1');
+}
+else {
+	//ini_set('display_errors', '0');
+	//ini_set('log_errors', '1');
+	define('MTT_DEBUG', false);
+}
+
 require_once(MTTINC. 'common.php');
 require_once(MTTPATH. 'db/config.php');
-
-ini_set('display_errors', 'On');
 
 if(!isset($config)) global $config;
 Config::loadConfig($config);
@@ -39,7 +49,7 @@ if(Config::get('db') == 'mysql')
 		$db->connect(Config::get('mysql.host'), Config::get('mysql.user'), Config::get('mysql.password'), Config::get('mysql.db'));
 	}
 	catch(Exception $e) {
-		die2("Failed to connect to mysql database: ". $e->getMessage());
+		logAndDie("Failed to connect to mysql database: ". $e->getMessage());
 	}
 	$db->dq("SET NAMES utf8");
 }
@@ -226,10 +236,15 @@ function jsonExit($data)
 	exit;
 }
 
-function die2($userText, $errText = null)
+function logAndDie($userText, $errText = null)
 {
 	$errText === null ? error_log($userText) : error_log($errText);
-	echo $userText;
+	if (ini_get('display_errors')) {
+		echo $userText;
+	}
+	else {
+		echo "Error! See details in error log.";
+	}
 	exit(1);
 }
 

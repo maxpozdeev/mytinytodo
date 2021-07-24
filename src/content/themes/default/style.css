@@ -43,7 +43,7 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 
 #msg {  }
 #msg .msg-text {  font-weight:bold; cursor:pointer; }
-#msg .msg-details { padding:1px 4px; background-color:#fff; display:none; max-width:700px; position:absolute; z-index:2; }
+#msg .msg-details { padding:1px 4px; background-color:#fff; display:none; max-width:800px; position:absolute; z-index:2; white-space: pre-line; }
 #msg.mtt-error .msg-text { background-color:#ff3333; }
 #msg.mtt-error .msg-details { border:1px solid #ff3333;  }
 #msg.mtt-info .msg-text { background-color:#EFC300; }
