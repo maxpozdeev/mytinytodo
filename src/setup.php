@@ -336,13 +336,23 @@ function testConnect(&$error)
 	{
 		if(Config::get('db') == 'mysql')
 		{
-			if ( !function_exists("mysqli_connect") ) {
-				throw new Exception("Required PHP extension 'mysqli' is not installed");
+			if (defined('PDO::MYSQL_ATTR_FOUND_ROWS')) {
+				require_once(MTTINC. 'class.db.mysql.php');
+				Config::set('mysqli', 0);
 			}
-			require_once(MTTINC. 'class.db.mysqli.php');
+			else if (function_exists("mysqli_connect")) {
+				require_once(MTTINC. 'class.db.mysqli.php');
+				Config::set('mysqli', 1);
+			}
+			else {
+				$text = "Required PHP extension 'PDO mysql' is not installed.";
+				throw new Exception($text);
+			}
+
 			$db = new Database_Mysql;
 			$db->connect(Config::get('mysql.host'), Config::get('mysql.user'), Config::get('mysql.password'), Config::get('mysql.db'));
-		} else
+		}
+		else
 		{
 			if(false === $f = @fopen(MTTPATH. 'db/todolist.db', 'a+')) throw new Exception("database file is not readable/writable");
 			else fclose($f);

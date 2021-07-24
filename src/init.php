@@ -40,9 +40,10 @@ unset($config);
 date_default_timezone_set(Config::get('timezone'));
 
 # MySQL Database Connection
-if(Config::get('db') == 'mysql')
+if (Config::get('db') == 'mysql')
 {
-	require_once(MTTINC. 'class.db.mysqli.php');
+	if (Config::get('mysqli')) require_once(MTTINC. 'class.db.mysqli.php');
+	else require_once(MTTINC. 'class.db.mysql.php');
 	$db = DBConnection::init(new Database_Mysql);
 	try {
 		$db->connect(Config::get('mysql.host'), Config::get('mysql.user'), Config::get('mysql.password'), Config::get('mysql.db'));

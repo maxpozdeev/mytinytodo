@@ -87,6 +87,7 @@ class Config
 		'template' => array('default'=>'default', 'type'=>'s'),
 		'showdate' => array('default'=>0, 'type'=>'i'),
 		'markup' => array('default'=>'markdown', 'type'=>'s'),
+		'mysqli' => array('default'=>1, 'type'=>'i')
 	);
 
 	public static $config;
