@@ -1,102 +1,61 @@
 <?php
 
 /*
-	(C) Copyright 2009,2019 Max Pozdeev <maxpozdeev@gmail.com>
+	(C) Copyright 2009,2019,2021 Max Pozdeev <maxpozdeev@gmail.com>
 	Licensed under the GNU GPL v2 license. See file COPYRIGHT for details.
 */
 
 // ---------------------------------------------------------------------------- //
 class DatabaseResult_Mysql
 {
+	private $q; //mysqli_result
 
-	var $parent;
-	var $q;
-	var $query;
-	var $rows = NULL;
-	var $affected = NULL;
-	var $prefix = '';
-
-	function __construct($query, &$h, $resultless = 0)
+	function __construct(mysqli $dbh, $query, $resultless = 0)
 	{
-		$this->parent = $h;
-		$this->query = $query;
-
-		$this->q = mysqli_query($this->parent->dbh, $query);
-
-		if(!$this->q)
-		{
-			throw new Exception($this->parent->error());
-		}
-	}
-
-	function affected()
-	{
-		if(is_null($this->affected))
-		{
-			$this->affected = mysqli_affected_rows($this->parent->dbh);
-		}
-		return $this->affected;
+		$this->q = $dbh->query($query); //throws mysqli_sql_exception
 	}
 
 	function fetch_row()
 	{
-		return mysqli_fetch_row($this->q);
+		return $this->q->fetch_row();
 	}
 
 	function fetch_assoc()
 	{
-		return mysqli_fetch_assoc($this->q);
-	}
-
-	function rows()
-	{
-		if (!is_null($this -> rows)) return $this->rows;
-		$this->rows = mysqli_num_rows($this->q);
-		return $this->rows;
+		return $this->q->fetch_assoc();
 	}
 }
 
 // ---------------------------------------------------------------------------- //
 class Database_Mysql
 {
-	var $dbh;
-	var $error_str;
+	private $dbh; //mysqli
 
 	function __construct()
 	{
+		// enable throwing exceptions
+		mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 	}
 
 	function connect($host, $user, $pass, $db)
 	{
-		if(!$this->dbh = @mysqli_connect($host,$user,$pass))
-		{
-			throw new Exception(mysqli_connect_error());
-		}
-		if( @!mysqli_select_db($this->dbh, $db) )
-		{
-			throw new Exception($this->error());
-		}
+		$this->dbh = new mysqli($host, $user, $pass, $db); //throws mysqli_sql_exception
 		return true;
 	}
 
 	function last_insert_id()
 	{
-		return mysqli_insert_id($this->dbh);
-	}
-
-	function error()
-	{
-		return mysqli_error($this->dbh);
+		return $this->dbh->insert_id;
 	}
 
 	function sq($query, $p = NULL)
 	{
 		$q = $this->_dq($query, $p);
 
-		if($q->rows()) $res = $q->fetch_row();
-		else return NULL;
+		$res = $q->fetch_row();
+		if ($res === false || $res === null) return NULL;
 
-		if(sizeof($res) > 1) return $res;
+		if (sizeof($res) > 1) return $res;
 		else return $res[0];
 	}
 
@@ -104,11 +63,10 @@ class Database_Mysql
 	{
 		$q = $this->_dq($query, $p);
 
-		if($q->rows()) $res = $q->fetch_assoc();
-		else return NULL;
+		$res = $q->fetch_assoc();
+		if ($res === false || $res === null) return NULL;
 
-		if(sizeof($res) > 1) return $res;
-		else return $res[0];
+		return $res;
 	}
 
 	function dq($query, $p = NULL)
@@ -116,38 +74,43 @@ class Database_Mysql
 		return $this->_dq($query, $p);
 	}
 
+	/*
+		for resultless queries like INSERT,UPDATE,DELETE
+	*/
 	function ex($query, $p = NULL)
 	{
-		return $this->_dq($query, $p, 1);
+		$dbr = $this->_dq($query, $p, 1);
+		return $this->affected();
 	}
 
 	private function _dq($query, $p = NULL, $resultless = 0)
 	{
-		if(!isset($p)) $p = array();
-		  elseif(!is_array($p)) $p = array($p);
+		if (!isset($p)) $p = array();
+		elseif (!is_array($p)) $p = array($p);
 
 		$m = explode('?', $query);
 
-		if(sizeof($p)>0)
+		if (sizeof($p) > 0)
 		{
-			if(sizeof($m)< sizeof($p)+1) {
+			if (sizeof($m) < sizeof($p)+1) {
 				throw new Exception("params to set MORE than query params");
 			}
-			if(sizeof($m)> sizeof($p)+1) {
+			if (sizeof($m) > sizeof($p)+1) {
 				throw new Exception("params to set LESS than query params");
 			}
 			$query = "";
-			for($i=0; $i<sizeof($m)-1; $i++) {
+			for ($i=0; $i < sizeof($m)-1; $i++) {
 				$query .= $m[$i]. (is_null($p[$i]) ? 'NULL' : $this->quote($p[$i]));
 			}
 			$query .= $m[$i];
 		}
-		return new DatabaseResult_Mysql($query, $this, $resultless);
+		$this->lastQuery = $query;
+		return new DatabaseResult_Mysql($this->dbh, $query, $resultless);
 	}
 
 	function affected()
 	{
-		return mysqli_affected_rows($this->dbh);
+		return $this->dbh->affected_rows;
 	}
 
 	function quote($s)
@@ -164,8 +127,8 @@ class Database_Mysql
 	function table_exists($table)
 	{
 		$table = addslashes($table);
-		$q = mysqli_query($this->dbh, "SELECT 1 FROM `$table` WHERE 1=0");
-		if($q === false) return false;
+		$q = $this->dbh->query("SELECT 1 FROM `$table` WHERE 1=0");
+		if ($q === false || $q === null) return false;
 		else return true;
 	}
 }

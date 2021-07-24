@@ -1,39 +1,27 @@
 <?php
 
 /*
-	(C) Copyright 2009 Max Pozdeev <maxpozdeev@gmail.com>
+	(C) Copyright 2009,2021 Max Pozdeev <maxpozdeev@gmail.com>
 	Licensed under the GNU GPL v2 license. See file COPYRIGHT for details.
 */
 
 class DatabaseResult_Sqlite3
 {
-	private $parent;
 	private $q;
-	var $query;
-	var $prefix;
+	private $affected;
 
-	function __construct($query, &$h, $resultless = 0)
+	function __construct($dbh, $query, $resultless = 0)
 	{
-		$this->parent = $h;
-		$this->parent->lastQuery = $this->query = $query;
-
-		if($resultless)
+		// use with DELETE, INSERT, UPDATE
+		if ($resultless)
 		{
-			$r = $this->parent->dbh->exec($query);
-			if($r === false) {
-				$ei = $this->parent->dbh->errorInfo();
-				throw new Exception("SQLSTATE[$ei[0]] [$ei[1]] $ei[2]");
-			}
-			$this->parent->affected = $r;
+			$this->affected = $dbh->exec($query); //throws PDOException
 		}
+		// SELECT
 		else
 		{
-			$this->q = $this->parent->dbh->query($query);
-			if(!$this->q) {
-				$ei = $this->parent->dbh->errorInfo();
-				throw new Exception("SQLSTATE[$ei[0]] [$ei[1]] $ei[2]");
-			}
-			$this->parent->affected = $this->q->rowCount();
+			$this->q = $dbh->query($query); //throws PDOException
+			$this->affected = $this->q->rowCount();
 		}
 	}
 
@@ -47,12 +35,17 @@ class DatabaseResult_Sqlite3
 		return $this->q->fetch(PDO::FETCH_ASSOC);
 	}
 
+	function rowsAffected()
+	{
+		return $this->affected;
+	}
+
 }
 
 class Database_Sqlite3
 {
-	var $dbh;
-	var $affected = null;
+	private $dbh;
+	private $affected = null;
 	var $lastQuery;
 
 	function __construct()
@@ -61,72 +54,81 @@ class Database_Sqlite3
 
 	function connect($filename)
 	{
-		try {
-			$this->dbh = new PDO("sqlite:$filename");
-		}
-		catch(PDOException $e) {
-			throw new Exception($e->getMessage());
-		}
+		$options = array(
+			PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+		);
+		$this->dbh = new PDO("sqlite:$filename", null, null, $options); //throws PDOException
 		return true;
 	}
 
+	/*
+		SELECT queries for single row
+	*/
 	function sq($query, $p = NULL)
 	{
 		$q = $this->_dq($query, $p);
 
 		$res = $q->fetch_row();
-		if($res === false) return NULL;
+		if ($res === false) return NULL;
 
-		if(sizeof($res) > 1) return $res;
+		if (sizeof($res) > 1) return $res;
 		else return $res[0];
 	}
 
+	/*
+		SELECT queries for single row
+	*/
 	function sqa($query, $p = NULL)
 	{
 		$q = $this->_dq($query, $p);
 
 		$res = $q->fetch_assoc();
-		if($res === false) return NULL;
-
-		if(sizeof($res) > 1) return $res;
-		else return $res[0];
+		if ($res === false) return NULL;
+		return $res;
 	}
 
+	/*
+		SELECT queries for multiple rows
+	*/
 	function dq($query, $p = NULL)
 	{
 		return $this->_dq($query, $p);
 	}
 
 	/*
-		for resultless queries like INSERT,UPDATE
+		for resultless queries like INSERT,UPDATE,DELETE
 	*/
 	function ex($query, $p = NULL)
 	{
-		return $this->_dq($query, $p, 1);
+		$dbr = $this->_dq($query, $p, 1);
+		return $this->affected();
 	}
 
 	private function _dq($query, $p = NULL, $resultless = 0)
 	{
-		if(!isset($p)) $p = array();
-		elseif(!is_array($p)) $p = array($p);
+		if (!isset($p)) $p = array();
+		elseif (!is_array($p)) $p = array($p);
 
 		$m = explode('?', $query);
 
-		if(sizeof($p)>0)
+		if (sizeof($p) > 0)
 		{
-			if(sizeof($m)< sizeof($p)+1) {
+			if (sizeof($m) < sizeof($p)+1) {
 				throw new Exception("params to set MORE than query params");
 			}
-			if(sizeof($m)> sizeof($p)+1) {
+			if (sizeof($m) > sizeof($p)+1) {
 				throw new Exception("params to set LESS than query params");
 			}
 			$query = "";
-			for($i=0; $i<sizeof($m)-1; $i++) {
+			for ($i=0; $i<sizeof($m)-1; $i++) {
 				$query .= $m[$i]. (is_null($p[$i]) ? 'NULL' : $this->quote($p[$i]));
 			}
 			$query .= $m[$i];
 		}
-		return new DatabaseResult_Sqlite3($query, $this, $resultless);
+		$this->lastQuery = $query;
+		$dbr = new DatabaseResult_Sqlite3($this->dbh, $query, $resultless);
+		$this->affected = $dbr->rowsAffected();
+		return $dbr;
 	}
 
 	function affected()
