@@ -507,7 +507,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			$("#tasklist").disableSelection();
 			$("#tasklist").sortable('option', {
 				axis: 'y',
-				delay: 0,
+				delay: 50,
 				cancel: 'input',
 				distance: 0
 			});
