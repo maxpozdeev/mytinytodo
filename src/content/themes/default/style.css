@@ -435,7 +435,7 @@ li.mtt-item-hidden { display:none; }
 .mtt-settings-table { width:100%; border-collapse:collapse; }
 .mtt-settings-table th, .mtt-settings-table td { border-bottom:1px solid #dedede; padding:8px; vertical-align:top; }
 .mtt-settings-table .form-bottom-buttons { border-bottom:none; text-align:center; }
-.mtt-settings-table th { text-align:left; width:210px; padding-left:8px; }
+.mtt-settings-table th { text-align:left; width:30%; padding-left:8px; }
 .mtt-settings-table .descr { font-size:0.8rem; font-weight:normal; color:#222; }
 .mtt-settings-table .in350 { min-width:350px; }
 .mtt-settings-table input { padding:3px; border:1px solid #ccc; border-radius:2px; }

@@ -220,7 +220,7 @@ header('Content-type:text/html; charset=utf-8');
 </tr>
 
 <tr>
-<th><?php _e('set_smartsyntax');?>:<br/><span class="descr"><?php _e('set_smartsyntax_descr');?></span></th>
+<th><?php _e('set_smartsyntax');?>:<br/><span class="descr"><?php _e('set_smartsyntax2_descr');?></span></th>
 <td>
  <label><input type="radio" name="smartsyntax" value="1" <?php if(_c('smartsyntax')) echo 'checked="checked"'; ?> /><?php _e('set_enabled');?></label> <br/>
  <label><input type="radio" name="smartsyntax" value="0" <?php if(!_c('smartsyntax')) echo 'checked="checked"'; ?> /><?php _e('set_disabled');?></label>

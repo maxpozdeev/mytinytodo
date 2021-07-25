@@ -142,7 +142,7 @@ class DefaultLang
 		'set_newpass' => "New password",
 		'set_newpass_descr' => "(leave blank if won't change current password)",
 		'set_smartsyntax' => "Smart syntax",
-		'set_smartsyntax_descr' => "(/priority/ task /tags/)",
+		'set_smartsyntax2_descr' => "Example: +1 Task title #tag1 #tag2",
 		'set_timezone' => "Time zone",
 		'set_autotag' => "Autotagging",
 		'set_autotag_descr' => "(automatically adds tag of current tag filter to newly created task)",
