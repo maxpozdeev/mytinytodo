@@ -173,24 +173,22 @@ function timezoneIdentifiers()
 header('Content-type:text/html; charset=utf-8');
 ?>
 
-<div><a href="#" class="mtt-back-button"><?php _e('go_back');?></a></div>
-
-<h3 class="page-title"><?php _e('set_header');?></h3>
+<h3 class="page-title"><a class="mtt-back-button"></a><?php _e('set_header');?></h3>
 
 <div id="settings_msg" style="display:none"></div>
 
 <form id="settings_form" method="post" action="settings.php">
 
-<table class="mtt-settings-table">
+<div class="mtt-settings-table">
 
-<tr>
-<th><?php _e('set_title');?>:<br/><span class="descr"><?php _e('set_title_descr');?></span></th>
-<td> <input name="title" value="<?php echo htmlspecialchars(_c('title'));?>" class="in350" autocomplete="off" /> </td>
-</tr>
+<div class="tr">
+  <div class="th"> <?php _e('set_title');?>:<br/><span class="descr"><?php _e('set_title_descr');?></span></div>
+  <div class="td"> <input name="title" value="<?php echo htmlspecialchars(_c('title'));?>" class="in350" autocomplete="off" /> </div>
+</div>
 
-<tr>
-<th><?php _e('set_language');?>:</th>
-<td>
+<div class="tr">
+<div class="th"><?php _e('set_language');?>:</div>
+<div class="td">
 	<select name="lang"><?php echo selectOptionsA(getLangs(), _c('lang')); ?></select>
 	<?php if ($oldLangs) { ?>
 	<br><br>
@@ -204,68 +202,68 @@ header('Content-type:text/html; charset=utf-8');
 	$('#mtt_old_langs_link').attr('href', mytinytodo.mttUrl + 'mytinytodo_lang.php?jsonfile&lang=' + $('#mtt_old_langs').val());
 	</script>
 	<?php } ?>
-</td>
-</tr>
+</div>
+</div>
 
-<tr>
-<th><?php _e('set_protection');?>:</th>
-<td>
+<div class="tr">
+<div class="th"><?php _e('set_protection');?>:</div>
+<div class="td">
  <label><input type="radio" name="allowpassword" value="1" <?php if(_c('password')!='') echo 'checked="checked"'; ?> onclick='$(this.form).find("input[name=password]").attr("disabled",false)' /><?php _e('set_enabled');?></label> <br/>
  <label><input type="radio" name="allowpassword" value="0" <?php if(_c('password')=='') echo 'checked="checked"'; ?> onclick='$(this.form).find("input[name=password]").attr("disabled","disabled")' /><?php _e('set_disabled');?></label> <br/>
-</td></tr>
+</div></div>
 
-<tr>
-<th><?php _e('set_newpass');?>:<br/><span class="descr"><?php _e('set_newpass_descr');?></span></th>
-<td> <input type="password" name="password" <?php if(_c('password')=='') echo "disabled"; ?> /> </td>
-</tr>
+<div class="tr">
+<div class="th"><?php _e('set_newpass');?>:<br/><span class="descr"><?php _e('set_newpass_descr');?></span></div>
+<div class="td"> <input type="password" name="password" <?php if(_c('password')=='') echo "disabled"; ?> /> </div>
+</div>
 
-<tr>
-<th><?php _e('set_smartsyntax');?>:<br/><span class="descr"><?php _e('set_smartsyntax2_descr');?></span></th>
-<td>
+<div class="tr">
+<div class="th"><?php _e('set_smartsyntax');?>:<br/><span class="descr"><?php _e('set_smartsyntax2_descr');?></span></div>
+<div class="td">
  <label><input type="radio" name="smartsyntax" value="1" <?php if(_c('smartsyntax')) echo 'checked="checked"'; ?> /><?php _e('set_enabled');?></label> <br/>
  <label><input type="radio" name="smartsyntax" value="0" <?php if(!_c('smartsyntax')) echo 'checked="checked"'; ?> /><?php _e('set_disabled');?></label>
-</td></tr>
+</div></div>
 
-<tr>
-<th><?php _e('set_autotag');?>:<br/><span class="descr"><?php _e('set_autotag_descr');?></span></th>
-<td>
+<div class="tr">
+<div class="th"><?php _e('set_autotag');?>:<br/><span class="descr"><?php _e('set_autotag_descr');?></span></div>
+<div class="td">
  <label><input type="radio" name="autotag" value="1" <?php if(_c('autotag')) echo 'checked="checked"'; ?> /><?php _e('set_enabled');?></label> <br/>
  <label><input type="radio" name="autotag" value="0" <?php if(!_c('autotag')) echo 'checked="checked"'; ?> /><?php _e('set_disabled');?></label>
-</td></tr>
+</div></div>
 
-<tr>
-<th><?php _e('set_sessions');?>:</th>
-<td>
+<div class="tr">
+<div class="th"><?php _e('set_sessions');?>:</div>
+<div class="td">
  <label><input type="radio" name="session" value="default" <?php if(_c('session')=='default') echo 'checked="checked"'; ?> /><?php _e('set_sessions_php');?></label> <br/>
  <label><input type="radio" name="session" value="files" <?php if(_c('session')=='files') echo 'checked="checked"'; ?> /><?php _e('set_sessions_files');?></label> <span class="descr">(&lt;mytinytodo_dir&gt;/tmp/sessions)</span>
-</td></tr>
+</div></div>
 
-<tr>
-<th><?php _e('set_timezone');?>:</th>
-<td>
+<div class="tr">
+<div class="th"><?php _e('set_timezone');?>:</div>
+<div class="td">
  <select name="timezone"><?php echo selectOptions(timezoneIdentifiers(), _c('timezone')); ?></select>
-</td></tr>
+</div></div>
 
-<tr>
-<th><?php _e('set_firstdayofweek');?>:</th>
-<td>
+<div class="tr">
+<div class="th"><?php _e('set_firstdayofweek');?>:</div>
+<div class="td">
  <select name="firstdayofweek"><?php echo selectOptions(__('days_long'), _c('firstdayofweek')); ?></select>
-</td></tr>
+</div></div>
 
-<tr>
-<th><?php _e('set_date');?>:</th>
-<td>
- <input name="dateformat" value="<?php echo htmlspecialchars(_c('dateformat'));?>" />
+<div class="tr">
+<div class="th"><?php _e('set_date');?>:</div>
+<div class="td">
+ <input name="dateformat" size="8" value="<?php echo htmlspecialchars(_c('dateformat'));?>" />
  <select onchange="if(this.value!=0) this.form.dateformat.value=this.value;">
  <?php echo selectOptions(array('F j, Y'=>formatTime('F j, Y'), 'M d, Y'=>formatTime('M d, Y'), 'j M Y'=>formatTime('j M Y'), 'd F Y'=>formatTime('d F Y'),
 	'n/j/Y'=>formatTime('n/j/Y'), 'd.m.Y'=>formatTime('d.m.Y'), 'j. F Y'=>formatTime('j. F Y'), 0=>__('set_custom')), _c('dateformat'), 0); ?>
  </select>
-</td></tr>
+</div></div>
 
-<tr>
-<th><?php _e('set_date2');?>:</th>
-<td>
- <input name="dateformat2" value="<?php echo htmlspecialchars(_c('dateformat2'));?>" />
+<div class="tr">
+<div class="th"><?php _e('set_date2');?>:</div>
+<div class="td">
+ <input name="dateformat2" size="8" value="<?php echo htmlspecialchars(_c('dateformat2'));?>" />
  <select onchange="if(this.value!=0) this.form.dateformat2.value=this.value;">
  <?php echo selectOptions(array(
        'Y-m-d'=>'yyyy-mm-dd ('.date('Y-m-d').')',
@@ -274,37 +272,36 @@ header('Content-type:text/html; charset=utf-8');
        'd/m/y'=>'dd/mm/yy ('.date('d/m/y').')',
        0=>__('set_custom')), _c('dateformat2'), 0);  ?>
  </select>
-</td></tr>
+</div></div>
 
-<tr>
-<th><?php _e('set_shortdate');?>:</th>
-<td>
- <input name="dateformatshort" value="<?php echo htmlspecialchars(_c('dateformatshort'));?>" />
+<div class="tr">
+<div class="th"><?php _e('set_shortdate');?>:</div>
+<div class="td">
+ <input name="dateformatshort" size="8" value="<?php echo htmlspecialchars(_c('dateformatshort'));?>" />
  <select onchange="if(this.value!=0) this.form.dateformatshort.value=this.value;">
  <?php echo selectOptions(array('M d'=>formatTime('M d'), 'j M'=>formatTime('j M'), 'n/j'=>formatTime('n/j'), 'd.m'=>formatTime('d.m'), 0=>__('set_custom')), _c('dateformatshort'), 0); ?>
  </select>
-</td></tr>
+</div></div>
 
-<tr>
-<th><?php _e('set_clock');?>:</th>
-<td>
+<div class="tr">
+<div class="th"><?php _e('set_clock');?>:</div>
+<div class="td">
  <select name="clock"><?php echo selectOptions(array(12=>__('set_12hour').' ('.date('g:i A').')', 24=>__('set_24hour').' ('.date('H:i').')'), _c('clock')); ?></select>
-</td></tr>
+</div></div>
 
-<tr>
-<th><?php _e('set_showdate');?>:</th>
-<td>
+<div class="tr">
+<div class="th"><?php _e('set_showdate');?>:</div>
+<div class="td">
  <label><input type="radio" name="showdate" value="1" <?php if(_c('showdate')) echo 'checked="checked"'; ?> /><?php _e('set_enabled');?></label> <br/>
  <label><input type="radio" name="showdate" value="0" <?php if(!_c('showdate')) echo 'checked="checked"'; ?> /><?php _e('set_disabled');?></label>
-</td>
-</tr>
+</div>
+</div>
 
-<tr><td colspan="2" class="form-bottom-buttons">
+<div class="tr form-bottom-buttons">
+  <input type="submit" value="<?php _e('set_submit');?>" />
+  <input type="button" class="mtt-back-button" value="<?php _e('set_cancel');?>" />
+</div>
 
-<input type="submit" value="<?php _e('set_submit');?>" />
-<input type="button" class="mtt-back-button" value="<?php _e('set_cancel');?>" />
-
-</td></tr>
-</table>
+</div>
 
 </form>
