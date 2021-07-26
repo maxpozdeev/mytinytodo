@@ -47,7 +47,12 @@ if (Config::get('db') == 'mysql')
 	else require_once(MTTINC. 'class.db.mysql.php');
 	$db = DBConnection::init(new Database_Mysql);
 	try {
-		$db->connect(Config::get('mysql.host'), Config::get('mysql.user'), Config::get('mysql.password'), Config::get('mysql.db'));
+		$db->connect( array(
+			'host' => Config::get('mysql.host'),
+			'user' => Config::get('mysql.user'),
+			'password' => Config::get('mysql.password'),
+			'db' => Config::get('mysql.db')
+		));
 	}
 	catch(Exception $e) {
 		logAndDie("Failed to connect to mysql database: ". $e->getMessage());
@@ -60,7 +65,7 @@ elseif(Config::get('db') == 'sqlite')
 {
 	require_once(MTTINC. 'class.db.sqlite3.php');
 	$db = DBConnection::init(new Database_Sqlite3);
-	$db->connect(MTTPATH. 'db/todolist.db');
+	$db->connect( array( 'filename' => MTTPATH. 'db/todolist.db' ) );
 }
 else {
 	# It seems not installed

@@ -25,7 +25,7 @@ else $sqlSort .= "ow ASC";
 
 $data = array();
 $q = $db->dq("SELECT *, duedate IS NULL AS ddn FROM {$db->prefix}todolist WHERE list_id=$listId $sqlSort");
-while($r = $q->fetch_assoc($q))
+while($r = $q->fetchAssoc())
 {
 	$data[] = $r;
 }

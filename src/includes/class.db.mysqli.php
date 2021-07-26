@@ -6,7 +6,7 @@
 */
 
 // ---------------------------------------------------------------------------- //
-class DatabaseResult_Mysql
+class DatabaseResult_Mysql extends DatabaseResult_Abstract
 {
 	private $q; //mysqli_result
 
@@ -15,19 +15,19 @@ class DatabaseResult_Mysql
 		$this->q = $dbh->query($query); //throws mysqli_sql_exception
 	}
 
-	function fetch_row()
+	function fetchRow()
 	{
 		return $this->q->fetch_row();
 	}
 
-	function fetch_assoc()
+	function fetchAssoc()
 	{
 		return $this->q->fetch_assoc();
 	}
 }
 
 // ---------------------------------------------------------------------------- //
-class Database_Mysql
+class Database_Mysql extends Database_Abstract
 {
 	private $dbh; //mysqli
 	private $dbname;
@@ -39,14 +39,18 @@ class Database_Mysql
 		mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 	}
 
-	function connect($host, $user, $pass, $db)
+	function connect($params)
 	{
+		$host = $params['host'];
+		$user = $params['user'];
+		$pass = $params['password'];
+		$db = $params['db'];
 		$this->dbname = $db;
 		$this->dbh = new mysqli($host, $user, $pass, $db); //throws mysqli_sql_exception
 		return true;
 	}
 
-	function last_insert_id()
+	function lastInsertId()
 	{
 		return $this->dbh->insert_id;
 	}
@@ -55,7 +59,7 @@ class Database_Mysql
 	{
 		$q = $this->_dq($query, $p);
 
-		$res = $q->fetch_row();
+		$res = $q->fetchRow();
 		if ($res === false || $res === null) return NULL;
 
 		if (sizeof($res) > 1) return $res;
@@ -66,13 +70,13 @@ class Database_Mysql
 	{
 		$q = $this->_dq($query, $p);
 
-		$res = $q->fetch_assoc();
+		$res = $q->fetchAssoc();
 		if ($res === false || $res === null) return NULL;
 
 		return $res;
 	}
 
-	function dq($query, $p = NULL)
+	function dq($query, $p = NULL) : DatabaseResult_Abstract
 	{
 		return $this->_dq($query, $p);
 	}
@@ -86,7 +90,7 @@ class Database_Mysql
 		return $this->affected();
 	}
 
-	private function _dq($query, $p = NULL, $resultless = 0)
+	private function _dq($query, $p = NULL, $resultless = 0) : DatabaseResult_Abstract
 	{
 		if (!isset($p)) $p = array();
 		elseif (!is_array($p)) $p = array($p);
@@ -127,7 +131,7 @@ class Database_Mysql
 		return '\''. sprintf($format, $s). '\'';
 	}
 
-	function table_exists($table)
+	function tableExists($table)
 	{
 		$r = $this->sq("SELECT 1 FROM information_schema.tables WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ?",
 						array($this->dbname, $table) );

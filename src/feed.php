@@ -61,7 +61,7 @@ function fillData(&$data, $listId, $field, $sqlWhere )
 	$lang = Lang::instance();
 	$db = DBConnection::instance();
 	$q = $db->dq("SELECT * FROM {$db->prefix}todolist WHERE list_id=$listId $sqlWhere ORDER BY $field DESC LIMIT 100");
-	while ($r = $q->fetch_assoc($q))
+	while ($r = $q->fetchAssoc())
 	{
 		if ($r['prio'] > 0) {
 			$r['prio'] = '+'.$r['prio'];

@@ -5,7 +5,7 @@
 	Licensed under the GNU GPL v2 license. See file COPYRIGHT for details.
 */
 
-class DatabaseResult_Sqlite3
+class DatabaseResult_Sqlite3 extends DatabaseResult_Abstract
 {
 	private $q;
 	private $affected;
@@ -25,12 +25,12 @@ class DatabaseResult_Sqlite3
 		}
 	}
 
-	function fetch_row()
+	function fetchRow()
 	{
 		return $this->q->fetch(PDO::FETCH_NUM);
 	}
 
-	function fetch_assoc()
+	function fetchAssoc()
 	{
 		return $this->q->fetch(PDO::FETCH_ASSOC);
 	}
@@ -42,7 +42,7 @@ class DatabaseResult_Sqlite3
 
 }
 
-class Database_Sqlite3
+class Database_Sqlite3 extends Database_Abstract
 {
 	private $dbh;
 	private $affected = null;
@@ -53,8 +53,9 @@ class Database_Sqlite3
 	{
 	}
 
-	function connect($filename)
+	function connect($params)
 	{
+		$filename = $params['filename'];
 		$options = array(
 			PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
 		);
@@ -69,7 +70,7 @@ class Database_Sqlite3
 	{
 		$q = $this->_dq($query, $p);
 
-		$res = $q->fetch_row();
+		$res = $q->fetchRow();
 		if ($res === false) return NULL;
 
 		if (sizeof($res) > 1) return $res;
@@ -83,7 +84,7 @@ class Database_Sqlite3
 	{
 		$q = $this->_dq($query, $p);
 
-		$res = $q->fetch_assoc();
+		$res = $q->fetchAssoc();
 		if ($res === false) return NULL;
 		return $res;
 	}
@@ -91,7 +92,7 @@ class Database_Sqlite3
 	/*
 		SELECT queries for multiple rows
 	*/
-	function dq($query, $p = NULL)
+	function dq($query, $p = NULL) : DatabaseResult_Abstract
 	{
 		return $this->_dq($query, $p);
 	}
@@ -105,7 +106,7 @@ class Database_Sqlite3
 		return $this->affected();
 	}
 
-	private function _dq($query, $p = NULL, $resultless = 0)
+	private function _dq($query, $p = NULL, $resultless = 0) : DatabaseResult_Abstract
 	{
 		if (!isset($p)) $p = array();
 		elseif (!is_array($p)) $p = array($p);
@@ -148,12 +149,12 @@ class Database_Sqlite3
 		return $this->dbh->quote(sprintf($format, $s)). " ESCAPE '\'";
 	}
 
-	function last_insert_id()
+	function lastInsertId()
 	{
 		return $this->dbh->lastInsertId();
 	}
 
-	function table_exists($table)
+	function tableExists($table)
 	{
 		$exists = $this->sq("SELECT 1 FROM sqlite_master WHERE type='table' AND name=?", $table);
 		if ($exists == "1") {

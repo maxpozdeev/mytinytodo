@@ -31,6 +31,7 @@ if($config['db'] != '')
 	{
 		die("Access denied!<br> Disable password protection or Log in.");
 	}
+	$db = DBConnection::instance();
 	$dbtype = (strtolower(get_class($db)) == 'database_mysql') ? 'mysql' : 'sqlite';
 }
 else
@@ -42,7 +43,7 @@ else
 	Config::loadConfig($config);
 	unset($config);
 
-	$db = 0;
+	$db = null;
 	$dbtype = '';
 }
 
@@ -270,12 +271,12 @@ echo "Done<br><br> <b>Attention!</b> Delete this file for security reasons.";
 printFooter();
 
 
-function get_ver($db, $dbtype)
+function get_ver(Database_Abstract $db, $dbtype)
 {
 	if(!$db || $dbtype == '') return '';
-	if(!$db->table_exists($db->prefix.'todolist')) return '';
+	if(!$db->tableExists($db->prefix.'todolist')) return '';
 	$v = '1.0';
-	if(!$db->table_exists($db->prefix.'tags')) return $v;
+	if(!$db->tableExists($db->prefix.'tags')) return $v;
 	$v = '1.1';
 	if($dbtype == 'mysql') {
 		if(!has_field_mysql($db, $db->prefix.'todolist', 'duedate')) return $v;
@@ -283,7 +284,7 @@ function get_ver($db, $dbtype)
 		if(!has_field_sqlite($db, $db->prefix.'todolist', 'duedate')) return $v;
 	}
 	$v = '1.2';
-	if(!$db->table_exists($db->prefix.'lists')) return $v;
+	if(!$db->tableExists($db->prefix.'lists')) return $v;
 	$v = '1.3.0';
 	if($dbtype == 'mysql') {
 		if(!has_field_mysql($db, $db->prefix.'todolist', 'd_completed')) return $v;
@@ -313,19 +314,19 @@ function printFooter()
 }
 
 
-function has_field_sqlite($db, $table, $field)
+function has_field_sqlite(Database_Abstract $db, $table, $field)
 {
 	$q = $db->dq("PRAGMA table_info(". $db->quote($table). ")");
-	while($r = $q->fetch_row()) {
+	while($r = $q->fetchRow()) {
 		if($r[1] == $field) return true;
 	}
 	return false;
 }
 
-function has_field_mysql($db, $table, $field)
+function has_field_mysql(Database_Abstract $db, $table, $field)
 {
 	$q = $db->dq("DESCRIBE `$table`");
-	while($r = $q->fetch_row()) {
+	while($r = $q->fetchRow()) {
 		if($r[0] == $field) return true;
 	}
 	return false;
@@ -351,7 +352,12 @@ function testConnect(&$error)
 			}
 
 			$db = new Database_Mysql;
-			$db->connect(Config::get('mysql.host'), Config::get('mysql.user'), Config::get('mysql.password'), Config::get('mysql.db'));
+			$db->connect(array(
+				'host' => Config::get('mysql.host'),
+				'user' => Config::get('mysql.user'),
+				'password' => Config::get('mysql.password'),
+				'db' => Config::get('mysql.db')
+			));
 		}
 		else
 		{
@@ -362,7 +368,7 @@ function testConnect(&$error)
 
 			require_once(MTTINC. 'class.db.sqlite3.php');
 			$db = new Database_Sqlite3;
-			$db->connect(MTTPATH. 'db/todolist.db');
+			$db->connect( array( 'filename' => MTTPATH. 'db/todolist.db' ) );
 		}
 	} catch(Exception $e) {
 		$error = $e->getMessage();
@@ -380,7 +386,7 @@ function myExceptionHandler($e)
 
 
 ### 1.1-1.2 ##########
-function update_11_12($db, $dbtype)
+function update_11_12(Database_Abstract $db, $dbtype)
 {
 	if($dbtype == 'mysql') $db->ex("ALTER TABLE todolist ADD `duedate` DATE default NULL");
 	else $db->ex("ALTER TABLE todolist ADD duedate DATE default NULL");
@@ -390,7 +396,7 @@ function update_11_12($db, $dbtype)
 	$db->ex("DELETE FROM tags");
 	$db->ex("DELETE FROM tag2task");
 	$q = $db->dq("SELECT id,tags FROM todolist");
-	while($r = $q->fetch_assoc())
+	while($r = $q->fetchAssoc())
 	{
 		if($r['tags'] == '') continue;
 		$tag_ids = prepare_tags($r['tags']);
@@ -427,7 +433,7 @@ function get_or_create_tag($name)
 
 	# need to create tag
 	$db->ex("INSERT INTO tags (name) VALUES (?)", $name);
-	return array($db->last_insert_id(), $name);
+	return array($db->lastInsertId(), $name);
 }
 
 function update_task_tags($id, $tag_ids)
@@ -442,7 +448,7 @@ function update_task_tags($id, $tag_ids)
 ### end 1.1-1.2 #####
 
 ### 1.2-1.3 ##########
-function update_12_13($db, $dbtype)
+function update_12_13(Database_Abstract $db, $dbtype)
 {
 	# update config
 	Config::save();
@@ -504,7 +510,7 @@ function update_12_13($db, $dbtype)
 
 
 ### 1.3.0 to 1.3.1 ##########
-function update_130_131($db, $dbtype)
+function update_130_131(Database_Abstract $db, $dbtype)
 {
 	$tz = null;
 	if(isset($_POST['tz'])) {
@@ -617,7 +623,7 @@ function update_130_131($db, $dbtype)
 ### end of 1.3.0 to 1.3.1 ##########
 
 ### update v1.3.1 to v1.4 ##########
-function update_131_14($db, $dbtype)
+function update_131_14(Database_Abstract $db, $dbtype)
 {
 	$db->ex("BEGIN");
 	if($dbtype=='mysql')
@@ -697,7 +703,7 @@ function update_131_14($db, $dbtype)
 
 	$q = $db->dq("SELECT id,list_id,tags FROM {$db->prefix}todolist WHERE tags != ''");
 	$ar = array();
-	while($r = $q->fetch_assoc()) $ar[] = $r;
+	while($r = $q->fetchAssoc()) $ar[] = $r;
 	foreach($ar as $r)
 	{
 			$aTags = v14_prepareTags($r['tags']);
@@ -720,14 +726,14 @@ function update_131_14($db, $dbtype)
 	# add UUID
 	$q = $db->dq("SELECT id FROM {$db->prefix}todolist");
 	$ar = array();
-	while($r = $q->fetch_assoc()) $ar[] = $r;
+	while($r = $q->fetchAssoc()) $ar[] = $r;
 	foreach($ar as $r) {
 		$db->ex("UPDATE {$db->prefix}todolist SET uuid=? WHERE id=".$r['id'], array(generateUUID()) );
 	}
 
 	$q = $db->dq("SELECT id FROM {$db->prefix}lists");
 	$ar = array();
-	while($r = $q->fetch_assoc()) $ar[] = $r;
+	while($r = $q->fetchAssoc()) $ar[] = $r;
 	foreach($ar as $r) {
 		$db->ex("UPDATE {$db->prefix}lists SET uuid=? WHERE id=".$r['id'], array(generateUUID()) );
 	}
@@ -774,7 +780,7 @@ function v14_getOrCreateTag($name)
 	if($tagId) return array('id'=>$tagId, 'name'=>$name);
 
 	$db->ex("INSERT INTO {$db->prefix}tags (name) VALUES (?)", array($name));
-	return array('id'=>$db->last_insert_id(), 'name'=>$name);
+	return array('id'=>$db->lastInsertId(), 'name'=>$name);
 }
 
 function v14_addTaskTags($taskId, $tagIds, $listId)
