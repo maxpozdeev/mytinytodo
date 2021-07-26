@@ -31,6 +31,7 @@ else {
 }
 
 require_once(MTTINC. 'common.php');
+require_once(MTTINC. 'class.dbconnection.php');
 require_once(MTTINC. 'class.config.php');
 require_once(MTTPATH. 'db/config.php');
 

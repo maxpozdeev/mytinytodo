@@ -10,7 +10,7 @@ set_exception_handler('myExceptionHandler');
 
 # Check old config file (prior v1.3)
 require_once('./db/config.php');
-if(!isset($config['db']))
+if (!isset($config['db']))
 {
 	if(isset($config['mysql'])) {
 		$config['db'] = 'mysql';
@@ -24,7 +24,7 @@ if(!isset($config['db']))
 	if(isset($config['allow']) && $config['allow'] == 'read') $config['allowread'] = 1;
 }
 
-if($config['db'] != '')
+if ($config['db'] != '')
 {
 	require_once('./init.php');
 	if ( !is_logged() )
@@ -36,9 +36,10 @@ if($config['db'] != '')
 }
 else
 {
-	if(!defined('MTTPATH')) define('MTTPATH', dirname(__FILE__) .'/');
-	if(!defined('MTTINC'))  define('MTTINC', MTTPATH. 'includes/');
+	if (!defined('MTTPATH')) define('MTTPATH', dirname(__FILE__) .'/');
+	if (!defined('MTTINC'))  define('MTTINC', MTTPATH. 'includes/');
 	require_once(MTTINC. 'common.php');
+	require_once(MTTINC. 'class.dbconnection.php');
 	require_once(MTTINC. 'class.config.php');
 	Config::loadConfig($config);
 	unset($config);
@@ -54,7 +55,7 @@ echo "<big><b>myTinyTodo @VERSION Setup</b></big><br><br>";
 # determine current installed version
 $ver = get_ver($db, $dbtype);
 
-if(!$ver)
+if (!$ver)
 {
 	# Which DB to select
 	if(!isset($_POST['installdb']) && !isset($_POST['install']))
