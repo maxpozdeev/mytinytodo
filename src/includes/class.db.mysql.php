@@ -160,7 +160,7 @@ class Database_Mysql extends Database_Abstract
 		return '\''. sprintf($format, $s). '\'';
 	}
 
-	function lastInsertId()
+	function lastInsertId($name = null)
 	{
 		return $this->dbh->lastInsertId();
 	}

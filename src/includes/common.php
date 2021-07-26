@@ -148,7 +148,7 @@ abstract class Database_Abstract
 	abstract function affected();
 	abstract function quote($s);
 	abstract function quoteForLike($format, $s);
-	abstract function lastInsertId();
+	abstract function lastInsertId($name = null);
 	abstract function tableExists($table);
 }
 

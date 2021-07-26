@@ -50,7 +50,7 @@ class Database_Mysql extends Database_Abstract
 		return true;
 	}
 
-	function lastInsertId()
+	function lastInsertId($name = null)
 	{
 		return $this->dbh->insert_id;
 	}

@@ -149,7 +149,7 @@ class Database_Sqlite3 extends Database_Abstract
 		return $this->dbh->quote(sprintf($format, $s)). " ESCAPE '\'";
 	}
 
-	function lastInsertId()
+	function lastInsertId($name = null)
 	{
 		return $this->dbh->lastInsertId();
 	}

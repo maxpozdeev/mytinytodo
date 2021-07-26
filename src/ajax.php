@@ -27,7 +27,7 @@ if(isset($_GET['loadLists']))
 	$t['list'][] = prepareAllTasksList();
 	$t['total'] = 1;
 	$q = $db->dq("SELECT * FROM {$db->prefix}lists $sqlWhere ORDER BY ow ASC, id ASC");
-	while($r = $q->fetch_assoc($q))
+	while($r = $q->fetchAssoc())
 	{
 		$t['total']++;
 		$t['list'][] = prepareList($r);
@@ -110,7 +110,7 @@ elseif(isset($_GET['loadTasks']))
 	$t['total'] = 0;
 	$t['list'] = array();
 	$q = $db->dq("SELECT *, duedate IS NULL AS ddn FROM {$db->prefix}todolist $inner WHERE $sqlWhereListId $sqlWhere $sqlSort");
-	while($r = $q->fetch_assoc($q))
+	while($r = $q->fetchAssoc())
 	{
 		$t['total']++;
 		$t['list'][] = prepareTaskRow($r);
@@ -148,7 +148,7 @@ elseif(isset($_GET['newTask']))
 	$db->ex("BEGIN");
 	$db->dq("INSERT INTO {$db->prefix}todolist (uuid,list_id,title,d_created,d_edited,ow,prio) VALUES (?,?,?,?,?,?,?)",
 				array(generateUUID(), $listId, $title, time(), time(), $ow, $prio) );
-	$id = $db->last_insert_id();
+	$id = $db->lastInsertId();
 	if($tags != '')
 	{
 		$aTags = prepareTags($tags);
@@ -184,7 +184,7 @@ elseif(isset($_GET['fullNewTask']))
 	$db->ex("BEGIN");
 	$db->dq("INSERT INTO {$db->prefix}todolist (uuid,list_id,title,d_created,d_edited,ow,prio,note,duedate) VALUES(?,?,?,?,?,?,?,?,?)",
 				array(generateUUID(), $listId, $title, time(), time(), $ow, $prio, $note, $duedate) );
-	$id = $db->last_insert_id();
+	$id = $db->lastInsertId();
 	if($tags != '')
 	{
 		$aTags = prepareTags($tags);
@@ -325,7 +325,7 @@ elseif(isset($_GET['suggestTags']))
 	$q = $db->dq("SELECT name,id FROM {$db->prefix}tags INNER JOIN {$db->prefix}tag2task ON id=tag_id WHERE list_id=$listId AND name LIKE ".
 					$db->quoteForLike('%s%%',$begin) ." GROUP BY tag_id ORDER BY name LIMIT $limit");
 	$t = array();
-	while($r = $q->fetch_row()) {
+	while($r = $q->fetchRow()) {
 		$t[] = $r[0];
 	}
 	jsonExit($t);
@@ -352,7 +352,7 @@ elseif(isset($_GET['tagCloud']))
 						"WHERE list_id=$listId GROUP BY (tag_id) ORDER BY tags_count ASC");
 	$at = array();
 	$ac = array();
-	while($r = $q->fetch_assoc()) {
+	while($r = $q->fetchAssoc()) {
 		$at[] = array('name'=>$r['name'], 'id'=>$r['tag_id']);
 		$ac[] = $r['tags_count'];
 	}
@@ -385,7 +385,7 @@ elseif(isset($_GET['addList']))
 	$ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->prefix}lists");
 	$db->dq("INSERT INTO {$db->prefix}lists (uuid,name,ow,d_created,d_edited,taskview) VALUES (?,?,?,?,?,?)",
 				array(generateUUID(), $name, $ow, time(), time(), 1) );
-	$id = $db->last_insert_id();
+	$id = $db->lastInsertId();
 	$t['total'] = 1;
 	$r = $db->sqa("SELECT * FROM {$db->prefix}lists WHERE id=$id");
 	$t['list'][] = prepareList($r);
@@ -638,7 +638,7 @@ function getOrCreateTag($name)
 	if($tagId) return array('id'=>$tagId, 'name'=>$name);
 
 	$db->ex("INSERT INTO {$db->prefix}tags (name) VALUES (?)", array($name));
-	return array('id'=>$db->last_insert_id(), 'name'=>$name);
+	return array('id'=>$db->lastInsertId(), 'name'=>$name);
 }
 
 function getTagId($tag)
@@ -653,7 +653,7 @@ function get_task_tags($id)
 	$db = DBConnection::instance();
 	$q = $db->dq("SELECT tag_id FROM {$db->prefix}tag2task WHERE task_id=?", $id);
 	$a = array();
-	while($r = $q->fetch_row()) {
+	while($r = $q->fetchRow()) {
 		$a[] = $r[0];
 	}
 	return $a;
@@ -914,7 +914,7 @@ function getUserListsSimple()
 	$db = DBConnection::instance();
 	$a = array();
 	$q = $db->dq("SELECT id,name FROM {$db->prefix}lists ORDER BY id ASC");
-	while($r = $q->fetch_row()) {
+	while($r = $q->fetchRow()) {
 		$a[$r[0]] = $r[1];
 	}
 	return $a;
