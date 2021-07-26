@@ -31,6 +31,7 @@ class Database_Mysql
 {
 	private $dbh; //mysqli
 	private $dbname;
+	var $prefix = '';
 
 	function __construct()
 	{

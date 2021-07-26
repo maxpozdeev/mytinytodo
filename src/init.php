@@ -55,7 +55,7 @@ if (Config::get('db') == 'mysql')
 	$db->dq("SET NAMES utf8");
 }
 
-# SQLite3 (pdo_sqlite)
+# SQLite3 Database
 elseif(Config::get('db') == 'sqlite')
 {
 	require_once(MTTINC. 'class.db.sqlite3.php');
@@ -66,7 +66,7 @@ else {
 	# It seems not installed
 	die("Not installed. Run <a href=setup.php>setup.php</a> first.");
 }
-$db->prefix = Config::get('prefix');
+DBConnection::setPrefix(Config::get('prefix'));
 
 //User can override language setting by cookies or query
 $forceLang = '';

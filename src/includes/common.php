@@ -124,11 +124,15 @@ class DBConnection
 	public static function instance()
 	{
         if (!isset(self::$instance)) {
-			//$c = __CLASS__;
-			$c = 'DBConnection';
-			self::$instance = new $c;
+			throw new Exception("DBConnection is not initialized");
         }
 		return self::$instance;
+	}
+
+	public static function setPrefix($prefix)
+	{
+		$db = self::instance();
+		$db->prefix = $prefix;
 	}
 }
 

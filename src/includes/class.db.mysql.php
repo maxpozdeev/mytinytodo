@@ -49,6 +49,7 @@ class Database_Mysql
 	private $affected = null;
 	var $lastQuery;
 	private $dbname;
+	var $prefix = '';
 
 	function __construct()
 	{

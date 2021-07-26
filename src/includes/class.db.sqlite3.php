@@ -47,6 +47,7 @@ class Database_Sqlite3
 	private $dbh;
 	private $affected = null;
 	var $lastQuery;
+	var $prefix = '';
 
 	function __construct()
 	{
