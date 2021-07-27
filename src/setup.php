@@ -234,7 +234,7 @@ elseif($ver == $lastVer)
 }
 else
 {
-	if(!in_array($ver, array('1.1','1.2','1.3.0','1.3.1'))) {
+	if(!in_array($ver, array('1.3.0','1.3.1'))) {
 		exitMessage("Can not update. Unsupported database version ($ver).");
 	}
 	if(!isset($_POST['update'])) {
@@ -251,19 +251,6 @@ else
 	}
 	if($ver == '1.3.0')
 	{
-		update_130_131($db, $dbtype);
-		update_131_14($db, $dbtype);
-	}
-	if($ver == '1.2')
-	{
-		update_12_13($db, $dbtype);
-		update_130_131($db, $dbtype);
-		update_131_14($db, $dbtype);
-	}
-	elseif($ver == '1.1')
-	{
-		update_11_12($db, $dbtype);
-		update_12_13($db, $dbtype);
 		update_130_131($db, $dbtype);
 		update_131_14($db, $dbtype);
 	}
@@ -384,130 +371,6 @@ function myExceptionHandler($e)
 		"\n<pre>". $e->getTraceAsString() . "</pre>\n";
 	exit;
 }
-
-
-### 1.1-1.2 ##########
-function update_11_12(Database_Abstract $db, $dbtype)
-{
-	if($dbtype == 'mysql') $db->ex("ALTER TABLE todolist ADD `duedate` DATE default NULL");
-	else $db->ex("ALTER TABLE todolist ADD duedate DATE default NULL");
-
-	# Fixing broken tags
-	$db->ex("BEGIN");
-	$db->ex("DELETE FROM tags");
-	$db->ex("DELETE FROM tag2task");
-	$q = $db->dq("SELECT id,tags FROM todolist");
-	while($r = $q->fetchAssoc())
-	{
-		if($r['tags'] == '') continue;
-		$tag_ids = prepare_tags($r['tags']);
-		if($tag_ids) update_task_tags($r['id'], $tag_ids);
-	}
-	$db->ex("COMMIT");
-}
-
-function prepare_tags(&$tags_str)
-{
-	$tag_ids = array();
-	$tag_names = array();
-	$tags = explode(',', $tags_str);
-	foreach($tags as $v)
-	{
-		# remove duplicate tags?
-		$tag = str_replace(array('"',"'"),array('',''),trim($v));
-		if($tag == '') continue;
-		list($tag_id,$tag_name) = get_or_create_tag($tag);
-		if($tag_id && !in_array($tag_id, $tag_ids)) {
-			$tag_ids[] = $tag_id;
-			$tag_names[] = $tag_name;
-		}
-	}
-	$tags_str = implode(',', $tag_names);
-	return $tag_ids;
-}
-
-function get_or_create_tag($name)
-{
-	global $db;
-	$tag = $db->sq("SELECT id,name FROM tags WHERE name=?", $name);
-	if($tag) return $tag;
-
-	# need to create tag
-	$db->ex("INSERT INTO tags (name) VALUES (?)", $name);
-	return array($db->lastInsertId(), $name);
-}
-
-function update_task_tags($id, $tag_ids)
-{
-	global $db;
-	foreach($tag_ids as $v) {
-		$db->ex("INSERT INTO tag2task (task_id,tag_id) VALUES ($id,$v)");
-	}
-	$db->ex("UPDATE tags SET tags_count=tags_count+1 WHERE id IN (". implode(',', $tag_ids). ")");
-}
-
-### end 1.1-1.2 #####
-
-### 1.2-1.3 ##########
-function update_12_13(Database_Abstract $db, $dbtype)
-{
-	# update config
-	Config::save();
-
-	# and then db
-	$db->ex("BEGIN");
-	if($dbtype=='mysql')
-	{
-		$db->ex(
-"CREATE TABLE lists (
- `id` INT UNSIGNED NOT NULL auto_increment,
- `name` VARCHAR(50) NOT NULL default '',
- PRIMARY KEY(`id`)
-) CHARSET=utf8 ");
-		$db->ex("ALTER TABLE todolist ADD `list_id` INT UNSIGNED NOT NULL default 0");
-		$db->ex("ALTER TABLE tags ADD `list_id` INT UNSIGNED NOT NULL default 0");
-
-		$db->ex("ALTER TABLE todolist ADD KEY(`list_id`)");
-		$db->ex("DROP INDEX `name` ON tags");
-		$db->ex("ALTER TABLE tags ADD UNIQUE KEY `listid_name` (`list_id`,`name`)");
-	}
-	else
-	{
-		$db->ex(
-"CREATE TABLE lists (
- id INTEGER PRIMARY KEY,
- name VARCHAR(50) NOT NULL
-) ");
-		$db->ex("ALTER TABLE todolist ADD list_id INTEGER UNSIGNED NOT NULL default 0");
-		$db->ex("CREATE INDEX todolist_list_id ON todolist (list_id)");
-
-		$db->ex(
-"CREATE TEMPORARY TABLE tags_backup (
- id INTEGER,
- name VARCHAR(50) NOT NULL,
- tags_count INT default 0
-) ");
-		$db->ex("INSERT INTO tags_backup SELECT id,name,tags_count FROM tags");
-		$db->ex("DROP TABLE tags");
-		$db->ex(
-"CREATE TABLE tags (
- id INTEGER PRIMARY KEY,
- name VARCHAR(50) NOT NULL,
- tags_count INT default 0,
- list_id INTEGER UNSIGNED NOT NULL default 0
-) ");
-		$db->ex("INSERT INTO tags (id,name,tags_count) SELECT id,name,tags_count FROM tags_backup");
-		$db->ex("CREATE UNIQUE INDEX tags_listid_name ON tags (list_id,name COLLATE NOCASE) ");
-		$db->ex("DROP TABLE tags_backup");
-	}
-	$db->ex("COMMIT");
-
-	$db->ex("INSERT INTO lists (name,d_created) VALUES (?,?)", array('Todo', time()));
-	$db->ex("UPDATE todolist SET list_id=1");
-
-}
-
-### end 1.2-1.3 #####
 
 
 ### 1.3.0 to 1.3.1 ##########
