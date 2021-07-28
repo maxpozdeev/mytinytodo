@@ -56,7 +56,7 @@ if (Config::get('db') == 'mysql')
 	catch(Exception $e) {
 		logAndDie("Failed to connect to mysql database: ". $e->getMessage());
 	}
-	$db->dq("SET NAMES utf8");
+	$db->dq("SET NAMES utf8mb4");
 }
 
 # SQLite3 Database

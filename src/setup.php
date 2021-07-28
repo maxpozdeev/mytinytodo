@@ -115,7 +115,7 @@ if (!$ver)
  `taskview` INT UNSIGNED NOT NULL default 0,
  PRIMARY KEY(`id`),
  UNIQUE KEY(`uuid`)
-) CHARSET=utf8 ");
+) CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci ");
 
 
 			$db->ex(
@@ -137,7 +137,7 @@ if (!$ver)
   PRIMARY KEY(`id`),
   KEY(`list_id`),
   UNIQUE KEY(`uuid`)
-) CHARSET=utf8 ");
+) CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci ");
 
 
 			$db->ex(
@@ -146,7 +146,7 @@ if (!$ver)
  `name` VARCHAR(50) NOT NULL,
  PRIMARY KEY(`id`),
  UNIQUE KEY `name` (`name`)
-) CHARSET=utf8 ");
+) CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci ");
 
 
 			$db->ex(
@@ -157,7 +157,7 @@ if (!$ver)
  KEY(`tag_id`),
  KEY(`task_id`),
  KEY(`list_id`)		/* for tagcloud */
-) CHARSET=utf8 ");
+) CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci ");
 
 
 			$db->ex(
@@ -398,6 +398,15 @@ function update_14_17(Database_Abstract $db, $dbtype)
 	$db->ex("BEGIN");
 	if($dbtype=='mysql')
 	{
+		# convert charset to utf8mb4
+
+		$db->ex("ALTER TABLE {$db->prefix}lists    CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+		$db->ex("ALTER TABLE {$db->prefix}todolist CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+		$db->ex("ALTER TABLE {$db->prefix}tags     CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+		$db->ex("ALTER TABLE {$db->prefix}tag2task CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+
+		# create settings table
+
 		$db->ex(
 "CREATE TABLE {$db->prefix}settings (
  `param_key`   VARCHAR(100) NOT NULL default '',
@@ -405,6 +414,7 @@ function update_14_17(Database_Abstract $db, $dbtype)
 UNIQUE KEY `param_key` (`param_key`)
 ) CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ");
 	}
+
 	else #sqlite
 	{
 		$db->ex(
