@@ -36,10 +36,8 @@ require_once(MTTINC. 'class.config.php');
 require_once(MTTPATH. 'db/config.php');
 
 if(!isset($config)) global $config;
-Config::loadConfig($config);
+Config::loadDbConfig($config);
 unset($config);
-
-date_default_timezone_set(Config::get('timezone'));
 
 # MySQL Database Connection
 if (Config::get('db') == 'mysql')
@@ -73,6 +71,10 @@ else {
 	die("Not installed. Run <a href=setup.php>setup.php</a> first.");
 }
 DBConnection::setPrefix(Config::get('prefix'));
+Config::load();
+
+
+date_default_timezone_set(Config::get('timezone'));
 
 //User can override language setting by cookies or query
 $forceLang = '';

@@ -26,6 +26,9 @@ if (!isset($config['db']))
 
 if ($config['db'] != '')
 {
+	require_once('./includes/class.config.php');
+	Config::$noDatabase = true; //will not load settings from database in init.php
+
 	require_once('./init.php');
 	if ( !is_logged() )
 	{
@@ -41,19 +44,20 @@ else
 	require_once(MTTINC. 'common.php');
 	require_once(MTTINC. 'class.dbconnection.php');
 	require_once(MTTINC. 'class.config.php');
-	Config::loadConfig($config);
+	Config::$noDatabase = true;
+	Config::loadDbConfig($config);
 	unset($config);
 
 	$db = null;
 	$dbtype = '';
 }
 
-$lastVer = '1.4';
+$lastVer = '1.7';
 echo '<html><head><meta name="robots" content="noindex,nofollow"><title>myTinyTodo @VERSION Setup</title></head><body>';
 echo "<big><b>myTinyTodo @VERSION Setup</b></big><br><br>";
 
 # determine current installed version
-$ver = get_ver($db, $dbtype);
+$ver = $db ? get_ver($db, $dbtype) : '';
 
 if (!$ver)
 {
@@ -88,7 +92,7 @@ if (!$ver)
 		if(!is_writable('./db/config.php')) {
 			exitMessage("Config file ('db/config.php') is not writable.");
 		}
-		Config::save();
+		Config::saveDbConfig();
 		exitMessage("This will create myTinyTodo database <form method=post><input type=hidden name=install value=1><input type=submit value=' Install '></form>");
 	}
 
@@ -156,6 +160,13 @@ if (!$ver)
 ) CHARSET=utf8 ");
 
 
+			$db->ex(
+"CREATE TABLE {$db->prefix}settings (
+ `param_key`   VARCHAR(100) NOT NULL default '',
+ `param_value` TEXT,
+UNIQUE KEY `param_key` (`param_key`)
+) CHARSET=utf8mb4 ");
+
 		} catch (Exception $e) {
 			exitMessage("<b>Error:</b> ". htmlarray($e->getMessage()));
 		}
@@ -219,6 +230,15 @@ if (!$ver)
 			$db->ex("CREATE INDEX tag2task_task_id ON {$db->prefix}tag2task (task_id)");
 			$db->ex("CREATE INDEX tag2task_list_id ON {$db->prefix}tag2task (list_id)");	/* for tagcloud */
 
+
+			$db->ex(
+"CREATE TABLE {$db->prefix}settings (
+ param_key   VARCHAR(100) NOT NULL default '',
+ param_value TEXT
+) ");
+
+			$db->ex("CREATE UNIQUE INDEX settings_key ON {$db->prefix}settings (param_key COLLATE NOCASE)");
+
 		} catch (Exception $e) {
 			exitMessage("<b>Error:</b> ". htmlarray($e->getMessage()));
 		}
@@ -227,6 +247,8 @@ if (!$ver)
 	# create default list
 	$db->ex( "INSERT INTO {$db->prefix}lists (uuid,name,d_created,taskview) VALUES (?,?,?,?)", array(generateUUID(), 'Todo', time(), 1) );
 
+	Config::save();
+	Config::saveDbConfig();
 }
 elseif($ver == $lastVer)
 {
@@ -234,25 +256,31 @@ elseif($ver == $lastVer)
 }
 else
 {
-	if(!in_array($ver, array('1.3.0','1.3.1'))) {
+	if(!in_array($ver, array('1.3.0','1.3.1','1.4'))) {
 		exitMessage("Can not update. Unsupported database version ($ver).");
 	}
 	if(!isset($_POST['update'])) {
-		exitMessage("Update database v$ver
+		exitMessage("Update database v$ver to v$lastVer<br><br>
 		<form name=frm method=post><input type=hidden name=update value=1><input type=hidden name=tz value=-1><input type=submit value=' Update '></form>
 		<script type=\"text/javascript\">var tz = -1 * (new Date()).getTimezoneOffset(); document.frm.tz.value = tz;</script>
 		");
 	}
 
 	# update process
-	if($ver == '1.3.1')
+	if ($ver == '1.4')
+	{
+		update_14_17($db, $dbtype);
+	}
+	elseif ($ver == '1.3.1')
 	{
 		update_131_14($db, $dbtype);
+		update_14_17($db, $dbtype);
 	}
-	if($ver == '1.3.0')
+	elseif ($ver == '1.3.0')
 	{
 		update_130_131($db, $dbtype);
 		update_131_14($db, $dbtype);
+		update_14_17($db, $dbtype);
 	}
 }
 echo "Done<br><br> <b>Attention!</b> Delete this file for security reasons.";
@@ -286,6 +314,8 @@ function get_ver(Database_Abstract $db, $dbtype)
 		if(!has_field_sqlite($db, $db->prefix.'todolist', 'd_edited')) return $v;
 	}
 	$v = '1.4';
+	if (!$db->tableExists($db->prefix.'settings')) return $v;
+	$v = '1.7';
 	return $v;
 }
 
@@ -658,5 +688,33 @@ function v14_addTaskTags($taskId, $tagIds, $listId)
 }
 ### end of 1.4 #####
 
+### update v1.4 to v1.7 ##########
+function update_14_17(Database_Abstract $db, $dbtype)
+{
+	$db->ex("BEGIN");
+	if($dbtype=='mysql')
+	{
+		$db->ex(
+"CREATE TABLE {$db->prefix}settings (
+ `param_key`   VARCHAR(100) NOT NULL default '',
+ `param_value` TEXT,
+UNIQUE KEY `param_key` (`param_key`)
+) CHARSET=utf8mb4 ");
+	}
+	else #sqlite
+	{
+		$db->ex(
+"CREATE TABLE {$db->prefix}settings (
+ param_key   VARCHAR(100) NOT NULL default '',
+ param_value TEXT
+) ");
+		$db->ex("CREATE UNIQUE INDEX settings_key ON {$db->prefix}settings (param_key COLLATE NOCASE)");
+	}
+	$db->ex("COMMIT");
+
+	Config::save();
+	Config::saveDbConfig();
+}
+### end of 1.7 #####
 
 ?>
