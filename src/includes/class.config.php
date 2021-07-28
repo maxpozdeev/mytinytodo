@@ -87,10 +87,7 @@ class Config
 		if (self::$noDatabase) {
 			return;
 		}
-		$db = DBConnection::instance();
-		$json = $db->sq("SELECT param_value FROM {$db->prefix}settings WHERE param_key = 'config.json'");
-		if (!$json) return;
-		$j = json_decode($json, true);
+		$j = self::requestDomain('config.json');
 		foreach ($j as $key=>$val) {
 			// Ignore params for database config
 			if ( !isset(self::$dbparams[$key]) ) {
@@ -164,14 +161,28 @@ class Config
 
 			$j[$param] = $val;
 		}
-		$json = json_encode($j, JSON_PRETTY_PRINT);
+		self::saveDomain('config.json', $j);
+	}
+
+	public static function requestDomain($key)
+	{
 		$db = DBConnection::instance();
-		$keyExists = $db->sq("SELECT COUNT(param_key) FROM {$db->prefix}settings WHERE param_key = 'config.json'");
+		$json = $db->sq("SELECT param_value FROM {$db->prefix}settings WHERE param_key = ?", array($key));
+		if (!$json) return array();
+		$j = json_decode($json, true);
+		return $j;
+	}
+
+	public static function saveDomain($key, $array)
+	{
+		$json = json_encode($array, JSON_PRETTY_PRINT);
+		$db = DBConnection::instance();
+		$keyExists = $db->sq("SELECT COUNT(param_key) FROM {$db->prefix}settings WHERE param_key = ?", array($key) );
 		if ($keyExists) {
-			$db->ex("UPDATE {$db->prefix}settings SET param_value = ? WHERE param_key = 'config.json'", array($json) );
+			$db->ex("UPDATE {$db->prefix}settings SET param_value = ? WHERE param_key = ?", array($json,$key) );
 		}
 		else {
-			$db->ex("INSERT INTO {$db->prefix}settings (param_key,param_value) VALUES ('config.json',?)", array($json) );
+			$db->ex("INSERT INTO {$db->prefix}settings (param_key,param_value) VALUES (?,?)", array($key,$json) );
 		}
 	}
 }
