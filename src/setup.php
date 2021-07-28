@@ -278,32 +278,20 @@ printFooter();
 
 function get_ver(Database_Abstract $db, $dbtype)
 {
-	if(!$db || $dbtype == '') return '';
-	if(!$db->tableExists($db->prefix.'todolist')) return '';
+	if ( !$db || $dbtype == '' ) return '';
+	if ( !$db->tableExists($db->prefix.'todolist') ) return '';
 	$v = '1.0';
-	if(!$db->tableExists($db->prefix.'tags')) return $v;
+	if ( !$db->tableExists($db->prefix.'tags') ) return $v;
 	$v = '1.1';
-	if($dbtype == 'mysql') {
-		if(!has_field_mysql($db, $db->prefix.'todolist', 'duedate')) return $v;
-	} else {
-		if(!has_field_sqlite($db, $db->prefix.'todolist', 'duedate')) return $v;
-	}
+	if ( !db_has_field($dbtype, $db, $db->prefix.'todolist', 'duedate') ) return $v;
 	$v = '1.2';
-	if(!$db->tableExists($db->prefix.'lists')) return $v;
+	if ( !$db->tableExists($db->prefix.'lists') ) return $v;
 	$v = '1.3.0';
-	if($dbtype == 'mysql') {
-		if(!has_field_mysql($db, $db->prefix.'todolist', 'd_completed')) return $v;
-	} else {
-		if(!has_field_sqlite($db, $db->prefix.'todolist', 'd_completed')) return $v;
-	}
+	if ( !db_has_field($dbtype, $db, $db->prefix.'todolist', 'd_completed') ) return $v;
 	$v = '1.3.1';
-	if($dbtype == 'mysql') {
-		if(!has_field_mysql($db, $db->prefix.'todolist', 'd_edited')) return $v;
-	} else {
-		if(!has_field_sqlite($db, $db->prefix.'todolist', 'd_edited')) return $v;
-	}
+	if ( !db_has_field($dbtype, $db, $db->prefix.'todolist', 'd_edited') ) return $v;
 	$v = '1.4';
-	if (!$db->tableExists($db->prefix.'settings')) return $v;
+	if ( !$db->tableExists($db->prefix.'settings') ) return $v;
 	$v = '1.7';
 	return $v;
 }
@@ -320,6 +308,12 @@ function printFooter()
 	echo "</body></html>";
 }
 
+function db_has_field($dbtype, Database_Abstract $db, $table, $field)
+{
+	if ($dbtype == 'mysql') return has_field_mysql($db, $table, $field);
+	elseif ($dbtype == 'sqlite') return has_field_sqlite($db, $table, $field);
+	else throw new Exception("Unexpected database type");
+}
 
 function has_field_sqlite(Database_Abstract $db, $table, $field)
 {
