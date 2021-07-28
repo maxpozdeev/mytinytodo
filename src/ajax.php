@@ -427,7 +427,14 @@ elseif(isset($_GET['setSort']))
 	$sort = (int)_post('sort');
 	if($sort < 0 || $sort > 104) $sort = 0;
 	elseif($sort < 101 && $sort > 4) $sort = 0;
-	$db->ex("UPDATE {$db->prefix}lists SET sorting=$sort,d_edited=? WHERE id=$listId", array(time()));
+	if ($listId == -1) {
+		$opts = Config::requestDomain('alltasks.json');
+		$opts['sort'] = $sort;
+		Config::saveDomain('alltasks.json', $opts);
+	}
+	else {
+		$db->ex("UPDATE {$db->prefix}lists SET sorting=$sort,d_edited=? WHERE id=$listId", array(time()));
+	}
 	jsonExit(array('total'=>1));
 }
 elseif(isset($_GET['publishList']))
@@ -907,14 +914,16 @@ function prepareAllTasksList()
 {
 	//default values
 	$hidden = 1;
+	$sort = 3;
 
 	$opts = Config::requestDomain('alltasks.json');
 	if ( isset($opts['hidden']) ) $hidden = (int)$opts['hidden'] ? 1 : 0;
+	if ( isset($opts['sort']) ) $sort = (int)$opts['sort'];
 
 	return array(
 		'id' => -1,
 		'name' => htmlarray(__('alltasks')),
-		'sort' => 3,
+		'sort' => $sort,
 		'published' => 0,
 		'showCompl' => 1,
 		'showNotes' => 0,
