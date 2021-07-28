@@ -165,7 +165,7 @@ if (!$ver)
  `param_key`   VARCHAR(100) NOT NULL default '',
  `param_value` TEXT,
 UNIQUE KEY `param_key` (`param_key`)
-) CHARSET=utf8mb4 ");
+) CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ");
 
 		} catch (Exception $e) {
 			exitMessage("<b>Error:</b> ". htmlarray($e->getMessage()));
@@ -403,7 +403,7 @@ function update_14_17(Database_Abstract $db, $dbtype)
  `param_key`   VARCHAR(100) NOT NULL default '',
  `param_value` TEXT,
 UNIQUE KEY `param_key` (`param_key`)
-) CHARSET=utf8mb4 ");
+) CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ");
 	}
 	else #sqlite
 	{
