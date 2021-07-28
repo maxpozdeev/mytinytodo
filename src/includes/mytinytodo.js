@@ -683,6 +683,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 
 				$.each(res.list, function(i,item) {
 					if ( item.id == -1) {
+						tabLists._alltasks = item;
 						ti += '<li id="list_all" class="mtt-tab mtt-tabs-alltasks'+(item.hidden?' mtt-tabs-hidden':'')+'">'+
 							'<a href="'+_mtt.urlForList(item)+'" title="'+item.name+'"><span>'+item.name+'</span>'+
 							'<div class="list-action"></div></a></li>';
@@ -1357,7 +1358,7 @@ function tabSelect(elementOrId)
 
 	if(curList.hidden) {
 		curList.hidden = false;
-		if(curList.id > 0) _mtt.db.request('setHideList', {list:curList.id, hide:0});
+		_mtt.db.request('setHideList', {list:curList.id, hide:0});
 	}
 	flag.tagsChanged = true;
 	cancelTagFilter(0, 1);
@@ -2104,6 +2105,7 @@ function cmenuOnListOrderChanged()
 
 function cmenuOnListHidden(list)
 {
+	if (list.id == -1) return;
 	$('#cmenu_list\\:'+list.id).addClass('mtt-list-hidden');
 };
 
@@ -2233,6 +2235,7 @@ function slmenuOnListSelected(list)
 
 function slmenuOnListHidden(list)
 {
+	if (list.id == -1) return;
 	$('#slmenucontainer li.list-id-'+list.id).addClass('mtt-list-hidden');
 };
 
@@ -2285,10 +2288,8 @@ function hideList(listId)
 
 	tabLists.get(listId).hidden = true;
 
-	if(listId > 0) {
-		_mtt.db.request('setHideList', {list:listId, hide:1});
-		_mtt.doAction('listHidden', tabLists.get(listId));
-	}
+	_mtt.db.request('setHideList', {list:listId, hide:1});
+	_mtt.doAction('listHidden', tabLists.get(listId));
 
 	if(listIdToSelect) {
 		tabSelect(listIdToSelect);

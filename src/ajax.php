@@ -515,9 +515,16 @@ elseif(isset($_GET['setHideList']))
 {
 	check_write_access();
 	$listId = (int)_post('list');
-	$flag = (int)_post('hide');
-	$bitwise = ($flag == 0) ? 'taskview & ~4' : 'taskview | 4';
-	$db->dq("UPDATE {$db->prefix}lists SET taskview=$bitwise WHERE id=$listId");
+	$flag = (int)_post('hide') ? 1 : 0;
+	if ($listId == -1) {
+		$opts = Config::requestDomain('alltasks.json');
+		$opts['hidden'] = $flag;
+		Config::saveDomain('alltasks.json', $opts);
+	}
+	else {
+		$bitwise = ($flag == 0) ? 'taskview & ~4' : 'taskview | 4';
+		$db->dq("UPDATE {$db->prefix}lists SET taskview=$bitwise WHERE id=$listId");
+	}
 	jsonExit(array('total'=>1));
 }
 
@@ -898,6 +905,12 @@ function prepareList($row)
 
 function prepareAllTasksList()
 {
+	//default values
+	$hidden = 1;
+
+	$opts = Config::requestDomain('alltasks.json');
+	if ( isset($opts['hidden']) ) $hidden = (int)$opts['hidden'] ? 1 : 0;
+
 	return array(
 		'id' => -1,
 		'name' => htmlarray(__('alltasks')),
@@ -905,7 +918,7 @@ function prepareAllTasksList()
 		'published' => 0,
 		'showCompl' => 1,
 		'showNotes' => 0,
-		'hidden' => 1,
+		'hidden' => $hidden,
 	);
 }
 
