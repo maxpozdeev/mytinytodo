@@ -167,6 +167,17 @@ if (!$ver)
 UNIQUE KEY `param_key` (`param_key`)
 ) CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ");
 
+
+			$db->ex(
+"CREATE TABLE {$db->prefix}sessions (
+ `id`          VARCHAR(64) NOT NULL default '',		/* upto 64 bytes for sha256 */
+ `data`        TEXT,
+ `last_access` INT UNSIGNED NOT NULL default 0,		/* time() timestamp */
+ `expires`     INT UNSIGNED NOT NULL default 0,		/* time() timestamp */
+UNIQUE KEY `id` (`id`)
+) CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ");
+
+
 		} catch (Exception $e) {
 			exitMessage("<b>Error:</b> ". htmlarray($e->getMessage()));
 		}
@@ -238,6 +249,17 @@ UNIQUE KEY `param_key` (`param_key`)
 ) ");
 
 			$db->ex("CREATE UNIQUE INDEX settings_key ON {$db->prefix}settings (param_key COLLATE NOCASE)");
+
+
+			$db->ex(
+"CREATE TABLE {$db->prefix}sessions (
+ id          VARCHAR(64) NOT NULL default '',
+ data        TEXT,
+ last_access INTEGER UNSIGNED NOT NULL default 0,
+ expires     INTEGER UNSIGNED NOT NULL default 0
+) ");
+
+			$db->ex("CREATE UNIQUE INDEX sessions_id ON {$db->prefix}sessions (id COLLATE NOCASE)");
 
 		} catch (Exception $e) {
 			exitMessage("<b>Error:</b> ". htmlarray($e->getMessage()));
@@ -390,6 +412,7 @@ function myExceptionHandler($e)
 function update_14_17(Database_Abstract $db, $dbtype)
 {
 	$db->ex("BEGIN");
+
 	if($dbtype=='mysql')
 	{
 		# convert charset to utf8mb4
@@ -407,6 +430,18 @@ function update_14_17(Database_Abstract $db, $dbtype)
  `param_value` TEXT,
 UNIQUE KEY `param_key` (`param_key`)
 ) CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ");
+
+		# create sessions table
+
+		$db->ex(
+"CREATE TABLE {$db->prefix}sessions (
+ `id`          VARCHAR(64) NOT NULL default '',
+ `data`        TEXT,
+ `last_access` INT UNSIGNED NOT NULL default 0,
+ `expires`     INT UNSIGNED NOT NULL default 0,
+UNIQUE KEY `id` (`id`)
+) CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ");
+
 	}
 
 	else #sqlite
@@ -417,7 +452,20 @@ UNIQUE KEY `param_key` (`param_key`)
  param_value TEXT
 ) ");
 		$db->ex("CREATE UNIQUE INDEX settings_key ON {$db->prefix}settings (param_key COLLATE NOCASE)");
+
+		# sessions
+
+		$db->ex(
+"CREATE TABLE {$db->prefix}sessions (
+ id          VARCHAR(100) NOT NULL default '',
+ data        TEXT,
+ last_access INTEGER UNSIGNED NOT NULL default 0,
+ expires     INTEGER UNSIGNED NOT NULL default 0
+) ");
+
+		$db->ex("CREATE UNIQUE INDEX sessions_id ON {$db->prefix}sessions (id COLLATE NOCASE)");
 	}
+
 	$db->ex("COMMIT");
 
 	Config::save();

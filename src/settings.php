@@ -41,7 +41,6 @@ if(isset($_POST['save']))
 	catch (Exception $e) {
 	}
 	Config::set('autotag', (int)_post('autotag'));
-	Config::set('session', _post('session'));
 	Config::set('firstdayofweek', (int)_post('firstdayofweek'));
 	Config::set('clock', (int)_post('clock'));
 	Config::set('dateformat', _post('dateformat'));
@@ -229,13 +228,6 @@ header('Content-type:text/html; charset=utf-8');
 <div class="td">
  <label><input type="radio" name="autotag" value="1" <?php if(_c('autotag')) echo 'checked="checked"'; ?> /><?php _e('set_enabled');?></label> <br/>
  <label><input type="radio" name="autotag" value="0" <?php if(!_c('autotag')) echo 'checked="checked"'; ?> /><?php _e('set_disabled');?></label>
-</div></div>
-
-<div class="tr">
-<div class="th"><?php _e('set_sessions');?>:</div>
-<div class="td">
- <label><input type="radio" name="session" value="default" <?php if(_c('session')=='default') echo 'checked="checked"'; ?> /><?php _e('set_sessions_php');?></label> <br/>
- <label><input type="radio" name="session" value="files" <?php if(_c('session')=='files') echo 'checked="checked"'; ?> /><?php _e('set_sessions_files');?></label> <span class="descr">(&lt;mytinytodo_dir&gt;/tmp/sessions)</span>
 </div></div>
 
 <div class="tr">
