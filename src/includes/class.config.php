@@ -58,9 +58,6 @@ class Config
 		# First day of week: 0-Sunday, 1-Monday, 2-Tuesday, .. 6-Saturday
 		'firstdayofweek' => array('default'=>1, 'type'=>'i'),
 
-		# select session handling mechanism: files or default (php default)
-		'session' => array('default'=>'files', 'type'=>'s', 'options'=>array('files','default')),
-
 		# Date/time formats
 		'clock' => array('default'=>24, 'type'=>'i', 'options'=>array(12,24)),
 		'dateformat' => array('default'=>'j M Y', 'type'=>'s'),
