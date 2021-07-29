@@ -761,6 +761,8 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		prev.lastScrollTop = $(window).scrollTop();
 		this.pages.prev.push(this.pages.current);
 		this.pages.current = {page:page, pageClass:pageClass};
+		$('#mtt_body').removeClass('page-' + prev.page);
+		$('#mtt_body').addClass('page-' + page);
 		showhide($('#page_'+ this.pages.current.page).addClass('mtt-page-'+ this.pages.current.pageClass), $('#page_'+ prev.page));
 	},
 
@@ -769,6 +771,8 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		if(this.pages.current.page == 'tasks') return false;
 		var prev = this.pages.current;
 		this.pages.current = this.pages.prev.pop();
+		$('#mtt_body').removeClass('page-' + prev.page);
+		$('#mtt_body').addClass('page-' + this.pages.current.page);
 		showhide($('#page_'+ this.pages.current.page), $('#page_'+ prev.page).removeClass('mtt-page-'+prev.page.pageClass));
 		$(window).scrollTop(this.pages.current.lastScrollTop);
 		if (this.pages.current.onBack) this.pages.current.onBack.call(this);

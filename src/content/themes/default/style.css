@@ -467,6 +467,9 @@ li.mtt-item-hidden { display:none; }
 /* narrow screens */
 @media only screen and (max-width: 600px) {
 
+  #mtt_body { padding: 15px 15px 0px; }
+  #mtt_body.page-ajax .topblock { display: none; }
+
   h2 { font-size:1rem; }
 
   #bar_login, #bar_logout { padding-right:1px; }
@@ -524,6 +527,7 @@ li.mtt-item-hidden { display:none; }
   .mtt-menu-container li { padding-top:0.3rem; padding-bottom:0.3rem; }
 
   .mtt-settings-table .tr { display: block; }
+  .mtt-settings-table .tr:not(.form-bottom-buttons) { background-color:#f5f5f5; border:1px solid #f5f5f5; border-radius: 10px; padding:0 15px; margin-bottom: 5px;}
   .mtt-settings-table .th { width: auto; padding-bottom: 4px; padding-left: 0px; }
   .mtt-settings-table .td {  padding-top: 4px; padding-left: 0px; }
   .mtt-settings-table input , .mtt-settings-table select, .mtt-settings-table label { margin-top:5px; }
