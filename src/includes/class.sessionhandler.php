@@ -33,16 +33,17 @@ class MTTSessionHandler implements SessionHandlerInterface
 	public function read($id)
 	{
 		// read session data if not expired
-		$expire = time();
+		$time = time();
+		$expire = $time;
 		$r = $this->db->sq("SELECT data,last_access FROM {$this->db->prefix}sessions WHERE id = ? AND expires >= $expire", $id);
 		if ( is_null($r) ) return '';
 
 		// update last access time and set expires in 14 days
 		// refresh once in a second
-		if ( $r[1] < time() ) {
-			$expire = time() + 14 * 86400;
+		if ( $r[1] < $time ) {
+			$expire = $time + 14 * 86400;
 			$this->db->ex("UPDATE {$this->db->prefix}sessions SET last_access=?,expires=? WHERE id = ?",
-				array(time(), $expire, $id) );
+				array($time, $expire, $id) );
 		}
 		return $r[0];
 	}
