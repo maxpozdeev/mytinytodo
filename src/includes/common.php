@@ -228,6 +228,11 @@ function escapeTags($s)
 	return $s;
 }
 
+function removeNewLines($s)
+{
+	return str_replace( ["\r","\n"], '', $s );
+}
+
 /* found in comments on http://www.php.net/manual/en/function.uniqid.php#94959 */
 function generateUUID()
 {

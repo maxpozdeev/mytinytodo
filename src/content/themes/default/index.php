@@ -28,7 +28,7 @@
 <script type="text/javascript">
 $().ready(function(){
 	mytinytodo.init({
-		title: "<?php mttinfo('title', false); ?>",
+		title: <?php echo json_encode(get_unsafe_mttinfo('title'), JSON_UNESCAPED_UNICODE); ?> ,
 		lang: <?php echo Lang::instance()->makeJS() ?>,
 		mttUrl: "<?php mttinfo('mtt_url'); ?>",
 		homeUrl: "<?php mttinfo('url'); ?>",
