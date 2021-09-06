@@ -154,9 +154,9 @@ function __($s)
 	return Lang::instance()->get($s);
 }
 
-function mttinfo($v, $escape = true)
+function mttinfo($v)
 {
-	echo $escape ? get_mttinfo($v) : get_unsafe_mttinfo($v);
+	echo get_mttinfo($v);
 }
 
 /*

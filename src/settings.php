@@ -43,10 +43,10 @@ if(isset($_POST['save']))
 	Config::set('autotag', (int)_post('autotag'));
 	Config::set('firstdayofweek', (int)_post('firstdayofweek'));
 	Config::set('clock', (int)_post('clock'));
-	Config::set('dateformat', _post('dateformat'));
-	Config::set('dateformat2', _post('dateformat2'));
-	Config::set('dateformatshort', _post('dateformatshort'));
-	Config::set('title', trim(_post('title')));
+	Config::set('dateformat', removeNewLines(_post('dateformat')) );
+	Config::set('dateformat2', removeNewLines(_post('dateformat2')) );
+	Config::set('dateformatshort', removeNewLines(_post('dateformatshort')) );
+	Config::set('title', removeNewLines(trim(_post('title'))) );
 	Config::set('showdate', (int)_post('showdate'));
 	Config::save();
 	$t['saved'] = 1;
