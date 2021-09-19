@@ -17,6 +17,10 @@ if ( !is_logged() )
 
 if(isset($_POST['save']))
 {
+	if (need_auth() && _post('_token') != hash('gost', session_id())) {
+		die("Access denied! Try to reload the settings page.");
+	}
+
 	$t = array();
 	$langs = getLangs();
 	Config::$params['lang']['options'] = array_keys($langs);
@@ -177,6 +181,7 @@ header('Content-type:text/html; charset=utf-8');
 <div id="settings_msg" style="display:none"></div>
 
 <form id="settings_form" method="post" action="settings.php">
+<input type="hidden" name="_token" value="<?php if(need_auth()) echo htmlspecialchars(hash('gost',session_id())) ?>">
 
 <div class="mtt-settings-table">
 
