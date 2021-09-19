@@ -96,7 +96,7 @@ if (need_auth() && !isset($dontStartSession))
 	session_set_save_handler(new MTTSessionHandler());
 	ini_set('session.use_cookies', true);
 	ini_set('session.use_only_cookies', true);
-	session_set_cookie_params(1209600, url_dir(Config::get('url')=='' ? getRequestUri() : Config::getUrl('url'))); # 14 days session cookie lifetime
+	session_set_cookie_params(5184000, url_dir(Config::get('url')=='' ? getRequestUri() : Config::getUrl('url')), null, null, true); # 60 days session cookie lifetime (httponly)
 	session_name('mtt-session');
 	session_start();
 }
