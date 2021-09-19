@@ -76,14 +76,14 @@ if (need_auth() && !isset($dontStartSession))
 	if(Config::get('session') == 'files')
 	{
 		session_save_path(MTTPATH. 'tmp/sessions');
-		ini_set('session.gc_maxlifetime', '1209600'); # 14 days session file minimum lifetime
+		ini_set('session.gc_maxlifetime', '2592000'); # 30 days session file minimum lifetime
 		ini_set('session.gc_probability', 1);
 		ini_set('session.gc_divisor', 10);
 	}
 
 	ini_set('session.use_cookies', true);
 	ini_set('session.use_only_cookies', true);
-	session_set_cookie_params(1209600, url_dir(Config::get('url')=='' ? getRequestUri() : Config::getUrl('url'))); # 14 days session cookie lifetime
+	session_set_cookie_params(5184000, url_dir(Config::get('url')=='' ? getRequestUri() : Config::getUrl('url')), null, null, true); # 60 days session cookie lifetime
 	session_name('mtt-session');
 	session_start();
 }
