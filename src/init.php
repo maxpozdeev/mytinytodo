@@ -90,15 +90,8 @@ Lang::loadLang( Config::get('lang') );
 
 $_mttinfo = array();
 
-if (need_auth() && !isset($dontStartSession))
-{
-	require_once(MTTINC. 'class.sessionhandler.php');
-	session_set_save_handler(new MTTSessionHandler());
-	ini_set('session.use_cookies', true);
-	ini_set('session.use_only_cookies', true);
-	session_set_cookie_params(5184000, url_dir(Config::get('url')=='' ? getRequestUri() : Config::getUrl('url')), null, null, true); # 60 days session cookie lifetime (httponly)
-	session_name('mtt-session');
-	session_start();
+if (need_auth() && !isset($dontStartSession)) {
+	setup_and_start_session();
 }
 
 function need_auth()
@@ -135,6 +128,30 @@ function check_token()
 	if (!isset($_SERVER['HTTP_MTT_TOKEN']) || $_SERVER['HTTP_MTT_TOKEN'] != $token) {
 		die("Access denied! Try to reload the page.");
 	}
+}
+
+function setup_and_start_session()
+{
+	ini_set('session.use_cookies', true);
+	ini_set('session.use_only_cookies', true);
+
+	$lifetime = 5184000; # 60 days session cookie lifetime
+	$path = url_dir(Config::get('url')=='' ? getRequestUri() : Config::getUrl('url'));
+	$samesite = 'lax';
+
+	if (PHP_VERSION_ID < 70300) {
+		# this is a known samesite flag workaround, was fixed in 7.3
+		session_set_cookie_params($lifetime, $path. '; samesite='.$samesite, null, null, true);
+	} else {
+		session_set_cookie_params(Array(
+			'lifetime' => $lifetime,
+			'path' => $path,
+			'httponly' => true,
+			'samesite' => $samesite
+		));
+	}
+	session_name('mtt-session');
+	session_start();
 }
 
 function timestampToDatetime($timestamp)
