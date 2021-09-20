@@ -143,6 +143,9 @@ class Config
 
 	public static function set($key, $value)
 	{
+		if ($key == "prefix" && $value !== "" && !preg_match("/^[a-zA-Z0-9_]+$/", $value)) {
+			throw new Exception("Incorrect table prefix. Can contain only latin letters, digits and underscore character.");
+		}
 		self::$config[$key] = $value;
 	}
 
