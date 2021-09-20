@@ -21,6 +21,7 @@ $db = DBConnection::instance();
 
 if(isset($_GET['loadLists']))
 {
+	check_token();
 	if (!is_logged()) $sqlWhere = 'WHERE published=1';
 	else $sqlWhere = '';
 	$t = array();
@@ -307,12 +308,15 @@ elseif(isset($_POST['login']))
 		$t['logged'] = 1;
 		session_regenerate_id(1);
 		$_SESSION['logged'] = 1;
+		$_SESSION['token'] = generateUUID();
 	}
 	jsonExit($t);
 }
 elseif(isset($_POST['logout']))
 {
+	check_token();
 	unset($_SESSION['logged']);
+	unset($_SESSION['token']);
 	$t = array('logged' => 0);
 	jsonExit($t);
 }
@@ -579,6 +583,7 @@ function prepareTaskRow($r)
 
 function check_read_access($listId = null)
 {
+	check_token();
 	$db = DBConnection::instance();
 	if(is_logged()) return true;
 	if($listId !== null)
@@ -604,6 +609,7 @@ function have_write_access($listId = null)
 
 function check_write_access($listId = null)
 {
+	check_token();
 	if(have_write_access($listId)) return;
 	jsonExit( array('total'=>0, 'list'=>array(), 'denied'=>1) );
 }
@@ -940,5 +946,17 @@ function getUserListsSimple()
 	}
 	return $a;
 }
+
+function check_token()
+{
+	if (!need_auth()) return true;
+	if (!isset($_SESSION)) return true;
+	if (!isset($_SESSION['token'])) return true;
+	$headers = getallheaders();
+	if (!isset($headers['MTT-Token']) || $headers['MTT-Token'] != $_SESSION['token']) {
+		die("Access denied! Try to reload the page.");
+	}
+}
+
 
 ?>

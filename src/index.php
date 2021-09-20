@@ -51,6 +51,7 @@ function redirectWithHashRoute(array $q, array $hash)
 function js_options()
 {
 	$a = array(
+		"token" => htmlspecialchars(access_token()),
 		"title" => get_unsafe_mttinfo('title'),
 		"lang" => Lang::instance()->jsStrings(),
 		"mttUrl" => get_mttinfo('mtt_url'),

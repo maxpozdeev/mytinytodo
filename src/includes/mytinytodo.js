@@ -51,6 +51,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 	mttUrl: '',
 	homeUrl: '',
 	options: {
+		token: '',
 		title: '',
 		openList: 0,
 		autotag: false,
@@ -150,6 +151,10 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		}
 
 		jQuery.extend(this.options, options);
+
+		if (this.options.token) {
+			jQuery.ajaxSetup( { headers: { "MTT-Token": this.options.token } } )
+		}
 
 		flag.needAuth = options.needAuth ? true : false;
 		flag.isLogged = options.isLogged ? true : false;
