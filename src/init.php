@@ -71,21 +71,8 @@ Lang::loadLang( Config::get('lang') );
 
 $_mttinfo = array();
 
-if (need_auth() && !isset($dontStartSession))
-{
-	if(Config::get('session') == 'files')
-	{
-		session_save_path(MTTPATH. 'tmp/sessions');
-		ini_set('session.gc_maxlifetime', '2592000'); # 30 days session file minimum lifetime
-		ini_set('session.gc_probability', 1);
-		ini_set('session.gc_divisor', 10);
-	}
-
-	ini_set('session.use_cookies', true);
-	ini_set('session.use_only_cookies', true);
-	session_set_cookie_params(5184000, url_dir(Config::get('url')=='' ? getRequestUri() : Config::getUrl('url')), null, null, true); # 60 days session cookie lifetime
-	session_name('mtt-session');
-	session_start();
+if (need_auth() && !isset($dontStartSession)) {
+	setup_and_start_session();
 }
 
 function need_auth()
@@ -122,6 +109,38 @@ function check_token()
 	if (!isset($headers['MTT-Token']) || $headers['MTT-Token'] != $token) {
 		die("Access denied! Try to reload the page.");
 	}
+}
+
+function setup_and_start_session()
+{
+	if(Config::get('session') == 'files')
+	{
+		session_save_path(MTTPATH. 'tmp/sessions');
+		ini_set('session.gc_maxlifetime', '2592000'); # 30 days session file minimum lifetime
+		ini_set('session.gc_probability', 1);
+		ini_set('session.gc_divisor', 10);
+	}
+
+	ini_set('session.use_cookies', true);
+	ini_set('session.use_only_cookies', true);
+
+	$lifetime = 5184000; # 60 days session cookie lifetime
+	$path = url_dir(Config::get('url')=='' ? getRequestUri() : Config::getUrl('url'));
+	$samesite = 'lax';
+
+	if (PHP_VERSION_ID < 70300) {
+		# this is a known samesite flag workaround, was fixed in 7.3
+		session_set_cookie_params($lifetime, $path. '; samesite='.$samesite, null, null, true);
+	} else {
+		session_set_cookie_params(Array(
+			'lifetime' => $lifetime,
+			'path' => $path,
+			'httponly' => true,
+			'samesite' => $samesite
+		));
+	}
+	session_name('mtt-session');
+	session_start();
 }
 
 function timestampToDatetime($timestamp)
