@@ -10,17 +10,13 @@ require_once('./init.php');
 
 $lang = Lang::instance();
 
-if ( !is_logged() )
-{
+if ( !is_logged() ) {
 	die("Access denied!<br/> Disable password protection or Log in.");
 }
+check_token();
 
 if(isset($_POST['save']))
 {
-	if (need_auth() && _post('_token') != hash('gost', session_id())) {
-		die("Access denied! Try to reload the settings page.");
-	}
-
 	$t = array();
 	$langs = getLangs();
 	Config::$params['lang']['options'] = array_keys($langs);
@@ -184,7 +180,6 @@ header('Content-type:text/html; charset=utf-8');
 <div id="settings_msg" style="display:none"></div>
 
 <form id="settings_form" method="post" action="settings.php">
-<input type="hidden" name="_token" value="<?php if(need_auth()) echo htmlspecialchars(hash('gost',session_id())) ?>">
 
 <table class="mtt-settings-table">
 

@@ -879,16 +879,6 @@ function getUserListsSimple()
 	return $a;
 }
 
-function check_token()
-{
-	if (!need_auth()) return true;
-	if (!isset($_SESSION)) return true;
-	if (!isset($_SESSION['token'])) return true;
-	$headers = getallheaders();
-	if (!isset($headers['MTT-Token']) || $headers['MTT-Token'] != $_SESSION['token']) {
-		die("Access denied! Try to reload the page.");
-	}
-}
 
 
 ?>
