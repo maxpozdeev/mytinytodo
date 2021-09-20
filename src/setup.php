@@ -87,7 +87,7 @@ if (!$ver)
 			Config::set('prefix', trim(_post('prefix')));
 		}
 		if(!testConnect($error)) {
-			exitMessage("Database connection error: $error");
+			exitMessage("Database connection error: ". htmlspecialchars($error));
 		}
 		if(!is_writable('./db/config.php')) {
 			exitMessage("Config file ('db/config.php') is not writable.");
@@ -279,10 +279,10 @@ elseif($ver == $lastVer)
 else
 {
 	if(!in_array($ver, array('1.4'))) {
-		exitMessage("Can not update. Unsupported database version ($ver).");
+		exitMessage(htmlspecialchars("Can not update. Unsupported database version ($ver)."));
 	}
 	if(!isset($_POST['update'])) {
-		exitMessage("Update database v$ver to v$lastVer<br><br>
+		exitMessage(htmlspecialchars("Update database v$ver to v$lastVer"). "<br><br>
 		<form name=frm method=post><input type=hidden name=update value=1><input type=hidden name=tz value=-1><input type=submit value=' Update '></form>
 		<script type=\"text/javascript\">var tz = -1 * (new Date()).getTimezoneOffset(); document.frm.tz.value = tz;</script>
 		");
@@ -400,10 +400,16 @@ function testConnect(&$error)
 	return 1;
 }
 
+function debugExceptionHandler($e)
+{
+	echo '<br><b>Error:</b> \''. htmlspecialchars($e->getMessage()) .'\' in <i>'. htmlspecialchars($e->getFile() .':'. $e->getLine()). '</i>'.
+		"\n<pre>". htmlspecialchars($e->getTraceAsString()) . "</pre>\n";
+	exit;
+}
+
 function myExceptionHandler($e)
 {
-	echo '<br><b>Fatal Error:</b> \''. $e->getMessage() .'\' in <i>'. $e->getFile() .':'. $e->getLine() . '</i>'.
-		"\n<pre>". $e->getTraceAsString() . "</pre>\n";
+	echo '<br><b>Error:</b> '. htmlspecialchars($e->getMessage()) ;
 	exit;
 }
 
