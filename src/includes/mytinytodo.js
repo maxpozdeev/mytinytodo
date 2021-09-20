@@ -2359,8 +2359,8 @@ function hideList(listId)
 function flashError(str, details)
 {
 	if (details === undefined) details = '';
-	$("#msg>.msg-text").text(str)
-	$("#msg>.msg-details").text(details);
+	$("#msg>.msg-text").text(dehtml(str))
+	$("#msg>.msg-details").text(dehtml(details));
 	$("#loading").hide();
 	$("#msg").addClass('mtt-error').effect("highlight", {color:_mtt.theme.msgFlashColor}, 700);
 }
@@ -2368,8 +2368,8 @@ function flashError(str, details)
 function flashInfo(str, details)
 {
 	if (details === undefined) details = '';
-	$("#msg>.msg-text").text(str)
-	$("#msg>.msg-details").text(details);
+	$("#msg>.msg-text").text(dehtml(str))
+	$("#msg>.msg-details").text(dehtml(details));
 	$("#loading").hide();
 	$("#msg").addClass('mtt-info').effect("highlight", {color:_mtt.theme.msgFlashColor}, 700);
 }

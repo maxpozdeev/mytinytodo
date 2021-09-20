@@ -257,7 +257,7 @@ class DefaultLang
 	function loadLangHeader($langFile)
 	{
 		if (!file_exists($langFile)) {
-			die("file does not exist: $langFile");
+			die("file does not exist: ". htmlspecialchars($langFile));
 		}
 		$contents = file_get_contents($langFile);
 

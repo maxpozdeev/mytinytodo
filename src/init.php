@@ -261,7 +261,7 @@ function logAndDie($userText, $errText = null)
 {
 	$errText === null ? error_log($userText) : error_log($errText);
 	if (ini_get('display_errors')) {
-		echo $userText;
+		echo htmlspecialchars($userText);
 	}
 	else {
 		echo "Error! See details in error log.";
