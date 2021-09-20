@@ -39,7 +39,7 @@ if(Config::get('db') == 'mysql')
 		$db->connect(Config::get('mysql.host'), Config::get('mysql.user'), Config::get('mysql.password'), Config::get('mysql.db'));
 	}
 	catch(Exception $e) {
-		die2("Failed to connect to mysql database: ". $e->getMessage());
+		logAndDie("Failed to connect to mysql database: ". $e->getMessage());
 	}
 	$db->dq("SET NAMES utf8");
 }
@@ -253,10 +253,10 @@ function jsonExit($data)
 	exit;
 }
 
-function die2($userText, $errText = null)
+function logAndDie($userText, $errText = null)
 {
 	$errText === null ? error_log($userText) : error_log($errText);
-	echo $userText;
+	echo htmlspecialchars($userText);
 	exit(1);
 }
 

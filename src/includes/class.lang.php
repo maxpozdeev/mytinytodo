@@ -36,7 +36,7 @@ class Lang
 			$lang->loadDefaultStrings();
 		}
 		else if ( $die == 1 ) {
-			die("Language file not found ($code.json)");
+			die("Language file not found (". htmlspecialchars($code). ".json)");
 		}
 	}
 
@@ -68,7 +68,7 @@ class Lang
 	function loadDefaultStrings()
 	{
 		if ( ! self::langExists($this->default) ) {
-			die("Default language file not found ({$this->default}.json)");
+			die("Default language file not found (". htmlspecialchars($this->default). ".json)");
 		}
 		$defStr = file_get_contents($this->langDir(). "{$this->default}.json");
 		$this->strings = json_decode($defStr, true);

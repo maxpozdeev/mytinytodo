@@ -809,12 +809,12 @@ function myExceptionHandler($e)
 	{
 		if(-1 == $e->getCode()) {
 			//thrown in myErrorHandler
-			die2($e->getMessage()."\n". $e->getTraceAsString(), $e->getMessage());
+			logAndDie($e->getMessage()."\n". $e->getTraceAsString(), $e->getMessage());
 		}
-		die2('Exception: \''. $e->getMessage() .'\' in '. $e->getFile() .':'. $e->getLine());
+		logAndDie('Exception: \''. $e->getMessage() .'\' in '. $e->getFile() .':'. $e->getLine());
 	}
 	catch(Exception $e) {
-		die2('Exception in ExceptionHandler: \''. $e->getMessage() .'\' in '. $e->getFile() .':'. $e->getLine());
+		logAndDie('Exception in ExceptionHandler: \''. $e->getMessage() .'\' in '. $e->getFile() .':'. $e->getLine());
 	}
 	exit;
 }
