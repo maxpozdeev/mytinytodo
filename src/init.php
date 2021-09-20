@@ -106,6 +106,14 @@ function is_readonly()
 	return false;
 }
 
+function access_token()
+{
+	if (!need_auth()) return '';
+	if (!isset($_SESSION)) return '';
+	if (!isset($_SESSION['token'])) return '';
+	return $_SESSION['token'];
+}
+
 function timestampToDatetime($timestamp)
 {
 	$format = Config::get('dateformat') .' '. (Config::get('clock') == 12 ? 'g:i A' : 'H:i');
