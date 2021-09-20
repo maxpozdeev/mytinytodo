@@ -127,6 +127,16 @@ function access_token()
 	return $_SESSION['token'];
 }
 
+function check_token()
+{
+	$token = access_token();
+	if ($token == '') return true;
+	$headers = getallheaders();
+	if (!isset($headers['MTT-Token']) || $headers['MTT-Token'] != $token) {
+		die("Access denied! Try to reload the page.");
+	}
+}
+
 function timestampToDatetime($timestamp)
 {
 	$format = Config::get('dateformat') .' '. (Config::get('clock') == 12 ? 'g:i A' : 'H:i');
