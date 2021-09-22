@@ -1374,7 +1374,7 @@ function tabSelect(elementOrId)
 	}
 	if ( !tabLists.exists(id) ) {
 		// TODO: handle unknown list
-		flashError(_mtt.lang.get('denied'), id);
+		flashError(_mtt.lang.get('denied'));
 		return;
 	}
 
