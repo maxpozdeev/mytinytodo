@@ -105,8 +105,8 @@ function check_token()
 {
 	$token = access_token();
 	if ($token == '') return true;
-	$headers = getallheaders();
-	if (!isset($headers['MTT-Token']) || $headers['MTT-Token'] != $token) {
+	if (!isset($_SERVER)) return true;
+	if (!isset($_SERVER['HTTP_MTT_TOKEN']) || $_SERVER['HTTP_MTT_TOKEN'] != $token) {
 		die("Access denied! Try to reload the page.");
 	}
 }
