@@ -60,6 +60,7 @@ class DatabaseResult_Mysql
 class Database_Mysql
 {
 	var $dbh;
+	var $dbname;
 	var $error_str;
 
 	function __construct()
@@ -72,6 +73,7 @@ class Database_Mysql
 		{
 			throw new Exception(mysqli_connect_error());
 		}
+		$this->dbname = $db;
 		if( @!mysqli_select_db($this->dbh, $db) )
 		{
 			throw new Exception($this->error());
@@ -163,10 +165,10 @@ class Database_Mysql
 
 	function table_exists($table)
 	{
-		$table = addslashes($table);
-		$q = mysqli_query($this->dbh, "SELECT 1 FROM `$table` WHERE 1=0");
-		if($q === false) return false;
-		else return true;
+		$r = $this->sq("SELECT 1 FROM information_schema.tables WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ?",
+						array($this->dbname, $table) );
+		if ($r === false || $r === null) return false;
+		return true;
 	}
 }
 
