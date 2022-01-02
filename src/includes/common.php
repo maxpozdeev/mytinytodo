@@ -221,6 +221,9 @@ function url_dir($url, $onlyPath = 1)
 
 function escapeTags($s)
 {
+	if ($s == '') {
+		return '';
+	}
 	$c1 = chr(1);
 	$c2 = chr(2);
 	$s = preg_replace("~<b>([\s\S]*?)</b>~i", "${c1}b${c2}\$1${c1}/b${c2}", $s);
