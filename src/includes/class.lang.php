@@ -118,7 +118,8 @@ class Lang
 			'f_past',
 			'f_today',
 			'f_soon',
-			'alltasks'
+			'alltasks',
+			'set_header'
 		]);
 		$a['_rtl'] = $this->rtl() ? 1 : 0;
 

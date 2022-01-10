@@ -14,7 +14,7 @@ var sortOrder; //save task order before dragging
 var searchTimer;
 var objPrio = {};
 var lastClickedNodeId = 0;
-var flag = { needAuth:false, isLogged:false, tagsChanged:true, readOnly:false, editFormChanged:false, firstLoad:true, historySkip:false };
+var flag = { needAuth:false, isLogged:false, tagsChanged:true, readOnly:false, editFormChanged:false, firstLoad:true, dontChangeHistoryOnce:false };
 var taskCnt = { total:0, past: 0, today:0, soon:0 };
 var tabLists = {
 	_lists: {},
@@ -97,8 +97,15 @@ var mytinytodo = window.mytinytodo = _mtt = {
 	},
 
 	pages: {
-		current: { page:'tasks', pageClass:'' },
+		current: null,
 		prev: []
+	},
+
+	pageDefault: {
+		page: 'tasks',
+		pageClass: '',
+		lastScrollTop: 0,
+		onOpen: function() { this.loadLists(); }
 	},
 
 	curList: function(){
@@ -560,15 +567,16 @@ var mytinytodo = window.mytinytodo = _mtt = {
 
 		// Settings
 		$("#settings").click(showSettings);
+
 		$("#page_ajax").on('submit', '#settings_form', function() {
 			saveSettings(this);
 			return false;
 		});
 
-		$(document).on('click', '.mtt-back-button', function(){ _mtt.pageBack(); this.blur(); return false; } );
+		$(document).on('click', '.mtt-back-button', function(){ _mtt.pageBack(true); this.blur(); return false; } );
 
 		$(window).bind('beforeunload', function() {
-			if(_mtt.pages.current.page == 'taskedit' && flag.editFormChanged) {
+			if (_mtt.pages.current && _mtt.pages.current.page == 'taskedit' && flag.editFormChanged) {
 				return _mtt.lang.get('confirmLeave');
 			}
 		});
@@ -595,7 +603,8 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		//History
 		if (this.options.history) {
 			window.onpopstate = historyOnPopState;
-			this.addAction('listSelected', historyListSelected);
+			this.addAction('listSelected', historyOnListSelected);
+			this.addAction('settingsLoaded', historyOnSettingsLoaded);
 		}
 
 		this.doAction( 'init' );
@@ -635,10 +644,10 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		}
 
 		if (path.settings) {
-			this.pages.current.onBack = function(){ this.loadLists(); }
 			showSettings();
 		}
 		else {
+			this.pageSet('tasks', '');
 			this.loadLists();
 		}
 	},
@@ -757,25 +766,42 @@ var mytinytodo = window.mytinytodo = _mtt = {
 
 	pageSet: function(page, pageClass)
 	{
-		var prev = this.pages.current;
-		prev.lastScrollTop = $(window).scrollTop();
-		this.pages.prev.push(this.pages.current);
-		this.pages.current = {page:page, pageClass:pageClass};
-		$('#mtt_body').removeClass('page-' + prev.page);
+		if (this.pages.current) {
+			var prev = this.pages.current;
+			prev.lastScrollTop = $(window).scrollTop();
+			this.pages.prev.push(this.pages.current);
+			$('#mtt_body').removeClass('page-' + prev.page);
+			$('#page_'+ prev.page).removeClass('mtt-page-'+prev.page.pageClass).hide();
+		}
+		this.pages.current = { page:page, pageClass:pageClass };
 		$('#mtt_body').addClass('page-' + page);
-		showhide($('#page_'+ this.pages.current.page).addClass('mtt-page-'+ this.pages.current.pageClass), $('#page_'+ prev.page));
+		$('#page_'+ this.pages.current.page).show().addClass('mtt-page-'+ this.pages.current.pageClass);
 	},
 
-	pageBack: function()
+	pageBack: function(clicked)
 	{
-		if(this.pages.current.page == 'tasks') return false;
-		var prev = this.pages.current;
-		this.pages.current = this.pages.prev.pop();
-		$('#mtt_body').removeClass('page-' + prev.page);
+		// If clicked on back button in settings we'll use history navigation
+		if (clicked && this.pages.current && this.pages.current.page == 'ajax' && this.pages.current.pageClass == 'settings') {
+			history.back();
+			return false;
+		}
+		if (this.pages.current.page == 'tasks') {
+			return false;
+		}
+		if (this.pages.current) {
+			var prev = this.pages.current;
+			$('#mtt_body').removeClass('page-' + prev.page);
+			$('#page_'+ prev.page).removeClass('mtt-page-'+prev.page.pageClass);
+			$('#page_'+ prev.page).hide();
+		}
+		var cur = this.pages.prev.pop();
+		this.pages.current = cur ? cur : this.pageDefault;
 		$('#mtt_body').addClass('page-' + this.pages.current.page);
-		showhide($('#page_'+ this.pages.current.page), $('#page_'+ prev.page).removeClass('mtt-page-'+prev.page.pageClass));
+		$('#page_'+ this.pages.current.page).addClass('mtt-page-'+ this.pages.current.pageClass).show();
 		$(window).scrollTop(this.pages.current.lastScrollTop);
-		if (this.pages.current.onBack) this.pages.current.onBack.call(this);
+		if (!cur && this.pages.current.onOpen) {
+			this.pages.current.onOpen.call(this);
+		}
 	},
 
 
@@ -872,6 +898,11 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		var l = list || curList;
 		if (l === undefined) return '';
 		return _mtt.mttUrl + 'feed.php?list='+l.id;
+	},
+
+	urlForSettings: function()
+	{
+		return '#settings';
 	}
 
 }; // End of mytinytodo object
@@ -1690,20 +1721,30 @@ function submitFullTask(form)
 {
 	if(flag.readOnly) return false;
 
-	_mtt.db.request('fullNewTask', { list:curList.id, tag:_mtt.filter.getTags(), title: form.task.value, note:form.note.value,
-			prio:form.prio.value, tags:form.tags.value, duedate:form.duedate.value }, function(json){
-		if(!parseInt(json.total)) return;
-		form.task.value = '';
-		var item = json.list[0];
-		taskList[item.id] = item;
-		taskOrder.push(parseInt(item.id));
-		$('#tasklist').append(_mtt.prepareTaskStr(item));
-		changeTaskOrder(item.id);
-		_mtt.pageBack();
-		$('#taskrow_'+item.id).effect("highlight", {color:_mtt.theme.newTaskFlashColor}, 2000);
-		changeTaskCnt(item, 1);
-		refreshTaskCnt();
-	});
+	_mtt.db.request( 'fullNewTask',
+		{
+			list: curList.id,
+			tag: _mtt.filter.getTags(),
+			title: form.task.value,
+			note: form.note.value,
+			prio: form.prio.value,
+			tags: form.tags.value,
+			duedate: form.duedate.value
+		},
+		function(json) {
+			if (!parseInt(json.total)) return;
+			form.task.value = '';
+			var item = json.list[0];
+			taskList[item.id] = item;
+			taskOrder.push(parseInt(item.id));
+			$('#tasklist').append(_mtt.prepareTaskStr(item));
+			changeTaskOrder(item.id);
+			_mtt.pageBack();
+			$('#taskrow_'+item.id).effect("highlight", {color:_mtt.theme.newTaskFlashColor}, 2000);
+			changeTaskCnt(item, 1);
+			refreshTaskCnt();
+		}
+	);
 
 	flag.tagsChanged = true;
 	return false;
@@ -2418,10 +2459,13 @@ function logout()
 
 function showSettings()
 {
-	if(_mtt.pages.current.page == 'ajax' && _mtt.pages.current.pageClass == 'settings') return false;
-	$('#page_ajax').load(_mtt.mttUrl+'settings.php?ajax=yes',null,function(){
-		//showhide($('#page_ajax').addClass('mtt-page-settings'), $('#page_tasks'));
+	if (_mtt.pages.current && _mtt.pages.current.page == 'ajax' && _mtt.pages.current.pageClass == 'settings') {
+		return false;
+	}
+	$('#page_ajax').load(_mtt.mttUrl+'settings.php?ajax=yes', null, function(){
+		document.title = _mtt.lang.get('set_header') + ' - ' + _mtt.options.title;
 		_mtt.pageSet('ajax','settings');
+		_mtt.doAction('settingsLoaded');
 	})
 	return false;
 }
@@ -2477,10 +2521,10 @@ function mttPrompt(msg, defaultValue, callbackOk, callbackCancel)
 /*
  *	History and Hash change
  */
-function historyListSelected(list)
+function historyOnListSelected(list)
 {
-	if (flag.historySkip) {
-		flag.historySkip = false;
+	if (flag.dontChangeHistoryOnce) {
+		flag.dontChangeHistoryOnce = false;
 		return;
 	}
 
@@ -2492,12 +2536,33 @@ function historyListSelected(list)
 	}
 }
 
+function historyOnSettingsLoaded()
+{
+	if (flag.dontChangeHistoryOnce) {
+		flag.dontChangeHistoryOnce = false;
+		return;
+	}
+	history.pushState( { settings:1 }, document.title, _mtt.urlForSettings() );
+}
+
 
 function historyOnPopState(event)
 {
-	if (event.state && event.state.list) {
-		flag.historySkip = true;
+	if (!event.state) return;
+	if (event.state.list && _mtt.pages.current && _mtt.pages.current.page == 'ajax' && _mtt.pages.current.pageClass == 'settings') {
+		// Here we go back to tasklist from settings, no reload. Just show and hide pages without history actions.
+		_mtt.pageBack();
+	}
+	else if (event.state.list) {
+		flag.dontChangeHistoryOnce = true;
 		tabSelect(event.state.list);
+	}
+	else if (event.state.settings) {
+		flag.dontChangeHistoryOnce = true;
+		showSettings();
+	}
+	else {
+		console.log("unexpected: nothing to pop");
 	}
 }
 
