@@ -1,11 +1,13 @@
+version: "3.9"
+
 services:
   web:
-    build: ./
+    build:
+      context: .
+      dockerfile: Dockerfile-web
     image: mytinytodo-dev:php8.0-apache
-    container_name: mtt-dev-php80-apache
+    container_name: ${PLATFORM_NAME}-web
     ports:
-    - "8080:80"
+      - "8080:80"
     volumes:
-    - ../../../src:/var/www/html
-    - ./php-mtt.ini:/usr/local/etc/php/conf.d/php-mtt.ini
-    - ./php-opcache.ini:/usr/local/etc/php/conf.d/php-opcache.ini
+      - ../../../src:/var/www/html
