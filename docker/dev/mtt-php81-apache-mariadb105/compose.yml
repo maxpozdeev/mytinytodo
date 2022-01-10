@@ -1,0 +1,38 @@
+version: "3.9"
+
+networks:
+  network:
+    name: "${PLATFORM_NAME}-network"
+
+services:
+  web:
+    build:
+      context: ../mtt-php81-apache/
+      dockerfile: Dockerfile-web
+    image: mytinytodo-dev:php8.1-apache
+    container_name: ${PLATFORM_NAME}-web
+    ports:
+      - "8080:80"
+    volumes:
+      - ../../../src:/var/www/html
+    depends_on:
+      - db
+    networks:
+      - network
+
+  db:
+    build:
+      context: ../_mariadb105
+      dockerfile: Dockerfile-db
+    image: mytinytodo-dev:mariadb10.5
+    container_name: ${PLATFORM_NAME}-db
+    #restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: JustForDev
+      MARIADB_USER: mtt
+      MARIADB_PASSWORD: mtt
+      MARIADB_DATABASE: mytinytodo
+    volumes:
+      - ../_mariadb105/db_data:/var/lib/mysql
+    networks:
+      - network
