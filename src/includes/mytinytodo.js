@@ -57,6 +57,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		instantSearch: true,
 		tagPreview: true,
 		tagPreviewDelay: 700, //milliseconds
+		ajaxAnimationDelay: 200,
 		saveShowNotes: false,
 		firstdayofweek: 1,
 		touchDevice: false,
@@ -66,7 +67,8 @@ var mytinytodo = window.mytinytodo = _mtt = {
 	},
 
 	timers: {
-		previewtag: 0
+		previewtag: 0,
+		ajaxAnimation: 0,
 	},
 
 	lang: {
@@ -526,11 +528,13 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		// AJAX Errors
 		$(document).ajaxSend(function(r,s){
 			$("#msg").hide().removeClass('mtt-error mtt-info').find('.msg-details').hide();
-			$("#loading").show();
+			clearTimeout(_mtt.timers.ajaxAnimation);
+			_mtt.timers.ajaxAnimation = setTimeout(function(){ $("#mtt_body").addClass("ajax-loading"); }, _mtt.options.ajaxAnimationDelay);
 		});
 
 		$(document).ajaxStop(function(r,s){
-			$("#loading").fadeOut();
+			clearTimeout(_mtt.timers.ajaxAnimation);
+			$("#mtt_body").removeClass("ajax-loading");
 		});
 
 		$(document).ajaxError(function(event, request, settings){

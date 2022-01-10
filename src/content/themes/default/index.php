@@ -42,7 +42,6 @@ $().ready(function(){
  </div>
 
 <div class="topblock-bar">
- <div id="loading"></div>
  <div id="msg"><span class="msg-text"></span><div class="msg-details"></div></div>
  <div class="bar-menu">
    <span class="need-owner">

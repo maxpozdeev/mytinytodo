@@ -14,7 +14,24 @@ body { margin:0px; padding:0px;  height:100%; background-color:#fff; font-family
 
 td, th, input, textarea, select { font-family:"Helvetica Neue",helvetica,arial,sans-serif; font-size:1rem; }
 form { display: inline; }
-.topblock h2 { margin:0; font-size:1.5rem; padding-right:10px; }
+.topblock h2 {
+  margin:0;
+  font-size:1.5rem;
+  padding-left: 30px;
+  padding-right: 10px;
+  background: url(images/logo.gif) no-repeat top left;
+  background-size: 24px 24px;
+}
+#mtt_body.ajax-loading .topblock h2 {
+  background-image: url(images/logo-loading.gif);
+}
+
+/* preload images */
+body::after {
+  position:absolute; width:0; height:0; overflow:hidden; z-index:-1;
+  content:url(images/logo-loading.gif);
+}
+
 h3.page-title { margin:0; border-bottom:2px solid #B5D5FF; margin-bottom:10px; padding:0.6rem 0; font-size:1.1rem; }
 a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 
@@ -26,7 +43,7 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 
 .topblock-title { display:flex; align-items:center; }
 .topblock-bar { flex-grow:1; display:flex; justify-content:flex-start; border-bottom:1px solid #b5d5ff; padding-bottom:5px; }
-.bar-menu { flex-grow:1; display:flex; justify-content:flex-end; text-align:right; min-height:16px; /* for loading.gif */ }
+.bar-menu { flex-grow:1; display:flex; justify-content:flex-end; text-align:right; }
 .nodecor { text-decoration:none; }
 #bar_auth::before { content:'\00a0| '; } /* &nbsp; = \00a0 */
 #bar_logout { display:none; }
@@ -39,7 +56,6 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 #authform div.h { font-weight:bold; }
 #authform input { padding:3px; border:1px solid #ccc; border-radius:2px; }
 #authform input[type="submit"] { padding:4px; border-radius:3px; background-color:#efefef; }
-#loading { background-color:#ffffff; display:none; margin-right:6px; width:16px; height:16px; background:url(images/loading48.gif) no-repeat; background-size:16px 16px; }
 
 #msg {  }
 #msg .msg-text {  font-weight:bold; cursor:pointer; }
