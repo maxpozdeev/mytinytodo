@@ -821,14 +821,13 @@ function daysInMonth($m, $y=0)
 
 function myErrorHandler($errno, $errstr, $errfile, $errline)
 {
-	if ($errno==E_ERROR || $errno==E_CORE_ERROR || $errno==E_COMPILE_ERROR || $errno==E_USER_ERROR || $errno==E_PARSE) $error = 'Error';
+	if ($errno==E_ERROR || $errno==E_CORE_ERROR || $errno==E_COMPILE_ERROR || $errno==E_USER_ERROR || $errno==E_PARSE) {
+		$error = 'Error';
+	}
 	elseif ($errno==E_WARNING || $errno==E_CORE_WARNING || $errno==E_COMPILE_WARNING || $errno==E_USER_WARNING || $errno==E_STRICT) {
 		if (error_reporting() & $errno) $error = 'Warning'; else return;
 	}
-	elseif ($errno==E_NOTICE || $errno==E_USER_NOTICE) {
-		if (error_reporting() & $errno) $error = 'Notice'; else return;
-	}
-	elseif (defined('E_DEPRECATED') && ($errno==E_DEPRECATED || $errno==E_USER_DEPRECATED)) { # since 5.3.0
+	elseif ($errno==E_NOTICE || $errno==E_USER_NOTICE || $errno==E_DEPRECATED || $errno==E_USER_DEPRECATED) {
 		if (error_reporting() & $errno) $error = 'Notice'; else return;
 	}
 	else $error = "Error ($errno)";	# here may be E_RECOVERABLE_ERROR
