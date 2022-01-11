@@ -9,5 +9,7 @@ services:
     container_name: ${PLATFORM_NAME}-web
     ports:
       - "8080:80"
+    environment:
+      - MTT_ENABLE_DEBUG=YES
     volumes:
       - ../../../src:/var/www/html
