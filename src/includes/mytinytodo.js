@@ -115,6 +115,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 	},
 
 	flag: flag,
+	lastHistoryState: null,
 
 	// procs
 	setApi: function(storage)
@@ -570,7 +571,10 @@ var mytinytodo = window.mytinytodo = _mtt = {
 
 
 		// Settings
-		$("#settings").click(showSettings);
+		$("#settings").click(function(event){
+			showSettings();
+			return false;
+		});
 
 		$("#page_ajax").on('submit', '#settings_form', function() {
 			saveSettings(this);
@@ -607,8 +611,6 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		//History
 		if (this.options.history) {
 			window.onpopstate = historyOnPopState;
-			this.addAction('listSelected', historyOnListSelected);
-			this.addAction('settingsLoaded', historyOnSettingsLoaded);
 		}
 
 		this.doAction( 'init' );
@@ -643,9 +645,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 	{
 		var path = this.parseAnchor();
 
-		if (flag.firstLoad) {
-			updateAccessStatus();
-		}
+		updateAccessStatus();
 
 		if (path.settings) {
 			showSettings();
@@ -734,7 +734,6 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			_mtt.doAction('listsLoaded');
 			tabSelect(openListId);
 
-			flag.firstLoad = false;
 			$('#page_tasks').show();
 
 		});
@@ -785,12 +784,14 @@ var mytinytodo = window.mytinytodo = _mtt = {
 	pageBack: function(clicked)
 	{
 		// If clicked on back button in settings we'll use history navigation
-		if (clicked && this.pages.current && this.pages.current.page == 'ajax' && this.pages.current.pageClass == 'settings') {
-			history.back();
-			return false;
+		if ( clicked &&
+			 this.pages.current && this.pages.current.page == 'ajax' && this.pages.current.pageClass == 'settings' &&
+			 this.pages.prev.length > 0 ) {
+			window.history.back();
+			return;
 		}
 		if (this.pages.current.page == 'tasks') {
-			return false;
+			return;
 		}
 		if (this.pages.current) {
 			var prev = this.pages.current;
@@ -1374,7 +1375,6 @@ function tabSelect(elementOrId)
 
 	var prevList = curList;
 	curList = tabLists.get(id);
-	document.title = curList.name + ' - ' + _mtt.options.title;
 
 	$('#lists .mtt-tabs-selected').removeClass('mtt-tabs-selected');
 
@@ -1394,6 +1394,8 @@ function tabSelect(elementOrId)
 		if(filter.search != '') liveSearchToggle(0, 1);
 		mytinytodo.doAction('listSelected', tabLists.get(id));
 	}
+	var newTitle = curList.name + ' - ' + _mtt.options.title;
+	updateHistoryState( { list:id }, _mtt.urlForList(curList), newTitle );
 
 	if(curList.hidden) {
 		curList.hidden = false;
@@ -2467,11 +2469,11 @@ function showSettings()
 		return false;
 	}
 	$('#page_ajax').load(_mtt.mttUrl+'settings.php?ajax=yes', null, function(){
-		document.title = _mtt.lang.get('set_header') + ' - ' + _mtt.options.title;
 		_mtt.pageSet('ajax','settings');
+		var newTitle = _mtt.lang.get('set_header') + ' - ' + _mtt.options.title;
+		updateHistoryState( { settings:1 }, _mtt.urlForSettings(), newTitle );
 		_mtt.doAction('settingsLoaded');
 	})
-	return false;
 }
 
 function saveSettings(frm)
@@ -2525,28 +2527,36 @@ function mttPrompt(msg, defaultValue, callbackOk, callbackCancel)
 /*
  *	History and Hash change
  */
-function historyOnListSelected(list)
+
+
+/**
+ * Manipulate browser history manually.
+ * //TODO: use window.location and hashchange event ?
+ * @param {object} state History Api state data
+ * @param {string} url   document url. appended to the state.
+ * @param {string} title document title to set. appended to the state.
+ */
+function updateHistoryState(state, url, title)
 {
-	if (flag.dontChangeHistoryOnce) {
-		flag.dontChangeHistoryOnce = false;
+	if (!_mtt.options.history) {
+		document.title = title;
 		return;
 	}
-
-	if (flag.firstLoad) {
-		history.replaceState( { list:list.id }, document.title, _mtt.urlForList(list))
+	if (flag.dontChangeHistoryOnce) {
+		flag.dontChangeHistoryOnce = false;
 	}
 	else {
-		history.pushState( { list:list.id }, document.title, _mtt.urlForList(list));
+		if (_mtt.lastHistoryState) {
+			//_mtt.lastHistoryState.title = document.title;
+			window.history.pushState(_mtt.lastHistoryState, _mtt.lastHistoryState.title, _mtt.lastHistoryState.url);
+		}
+		state.url = url;
+		state.title = title;
+		window.history.replaceState(state, title, url); //also refresh visible URL
 	}
-}
-
-function historyOnSettingsLoaded()
-{
-	if (flag.dontChangeHistoryOnce) {
-		flag.dontChangeHistoryOnce = false;
-		return;
-	}
-	history.pushState( { settings:1 }, document.title, _mtt.urlForSettings() );
+	_mtt.lastHistoryState = history.state;
+	flag.firstLoad = false;
+	document.title = title;
 }
 
 
@@ -2556,6 +2566,8 @@ function historyOnPopState(event)
 	if (event.state.list && _mtt.pages.current && _mtt.pages.current.page == 'ajax' && _mtt.pages.current.pageClass == 'settings') {
 		// Here we go back to tasklist from settings, no reload. Just show and hide pages without history actions.
 		_mtt.pageBack();
+		flag.dontChangeHistoryOnce = true;
+		updateHistoryState( { list:event.state.list }, event.state.url, event.state.title );
 	}
 	else if (event.state.list) {
 		flag.dontChangeHistoryOnce = true;
