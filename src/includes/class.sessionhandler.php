@@ -13,14 +13,14 @@ class MTTSessionHandler implements SessionHandlerInterface
 	 * @return bool
 	 * @throws Exception
 	 */
-	public function open($path, $name)
+	public function open($path, $name): bool
 	{
 		$this->db = DBConnection::instance();
 		return true;
 	}
 
 	/** @return bool  */
-	public function close()
+	public function close(): bool
     {
         return true;
     }
@@ -30,6 +30,7 @@ class MTTSessionHandler implements SessionHandlerInterface
 	 * @return string
 	 * @throws Exception
 	 */
+	#[\ReturnTypeWillChange]
 	public function read($id)
 	{
 		// read session data if not expired
@@ -54,7 +55,7 @@ class MTTSessionHandler implements SessionHandlerInterface
 	 * @return bool
 	 * @throws Exception
 	 */
-	public function write($id, $data)
+	public function write($id, $data): bool
 	{
 		$exists = $this->db->sq("SELECT COUNT(*) FROM {$this->db->prefix}sessions WHERE id = ?", $id);
 		if (!$exists) {
@@ -76,7 +77,7 @@ class MTTSessionHandler implements SessionHandlerInterface
 	 * @return bool
 	 * @throws Exception
 	 */
-	public function destroy($id)
+	public function destroy($id): bool
 	{
 		$this->db->ex("DELETE FROM {$this->db->prefix}sessions WHERE id = ?", $id);
 		return true;
@@ -86,6 +87,7 @@ class MTTSessionHandler implements SessionHandlerInterface
 	 * @param int $max_lifetime
 	 * @return int|false
 	 */
+	#[\ReturnTypeWillChange]
 	public function gc($max_lifetime)
 	{
 		// We ignore php runtime 'session.gc_maxlifetime'
