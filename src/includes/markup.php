@@ -5,6 +5,9 @@ require_once(MTTINC. 'parsedown/Parsedown.php');
 
 function noteMarkup($note)
 {
+	if ($note === null) {
+		$note = '';
+	}
 	if (Config::get('markup') == 'v1') {
 		return mttMarkup_v1($note);
 	}
