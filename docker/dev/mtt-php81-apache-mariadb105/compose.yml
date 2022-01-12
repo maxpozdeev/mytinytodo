@@ -15,6 +15,11 @@ services:
       - "8080:80"
     environment:
       - MTT_ENABLE_DEBUG=YES
+      - MTT_DB_TYPE=mysqli
+      - MTT_DB_HOST=db
+      - MTT_DB=mytinytodo
+      - MTT_DB_USER=mtt
+      - MTT_DB_PASSWORD=mtt
     volumes:
       - ../../../src:/var/www/html
     depends_on:

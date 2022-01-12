@@ -61,9 +61,15 @@ $ver = $db ? get_ver($db, $dbtype) : '';
 
 if (!$ver)
 {
-	# Which DB to select
-	if(!isset($_POST['installdb']) && !isset($_POST['install']))
+	if (!isset($_POST['installdb']) && !isset($_POST['install']) && $db !== null)
 	{
+		# We already have settings file and need to create tables.
+		exitMessage("<form method=post>Click next to create tables in '". htmlspecialchars($dbtype). "' database.<br><br>
+					<input type=hidden name=install value=db><input type=submit value=' Next '></form>");
+	}
+	else if (!isset($_POST['installdb']) && !isset($_POST['install']))
+	{
+		# Select database and connection settings to save.
 		exitMessage("<form method=post>Select database type to use:<br><br>
 <label><input type=radio name=installdb value=sqlite checked=checked onclick=\"document.getElementById('mysqlsettings').style.display='none'\">SQLite</label><br><br>
 <label><input type=radio name=installdb value=mysql onclick=\"document.getElementById('mysqlsettings').style.display=''\">MySQL</label><br>
