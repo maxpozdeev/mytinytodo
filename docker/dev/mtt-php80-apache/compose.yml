@@ -11,5 +11,6 @@ services:
       - "8080:80"
     environment:
       - MTT_ENABLE_DEBUG=YES
+      - MTT_DB_TYPE=sqlite
     volumes:
       - ../../../src:/var/www/html
