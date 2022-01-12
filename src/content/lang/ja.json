@@ -20,7 +20,6 @@
     "taskdate_inline_duedate": "Due %s",
     "taskdate_created": "作成時間",
     "taskdate_completed": "完了時間",
-    "go_back": "&lt;&lt; Back",
     "edit_task": "タスク編集",
     "add_task": "新規タスク",
     "priority": "優先度",

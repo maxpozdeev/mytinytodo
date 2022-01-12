@@ -21,7 +21,6 @@
     "taskdate_inline_duedate": "В срок %s",
     "taskdate_created": "Дата создания",
     "taskdate_completed": "Дата завершения",
-    "go_back": "&lt;&lt; Назад",
     "edit_task": "Редактирование задачи",
     "add_task": "Новая задача",
     "priority": "Приоритет",

@@ -20,7 +20,6 @@
     "taskdate_inline_duedate": "Due %s",
     "taskdate_created": "Дан и час креирања",
     "taskdate_completed": "Дан и час завршетка",
-    "go_back": "&lt;&lt; Back",
     "edit_task": "Измена задатка",
     "add_task": "Нови задатак",
     "priority": "Приоритет",

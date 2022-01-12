@@ -314,15 +314,17 @@ li.task-row.task-completed .task-note-block .task-note { text-decoration:line-th
 .alltags-cell { width:1%; white-space:nowrap; padding-left:5px; }
 #page_taskedit.mtt-inadd .mtt-inedit { display:none; }
 #page_taskedit.mtt-inedit .mtt-inadd { display:none; }
-#taskedit-date { font-size:1rem; font-weight:normal; display:inline; color:#777; margin-left:8px; }
+#taskedit_id { color: #666; font-weight: normal; }
+#taskedit_info { font-size:1rem; font-weight:normal; color:#666; margin-bottom:6px; }
+#taskedit_info > div { margin-top:6px; }
 
 a.mtt-back-button { font-size:1rem; }
 h3.page-title a.mtt-back-button {
   display:inline-block;
   width:1.3rem;
   height:1.3rem;
-  margin-right:0.5rem;
-  background:url(images/back.svg) no-repeat;
+  margin-right:0.4rem;
+  background:url(images/back.svg) no-repeat center top;
   background-size:1.3rem;
   position: relative;
   top:4px;
@@ -482,7 +484,8 @@ li.mtt-item-hidden { display:none; }
 @media only screen and (max-width: 600px) {
 
   #mtt_body { padding: 15px 15px 0px; }
-  #mtt_body.page-ajax .topblock { display: none; }
+  #mtt_body.page-ajax .topblock { display: none; } /* hide topmost block if settings pages is opened */
+  #mtt_body.page-taskedit .topblock { display: none; } /* hide topmost block if edit/add task  page is opened */
 
   h2 { font-size:1rem; }
 
@@ -490,6 +493,7 @@ li.mtt-item-hidden { display:none; }
 
   .mtt-img-button { padding:4px; }
   .mtt-menu-button { padding:4px; }
+  h3.page-title a.mtt-back-button { width:2rem; }
 
   .mtt-tabs-add-button { padding-left:0.4rem; padding-right:0.4rem; } /* make thiсker */
 

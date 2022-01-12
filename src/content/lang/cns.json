@@ -20,7 +20,6 @@
     "taskdate_inline_duedate": "Due %s",
     "taskdate_created": "Created",
     "taskdate_completed": "Completed",
-    "go_back": "&lt;&lt; Back",
     "edit_task": "编辑任务",
     "add_task": "新增任务",
     "priority": "优先级",

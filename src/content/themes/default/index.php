@@ -125,21 +125,17 @@ $().ready(function(){
 <!-- Page: Edit Task -->
 <div id="page_taskedit" style="display:none">
 
-<div><a href="#" class="mtt-back-button"><?php _e('go_back');?></a></div>
+<h3 class="page-title mtt-inadd"><a class="mtt-back-button"></a><?php _e('add_task');?></h3>
+<h3 class="page-title mtt-inedit"><a class="mtt-back-button"></a><?php _e('edit_task');?> <span id="taskedit_id"></span></h3>
 
-<h3 class="page-title mtt-inadd"><?php _e('add_task');?></h3>
-<h3 class="page-title mtt-inedit"><?php _e('edit_task');?>
-  <div id="taskedit-date" class="mtt-inedit">
-   (<span class="date-created" title="<?php _e('taskdate_created');?>"><span></span></span><span class="date-completed" title="<?php _e('taskdate_completed');?>"> &mdash; <span></span></span>)
+<div id="taskedit_info" class="mtt-inedit">
+    <div class="date-created"><?php _e('taskdate_created'); ?>: <span class="date-created-value"></span></div>
+    <div class="date-completed"><?php _e('taskdate_completed'); ?>: <span class="date-completed-value"></span></div>
   </div>
-</h3>
 
 <form id="taskedit_form" name="edittask" method="post">
 <input type="hidden" name="isadd" value="0" />
 <input type="hidden" name="id" value="" />
-<div class="form-row form-row-short">
-  <span class="h"><?php _e('priority');?></span>
-</div>
 <div class="form-row form-row-short">
   <span class="h"><?php _e('priority');?></span>
   <select name="prio" class="form-input">
@@ -171,6 +167,10 @@ $().ready(function(){
 
 </div>
 <!-- end of page_taskedit -->
+
+
+<div id="page_ajax" style="display:none">
+</div>
 
 
 <div id="authform" style="display:none">
@@ -261,9 +261,6 @@ $().ready(function(){
   <li id="slmenu_list:-1" class="list-id--1 mtt-need-list"><div class="menu-icon"></div><a href="#alltasks"><?php _e('alltasks'); ?></a></li>
   <li class="mtt-menu-delimiter slmenu-lists-begin mtt-need-list"></li>
 </ul>
-</div>
-
-<div id="page_ajax" style="display:none">
 </div>
 
 </div><!-- end of #mtt_body -->

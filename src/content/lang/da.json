@@ -20,7 +20,6 @@
     "taskdate_inline_duedate": "Due %s",
     "taskdate_created": "Dato for oprettelse",
     "taskdate_completed": "Dato for færdiggørelse",
-    "go_back": "&lt;&lt; Back",
     "edit_task": "Rediger opgave",
     "add_task": "Ny opgave",
     "priority": "Prioritet",

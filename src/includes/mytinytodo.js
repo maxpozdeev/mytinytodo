@@ -1551,9 +1551,13 @@ function editTask(id)
 	form.tags.value = item.tags.split(',').join(', ');
 	form.duedate.value = item.duedate;
 	form.prio.value = item.prio;
-	$('#taskedit-date .date-created>span').text(item.date);
-	if(item.compl) $('#taskedit-date .date-completed').show().find('span').text(item.dateCompleted);
-	else $('#taskedit-date .date-completed').hide();
+	$('#taskedit_id').text('#' + item.id);
+	$('#taskedit_info .date-created-value').text(item.date);
+	if(item.compl) {
+		$('#taskedit_info .date-completed-value').text(item.dateCompleted);
+		$('#taskedit_info .date-completed').show()
+	}
+	else $('#taskedit_info .date-completed').hide();
 	toggleEditAllTags(0);
 	showEditForm();
 	return false;
