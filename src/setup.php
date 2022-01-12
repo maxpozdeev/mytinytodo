@@ -8,7 +8,7 @@
 
 set_exception_handler('myExceptionHandler');
 
-# Check old config file (prior v1.3)
+# Check old config file
 require_once('./db/config.php');
 if (!isset($config['db']))
 {
@@ -278,14 +278,12 @@ elseif($ver == $lastVer)
 }
 else
 {
-	if(!in_array($ver, array('1.4'))) {
+	if (!in_array($ver, array('1.4'))) {
 		exitMessage(htmlspecialchars("Can not update. Unsupported database version ($ver)."));
 	}
-	if(!isset($_POST['update'])) {
+	if (!isset($_POST['update'])) {
 		exitMessage(htmlspecialchars("Update database v$ver to v$lastVer"). "<br><br>
-		<form name=frm method=post><input type=hidden name=update value=1><input type=hidden name=tz value=-1><input type=submit value=' Update '></form>
-		<script type=\"text/javascript\">var tz = -1 * (new Date()).getTimezoneOffset(); document.frm.tz.value = tz;</script>
-		");
+		<form name=frm method=post><input type=hidden name=update value=1><input type=submit value=' Update '></form>");
 	}
 
 	# update process

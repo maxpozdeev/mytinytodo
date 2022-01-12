@@ -47,11 +47,6 @@ mytinytodoStorageAjax.prototype =
 		if(params.setCompl && params.setCompl != 0) q += '&setCompl=1';
 		q += '&rnd='+Math.random();
 
-/*		$.getJSON(mtt.mttUrl+'ajax.php?loadTasks&list='+params.list+'&compl='+params.compl+'&sort='+params.sort+'&tz='+params.tz+q, function(json){
-			callback.call(mtt, json);
-		})
-*/
-
 		$.getJSON(this.mtt.mttUrl+'ajax.php?loadTasks&list='+params.list+'&compl='+params.compl+'&sort='+params.sort+q, callback);
 	},
 
