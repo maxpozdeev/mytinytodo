@@ -8,7 +8,10 @@
 
 class Config
 {
+	/** @var bool */
 	public static $noDatabase = false;
+
+	/** @var array[] */
 	private static $dbparams = array(
 		# Database type: sqlite or mysql
 		'db' => array('default'=>'sqlite', 'type'=>'s'),
@@ -26,6 +29,7 @@ class Config
 		'mysqli' => array('default'=>1, 'type'=>'i')
 	);
 
+	/** @var array[] */
 	public static $params = array(
 		# These two parameters are used when mytinytodo index.php called not from installation directory
 		# 'url' - URL where index.php is called from (ex.: http://site.com/todo.php)
@@ -72,13 +76,25 @@ class Config
 		'markup' => array('default'=>'markdown', 'type'=>'s'),
 	);
 
+	/** @var mixed[] */
 	private static $config;
 
-	public static function loadDbConfig($config)
+
+	/**
+	 *
+	 * @param mixed[] $config
+	 * @return void
+	 */
+	public static function loadDbConfig(array $config)
 	{
 		self::$config = $config;
 	}
 
+	/**
+	 *
+	 * @return void
+	 * @throws Exception
+	 */
 	public static function load()
 	{
 		if (self::$noDatabase) {
@@ -93,6 +109,11 @@ class Config
 		}
 	}
 
+	/**
+	 *
+	 * @param string $key
+	 * @return mixed
+	 */
 	public static function get($key)
 	{
 		if (isset(self::$config[$key])) return self::$config[$key];
@@ -101,6 +122,11 @@ class Config
 		else return null;
 	}
 
+	/**
+	 *
+	 * @param string $key
+	 * @return string|null
+	 */
 	public static function getUrl($key)
 	{
 		$url = '';
@@ -110,6 +136,13 @@ class Config
 		return str_replace( ["\r","\n"], '', $url );
 	}
 
+	/**
+	 *
+	 * @param string $key
+	 * @param mixed $value
+	 * @return void
+	 * @throws Exception
+	 */
 	public static function set($key, $value)
 	{
 		if ($key == "prefix" && $value !== "" && !preg_match("/^[a-zA-Z0-9_]+$/", $value)) {
@@ -118,6 +151,11 @@ class Config
 		self::$config[$key] = $value;
 	}
 
+	/**
+	 *
+	 * @return void
+	 * @throws Exception
+	 */
 	public static function saveDbConfig()
 	{
 		$s = '';
@@ -147,6 +185,11 @@ class Config
 
 	}
 
+	/**
+	 *
+	 * @return void
+	 * @throws Exception
+	 */
 	public static function save()
 	{
 		$j = array();
@@ -164,6 +207,12 @@ class Config
 		self::saveDomain('config.json', $j);
 	}
 
+	/**
+	 *
+	 * @param string $key
+	 * @return array
+	 * @throws Exception
+	 */
 	public static function requestDomain($key)
 	{
 		$db = DBConnection::instance();
@@ -173,6 +222,13 @@ class Config
 		return $j;
 	}
 
+	/**
+	 *
+	 * @param string $key
+	 * @param array $array
+	 * @return void
+	 * @throws Exception
+	 */
 	public static function saveDomain($key, $array)
 	{
 		$json = json_encode($array, JSON_PRETTY_PRINT);
