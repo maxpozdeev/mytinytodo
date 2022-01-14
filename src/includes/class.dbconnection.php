@@ -1,5 +1,10 @@
 <?php
 
+/*
+	This file is a part of myTinyTodo.
+	(C) Copyright 2021 Max Pozdeev <maxpozdeev@gmail.com>
+	Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
+*/
 
 class DBConnection
 {
@@ -48,4 +53,3 @@ abstract class DatabaseResult_Abstract
 	abstract function fetchAssoc();
 }
 
-?>

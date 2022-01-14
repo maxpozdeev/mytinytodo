@@ -1,8 +1,9 @@
 <?php
 
 /*
-	(C) Copyright 2021 Max Pozdeev <maxpozdeev@gmail.com>
-	Licensed under the GNU GPL v2 license. See file COPYRIGHT for details.
+	This file is a part of myTinyTodo.
+	(C) Copyright 2020-2021 Max Pozdeev <maxpozdeev@gmail.com>
+	Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
 // ---------------------------------------------------------------------------- //

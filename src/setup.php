@@ -1,9 +1,9 @@
 <?php
 
 /*
-	This file is part of myTinyTodo.
-	(C) Copyright 2009-2011 Max Pozdeev <maxpozdeev@gmail.com>
-	Licensed under the GNU GPL v2 license. See file COPYRIGHT for details.
+	This file is a part of myTinyTodo.
+	(C) Copyright 2009-2011,2020-2022 Max Pozdeev <maxpozdeev@gmail.com>
+	Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
 set_exception_handler('myExceptionHandler');
@@ -482,5 +482,3 @@ UNIQUE KEY `id` (`id`)
 	Config::saveDbConfig();
 }
 ### end of 1.7 #####
-
-?>

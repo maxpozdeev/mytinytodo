@@ -1,8 +1,8 @@
 <?php
 /*
-	This file is part of myTinyTodo.
-	(C) Copyright 2009-2010,2020 Max Pozdeev <maxpozdeev@gmail.com>
-	Licensed under the GNU GPL v2 license. See file COPYRIGHT for details.
+	This file is a part of myTinyTodo.
+	(C) Copyright 2009-2011,2019-2022 Max Pozdeev <maxpozdeev@gmail.com>
+	Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
 define('MTT_VERSION', '@VERSION');

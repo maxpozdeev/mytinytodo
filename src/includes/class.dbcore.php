@@ -1,5 +1,12 @@
 <?php
 
+/*
+	This file is a part of myTinyTodo.
+	(C) Copyright 2022 Max Pozdeev <maxpozdeev@gmail.com>
+	Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
+*/
+
+
 // FIXME: experimental, subject to change
 
 class DBCore
@@ -68,3 +75,4 @@ class DBCore
 	}
 
 }
+

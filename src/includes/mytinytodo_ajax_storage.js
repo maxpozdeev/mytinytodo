@@ -1,7 +1,7 @@
 /*
 	This file is a part of myTinyTodo.
-	(C) Copyright 2010 Max Pozdeev <maxpozdeev@gmail.com>
-	Licensed under the GNU GPL v2 license. See file COPYRIGHT for details.
+	(C) Copyright 2010,2020 Max Pozdeev <maxpozdeev@gmail.com>
+	Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
 // AJAX myTinyTodo Storage
