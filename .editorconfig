@@ -6,10 +6,19 @@ root = true
 [*]
 charset = utf-8
 end_of_line = lf
-indent_style = tab
+# tab_width here used only to represent tabs if indent_size is not set
 tab_width = 4
 trim_trailing_whitespace = true
 insert_final_newline = true
+
+# temporary. spaces will be used later.
+[*.{php,js}]
+indent_style = tab
+tab_width = 4
+
+[*.{css,yml,html}]
+indent_style = space
+indent_size = 2
 
 [*.php]
 insert_final_newline = false
@@ -18,15 +27,8 @@ insert_final_newline = false
 trim_trailing_whitespace = false
 insert_final_newline = false
 
-[*.css]
-indent_style = space
-indent_size = 2
-
 [/version.txt]
 insert_final_newline = false
-
-[*.yml]
-indent_style = space
 
 [/src/content/themes/*/index.php]
 indent_style = space
