@@ -9,17 +9,33 @@
 class MTTParsedown extends Parsedown
 {
 
+	protected $toExternal;
+
     function __construct()
     {
-        $this->InlineTypes['#'][]= 'TaskId';
+		$this->toExternal = false;
 
+        $this->InlineTypes['#'][]= 'TaskId';
         $this->inlineMarkerList .= '#';
     }
+
+	public function setToExternal(bool $v)
+	{
+		$this->toExternal = $v;
+	}
 
     protected function inlineTaskId($excerpt)
     {
         if (preg_match('/^#(\d+)/', $excerpt['text'], $matches))
         {
+			$attrs = array(
+				'href' => get_mttinfo('url'). '?task='. $matches[1],
+				'target' => '_blank',
+			);
+			if (!$this->toExternal) {
+				$attrs['class'] = 'mtt-link-to-task';
+				$attrs['target-id'] = $matches[1];
+			}
             return array(
 
                 // How many characters to advance the Parsedown's
@@ -28,12 +44,7 @@ class MTTParsedown extends Parsedown
                 'element' => array(
                     'name' => 'a',
                     'text' => '#'. $matches[1],
-                    'attributes' => array(
-                        'href' => get_mttinfo('url'). '?task='. $matches[1],
-						'target' => '_blank',
-						'class' => 'mtt-link-to-task',
-						'target-id' => $matches[1],
-                    ),
+                    'attributes' => $attrs,
                 ),
 
             );

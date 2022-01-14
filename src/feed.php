@@ -8,6 +8,7 @@
 
 $dontStartSession = 1;
 require_once('./init.php');
+require_once(MTTINC. 'markup.php');
 
 $lang = Lang::instance();
 
@@ -82,7 +83,7 @@ function fillData(&$data, $listId, $field, $sqlWhere )
 			$a[] = $lang->get('taskdate_completed'). ": ". timestampToDatetime($r['d_completed']);
 		}
 		$r['title'] = htmlspecialchars( $r['title'] );
-		$r['note'] = mttMarkup_v1($r['note']);
+		$r['note'] = noteMarkup($r['note'], true);
 		$r['_descr'] = implode("<br/>", htmlarray($a)). "<br/><br/>". $r['note'];
 		$r['_title'] = "#". (int)$r['id']. ": ". $r['title'];
 		$r['_d'] =  gmdate('r', $r[$field]);

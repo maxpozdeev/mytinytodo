@@ -10,7 +10,7 @@ require_once(MTTINC. 'parsedown/Parsedown.php');
 require_once(MTTINC. 'parsedown/MTTParsedown.php');
 
 
-function noteMarkup($note)
+function noteMarkup($note, $toExternal = false)
 {
 	if ($note === null) {
 		$note = '';
@@ -18,13 +18,14 @@ function noteMarkup($note)
 	if (Config::get('markup') == 'v1') {
 		return mttMarkup_v1($note);
 	}
-	return markdownToHtml($note);
+	return markdownToHtml($note, $toExternal);
 }
 
 // Markdown converter (Parsedown)
-function markdownToHtml($s)
+function markdownToHtml($s, $toExternal = false)
 {
 	$parser = MTTParsedown::instance();
+	$parser->setToExternal($toExternal);
 	$parser->setSafeMode(true);
 	//$parser->setBreaksEnabled(true);
 	return $parser->text($s);
