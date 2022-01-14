@@ -655,6 +655,11 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		if (path.settings) {
 			showSettings();
 		}
+		else if (path.search && path.list) {
+			filter.search = path.search;
+			this.pageSet('tasks', '');
+			this.loadLists();
+		}
 		else {
 			this.pageSet('tasks', '');
 			this.loadLists();
@@ -664,7 +669,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 	loadLists: function()
 	{
 		if(filter.search != '') {
-			filter.search = '';
+			//filter.search = '' will be in tabSelect
 			$('#searchbarkeyword').text('');
 			$('#searchbar').hide();
 		}
@@ -879,6 +884,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 				case "list": if(a[++i].match(/^-?\d+$/)) { p[s] = a[i]; } break;
 				case "alltasks": p.list = '-1'; break;
 				case "settings": p.settings = true; break;
+				case "search":   p.search = decodeURIComponent(a[++i]); break;
 			}
 		}
 
@@ -1400,6 +1406,7 @@ function tabSelect(elementOrId)
 		mytinytodo.doAction('listSelected', tabLists.get(id));
 	}
 	var newTitle = curList.name + ' - ' + _mtt.options.title;
+	var isFirstLoad = flag.firstLoad;
 	updateHistoryState( { list:id }, _mtt.urlForList(curList), newTitle );
 
 	if(curList.hidden) {
@@ -1409,7 +1416,16 @@ function tabSelect(elementOrId)
 	flag.tagsChanged = true;
 	cancelTagFilter(0, 1);
 	setTaskview(0);
-	loadTasks({clearTasklist:1});
+
+	if (isFirstLoad && filter.search != '') {
+		$('#search').val(filter.search);
+		$('#search_close').show();
+		searchTasks(true);
+	}
+	else {
+		filter.search = '';
+		loadTasks({clearTasklist:1});
+	}
 };
 
 

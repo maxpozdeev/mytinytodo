@@ -32,6 +32,7 @@ else {
 
 require_once(MTTINC. 'common.php');
 require_once(MTTINC. 'class.dbconnection.php');
+require_once(MTTINC. 'class.dbcore.php');
 require_once(MTTINC. 'class.config.php');
 require_once(MTTPATH. 'db/config.php');
 
@@ -71,6 +72,7 @@ else {
 	die("Not installed. Run <a href=setup.php>setup.php</a> first.");
 }
 DBConnection::setPrefix(Config::get('prefix'));
+DBCore::setDefaultInstance(new DBCore($db));
 Config::load();
 
 

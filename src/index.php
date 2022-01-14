@@ -8,14 +8,8 @@
 require_once('./init.php');
 
 //Parse query string
-if ( isset($_SERVER['QUERY_STRING']) && $_SERVER['QUERY_STRING'] != '' )
-{
-	parse_str($_SERVER['QUERY_STRING'], $q);
-	if (isset($q['list'])) {
-		$hash = ($q['list'] == 'alltasks') ? ['alltasks'] : ['list', (int)$q['list']];
-		unset($q['list']);
-		redirectWithHashRoute($q, $hash);
-	}
+if ( isset($_SERVER['QUERY_STRING']) && $_SERVER['QUERY_STRING'] != '' ) {
+	parseRoute($_SERVER['QUERY_STRING']);
 }
 
 
@@ -35,7 +29,26 @@ require(TEMPLATEPATH. 'index.php');
 
 // end
 
-function redirectWithHashRoute(array $q, array $hash)
+
+function parseRoute($queryString)
+{
+	parse_str($queryString, $q);
+	if (isset($q['list'])) {
+		$hash = ($q['list'] == 'alltasks') ? ['alltasks'] : ['list', (int)$q['list']];
+		unset($q['list']);
+		redirectWithHashRoute($hash, $q);
+	}
+	else if (isset($q['task'])) {
+		$listId = (int)DBCore::defaultInstance()->getListIdByTaskId((int)$q['task']);
+		if ($listId > 0) {
+			$h = [ 'list', $listId, 'search', '#'. (int)$q['task']];
+			redirectWithHashRoute($h);
+		}
+		// TODO: not found
+	}
+}
+
+function redirectWithHashRoute(array $hash, array $q = [])
 {
 	$url = get_unsafe_mttinfo('url');
 	$query = http_build_query($q);

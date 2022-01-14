@@ -1,6 +1,7 @@
 <?php
 
 require_once(MTTINC. 'parsedown/Parsedown.php');
+require_once(MTTINC. 'parsedown/MTTParsedown.php');
 
 
 function noteMarkup($note)
@@ -17,7 +18,7 @@ function noteMarkup($note)
 // Markdown converter (Parsedown)
 function markdownToHtml($s)
 {
-	$parser = Parsedown::instance();
+	$parser = MTTParsedown::instance();
 	$parser->setSafeMode(true);
 	//$parser->setBreaksEnabled(true);
 	return $parser->text($s);
