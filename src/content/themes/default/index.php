@@ -116,6 +116,10 @@ $().ready(function(){
   <span id="tagcloudbtn" class="mtt-menu-button"><?php _e('tagcloud');?> <span class="arrdown2"></span></span>
 </h3>
 
+<div id="tasks_info" style="display:none;">
+  <div class="v"></div>
+</div>
+
 <ol id="tasklist" class="sortable"></ol>
 
 </div>
@@ -258,7 +262,7 @@ $().ready(function(){
 
 <div id="slmenucontainer" class="mtt-menu-container" style="display:none">
 <ul>
-  <li id="slmenu_list:-1" class="list-id--1 mtt-need-list"><div class="menu-icon"></div><a href="#alltasks"><?php _e('alltasks'); ?></a></li>
+  <li id="slmenu_list:-1" class="list-id--1 mtt-need-authorized"><div class="menu-icon"></div><a href="#alltasks"><?php _e('alltasks'); ?></a></li>
   <li class="mtt-menu-delimiter slmenu-lists-begin mtt-need-list"></li>
 </ul>
 </div>

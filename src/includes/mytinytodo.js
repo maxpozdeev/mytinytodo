@@ -675,6 +675,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		}
 		$('#page_tasks').hide();
 		$('#tasklist').html('');
+		$('#tasks_info').hide();
 
 		tabLists.clear();
 
@@ -682,7 +683,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		{
 			var ti = '';
 			var openListId = 0;
-			if(res && res.total)
+			if(res && res.total && res.list)
 			{
 				// open required or first non-hidden list
 				for(var i=0; i<res.list.length; i++) {
@@ -701,9 +702,6 @@ var mytinytodo = window.mytinytodo = _mtt = {
 				// open all tasks tab
 				if(_mtt.options.openList == -1) openListId = -1;
 
-				// or open first if all list are hidden
-				if(!openListId) openListId = res.list[0].id;
-
 				$.each(res.list, function(i,item) {
 					if ( item.id == -1) {
 						tabLists._alltasks = item;
@@ -720,32 +718,43 @@ var mytinytodo = window.mytinytodo = _mtt = {
 				});
 			}
 
-			if(openListId) {
-				$('#mtt_body').removeClass('no-lists');
-				$('.mtt-need-list').removeClass('mtt-item-disabled');
-			}
-			else {
+			if (openListId == 0) {
 				curList = 0;
-				$('#mtt_body').addClass('no-lists');
-				$('.mtt-need-list').addClass('mtt-item-disabled');
-			}
-
-			if (_mtt.options.openList && openListId != _mtt.options.openList) {
-				//TODO: handle unknown list
 			}
 
 			if (_mtt.options.markdown == true) {
 				$('#mtt_body').addClass('markdown-enabled');
 			}
 
+			if (tabLists.length() > 0) {
+				$('#mtt_body').removeClass('no-lists');
+			}
+			else {
+				$('#mtt_body').addClass('no-lists');
+			}
+
+			if (_mtt.options.openList != 0 && openListId == 0) {
+				// cant open list - not found
+				$('#tasks_info .v').text(_mtt.lang.get('listNotFound'))
+				$('#tasks_info').show();
+			}
+			else if (tabLists.length() == 0) {
+				if (flag.readOnly) $('#tasks_info .v').text(_mtt.lang.get('noPublicLists'));
+				else $('#tasks_info .v').text(_mtt.lang.get('listNotFound'))
+				$('#tasks_info').show();
+			}
+
 			_mtt.options.openList = 0;
+			$('#lists .mtt-tabs-selected').removeClass('mtt-tabs-selected');
+			$('#mtt_body').addClass('no-list-selected');
 			$('#lists ul').html(ti);
 			$('#lists').show();
 			_mtt.doAction('listsLoaded');
-			tabSelect(openListId);
 
+			if (tabLists.length() > 0 && openListId != 0) {
+				tabSelect(openListId);
+			}
 			$('#page_tasks').show();
-
 		});
 	},
 
@@ -1378,10 +1387,17 @@ function tabSelect(elementOrId)
 		id = id.split('_', 2)[1];
 		if (id === 'all') id = -1;
 	}
+
 	if ( !tabLists.exists(id) ) {
-		// TODO: handle unknown list
-		flashError(_mtt.lang.get('denied'));
+		$('#tasks_info .v').text(_mtt.lang.get('listNotFound'))
+		$('#tasks_info').show();
+		$('.mtt-need-list').addClass('mtt-item-disabled');
 		return;
+	}
+	else {
+		$('#tasks_info').hide();
+		$('.mtt-need-list').removeClass('mtt-item-disabled');
+		$('#mtt_body').removeClass('no-list-selected');
 	}
 
 	var prevList = curList;
@@ -1409,7 +1425,7 @@ function tabSelect(elementOrId)
 	var isFirstLoad = flag.firstLoad;
 	updateHistoryState( { list:id }, _mtt.urlForList(curList), newTitle );
 
-	if(curList.hidden) {
+	if (curList.hidden && flag.readOnly != true) {
 		curList.hidden = false;
 		_mtt.db.request('setHideList', {list:curList.id, hide:0});
 	}

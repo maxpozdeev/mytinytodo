@@ -23,12 +23,13 @@ if(isset($_GET['loadLists']))
 {
 	check_token();
 	$t = array();
+	$t['total'] = 0;
 	if (!is_logged()) $sqlWhere = 'WHERE published=1';
 	else {
 		$sqlWhere = '';
 		$t['list'][] = prepareAllTasksList(); // show alltasks lists only for authorized user
+		$t['total'] = 1;
 	}
-	$t['total'] = 1;
 	$q = $db->dq("SELECT * FROM {$db->prefix}lists $sqlWhere ORDER BY ow ASC, id ASC");
 	while($r = $q->fetchAssoc())
 	{

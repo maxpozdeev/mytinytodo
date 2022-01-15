@@ -112,6 +112,8 @@ class Lang
 			'actionNoteCancel',
 			'error',
 			'denied',
+			'listNotFound',
+			'noPublicLists',
 			'invalidpass',
 			'addList',
 			'addListDefault',

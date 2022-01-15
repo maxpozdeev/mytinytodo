@@ -161,6 +161,8 @@
     "actionNoteCancel": "cancel",
     "error": "Some error occurred (click for details)",
     "denied": "Access denied",
+    "listNotFound": "Not found",
+    "noPublicLists": "No public tasks",
     "invalidpass": "Wrong password",
     "addList": "Create new list",
     "addListDefault": "Todo",
