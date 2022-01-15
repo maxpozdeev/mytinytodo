@@ -2478,6 +2478,7 @@ function logout()
 {
 	$.post(mytinytodo.mttUrl+'ajax.php?logout', { logout:1 }, function(json){
 		flag.isLogged = false;
+		window.location.hash = '';
 		window.location.reload();
 	}, 'json');
 	return false;
