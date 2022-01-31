@@ -105,14 +105,20 @@ function removeNewLines($s)
 	return str_replace( ["\r","\n"], '', $s );
 }
 
-/* found in comments on http://www.php.net/manual/en/function.uniqid.php#94959 */
-function generateUUID()
+/**
+ * Generates UUID v4
+ * Implementation from https://github.com/symfony/polyfill-uuid
+ */
+function generateUUID(): string
 {
-    return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
-      mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff),
-      mt_rand(0, 0x0fff) | 0x4000,
-      mt_rand(0, 0x3fff) | 0x8000,
-      mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff)
+	$uuid = bin2hex(random_bytes(16));
+	return sprintf('%08s-%04s-4%03s-%04x-%012s',
+		substr($uuid, 0, 8),
+		substr($uuid, 8, 4),
+		// $uuid[14] = 4
+		substr($uuid, 13, 3),
+		hexdec(substr($uuid, 16, 4)) & 0x3fff | 0x8000,
+		substr($uuid, 20, 12)
     );
 }
 
