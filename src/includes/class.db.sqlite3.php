@@ -2,13 +2,15 @@
 
 /*
 	This file is a part of myTinyTodo.
-	(C) Copyright 2009,2019-2021 Max Pozdeev <maxpozdeev@gmail.com>
+	(C) Copyright 2009,2019-2022 Max Pozdeev <maxpozdeev@gmail.com>
 	Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
 class DatabaseResult_Sqlite3 extends DatabaseResult_Abstract
 {
+	/** @var PDOStatement */
 	private $q;
+
 	private $affected;
 
 	function __construct($dbh, $query, $resultless = 0)
@@ -45,7 +47,9 @@ class DatabaseResult_Sqlite3 extends DatabaseResult_Abstract
 
 class Database_Sqlite3 extends Database_Abstract
 {
+	/** @var PDO */
 	private $dbh;
+
 	private $affected = null;
 	var $lastQuery;
 	var $prefix = '';
@@ -164,6 +168,15 @@ class Database_Sqlite3 extends Database_Abstract
 		$exists = $this->sq("SELECT 1 FROM sqlite_temp_master WHERE type='table' AND name=?", $table);
 		if ($exists == "1") {
 		  return true;
+		}
+		return false;
+	}
+
+	function tableFieldExists($table, $field): bool
+	{
+		$q = $this->dq("PRAGMA table_info(". $this->quote($table). ")");
+		while ($r = $q->fetchRow()) {
+			if ($r[1] == $field) return true;
 		}
 		return false;
 	}

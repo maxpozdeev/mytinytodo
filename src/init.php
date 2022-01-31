@@ -30,28 +30,25 @@ else {
 	define('MTT_DEBUG', false);
 }
 
+requireConfig();
 require_once(MTTINC. 'common.php');
 require_once(MTTINC. 'class.dbconnection.php');
 require_once(MTTINC. 'class.dbcore.php');
 require_once(MTTINC. 'class.config.php');
-require_once(MTTPATH. 'db/config.php');
 
-if(!isset($config)) global $config;
-Config::loadDbConfig($config);
-unset($config);
 
 # MySQL Database Connection
-if (Config::get('db') == 'mysql')
+if (MTT_DB_TYPE == 'mysql')
 {
-	if (Config::get('mysqli')) require_once(MTTINC. 'class.db.mysqli.php');
+	if (defined('MTT_DB_DRIVER') && MTT_DB_DRIVER == 'mysqli') require_once(MTTINC. 'class.db.mysqli.php');
 	else require_once(MTTINC. 'class.db.mysql.php');
 	$db = DBConnection::init(new Database_Mysql);
 	try {
 		$db->connect( array(
-			'host' => Config::get('mysql.host'),
-			'user' => Config::get('mysql.user'),
-			'password' => Config::get('mysql.password'),
-			'db' => Config::get('mysql.db')
+			'host' => MTT_DB_HOST,
+			'user' => MTT_DB_USER,
+			'password' => MTT_DB_PASSWORD,
+			'db' => MTT_DB_NAME,
 		));
 	}
 	catch(Exception $e) {
@@ -61,17 +58,17 @@ if (Config::get('db') == 'mysql')
 }
 
 # SQLite3 Database
-elseif(Config::get('db') == 'sqlite')
+elseif (MTT_DB_TYPE == 'sqlite')
 {
 	require_once(MTTINC. 'class.db.sqlite3.php');
 	$db = DBConnection::init(new Database_Sqlite3);
 	$db->connect( array( 'filename' => MTTPATH. 'db/todolist.db' ) );
 }
 else {
-	# It seems not installed
-	die("Not installed. Run <a href=setup.php>setup.php</a> first.");
+	die("Incorrect database connection config");
 }
-DBConnection::setPrefix(Config::get('prefix'));
+
+DBConnection::setPrefix(MTT_DB_PREFIX);
 DBCore::setDefaultInstance(new DBCore($db));
 Config::load();
 
@@ -94,6 +91,21 @@ $_mttinfo = array();
 
 if (need_auth() && !isset($dontStartSession)) {
 	setup_and_start_session();
+}
+
+
+function requireConfig()
+{
+	$exists = file_exists(MTTPATH. 'config.php');
+	$defined = false;
+	if ($exists) {
+		require_once(MTTPATH. 'config.php');
+		$defined = defined('MTT_DB_TYPE');
+	}
+	# It seems not installed
+	if (!$defined) {
+		die("Not installed. Run <a href=setup.php>setup.php</a> first.");
+	}
 }
 
 function need_auth()
@@ -196,6 +208,11 @@ function mttinfo($v)
 	echo get_mttinfo($v);
 }
 
+function get_mttinfo($v)
+{
+	return htmlspecialchars( get_unsafe_mttinfo($v) );
+}
+
 /*
  * Returned values from get_unsafe_mttinfo() can be unsafe for html.
  * But '\r' and '\n' in URLs taken from config are removed.
@@ -241,11 +258,6 @@ function get_unsafe_mttinfo($v)
 			}
 			return time(); //force no-cache for dev needs
 	}
-}
-
-function get_mttinfo($v)
-{
-	return htmlspecialchars( get_unsafe_mttinfo($v) );
 }
 
 function reset_mttinfo($key)

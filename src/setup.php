@@ -6,279 +6,149 @@
 	Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
-set_exception_handler('myExceptionHandler');
-
-# Check old config file
-require_once('./db/config.php');
-if (!isset($config['db']))
-{
-	if(isset($config['mysql'])) {
-		$config['db'] = 'mysql';
-		$config['mysql.host'] = $config['mysql'][0];
-		$config['mysql.db'] = $config['mysql'][3];
-		$config['mysql.user'] = $config['mysql'][1];
-		$config['mysql.password'] = $config['mysql'][2];
-	} else {
-		$config['db'] = 'sqlite';
-	}
-	if(isset($config['allow']) && $config['allow'] == 'read') $config['allowread'] = 1;
-}
-
-if ($config['db'] != '')
-{
-	require_once('./includes/class.config.php');
-	Config::$noDatabase = true; //will not load settings from database in init.php
-
-	require_once('./init.php');
-	if ( !is_logged() )
-	{
-		die("Access denied!<br> Disable password protection or Log in.");
-	}
-	$db = DBConnection::instance();
-	$dbtype = (strtolower(get_class($db)) == 'database_mysql') ? 'mysql' : 'sqlite';
-}
-else
-{
-	if (!defined('MTTPATH')) define('MTTPATH', dirname(__FILE__) .'/');
-	if (!defined('MTTINC'))  define('MTTINC', MTTPATH. 'includes/');
-	require_once(MTTINC. 'common.php');
-	require_once(MTTINC. 'class.dbconnection.php');
-	require_once(MTTINC. 'class.config.php');
-	Config::$noDatabase = true;
-	Config::loadDbConfig($config);
-	unset($config);
-
-	$db = null;
-	$dbtype = '';
-}
-
+// Can be used to upgrade database from myTinyTodo v1.4 or later
 $lastVer = '1.7';
+
+if (getenv('MTT_ENABLE_DEBUG') == 'YES') {
+	set_exception_handler('debugExceptionHandler');
+}
+else {
+	set_exception_handler('myExceptionHandler');
+}
+
+if (!defined('MTTPATH')) define('MTTPATH', dirname(__FILE__) .'/');
+if (!defined('MTTINC'))  define('MTTINC', MTTPATH. 'includes/');
+require_once(MTTINC. 'common.php');
+require_once(MTTINC. 'class.dbconnection.php');
+require_once(MTTINC. 'class.config.php');
+
+$db = null;
+$ver = '';
+$error = '';
+
+$configExists = file_exists(MTTPATH. 'config.php');
+$oldConfigExists = file_exists(MTTPATH. 'db/config.php');
+
+
 echo '<html><head><meta name="robots" content="noindex,nofollow"><title>myTinyTodo @VERSION Setup</title></head><body>';
 echo "<big><b>myTinyTodo @VERSION Setup</b></big><br><br>";
 
-# determine current installed version
-$ver = $db ? get_ver($db, $dbtype) : '';
-
-if (!$ver)
+if (!$configExists && $oldConfigExists)
 {
-	if (!isset($_POST['installdb']) && !isset($_POST['install']) && $db !== null)
+	// First we need to migrate database config
+	require_once(MTTPATH. 'db/config.php');
+	if (isset($config['password']) && $config['password'] != '') {
+		if (!isset($_POST['configpassword']) || $_POST['configpassword'] != $config['password']) {
+			exitMessage("Enter current password to continue. <form method=post><input type=password name=configpassword> <input type=submit value=' Continue '></form>");
+		}
+	}
+	Config::loadConfigV14($config);
+	tryToSaveDBConfig();
+	$configExists = true;
+}
+
+if ($configExists)
+{
+	// No need to migrate database config
+	require_once(MTTPATH. 'config.php');
+	$db = testConnect($error);
+	if (!$db) {
+		exitMessage( "Database connection config file seems to be incorrect. You can remove config.php or edit it manually and then reload setup.<br><br>".
+					 "<b>Error:</b> ". htmlspecialchars($error) );
+	}
+	// Config file v1.7 already exists and set up correctly
+	$dbtype = MTT_DB_TYPE;
+
+	// Determine current installed db version
+	$ver = databaseVersion($db);
+
+	if ($ver == '1.4') {
+		// Need to upgrade. Do not ask for old password
+		require_once(MTTPATH. 'db/config.php');
+		Config::loadConfigV14($config);
+		unset($config);
+		DBConnection::init($db);
+	}
+	else {
+		if ($ver != '1.7') {
+			Config::$noDatabase = true; //will not load settings from database in init.php
+		}
+		require_once('./init.php');
+		if ( !is_logged() ) {
+			die("Access denied!<br> Disable password protection or Log in.");
+		}
+	}
+}
+
+if ($ver == '')
+{
+	$install = trim(_post('install'));
+
+	if ($install == '' && $db !== null)
 	{
 		# We already have settings file and need to create tables.
 		exitMessage("<form method=post>Click next to create tables in '". htmlspecialchars($dbtype). "' database.<br><br>
-					<input type=hidden name=install value=db><input type=submit value=' Next '></form>");
+					<input type=hidden name=install value=create><input type=submit value=' Next '></form>");
 	}
-	else if (!isset($_POST['installdb']) && !isset($_POST['install']))
+	elseif ($install == '')
 	{
 		# Specify database type and connection settings to save.
-		exitMessage("<form method=post>Select database type to use:<br><br>
-<label><input type=radio name=installdb value=sqlite checked=checked onclick=\"document.getElementById('mysqlsettings').style.display='none'\">SQLite</label><br><br>
-<label><input type=radio name=installdb value=mysql onclick=\"document.getElementById('mysqlsettings').style.display=''\">MySQL</label><br>
-<div id='mysqlsettings' style='display:none; margin-left:30px;'><br><table><tr><td>Host:</td><td><input name=mysql_host value=localhost></td></tr>
-<tr><td>Database:</td><td><input name=mysql_db value=mytinytodo></td></tr>
-<tr><td>User:</td><td><input name=mysql_user value=user></td></tr>
-<tr><td>Password:</td><td><input type=password name=mysql_password></td></tr>
-<tr><td>Table prefix:</td><td><input name=prefix value=\"mtt_\"></td></tr>
-</table></div><br><input type=submit value=' Next '></form>");
+		exitMessage("
+			<form method=post>Select database type to use:<br><br>
+			<input type=hidden name=install value=config>
+			<label><input type=radio name=db_type value=sqlite checked=checked onclick=\"document.getElementById('mysqlsettings').style.display='none'\">SQLite</label><br><br>
+			<label><input type=radio name=db_type value=mysql onclick=\"document.getElementById('mysqlsettings').style.display=''\">MySQL</label><br>
+			<div id='mysqlsettings' style='display:none; margin-left:30px;'><br><table>
+			<tr><td>Host:</td><td><input name=db_host value=localhost></td></tr>
+			<tr><td>Database:</td><td><input name=db_name value=mytinytodo></td></tr>
+			<tr><td>User:</td><td><input name=db_user value=mtt></td></tr>
+			<tr><td>Password:</td><td><input type=password name=db_password></td></tr>
+			<tr><td>Table prefix:</td><td><input name=db_prefix value='mtt_'></td></tr>
+			</table></div><br><input type=submit value=' Next '></form>
+		");
 	}
-	elseif(isset($_POST['installdb']))
+	elseif ($install == 'config')
 	{
 		# Save configuration
-		$dbtype = ($_POST['installdb'] == 'mysql') ? 'mysql' : 'sqlite';
-		Config::set('db', $dbtype);
-		if($dbtype == 'mysql') {
-			Config::set('mysql.host', _post('mysql_host'));
-			Config::set('mysql.db', _post('mysql_db'));
-			Config::set('mysql.user', _post('mysql_user'));
-			Config::set('mysql.password', _post('mysql_password'));
-			Config::set('prefix', trim(_post('prefix')));
+		$dbtype = ($_POST['db_type'] == 'mysql') ? 'mysql' : 'sqlite';
+		Config::set('db.type', $dbtype);
+		if ($dbtype == 'mysql') {
+			Config::set('db.host', _post('db_host'));
+			Config::set('db.name', _post('db_name'));
+			Config::set('db.user', _post('db_user'));
+			Config::set('db.password', _post('db_password'));
+			Config::set('db.prefix', trim(_post('db_prefix')));
 		}
-		if(!testConnect($error)) {
+		Config::defineDbConstants();
+		$db = testConnect($error);
+		if (!$db) {
 			exitMessage("Database connection error: ". htmlspecialchars($error));
 		}
-		if(!is_writable('./db/config.php')) {
-			exitMessage("Config file ('db/config.php') is not writable.");
+		if (defined('MTT_DB_DRIVER')) {
+			Config::set('db.driver', MTT_DB_DRIVER);
 		}
-		Config::saveDbConfig();
-		exitMessage("This will create myTinyTodo database <form method=post><input type=hidden name=install value=1><input type=submit value=' Install '></form>");
+		tryToSaveDBConfig();
+		exitMessage("This will create myTinyTodo database <br> <form method=post><input type=hidden name=install value=create><input type=submit value=' Install '></form>");
 	}
-
-	# install database
-	if($dbtype == 'mysql')
+	elseif ($install == 'create')
 	{
-		try
-		{
-
-			$db->ex(
-"CREATE TABLE {$db->prefix}lists (
- `id` INT UNSIGNED NOT NULL auto_increment,
- `uuid` CHAR(36) NOT NULL default '',
- `ow` INT NOT NULL default 0,
- `name` VARCHAR(50) NOT NULL default '',
- `d_created` INT UNSIGNED NOT NULL default 0,
- `d_edited` INT UNSIGNED NOT NULL default 0,
- `sorting` TINYINT UNSIGNED NOT NULL default 0,
- `published` TINYINT UNSIGNED NOT NULL default 0,
- `taskview` INT UNSIGNED NOT NULL default 0,
- PRIMARY KEY(`id`),
- UNIQUE KEY(`uuid`)
-) CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci ");
-
-
-			$db->ex(
-"CREATE TABLE {$db->prefix}todolist (
- `id` INT UNSIGNED NOT NULL auto_increment,
- `uuid` CHAR(36) NOT NULL default '',
- `list_id` INT UNSIGNED NOT NULL default 0,
- `d_created` INT UNSIGNED NOT NULL default 0,   /* time() timestamp */
- `d_completed` INT UNSIGNED NOT NULL default 0, /* time() timestamp */
- `d_edited` INT UNSIGNED NOT NULL default 0,    /* time() timestamp */
- `compl` TINYINT UNSIGNED NOT NULL default 0,
- `title` VARCHAR(250) NOT NULL,
- `note` TEXT,
- `prio` TINYINT NOT NULL default 0,			/* priority -,0,+ */
- `ow` INT NOT NULL default 0,				/* order weight */
- `tags` VARCHAR(600) NOT NULL default '',	/* for fast access to task tags */
- `tags_ids` VARCHAR(250) NOT NULL default '', /* no more than 22 tags (x11 chars) */
- `duedate` DATE default NULL,
-  PRIMARY KEY(`id`),
-  KEY(`list_id`),
-  UNIQUE KEY(`uuid`)
-) CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci ");
-
-
-			$db->ex(
-"CREATE TABLE {$db->prefix}tags (
- `id` INT UNSIGNED NOT NULL auto_increment,
- `name` VARCHAR(50) NOT NULL,
- PRIMARY KEY(`id`),
- UNIQUE KEY `name` (`name`)
-) CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci ");
-
-
-			$db->ex(
-"CREATE TABLE {$db->prefix}tag2task (
- `tag_id` INT UNSIGNED NOT NULL,
- `task_id` INT UNSIGNED NOT NULL,
- `list_id` INT UNSIGNED NOT NULL,
- KEY(`tag_id`),
- KEY(`task_id`),
- KEY(`list_id`)		/* for tagcloud */
-) CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci ");
-
-
-			$db->ex(
-"CREATE TABLE {$db->prefix}settings (
- `param_key`   VARCHAR(100) NOT NULL default '',
- `param_value` TEXT,
-UNIQUE KEY `param_key` (`param_key`)
-) CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ");
-
-
-			$db->ex(
-"CREATE TABLE {$db->prefix}sessions (
- `id`          VARCHAR(64) NOT NULL default '',		/* upto 64 bytes for sha256 */
- `data`        TEXT,
- `last_access` INT UNSIGNED NOT NULL default 0,		/* time() timestamp */
- `expires`     INT UNSIGNED NOT NULL default 0,		/* time() timestamp */
-UNIQUE KEY `id` (`id`)
-) CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ");
-
-
+		# install database
+		try {
+			createAllTables($db, $dbtype);
 		} catch (Exception $e) {
 			exitMessage("<b>Error:</b> ". htmlarray($e->getMessage()));
 		}
+
+		# create default list
+		$db->ex( "INSERT INTO {$db->prefix}lists (uuid,name,d_created,taskview) VALUES (?,?,?,?)", array(generateUUID(), 'Todo', time(), 1) );
+
+		Config::save();
 	}
-	else #sqlite
-	{
-		try
-		{
-
-			$db->ex(
-"CREATE TABLE {$db->prefix}lists (
- id INTEGER PRIMARY KEY,
- uuid CHAR(36) NOT NULL,
- ow INTEGER NOT NULL default 0,
- name VARCHAR(50) NOT NULL,
- d_created INTEGER UNSIGNED NOT NULL default 0,
- d_edited INTEGER UNSIGNED NOT NULL default 0,
- sorting TINYINT UNSIGNED NOT NULL default 0,
- published TINYINT UNSIGNED NOT NULL default 0,
- taskview INTEGER UNSIGNED NOT NULL default 0
-) ");
-
-			$db->ex("CREATE UNIQUE INDEX lists_uuid ON {$db->prefix}lists (uuid)");
-
-			$db->ex(
-"CREATE TABLE {$db->prefix}todolist (
- id INTEGER PRIMARY KEY,
- uuid CHAR(36) NOT NULL,
- list_id INTEGER UNSIGNED NOT NULL default 0,
- d_created INTEGER UNSIGNED NOT NULL default 0,
- d_completed INTEGER UNSIGNED NOT NULL default 0,
- d_edited INTEGER UNSIGNED NOT NULL default 0,
- compl TINYINT UNSIGNED NOT NULL default 0,
- title VARCHAR(250) NOT NULL,
- note TEXT,
- prio TINYINT NOT NULL default 0,
- ow INTEGER NOT NULL default 0,
- tags VARCHAR(600) NOT NULL default '',
- tags_ids VARCHAR(250) NOT NULL default '',
- duedate DATE default NULL
-) ");
-			$db->ex("CREATE INDEX todo_list_id ON {$db->prefix}todolist (list_id)");
-			$db->ex("CREATE UNIQUE INDEX todo_uuid ON {$db->prefix}todolist (uuid)");
-
-
-			$db->ex(
-"CREATE TABLE {$db->prefix}tags (
- id INTEGER PRIMARY KEY AUTOINCREMENT,
- name VARCHAR(50) NOT NULL COLLATE NOCASE
-) ");
-			$db->ex("CREATE UNIQUE INDEX tags_name ON {$db->prefix}tags (name COLLATE NOCASE)");
-
-
-			$db->ex(
-"CREATE TABLE {$db->prefix}tag2task (
- tag_id INTEGER NOT NULL,
- task_id INTEGER NOT NULL,
- list_id INTEGER NOT NULL
-) ");
-			$db->ex("CREATE INDEX tag2task_tag_id ON {$db->prefix}tag2task (tag_id)");
-			$db->ex("CREATE INDEX tag2task_task_id ON {$db->prefix}tag2task (task_id)");
-			$db->ex("CREATE INDEX tag2task_list_id ON {$db->prefix}tag2task (list_id)");	/* for tagcloud */
-
-
-			$db->ex(
-"CREATE TABLE {$db->prefix}settings (
- param_key   VARCHAR(100) NOT NULL default '',
- param_value TEXT
-) ");
-
-			$db->ex("CREATE UNIQUE INDEX settings_key ON {$db->prefix}settings (param_key COLLATE NOCASE)");
-
-
-			$db->ex(
-"CREATE TABLE {$db->prefix}sessions (
- id          VARCHAR(64) NOT NULL default '',
- data        TEXT,
- last_access INTEGER UNSIGNED NOT NULL default 0,
- expires     INTEGER UNSIGNED NOT NULL default 0
-) ");
-
-			$db->ex("CREATE UNIQUE INDEX sessions_id ON {$db->prefix}sessions (id COLLATE NOCASE)");
-
-		} catch (Exception $e) {
-			exitMessage("<b>Error:</b> ". htmlarray($e->getMessage()));
-		}
+	else {
+		exitMessage("Unknown action");
 	}
-
-	# create default list
-	$db->ex( "INSERT INTO {$db->prefix}lists (uuid,name,d_created,taskview) VALUES (?,?,?,?)", array(generateUUID(), 'Todo', time(), 1) );
-
-	Config::save();
-	Config::saveDbConfig();
 }
-elseif($ver == $lastVer)
+elseif ($ver == $lastVer)
 {
 	exitMessage("Installed version does not require database update.");
 }
@@ -287,9 +157,12 @@ else
 	if (!in_array($ver, array('1.4'))) {
 		exitMessage(htmlspecialchars("Can not update. Unsupported database version ($ver)."));
 	}
+
 	if (!isset($_POST['update'])) {
 		exitMessage(htmlspecialchars("Update database v$ver to v$lastVer"). "<br><br>
-		<form name=frm method=post><input type=hidden name=update value=1><input type=submit value=' Update '></form>");
+		<form name=frm method=post><input type=hidden name=update value=1>
+		<input type=submit value=' Update '>
+		</form>");
 	}
 
 	# update process
@@ -298,24 +171,193 @@ else
 		update_14_17($db, $dbtype);
 	}
 }
-echo "Done<br><br> <b>Attention!</b> Delete this file for security reasons.";
+
+echo "Done<br><br> <b>Attention!</b> Delete this file for security reasons. <br><br> Go to <a href='index.php'>homepage</a>.";
 printFooter();
 
 
-function get_ver(Database_Abstract $db, $dbtype)
+function createAllTables($db, $dbtype)
 {
-	if ( !$db || $dbtype == '' ) return '';
+	if ($dbtype == 'mysql') {
+		createMysqlTables($db);
+	}
+	else {
+		createSqliteTables($db);
+	}
+}
+
+
+function createMysqlTables($db)
+{
+	$db->ex(
+"CREATE TABLE {$db->prefix}lists (
+	`id` INT UNSIGNED NOT NULL auto_increment,
+	`uuid` CHAR(36) NOT NULL default '',
+	`ow` INT NOT NULL default 0,
+	`name` VARCHAR(50) NOT NULL default '',
+	`d_created` INT UNSIGNED NOT NULL default 0,
+	`d_edited` INT UNSIGNED NOT NULL default 0,
+	`sorting` TINYINT UNSIGNED NOT NULL default 0,
+	`published` TINYINT UNSIGNED NOT NULL default 0,
+	`taskview` INT UNSIGNED NOT NULL default 0,
+	PRIMARY KEY(`id`),
+	UNIQUE KEY(`uuid`)
+) CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci ");
+
+
+	$db->ex(
+"CREATE TABLE {$db->prefix}todolist (
+	`id` INT UNSIGNED NOT NULL auto_increment,
+	`uuid` CHAR(36) NOT NULL default '',
+	`list_id` INT UNSIGNED NOT NULL default 0,
+	`d_created` INT UNSIGNED NOT NULL default 0,   /* time() timestamp */
+	`d_completed` INT UNSIGNED NOT NULL default 0, /* time() timestamp */
+	`d_edited` INT UNSIGNED NOT NULL default 0,    /* time() timestamp */
+	`compl` TINYINT UNSIGNED NOT NULL default 0,
+	`title` VARCHAR(250) NOT NULL,
+	`note` TEXT,
+	`prio` TINYINT NOT NULL default 0,			/* priority -,0,+ */
+	`ow` INT NOT NULL default 0,				/* order weight */
+	`tags` VARCHAR(600) NOT NULL default '',	/* for fast access to task tags */
+	`tags_ids` VARCHAR(250) NOT NULL default '', /* no more than 22 tags (x11 chars) */
+	`duedate` DATE default NULL,
+	PRIMARY KEY(`id`),
+	KEY(`list_id`),
+	UNIQUE KEY(`uuid`)
+) CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci ");
+
+
+	$db->ex(
+"CREATE TABLE {$db->prefix}tags (
+	`id` INT UNSIGNED NOT NULL auto_increment,
+	`name` VARCHAR(50) NOT NULL,
+	PRIMARY KEY(`id`),
+	UNIQUE KEY `name` (`name`)
+) CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci ");
+
+
+	$db->ex(
+"CREATE TABLE {$db->prefix}tag2task (
+	`tag_id` INT UNSIGNED NOT NULL,
+	`task_id` INT UNSIGNED NOT NULL,
+	`list_id` INT UNSIGNED NOT NULL,
+	KEY(`tag_id`),
+	KEY(`task_id`),
+	KEY(`list_id`)		/* for tagcloud */
+) CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci ");
+
+
+	$db->ex(
+"CREATE TABLE {$db->prefix}settings (
+	`param_key`   VARCHAR(100) NOT NULL default '',
+	`param_value` TEXT,
+UNIQUE KEY `param_key` (`param_key`)
+) CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ");
+
+
+	$db->ex(
+"CREATE TABLE {$db->prefix}sessions (
+	`id`          VARCHAR(64) NOT NULL default '',		/* upto 64 bytes for sha256 */
+	`data`        TEXT,
+	`last_access` INT UNSIGNED NOT NULL default 0,		/* time() timestamp */
+	`expires`     INT UNSIGNED NOT NULL default 0,		/* time() timestamp */
+UNIQUE KEY `id` (`id`)
+) CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ");
+}
+
+
+function createSqliteTables($db)
+{
+	$db->ex(
+"CREATE TABLE {$db->prefix}lists (
+	id INTEGER PRIMARY KEY,
+	uuid CHAR(36) NOT NULL,
+	ow INTEGER NOT NULL default 0,
+	name VARCHAR(50) NOT NULL,
+	d_created INTEGER UNSIGNED NOT NULL default 0,
+	d_edited INTEGER UNSIGNED NOT NULL default 0,
+	sorting TINYINT UNSIGNED NOT NULL default 0,
+	published TINYINT UNSIGNED NOT NULL default 0,
+	taskview INTEGER UNSIGNED NOT NULL default 0
+) ");
+
+	$db->ex("CREATE UNIQUE INDEX lists_uuid ON {$db->prefix}lists (uuid)");
+
+	$db->ex(
+"CREATE TABLE {$db->prefix}todolist (
+	id INTEGER PRIMARY KEY,
+	uuid CHAR(36) NOT NULL,
+	list_id INTEGER UNSIGNED NOT NULL default 0,
+	d_created INTEGER UNSIGNED NOT NULL default 0,
+	d_completed INTEGER UNSIGNED NOT NULL default 0,
+	d_edited INTEGER UNSIGNED NOT NULL default 0,
+	compl TINYINT UNSIGNED NOT NULL default 0,
+	title VARCHAR(250) NOT NULL,
+	note TEXT,
+	prio TINYINT NOT NULL default 0,
+	ow INTEGER NOT NULL default 0,
+	tags VARCHAR(600) NOT NULL default '',
+	tags_ids VARCHAR(250) NOT NULL default '',
+	duedate DATE default NULL
+) ");
+	$db->ex("CREATE INDEX todo_list_id ON {$db->prefix}todolist (list_id)");
+	$db->ex("CREATE UNIQUE INDEX todo_uuid ON {$db->prefix}todolist (uuid)");
+
+
+	$db->ex(
+"CREATE TABLE {$db->prefix}tags (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	name VARCHAR(50) NOT NULL COLLATE NOCASE
+) ");
+	$db->ex("CREATE UNIQUE INDEX tags_name ON {$db->prefix}tags (name COLLATE NOCASE)");
+
+
+	$db->ex(
+"CREATE TABLE {$db->prefix}tag2task (
+	tag_id INTEGER NOT NULL,
+	task_id INTEGER NOT NULL,
+	list_id INTEGER NOT NULL
+) ");
+	$db->ex("CREATE INDEX tag2task_tag_id ON {$db->prefix}tag2task (tag_id)");
+	$db->ex("CREATE INDEX tag2task_task_id ON {$db->prefix}tag2task (task_id)");
+	$db->ex("CREATE INDEX tag2task_list_id ON {$db->prefix}tag2task (list_id)");	/* for tagcloud */
+
+
+	$db->ex(
+"CREATE TABLE {$db->prefix}settings (
+	param_key   VARCHAR(100) NOT NULL default '',
+	param_value TEXT
+) ");
+
+	$db->ex("CREATE UNIQUE INDEX settings_key ON {$db->prefix}settings (param_key COLLATE NOCASE)");
+
+
+	$db->ex(
+"CREATE TABLE {$db->prefix}sessions (
+	id          VARCHAR(64) NOT NULL default '',
+	data        TEXT,
+	last_access INTEGER UNSIGNED NOT NULL default 0,
+	expires     INTEGER UNSIGNED NOT NULL default 0
+) ");
+
+	$db->ex("CREATE UNIQUE INDEX sessions_id ON {$db->prefix}sessions (id COLLATE NOCASE)");
+}
+
+
+function databaseVersion(Database_Abstract $db): string
+{
+	if ( !$db ) return '';
 	if ( !$db->tableExists($db->prefix.'todolist') ) return '';
 	$v = '1.0';
 	if ( !$db->tableExists($db->prefix.'tags') ) return $v;
 	$v = '1.1';
-	if ( !db_has_field($dbtype, $db, $db->prefix.'todolist', 'duedate') ) return $v;
+	if ( !$db->tableFieldExists($db->prefix.'todolist', 'duedate') ) return $v;
 	$v = '1.2';
 	if ( !$db->tableExists($db->prefix.'lists') ) return $v;
 	$v = '1.3.0';
-	if ( !db_has_field($dbtype, $db, $db->prefix.'todolist', 'd_completed') ) return $v;
+	if ( !$db->tableFieldExists($db->prefix.'todolist', 'd_completed') ) return $v;
 	$v = '1.3.1';
-	if ( !db_has_field($dbtype, $db, $db->prefix.'todolist', 'd_edited') ) return $v;
+	if ( !$db->tableFieldExists($db->prefix.'todolist', 'd_edited') ) return $v;
 	$v = '1.4';
 	if ( !$db->tableExists($db->prefix.'settings') ) return $v;
 	$v = '1.7';
@@ -334,79 +376,123 @@ function printFooter()
 	echo "</body></html>";
 }
 
-function db_has_field($dbtype, Database_Abstract $db, $table, $field)
+function tryToSaveDbConfig()
 {
-	if ($dbtype == 'mysql') return has_field_mysql($db, $table, $field);
-	elseif ($dbtype == 'sqlite') return has_field_sqlite($db, $table, $field);
-	else throw new Exception("Unexpected database type");
-}
-
-function has_field_sqlite(Database_Abstract $db, $table, $field)
-{
-	$q = $db->dq("PRAGMA table_info(". $db->quote($table). ")");
-	while($r = $q->fetchRow()) {
-		if($r[1] == $field) return true;
+	if (!file_exists(MTTPATH.'config.php')) {
+		@touch(MTTPATH.'config.php');
 	}
-	return false;
-}
-
-function has_field_mysql(Database_Abstract $db, $table, $field)
-{
-	$q = $db->dq("DESCRIBE `$table`");
-	while($r = $q->fetchRow()) {
-		if($r[0] == $field) return true;
+	if (!is_writable(MTTPATH.'config.php')) {
+		exitMessage("Database connection config file ('config.php') is not writable. You need to edit it manually, set contents to this and run setup once more. <br><br> \n".
+			"<textarea id='contents' style='width:90%; min-height:300px;'>\n".
+			htmlspecialchars(Config::dbConfigAsFileContents()).
+			"</textarea>\n".
+			"<script type='text/javascript'>document.getElementById('contents').select();</script>"
+		);
 	}
-	return false;
+	Config::saveDbConfig();
 }
 
 function testConnect(&$error)
 {
+	$db = null;
 	try
 	{
-		if(Config::get('db') == 'mysql')
+		if (!defined('MTT_DB_TYPE')) throw new Exception("MTT_DB_TYPE is not defined");
+
+		if (MTT_DB_TYPE == 'mysql')
 		{
+			$hasPDO = false;
+			$hasMysqli = false;
 			if (defined('PDO::MYSQL_ATTR_FOUND_ROWS')) {
-				require_once(MTTINC. 'class.db.mysql.php');
-				Config::set('mysqli', 0);
+				$hasPDO = true;
 			}
-			else if (function_exists("mysqli_connect")) {
-				require_once(MTTINC. 'class.db.mysqli.php');
-				Config::set('mysqli', 1);
+			if (function_exists("mysqli_connect")) {
+				$hasMysqli = true;
+			}
+
+			$driver = '';
+			if (defined('MTT_DB_DRIVER')) {
+				// forced to use specific mysql interface
+				if ( in_array(MTT_DB_DRIVER, ['mysqli', 'pdo', '']) ) {
+					$driver = MTT_DB_DRIVER;
+					if ($driver == '') $driver = 'pdo'; // default
+				}
+				else {
+					throw new Exception("Unknown database driver");
+				}
+			}
+
+			if ($driver == '') {
+				// auto-detect driver
+				if ($hasPDO) $driver = 'pdo';
+				else if ($hasMysqli) $driver = 'mysqli';
+			}
+
+			if ($driver == 'mysqli') {
+				if ($hasMysqli) {
+					require_once(MTTINC. 'class.db.mysqli.php');
+					if (!defined('MTT_DB_DRIVER')) define('MTT_DB_DRIVER', 'mysqli');
+				}
+				else {
+					throw new Exception("Required PHP extension 'MySQLi' is not installed.");
+				}
 			}
 			else {
-				$text = "Required PHP extension 'PDO mysql' is not installed.";
-				throw new Exception($text);
+				if ($hasPDO) {
+					require_once(MTTINC. 'class.db.mysql.php');
+					if (!defined('MTT_DB_DRIVER')) define('MTT_DB_DRIVER', ''); // set pdo?
+				}
+				else {
+					throw new Exception("Required PHP extension 'PDO_MySQL' is not installed.");
+				}
+			}
+
+			foreach (['MTT_DB_HOST', 'MTT_DB_USER', 'MTT_DB_PASSWORD', 'MTT_DB_NAME', 'MTT_DB_PREFIX'] as $c) {
+				if (!defined($c)) throw new Exception("$c is not defined");
 			}
 
 			$db = new Database_Mysql;
-			$db->connect(array(
-				'host' => Config::get('mysql.host'),
-				'user' => Config::get('mysql.user'),
-				'password' => Config::get('mysql.password'),
-				'db' => Config::get('mysql.db')
+			$db->connect( array(
+				'host' => MTT_DB_HOST,
+				'user' => MTT_DB_USER,
+				'password' => MTT_DB_PASSWORD,
+				'db' => MTT_DB_NAME
 			));
 		}
-		else
+		else if (MTT_DB_TYPE == 'sqlite')
 		{
-			if(false === $f = @fopen(MTTPATH. 'db/todolist.db', 'a+')) throw new Exception("database file is not readable/writable");
-			else fclose($f);
-
-			if(!is_writable(MTTPATH. 'db/')) throw new Exception("database directory ('db') is not writable");
-
+			if (false === $f = @fopen(MTTPATH. 'db/todolist.db', 'a+')) {
+				throw new Exception("database file is not readable/writable");
+			}
+			else {
+				fclose($f);
+			}
+			if (!is_writable(MTTPATH. 'db/')) {
+				throw new Exception("database directory ('db') is not writable");
+			}
 			require_once(MTTINC. 'class.db.sqlite3.php');
 			$db = new Database_Sqlite3;
 			$db->connect( array( 'filename' => MTTPATH. 'db/todolist.db' ) );
 		}
-	} catch(Exception $e) {
-		$error = $e->getMessage();
-		return 0;
+		else {
+			new Exception("Unsupported database type");
+		}
+
+		if (!defined('MTT_DB_PREFIX')) define('MTT_DB_PREFIX', '');
+		$db->setPrefix(MTT_DB_PREFIX);
 	}
-	return 1;
+	catch(Exception $e) {
+		//if (MTT_DEBUG) throw $e;
+		$error = $e->getMessage();
+		return null;
+	}
+	$error = '';
+	return $db;
 }
 
 function debugExceptionHandler($e)
 {
-	echo '<br><b>Error:</b> \''. htmlspecialchars($e->getMessage()) .'\' in <i>'. htmlspecialchars($e->getFile() .':'. $e->getLine()). '</i>'.
+	echo '<br><b>Error ('. htmlspecialchars(get_class($e)) .'):</b> \''. htmlspecialchars($e->getMessage()) .'\' in <i>'. htmlspecialchars($e->getFile() .':'. $e->getLine()). '</i>'.
 		"\n<pre>". htmlspecialchars($e->getTraceAsString()) . "</pre>\n";
 	exit;
 }

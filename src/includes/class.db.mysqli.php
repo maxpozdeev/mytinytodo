@@ -2,14 +2,15 @@
 
 /*
 	This file is a part of myTinyTodo.
-	(C) Copyright 2019-2021 Max Pozdeev <maxpozdeev@gmail.com>
+	(C) Copyright 2019-2022 Max Pozdeev <maxpozdeev@gmail.com>
 	Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
 // ---------------------------------------------------------------------------- //
 class DatabaseResult_Mysql extends DatabaseResult_Abstract
 {
-	private $q; //mysqli_result
+	/** @var mysqli_result */
+	private $q;
 
 	function __construct(mysqli $dbh, $query, $resultless = 0)
 	{
@@ -30,7 +31,9 @@ class DatabaseResult_Mysql extends DatabaseResult_Abstract
 // ---------------------------------------------------------------------------- //
 class Database_Mysql extends Database_Abstract
 {
-	private $dbh; //mysqli
+	/** @var mysqli */
+	private $dbh;
+
 	private $dbname;
 	var $prefix = '';
 
@@ -138,6 +141,16 @@ class Database_Mysql extends Database_Abstract
 						array($this->dbname, $table) );
 		if ($r === false || $r === null) return false;
 		return true;
+	}
+
+	function tableFieldExists($table, $field): bool
+	{
+		$table = str_replace('`', '\\`', addslashes($table));
+		$q = $this->dq("DESCRIBE `$table`");
+		while ($r = $q->fetchRow()) {
+			if ($r[0] == $field) return true;
+		}
+		return false;
 	}
 }
 
