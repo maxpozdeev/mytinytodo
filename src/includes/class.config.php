@@ -122,7 +122,7 @@ class Config
 		if (self::$noDatabase) {
 			return;
 		}
-		$j = self::requestDomain('config.json');
+		$j = self::requestDefaultDomain();
 		foreach ($j as $key=>$val) {
 			// Ignore params for database config
 			if ( !isset(self::$dbparams[$key]) ) {
@@ -202,7 +202,7 @@ class Config
 	 * @return array
 	 * @throws Exception
 	 */
-	public static function requestDomain($key)
+	public static function requestDomain(string $key)
 	{
 		$db = DBConnection::instance();
 		$json = $db->sq("SELECT param_value FROM {$db->prefix}settings WHERE param_key = ?", array($key));
@@ -210,6 +210,18 @@ class Config
 		$j = json_decode($json, true);
 		return $j;
 	}
+
+
+	/**
+	 *
+	 * @return array
+	 * @throws Exception
+	 */
+	public static function requestDefaultDomain()
+	{
+		return self::requestDomain('config.json');
+	}
+
 
 	/**
 	 *

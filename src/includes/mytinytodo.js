@@ -577,7 +577,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 
 		// Settings
 		$("#settings_btn").click(function(event){
-			showSettings();
+			showSettings( (event.metaKey || event.ctrlKey) ? 1 : 0 );
 			return false;
 		});
 
@@ -653,7 +653,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		updateAccessStatus();
 
 		if (path.settings) {
-			showSettings();
+			showSettings(path.settings == 'json' ? 1 : 0);
 		}
 		else if (path.search && path.list) {
 			filter.search = path.search;
@@ -893,6 +893,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 				case "list": if(a[++i].match(/^-?\d+$/)) { p[s] = a[i]; } break;
 				case "alltasks": p.list = '-1'; break;
 				case "settings": p.settings = true; break;
+				case "settings.json": p.settings = 'json'; break;
 				case "search":   p.search = decodeURIComponent(a[++i]); break;
 			}
 		}
@@ -925,8 +926,9 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		return _mtt.mttUrl + 'feed.php?list='+l.id;
 	},
 
-	urlForSettings: function()
+	urlForSettings: function(json = 0)
 	{
+		if (json == 1) return '#settings.json';
 		return '#settings';
 	}
 
@@ -2505,15 +2507,16 @@ function logout()
 	Settings
 */
 
-function showSettings()
+function showSettings(json = 0)
 {
 	if (_mtt.pages.current && _mtt.pages.current.page == 'ajax' && _mtt.pages.current.pageClass == 'settings') {
 		return false;
 	}
-	$('#page_ajax').load(_mtt.mttUrl+'settings.php?ajax=yes', null, function(){
+	var jsonParam = (json == 1) ? '&json=1' : '';
+	$('#page_ajax').load(_mtt.mttUrl + 'settings.php?ajax=yes' + jsonParam, null, function(){
 		_mtt.pageSet('ajax','settings');
 		var newTitle = _mtt.lang.get('set_header') + ' - ' + _mtt.options.title;
-		updateHistoryState( { settings:1 }, _mtt.urlForSettings(), newTitle );
+		updateHistoryState( { settings:1, settingsJson:json }, _mtt.urlForSettings(json), newTitle );
 		_mtt.doAction('settingsLoaded');
 	})
 }
@@ -2617,7 +2620,7 @@ function historyOnPopState(event)
 	}
 	else if (event.state.settings) {
 		flag.dontChangeHistoryOnce = true;
-		showSettings();
+		showSettings(event.state.settingsJson);
 	}
 	else {
 		console.log("unexpected: nothing to pop");

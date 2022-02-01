@@ -13,10 +13,11 @@ $lang = Lang::instance();
 if ( !is_logged() ) {
 	die("Access denied!<br/> Disable password protection or Log in.");
 }
-check_token();
 
 if(isset($_POST['save']))
 {
+	check_token();
+
 	$t = array();
 	$langs = getLangs();
 	Config::$params['lang']['options'] = array_keys($langs);
@@ -133,6 +134,24 @@ header('Content-type:text/html; charset=utf-8');
 ?>
 
 <h3 class="page-title"><a class="mtt-back-button"></a><?php _e('set_header');?></h3>
+
+
+<?php
+	if (isset($_GET['json'])) {
+		$j = Config::requestDefaultDomain();
+		if ($j['password'] != '') $j['password'] = "<not empty>";
+		$j = json_encode($j, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
+?>
+<div class="mtt-settings-table">
+  <div class="tr">
+    <div class="th"> config.json </div>
+    <div class="td"><textarea class="in350"><?php echo htmlspecialchars($j);?> </textarea></div>
+  </div>
+</div>
+<?php
+		exit;
+	}
+?>
 
 <div id="settings_msg" style="display:none"></div>
 
