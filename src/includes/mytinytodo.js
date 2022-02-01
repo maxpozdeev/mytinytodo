@@ -576,7 +576,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 
 
 		// Settings
-		$("#settings").click(function(event){
+		$("#settings_btn").click(function(event){
 			showSettings();
 			return false;
 		});

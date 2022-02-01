@@ -46,7 +46,7 @@ $().ready(function(){
   <div id="msg"><span class="msg-text"></span><div class="msg-details"></div></div>
   <div class="bar-menu">
     <span class="need-owner">
-      <a href="#settings" id="settings"><?php _e('a_settings');?></a>
+      <a href="#settings" id="settings_btn"><?php _e('a_settings');?></a>
     </span>
     <span id="bar_auth">
       <span id="bar_public" style="display:none"><?php _e('public_tasks');?> |</span>
