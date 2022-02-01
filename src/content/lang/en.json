@@ -144,6 +144,8 @@
     "set_timezone": "Time zone",
     "set_autotag": "Autotagging",
     "set_autotag_descr": "(automatically adds tag of current tag filter to newly created task)",
+    "set_markdown": "Markdown",
+    "set_markdown_descr": "(adds support of Markdown in notes, disable if you want to use old markup)",
     "set_firstdayofweek": "First day of week",
     "set_custom": "Custom",
     "set_date": "Date format",

@@ -41,6 +41,7 @@ if(isset($_POST['save']))
 	catch (Exception $e) {
 	}
 	Config::set('autotag', (int)_post('autotag'));
+	Config::set('markup', (int)_post('markdown') == 0 ? 'v1' : 'markdown');
 	Config::set('firstdayofweek', (int)_post('firstdayofweek'));
 	Config::set('clock', (int)_post('clock'));
 	Config::set('dateformat', removeNewLines(_post('dateformat')) );
@@ -173,6 +174,13 @@ header('Content-type:text/html; charset=utf-8');
 <div class="td">
  <label><input type="radio" name="autotag" value="1" <?php if(_c('autotag')) echo 'checked="checked"'; ?> /><?php _e('set_enabled');?></label> <br/>
  <label><input type="radio" name="autotag" value="0" <?php if(!_c('autotag')) echo 'checked="checked"'; ?> /><?php _e('set_disabled');?></label>
+</div></div>
+
+<div class="tr">
+<div class="th"><?php _e('set_markdown');?>:<br/><span class="descr"><?php _e('set_markdown_descr');?></span></div>
+<div class="td">
+ <label><input type="radio" name="markdown" value="1" <?php if (_c('markup') != 'v1') echo 'checked="checked"'; ?> /><?php _e('set_enabled');?></label> <br/>
+ <label><input type="radio" name="markdown" value="0" <?php if (_c('markup') == 'v1') echo 'checked="checked"'; ?> /><?php _e('set_disabled');?></label>
 </div></div>
 
 <div class="tr">

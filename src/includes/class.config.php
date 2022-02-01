@@ -70,7 +70,7 @@ class Config
 		'duedateformat' => array('default'=>1, 'type'=>'i'),
 
 		# First day of week: 0-Sunday, 1-Monday, 2-Tuesday, .. 6-Saturday
-		'firstdayofweek' => array('default'=>1, 'type'=>'i'),
+		'firstdayofweek' => array('default'=>1, 'type'=>'i', 'options'=>array(0,1,2,3,4,5,6)),
 
 		# Date/time formats
 		'clock' => array('default'=>24, 'type'=>'i', 'options'=>array(12,24)),
