@@ -2,7 +2,7 @@
 
 /*
 	This file is a part of myTinyTodo.
-	(C) Copyright 2021 Max Pozdeev <maxpozdeev@gmail.com>
+	(C) Copyright 2021-2022 Max Pozdeev <maxpozdeev@gmail.com>
 	Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
@@ -271,6 +271,7 @@ class Config
 		$a[] = self::prepareDbDefine("MTT_DB_NAME", self::get('db.name')) . "\n";
 		$a[] = self::prepareDbDefine("MTT_DB_PREFIX", self::get('db.prefix')) . "\n";
 		$a[] = self::prepareDbDefine("MTT_DB_DRIVER", self::get('db.driver')) . "\n";
+		$a[] = self::prepareDbDefine("MTT_SALT", defined('MTT_SALT') ? MTT_SALT : generateUUID()) . "\n";
 		return implode("\n", $a);
 	}
 

@@ -116,8 +116,9 @@ function need_auth(): bool
 function is_logged(): bool
 {
 	if ( !need_auth() ) return true;
-	if ( isset($_SESSION['logged']) && $_SESSION['logged'] ) return true;
-	return false;
+	if ( !isset($_SESSION['logged']) || !isset($_SESSION['sign']) ) return false;
+	if ( !(int)$_SESSION['logged'] ) return false;
+	return isSignatureOk($_SESSION['sign'], session_id(), Config::get('password'), defined('MTT_SALT') ? MTT_SALT : '');
 }
 
 function is_readonly(): bool

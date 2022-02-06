@@ -161,4 +161,16 @@ function isPasswordEqualsToHash(string $p, string $hash): bool
 	return false;
 }
 
+function idSignature(string $id, string $key, string $salt): string
+{
+	$secret = $key.$salt;
+	return hash_hmac('sha256', $id, $secret);
+}
+
+function isSignatureOk(string $signature, string $id, string $key, string $salt): bool
+{
+	if ( hash_equals($signature, idSignature($id, $key, $salt)) ) return true;
+	return false;
+}
+
 ?>
