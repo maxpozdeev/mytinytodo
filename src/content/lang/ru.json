@@ -163,6 +163,8 @@
     "actionNoteCancel": "отмена",
     "error": "Ошибка",
     "denied": "Доступ запрещен",
+    "listNotFound": "Не найден",
+    "noPublicLists": "Нет опубликованных списков",
     "invalidpass": "Неверный пароль",
     "addList": "Новый список",
     "addListDefault": "Todo",
