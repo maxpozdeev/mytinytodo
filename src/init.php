@@ -146,6 +146,9 @@ function check_token()
 
 function setup_and_start_session()
 {
+	require_once(MTTINC. 'class.sessionhandler.php');
+	session_set_save_handler(new MTTSessionHandler());
+
 	ini_set('session.use_cookies', true);
 	ini_set('session.use_only_cookies', true);
 
