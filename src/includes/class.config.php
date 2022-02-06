@@ -105,6 +105,9 @@ class Config
 				$key = 'db.driver';
 				$val = 'mysqli';
 			}
+			elseif ($key == 'password' && $val != '') {
+				$val = passwordHash($val); // in v1.7 password is hashed
+			}
 			// if (!isset(self::$dbparams[$key])) {
 			// 	throw new Exception("Unknown key: $key");
 			// }

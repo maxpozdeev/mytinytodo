@@ -30,8 +30,9 @@ if(isset($_POST['save']))
 		jsonExit($t);
 	}
 
-	if(isset($_POST['password']) && $_POST['password'] != '') Config::set('password', $_POST['password']);
-	elseif(!_post('allowpassword')) Config::set('password', '');
+	if (isset($_POST['password']) && $_POST['password'] != '') Config::set('password', passwordHash($_POST['password'])) ;
+	elseif (!_post('allowpassword')) Config::set('password', '');
+
 	Config::set('smartsyntax', (int)_post('smartsyntax'));
 	// Do not set invalid timezone
 	try {

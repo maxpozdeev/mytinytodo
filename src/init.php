@@ -108,25 +108,25 @@ function requireConfig()
 	}
 }
 
-function need_auth()
+function need_auth(): bool
 {
-	return (Config::get('password') != '') ? 1 : 0;
+	return (Config::get('password') != '') ? true : false;
 }
 
-function is_logged()
+function is_logged(): bool
 {
 	if ( !need_auth() ) return true;
 	if ( isset($_SESSION['logged']) && $_SESSION['logged'] ) return true;
 	return false;
 }
 
-function is_readonly()
+function is_readonly(): bool
 {
 	if ( !is_logged() ) return true;
 	return false;
 }
 
-function access_token()
+function access_token(): string
 {
 	if (!need_auth()) return '';
 	if (!isset($_SESSION)) return '';

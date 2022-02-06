@@ -306,8 +306,7 @@ elseif(isset($_POST['login']))
 		$t['disabled'] = 1;
 		jsonExit($t);
 	}
-	$password = _post('password');
-	if($password == Config::get('password')) {
+	if ( isPasswordEqualsToHash(_post('password'), Config::get('password')) ) {
 		$t['logged'] = 1;
 		session_regenerate_id(1);
 		$_SESSION['logged'] = 1;
