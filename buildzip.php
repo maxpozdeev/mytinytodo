@@ -45,7 +45,6 @@ $rev = substr($rev, 0, 8);
 print "> Version is $ver\n";
 
 rename('db/todolist.db.empty', 'db/todolist.db');
-rename('db/config.php.default', 'db/config.php');
 
 /*
 $fh = fopen("./content/themes/default/index.php", 'a') or die("cant write index.php\n");
@@ -57,8 +56,7 @@ fclose($fh);
 replaceVer('./setup.php', $ver);
 replaceVer('./init.php', $ver);
 
-unlink('./tmp/sessions/empty');
-
+unlink('./docker-config.php');
 unlink('./content/lang/en-rtl.json');
 /*
 # save only 2 languages
