@@ -80,6 +80,21 @@ function formatDate3($format, $ay, $am, $ad, $lang)
 	return strtr($format, array('Y'=>$Y, 'y'=>$y, 'F'=>$F, 'M'=>$M, 'n'=>$n, 'm'=>$m, 'd'=>$d, 'j'=>$j));
 }
 
+function getRequestUri()
+{
+	// Do not use HTTP_X_REWRITE_URL due to CVE-2018-14773
+	// SCRIPT_NAME or PATH_INFO ?
+	if (isset($_SERVER['REQUEST_URI'])) {
+		return $_SERVER['REQUEST_URI'];
+	}
+	else if (isset($_SERVER['ORIG_PATH_INFO']))  // IIS 5.0 CGI
+	{
+		$uri = $_SERVER['ORIG_PATH_INFO']; //has no query
+		if (!empty($_SERVER['QUERY_STRING'])) $uri .= '?'. $_SERVER['QUERY_STRING'];
+		return $uri;
+	}
+}
+
 function url_dir($url, $onlyPath = 1)
 {
 	if (false !== $p = strpos($url, '?')) {

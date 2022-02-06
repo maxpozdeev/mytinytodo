@@ -172,7 +172,7 @@ else
 	}
 }
 
-echo "Done<br><br> <b>Attention!</b> Delete this file for security reasons. <br><br> Go to <a href='index.php'>homepage</a>.";
+echo "Done<br><br> <b>Attention!</b> Delete this file for security reasons. <br><br> Go to <a href='". htmlspecialchars(url_dir(getRequestUri())). "'>homepage</a>.";
 printFooter();
 
 
