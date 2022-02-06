@@ -11,17 +11,19 @@ tab_width = 4
 trim_trailing_whitespace = true
 insert_final_newline = true
 
+[*.php]
+indent_style = space
+indent_size = 4
+insert_final_newline = false
+
 # temporary. spaces will be used later.
-[*.{php,js}]
+[*.js]
 indent_style = tab
 tab_width = 4
 
 [*.{css,yml,html}]
 indent_style = space
 indent_size = 2
-
-[*.php]
-insert_final_newline = false
 
 [*.md]
 trim_trailing_whitespace = false

@@ -1,9 +1,9 @@
 <?php
 
 /*
-	This file is a part of myTinyTodo.
-	(C) Copyright 2009-2011,2020-2022 Max Pozdeev <maxpozdeev@gmail.com>
-	Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
+    This file is a part of myTinyTodo.
+    (C) Copyright 2009-2011,2020-2022 Max Pozdeev <maxpozdeev@gmail.com>
+    Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
 require_once('./init.php');
@@ -11,81 +11,81 @@ require_once('./init.php');
 $lang = Lang::instance();
 
 if ( !is_logged() ) {
-	die("Access denied!<br/> Disable password protection or Log in.");
+    die("Access denied!<br/> Disable password protection or Log in.");
 }
 
 if(isset($_POST['save']))
 {
-	check_token();
+    check_token();
 
-	$t = array();
-	$langs = getLangs();
-	Config::$params['lang']['options'] = array_keys($langs);
-	Config::set('lang', _post('lang'));
+    $t = array();
+    $langs = getLangs();
+    Config::$params['lang']['options'] = array_keys($langs);
+    Config::set('lang', _post('lang'));
 
-	// in Demo mode we can set only language by cookies
-	if(defined('MTTDEMO')) {
-		setcookie('lang', Config::get('lang'), 0, url_dir(Config::get('url')=='' ? getRequestUri() : Config::getUrl('url')));
-		$t['saved'] = 1;
-		jsonExit($t);
-	}
+    // in Demo mode we can set only language by cookies
+    if(defined('MTTDEMO')) {
+        setcookie('lang', Config::get('lang'), 0, url_dir(Config::get('url')=='' ? getRequestUri() : Config::getUrl('url')));
+        $t['saved'] = 1;
+        jsonExit($t);
+    }
 
-	if (isset($_POST['password']) && $_POST['password'] != '') Config::set('password', passwordHash($_POST['password'])) ;
-	elseif (!_post('allowpassword')) Config::set('password', '');
+    if (isset($_POST['password']) && $_POST['password'] != '') Config::set('password', passwordHash($_POST['password'])) ;
+    elseif (!_post('allowpassword')) Config::set('password', '');
 
-	Config::set('smartsyntax', (int)_post('smartsyntax'));
-	// Do not set invalid timezone
-	try {
-	    $tz = trim(_post('timezone'));
-	    $testTZ = new DateTimeZone($tz); //will throw Exception on invalid timezone
-	    Config::set('timezone', $tz);
-	}
-	catch (Exception $e) {
-	}
-	Config::set('autotag', (int)_post('autotag'));
-	Config::set('markup', (int)_post('markdown') == 0 ? 'v1' : 'markdown');
-	Config::set('firstdayofweek', (int)_post('firstdayofweek'));
-	Config::set('clock', (int)_post('clock'));
-	Config::set('dateformat', removeNewLines(_post('dateformat')) );
-	Config::set('dateformat2', removeNewLines(_post('dateformat2')) );
-	Config::set('dateformatshort', removeNewLines(_post('dateformatshort')) );
-	Config::set('title', removeNewLines(trim(_post('title'))) );
-	Config::set('showdate', (int)_post('showdate'));
-	Config::save();
-	$t['saved'] = 1;
-	jsonExit($t);
+    Config::set('smartsyntax', (int)_post('smartsyntax'));
+    // Do not set invalid timezone
+    try {
+        $tz = trim(_post('timezone'));
+        $testTZ = new DateTimeZone($tz); //will throw Exception on invalid timezone
+        Config::set('timezone', $tz);
+    }
+    catch (Exception $e) {
+    }
+    Config::set('autotag', (int)_post('autotag'));
+    Config::set('markup', (int)_post('markdown') == 0 ? 'v1' : 'markdown');
+    Config::set('firstdayofweek', (int)_post('firstdayofweek'));
+    Config::set('clock', (int)_post('clock'));
+    Config::set('dateformat', removeNewLines(_post('dateformat')) );
+    Config::set('dateformat2', removeNewLines(_post('dateformat2')) );
+    Config::set('dateformatshort', removeNewLines(_post('dateformatshort')) );
+    Config::set('title', removeNewLines(trim(_post('title'))) );
+    Config::set('showdate', (int)_post('showdate'));
+    Config::save();
+    $t['saved'] = 1;
+    jsonExit($t);
 }
 
 function _c($key)
 {
-	return Config::get($key);
+    return Config::get($key);
 }
 
 function getLangs($withContents = 0)
 {
-	$langDir = Lang::instance()->langDir();
+    $langDir = Lang::instance()->langDir();
     if ( ! $h = opendir($langDir) ) {
-			return false;
-	}
+            return false;
+    }
     $a = array();
     while ( false !== ($file = readdir($h)) )
-	{
-		if ( preg_match('/(.+)\.json$/', $file, $m) ) {
-			$jsonText = file_get_contents($langDir. $file);
-			if (false === $jsonText) {
-				die("false ");
-				continue;
-			}
-			$a[$m[1]] = $m[1];
+    {
+        if ( preg_match('/(.+)\.json$/', $file, $m) ) {
+            $jsonText = file_get_contents($langDir. $file);
+            if (false === $jsonText) {
+                die("false ");
+                continue;
+            }
+            $a[$m[1]] = $m[1];
 
-			$j = json_decode($jsonText, true);
-			if ( isset($j['_header']['language']) && isset($j['_header']['original_name']) ) {
-				$a[$m[1]]= [
-					'name' => $j['_header']['original_name'],
-					'title' => $j['_header']['language']
-				];
-			}
-		}
+            $j = json_decode($jsonText, true);
+            if ( isset($j['_header']['language']) && isset($j['_header']['original_name']) ) {
+                $a[$m[1]]= [
+                    'name' => $j['_header']['original_name'],
+                    'title' => $j['_header']['language']
+                ];
+            }
+        }
     }
     closedir($h);
     return $a;
@@ -94,13 +94,13 @@ function getLangs($withContents = 0)
 
 function selectOptions($a, $value, $default=null)
 {
-	if(!$a) return '';
-	$s = '';
-	if($default !== null && !isset($a[$value])) $value = $default;
-	foreach($a as $k=>$v) {
-		$s .= '<option value="'.htmlspecialchars($k).'" '.($k===$value?'selected="selected"':'').'>'.htmlspecialchars($v).'</option>';
-	}
-	return $s;
+    if(!$a) return '';
+    $s = '';
+    if($default !== null && !isset($a[$value])) $value = $default;
+    foreach($a as $k=>$v) {
+        $s .= '<option value="'.htmlspecialchars($k).'" '.($k===$value?'selected="selected"':'').'>'.htmlspecialchars($v).'</option>';
+    }
+    return $s;
 }
 
 /**
@@ -110,15 +110,15 @@ function selectOptions($a, $value, $default=null)
  */
 function selectOptionsA($a, $key, $default=null)
 {
-	if(!$a) return '';
-	$s = '';
-	if($default !== null && !isset($a[$key])) $key = $default;
-	foreach($a as $k=>$v) {
-		$s .= '<option value="'.htmlspecialchars($k).'" '.($k===$key?'selected="selected"':'').
-		    (isset($v['title']) ? ' title="'.htmlspecialchars($v['title']).'"' : '').
-		    '>'.htmlspecialchars($v['name']).'</option>';
-	}
-	return $s;
+    if(!$a) return '';
+    $s = '';
+    if($default !== null && !isset($a[$key])) $key = $default;
+    foreach($a as $k=>$v) {
+        $s .= '<option value="'.htmlspecialchars($k).'" '.($k===$key?'selected="selected"':'').
+            (isset($v['title']) ? ' title="'.htmlspecialchars($v['title']).'"' : '').
+            '>'.htmlspecialchars($v['name']).'</option>';
+    }
+    return $s;
 }
 
 function timezoneIdentifiers()
@@ -138,10 +138,10 @@ header('Content-type:text/html; charset=utf-8');
 
 
 <?php
-	if (isset($_GET['json'])) {
-		$j = Config::requestDefaultDomain();
-		if ($j['password'] != '') $j['password'] = "<not empty>";
-		$j = json_encode($j, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
+    if (isset($_GET['json'])) {
+        $j = Config::requestDefaultDomain();
+        if ($j['password'] != '') $j['password'] = "<not empty>";
+        $j = json_encode($j, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
 ?>
 <div class="mtt-settings-table">
   <div class="tr">
@@ -150,8 +150,8 @@ header('Content-type:text/html; charset=utf-8');
   </div>
 </div>
 <?php
-		exit;
-	}
+        exit;
+    }
 ?>
 
 <div id="settings_msg" style="display:none"></div>
@@ -221,7 +221,7 @@ header('Content-type:text/html; charset=utf-8');
  <input name="dateformat" size="8" value="<?php echo htmlspecialchars(_c('dateformat'));?>" />
  <select onchange="if(this.value!=0) this.form.dateformat.value=this.value;">
  <?php echo selectOptions(array('F j, Y'=>formatTime('F j, Y'), 'M d, Y'=>formatTime('M d, Y'), 'j M Y'=>formatTime('j M Y'), 'd F Y'=>formatTime('d F Y'),
-	'n/j/Y'=>formatTime('n/j/Y'), 'd.m.Y'=>formatTime('d.m.Y'), 'j. F Y'=>formatTime('j. F Y'), 0=>__('set_custom')), _c('dateformat'), 0); ?>
+    'n/j/Y'=>formatTime('n/j/Y'), 'd.m.Y'=>formatTime('d.m.Y'), 'j. F Y'=>formatTime('j. F Y'), 0=>__('set_custom')), _c('dateformat'), 0); ?>
  </select>
 </div></div>
 
