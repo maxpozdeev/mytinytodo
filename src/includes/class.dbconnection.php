@@ -33,8 +33,14 @@ class DBConnection
 
 abstract class Database_Abstract
 {
-    var $lastQuery = null;
-    var $prefix = ''; //TODO: make private
+    protected static $readonlyProps = ['prefix', 'lastQuery'];
+
+    /** @var string */
+    protected $prefix = '';
+
+    /** @var string */
+    protected $lastQuery = '';
+
     abstract function connect($params);
     abstract function sq($query, $p = NULL);
     abstract function sqa($query, $p = NULL);
@@ -47,8 +53,11 @@ abstract class Database_Abstract
     abstract function tableExists($table);
     abstract function tableFieldExists($table, $field): bool;
 
-    function prefix(): string {
-        return $this->prefix;
+    function __get(string $propName) {
+        if ( in_array($propName, self::$readonlyProps) ) {
+            return $this->{$propName};
+        }
+        throw new Error("Attempt to read undefined property ". get_class($this). "::\$$propName");
     }
 
     function setPrefix(string $prefix) {

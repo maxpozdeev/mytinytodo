@@ -10,9 +10,8 @@
 class DatabaseResult_Mysql extends DatabaseResult_Abstract
 {
     /** @var PDOStatement */
-    private $q;
-
-    private $affected;
+    protected $q;
+    protected $affected;
 
     function __construct($dbh, $query, $resultless = 0)
     {
@@ -49,12 +48,9 @@ class DatabaseResult_Mysql extends DatabaseResult_Abstract
 class Database_Mysql extends Database_Abstract
 {
     /** @var PDO */
-    private $dbh;
-
-    private $affected = null;
-    var $lastQuery;
-    private $dbname;
-    var $prefix = '';
+    protected $dbh;
+    protected $affected = null;
+    protected $dbname;
 
     function __construct()
     {

@@ -10,7 +10,7 @@
 class DatabaseResult_Mysql extends DatabaseResult_Abstract
 {
     /** @var mysqli_result */
-    private $q;
+    protected $q;
 
     function __construct(mysqli $dbh, $query, $resultless = 0)
     {
@@ -32,10 +32,8 @@ class DatabaseResult_Mysql extends DatabaseResult_Abstract
 class Database_Mysql extends Database_Abstract
 {
     /** @var mysqli */
-    private $dbh;
-
-    private $dbname;
-    var $prefix = '';
+    protected $dbh;
+    protected $dbname;
 
     function __construct()
     {

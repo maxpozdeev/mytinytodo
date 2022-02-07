@@ -9,9 +9,8 @@
 class DatabaseResult_Sqlite3 extends DatabaseResult_Abstract
 {
     /** @var PDOStatement */
-    private $q;
-
-    private $affected;
+    protected $q;
+    protected $affected;
 
     function __construct($dbh, $query, $resultless = 0)
     {
@@ -48,11 +47,8 @@ class DatabaseResult_Sqlite3 extends DatabaseResult_Abstract
 class Database_Sqlite3 extends Database_Abstract
 {
     /** @var PDO */
-    private $dbh;
-
-    private $affected = null;
-    var $lastQuery;
-    var $prefix = '';
+    protected $dbh;
+    protected $affected = null;
 
     function __construct()
     {
