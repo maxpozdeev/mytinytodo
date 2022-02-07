@@ -35,7 +35,7 @@ mytinytodoStorageAjax.prototype =
 
 	loadLists: function(params, callback)
 	{
-		$.getJSON(this.mtt.mttUrl+'ajax.php?loadLists'+'&rnd='+Math.random(), callback);
+		$.getJSON(this.mtt.mttUrl+'ajax.php?loadLists', callback);
 	},
 
 
@@ -45,7 +45,6 @@ mytinytodoStorageAjax.prototype =
 		if(params.search && params.search != '') q += '&s='+encodeURIComponent(params.search);
 		if(params.tag && params.tag != '') q += '&t='+encodeURIComponent(params.tag);
 		if(params.setCompl && params.setCompl != 0) q += '&setCompl=1';
-		q += '&rnd='+Math.random();
 
 		$.getJSON(this.mtt.mttUrl+'ajax.php?loadTasks&list='+params.list+'&compl='+params.compl+'&sort='+params.sort+q, callback);
 	},
@@ -94,7 +93,7 @@ mytinytodoStorageAjax.prototype =
 
 	setPrio: function(params, callback)
 	{
-		$.getJSON(this.mtt.mttUrl+'ajax.php?setPrio='+params.id+'&prio='+params.prio+'&rnd='+Math.random(), callback);
+		$.getJSON(this.mtt.mttUrl+'ajax.php?setPrio='+params.id+'&prio='+params.prio, callback);
 	},
 
 
@@ -114,12 +113,12 @@ mytinytodoStorageAjax.prototype =
 
 	suggestTags: function(params, callback)
 	{
-		$.getJSON(this.mtt.mttUrl+'ajax.php?suggestTags', {list:params.list, q:params.q, rnd:Math.random()}, callback);
+		$.getJSON(this.mtt.mttUrl+'ajax.php?suggestTags', {list:params.list, q:params.q}, callback);
 	},
 
 	tagCloud: function(params, callback)
 	{
-		$.getJSON(this.mtt.mttUrl+'ajax.php?tagCloud&list='+params.list+'&rnd='+Math.random(), callback);
+		$.getJSON(this.mtt.mttUrl+'ajax.php?tagCloud&list='+params.list, callback);
 	},
 
 	moveTask: function(params, callback)

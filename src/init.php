@@ -255,8 +255,12 @@ function get_unsafe_mttinfo($v)
             $_mttinfo['title'] = (Config::get('title') != '') ? Config::get('title') : __('My Tiny Todolist');
             return $_mttinfo['title'];
         case 'version':
-            if (MTT_DEBUG) return time(); //force no-cache for dev needs
-            return mytinytodo\Version::VERSION;
+            if (MTT_DEBUG) {
+                $_mttinfo['version'] = mytinytodo\Version::VERSION . '-' . time();
+            } else {
+                $_mttinfo['version'] = mytinytodo\Version::VERSION;
+            }
+            return $_mttinfo['version'];
     }
 }
 
@@ -269,7 +273,10 @@ function reset_mttinfo($key)
 function jsonExit($data)
 {
     header('Content-type: application/json; charset=utf-8');
-    echo json_encode($data);
+    header('Cache-Control: no-store');
+    header('Pragma: no-cache'); // for old HTTP/1.0 intermediate caches
+    header_remove('Expires');
+    echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     exit;
 }
 
