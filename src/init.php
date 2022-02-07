@@ -5,8 +5,6 @@
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
-define('MTT_VERSION', '@VERSION');
-
 ##### MyTinyTodo requires php 7.0 and above! #####
 if (version_compare(PHP_VERSION, '7.0.0') < 0) {
     die("PHP 7.0+ is required");
@@ -35,6 +33,7 @@ require_once(MTTINC. 'common.php');
 require_once(MTTINC. 'class.dbconnection.php');
 require_once(MTTINC. 'class.dbcore.php');
 require_once(MTTINC. 'class.config.php');
+require_once(MTTINC. 'version.php');
 
 
 # MySQL Database Connection
@@ -256,11 +255,8 @@ function get_unsafe_mttinfo($v)
             $_mttinfo['title'] = (Config::get('title') != '') ? Config::get('title') : __('My Tiny Todolist');
             return $_mttinfo['title'];
         case 'version':
-            if (MTT_VERSION != '@'.'VERSION') {
-                $_mttinfo['version'] = MTT_VERSION;
-                return $_mttinfo['version'];
-            }
-            return time(); //force no-cache for dev needs
+            if (MTT_DEBUG) return time(); //force no-cache for dev needs
+            return mytinytodo\Version::VERSION;
     }
 }
 

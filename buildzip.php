@@ -31,12 +31,9 @@ if (!is_dir($dir)) {
 print "> Repository was cloned to temp dir: $dir\n";
 
 #get current version number if not specified
-if (!$ver)
-{
-    chdir($dir);
-    $fh = fopen('version.txt', 'r') or die("Cant open version.txt\n");
-    $ver = trim(fgets($fh, 100));
-    fclose($fh);
+if (!$ver) {
+    require_once(__DIR__ . '/src/includes/version.php');
+    $ver = mytinytodo\Version::VERSION;
 }
 chdir($dir. DIRECTORY_SEPARATOR. 'src');
 $rev = trim(`git show --format=format:%H --summary`);
@@ -51,10 +48,6 @@ $fh = fopen("./content/themes/default/index.php", 'a') or die("cant write index.
 fwrite($fh, "\n<!-- $rev -->");
 fclose($fh);
 */
-
-#replace @VERSION
-replaceVer('./setup.php', $ver);
-replaceVer('./init.php', $ver);
 
 unlink('./docker-config.php');
 unlink('./content/lang/en-rtl.json');
@@ -110,11 +103,4 @@ function deleteTreeIfDir($dir)
                 die("Unknown system ". PHP_OS. "\n");
         }
     }
-}
-
-function replaceVer($filename, $ver)
-{
-    $s = @file_get_contents($filename) or die("Cant open $filename\n");
-    $s = str_replace('@VERSION', $ver, $s);
-    @file_put_contents($filename, $s) or die("Cant write $filename\n");
 }
