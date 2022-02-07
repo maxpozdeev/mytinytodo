@@ -24,7 +24,7 @@ class DBConnection
         return self::$instance;
     }
 
-    public static function setPrefix($prefix)
+    public static function setTablePrefix($prefix)
     {
         $db = self::instance();
         $db->setPrefix($prefix);

@@ -167,7 +167,7 @@ function idSignature(string $id, string $key, string $salt): string
     return hash_hmac('sha256', $id, $secret);
 }
 
-function isSignatureOk(string $signature, string $id, string $key, string $salt): bool
+function isValidSignature(string $signature, string $id, string $key, string $salt): bool
 {
     if ( hash_equals($signature, idSignature($id, $key, $salt)) ) return true;
     return false;

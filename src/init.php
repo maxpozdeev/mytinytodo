@@ -68,7 +68,7 @@ else {
     die("Incorrect database connection config");
 }
 
-DBConnection::setPrefix(MTT_DB_PREFIX);
+DBConnection::setTablePrefix(MTT_DB_PREFIX);
 DBCore::setDefaultInstance(new DBCore($db));
 Config::load();
 
@@ -118,7 +118,7 @@ function is_logged(): bool
     if ( !need_auth() ) return true;
     if ( !isset($_SESSION['logged']) || !isset($_SESSION['sign']) ) return false;
     if ( !(int)$_SESSION['logged'] ) return false;
-    return isSignatureOk($_SESSION['sign'], session_id(), Config::get('password'), defined('MTT_SALT') ? MTT_SALT : '');
+    return isValidSignature($_SESSION['sign'], session_id(), Config::get('password'), defined('MTT_SALT') ? MTT_SALT : '');
 }
 
 function is_readonly(): bool
