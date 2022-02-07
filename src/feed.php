@@ -140,5 +140,3 @@ function printRss($data, $listData)
     header("Content-type: text/xml; charset=utf-8");
     print $s;
 }
-
-?>

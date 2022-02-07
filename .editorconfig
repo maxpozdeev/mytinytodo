@@ -14,7 +14,6 @@ insert_final_newline = true
 [*.php]
 indent_style = space
 indent_size = 4
-insert_final_newline = false
 
 # temporary. spaces will be used later.
 [*.js]

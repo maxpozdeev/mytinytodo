@@ -284,5 +284,3 @@ function logAndDie($userText, $errText = null)
     }
     exit(1);
 }
-
-?>

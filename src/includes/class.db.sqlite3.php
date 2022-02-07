@@ -177,5 +177,3 @@ class Database_Sqlite3 extends Database_Abstract
         return false;
     }
 }
-
-?>

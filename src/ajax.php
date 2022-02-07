@@ -950,7 +950,3 @@ function getUserListsSimple()
     }
     return $a;
 }
-
-
-
-?>

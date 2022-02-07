@@ -151,5 +151,3 @@ class Database_Mysql extends Database_Abstract
         return false;
     }
 }
-
-?>

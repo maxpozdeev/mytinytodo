@@ -157,5 +157,3 @@ function utf8chunks($text, $chunklen=75, $delimiter="\r\n\t")
     if($s != '') $a[] = $s;
     return implode($delimiter, $a);
 }
-
-?>

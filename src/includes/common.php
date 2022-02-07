@@ -172,5 +172,3 @@ function isValidSignature(string $signature, string $id, string $key, string $sa
     if ( hash_equals($signature, idSignature($id, $key, $salt)) ) return true;
     return false;
 }
-
-?>
