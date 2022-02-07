@@ -338,11 +338,11 @@ elseif(isset($_GET['suggestTags']))
     }
     jsonExit($t);
 }
-elseif(isset($_GET['setPrio']))
+elseif(isset($_GET['setTaskPriority']))
 {
     check_write_access();
-    $id = (int)$_GET['setPrio'];
-    $prio = (int)_get('prio');
+    $id = (int)_post('id');
+    $prio = (int)_post('priority');
     if($prio < -1) $prio = -1;
     elseif($prio > 2) $prio = 2;
     $db->ex("UPDATE {$db->prefix}todolist SET prio=$prio,d_edited=? WHERE id=$id", array(time()) );

@@ -91,9 +91,9 @@ mytinytodoStorageAjax.prototype =
 	},
 
 
-	setPrio: function(params, callback)
+	setTaskPriority: function(params, callback)
 	{
-		$.getJSON(this.mtt.mttUrl+'ajax.php?setPrio='+params.id+'&prio='+params.prio, callback);
+		$.post(this.mtt.mttUrl+'ajax.php?setTaskPriority='+params.id, { id:params.id, priority:params.priority }, callback, 'json');
 	},
 
 

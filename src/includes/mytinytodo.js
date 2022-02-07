@@ -1280,7 +1280,7 @@ function prioClick(prio, el)
 
 function setTaskPrio(id, prio)
 {
-	_mtt.db.request('setPrio', {id:id, prio:prio});
+	_mtt.db.request('setTaskPriority', {id:id, priority:prio});
 	taskList[id].prio = prio;
 	var $t = $('#taskrow_'+id);
 	$t.find('.task-prio').replaceWith(preparePrio(prio, id));
