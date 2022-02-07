@@ -202,6 +202,7 @@ function createMysqlTables($db)
     `sorting` TINYINT UNSIGNED NOT NULL default 0,
     `published` TINYINT UNSIGNED NOT NULL default 0,
     `taskview` INT UNSIGNED NOT NULL default 0,
+    `extra` TEXT,
     PRIMARY KEY(`id`),
     UNIQUE KEY(`uuid`)
 ) CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci ");
@@ -280,7 +281,8 @@ function createSqliteTables($db)
     d_edited INTEGER UNSIGNED NOT NULL default 0,
     sorting TINYINT UNSIGNED NOT NULL default 0,
     published TINYINT UNSIGNED NOT NULL default 0,
-    taskview INTEGER UNSIGNED NOT NULL default 0
+    taskview INTEGER UNSIGNED NOT NULL default 0,
+    extra TEXT
 ) ");
 
     $db->ex("CREATE UNIQUE INDEX lists_uuid ON {$db->prefix}lists (uuid)");
@@ -513,6 +515,8 @@ function update_14_17(Database_Abstract $db, $dbtype)
 
     if($dbtype=='mysql')
     {
+        $db->ex("ALTER TABLE {$db->prefix}lists ADD `extra` TEXT");
+
         # convert charset to utf8mb4
 
         $db->ex("ALTER TABLE {$db->prefix}lists    CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
@@ -544,6 +548,10 @@ UNIQUE KEY `id` (`id`)
 
     else #sqlite
     {
+        $db->ex("ALTER TABLE {$db->prefix}lists ADD extra TEXT");
+
+        # settings
+
         $db->ex(
 "CREATE TABLE {$db->prefix}settings (
  param_key   VARCHAR(100) NOT NULL default '',
