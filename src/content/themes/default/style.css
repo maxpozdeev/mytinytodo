@@ -326,7 +326,7 @@ li.task-row.task-completed .task-note-block .task-note { text-decoration:line-th
 #page_taskedit select.form-input { padding:2px; }
 #page_taskedit .form-bottom-buttons input { padding:4px; border:1px solid #ccc; border-radius:3px; background-color:#efefef; margin:2px; }
 #page_taskedit .form-row .in500 { width:100%; box-sizing:border-box; }
-#page_taskedit .form-row textarea.in500 { height:300px; font-family: monospace; }
+#page_taskedit .form-row textarea.in500 { height:300px; font-size:13px; font-family: ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace; white-space: pre; }
 #page_taskedit .form-row-short { float:left; margin-right:12px; }
 #page_taskedit .form-bottom-buttons { text-align:center; margin-top:1rem; }
 #alltags .tag { font-weight:bold; color:#333333; }
@@ -500,6 +500,7 @@ li.mtt-item-hidden { display:none; }
     font-size: 16px;
     -webkit-text-size-adjust: 100%; /* Dont increase font-size in horizontal orientation on ios */
   }
+  #page_taskedit .form-row textarea.in500 { font-size: 14px; }
 }
 
 /* narrow screens */
