@@ -51,6 +51,8 @@ fclose($fh);
 
 unlink('./docker-config.php');
 unlink('./content/lang/en-rtl.json');
+unlink('./mtt-edit-settings.php');
+
 /*
 # save only 2 languages
 $dh = opendir('./content/lang/') or die("Cant opendir lang\n");
