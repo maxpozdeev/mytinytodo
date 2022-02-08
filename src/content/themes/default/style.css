@@ -205,8 +205,7 @@ li.task-row.task-expanded .task-toggle { transform:rotate(90deg); }
   border:1px solid #DEDEDE;
   border-radius: 3px;
 }
-#tasklist li.task-row.task-has-note.task-expanded .task-block,
-#tasklist li.task-row.task-has-note.clicked .task-block {
+#tasklist li.task-row.task-has-note.task-expanded .task-block {
   border-bottom: 1px solid #f0f0f0;
 }
 .task-left { display:inline-block; }
@@ -506,7 +505,7 @@ li.mtt-item-hidden { display:none; }
 /* narrow screens */
 @media only screen and (max-width: 600px) {
 
-  #mtt_body { padding: 15px 15px 0px; }
+  #mtt_body { padding: 15px 8px 0px; }
   #mtt_body.page-ajax .topblock { display: none; } /* hide topmost block if settings pages is opened */
   #mtt_body.page-taskedit .topblock { display: none; } /* hide topmost block if edit/add task  page is opened */
 
