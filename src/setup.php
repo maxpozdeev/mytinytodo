@@ -432,10 +432,12 @@ function testConnect(&$error)
                 else if ($hasMysqli) $driver = 'mysqli';
             }
 
+            $db = null;
             if ($driver == 'mysqli') {
                 if ($hasMysqli) {
                     require_once(MTTINC. 'class.db.mysqli.php');
                     if (!defined('MTT_DB_DRIVER')) define('MTT_DB_DRIVER', 'mysqli');
+                    $db = new Database_Mysqli();
                 }
                 else {
                     throw new Exception("Required PHP extension 'MySQLi' is not installed.");
@@ -445,6 +447,7 @@ function testConnect(&$error)
                 if ($hasPDO) {
                     require_once(MTTINC. 'class.db.mysql.php');
                     if (!defined('MTT_DB_DRIVER')) define('MTT_DB_DRIVER', ''); // set pdo?
+                    $db = new Database_Mysql();
                 }
                 else {
                     throw new Exception("Required PHP extension 'PDO_MySQL' is not installed.");
@@ -455,7 +458,6 @@ function testConnect(&$error)
                 if (!defined($c)) throw new Exception("$c is not defined");
             }
 
-            $db = new Database_Mysql;
             $db->connect( array(
                 'host' => MTT_DB_HOST,
                 'user' => MTT_DB_USER,

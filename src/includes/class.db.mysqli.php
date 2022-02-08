@@ -7,7 +7,7 @@
 */
 
 // ---------------------------------------------------------------------------- //
-class DatabaseResult_Mysql extends DatabaseResult_Abstract
+class DatabaseResult_Mysqli extends DatabaseResult_Abstract
 {
     /** @var mysqli_result */
     protected $q;
@@ -29,7 +29,7 @@ class DatabaseResult_Mysql extends DatabaseResult_Abstract
 }
 
 // ---------------------------------------------------------------------------- //
-class Database_Mysql extends Database_Abstract
+class Database_Mysqli extends Database_Abstract
 {
     /** @var mysqli */
     protected $dbh;
@@ -114,7 +114,7 @@ class Database_Mysql extends Database_Abstract
             $query .= $m[$i];
         }
         $this->lastQuery = $query;
-        return new DatabaseResult_Mysql($this->dbh, $query, $resultless);
+        return new DatabaseResult_Mysqli($this->dbh, $query, $resultless);
     }
 
     function affected()

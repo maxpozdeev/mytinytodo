@@ -39,9 +39,15 @@ require_once(MTTINC. 'version.php');
 # MySQL Database Connection
 if (MTT_DB_TYPE == 'mysql')
 {
-    if (defined('MTT_DB_DRIVER') && MTT_DB_DRIVER == 'mysqli') require_once(MTTINC. 'class.db.mysqli.php');
-    else require_once(MTTINC. 'class.db.mysql.php');
-    $db = DBConnection::init(new Database_Mysql);
+    if (defined('MTT_DB_DRIVER') && MTT_DB_DRIVER == 'mysqli') {
+        require_once(MTTINC. 'class.db.mysqli.php');
+        $db = new Database_Mysqli();
+    }
+    else {
+        require_once(MTTINC. 'class.db.mysql.php');
+        $db = new Database_Mysql();
+    }
+    DBConnection::init($db);
     try {
         $db->connect( array(
             'host' => MTT_DB_HOST,
