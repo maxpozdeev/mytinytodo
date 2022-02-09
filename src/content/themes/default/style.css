@@ -119,7 +119,7 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 /* Quick Task Add */
 .taskbox-c { flex-grow:1; display:flex; align-items:center; }
 .mtt-taskbox { position:relative; padding-left:22px; /*input padding+border*/ flex-grow:1; max-width:430px; }
-#task { color:#444444; background:#fff; height:1.35rem; padding:2px 4px; padding-right:20px; border:1px solid #ccc; border-radius:3px; width:100%; margin-left:-24px; }
+#task { color:#222; background:#fff; height:1.35rem; padding:2px 4px; padding-right:20px; border:1px solid #ccc; border-radius:3px; width:100%; margin-left:-24px; }
 #mtt_body.show-all-tasks .taskbox-c, #mtt_body.readonly .taskbox-c { display:none; }
 
 .mtt-taskbox-icon { width:16px; height:16px; position:absolute; top:50%; margin-top:-8px; }
@@ -131,7 +131,7 @@ a { color:#0000ff; cursor:pointer; text-decoration:underline; }
 
 /* Live Search */
 #search {
- color:#444444; background:#fff; height:1.35rem; padding:2px 20px; width:100%; margin-left:-42px; /*padding+border*/
+ color:#222; background:#fff; height:1.35rem; padding:2px 20px; width:100%; margin-left:-42px; /*padding+border*/
  border:1px solid #ccc; border-radius:10px;
 }
 #search_close { display:none; }
@@ -275,7 +275,7 @@ li.task-row:hover .taskactionbtn { visibility:visible; }
 
 .task-note-block {
   padding: 0px 2rem;
-  color:#444;
+  color:#222;
   background-size:16px 16px;
   min-height:16px;
   display:none;
@@ -289,8 +289,8 @@ li.task-row.task-completed .task-note-block .task-note { text-decoration:line-th
 .task-note-actions { font-size:0.8rem; }
 .hidden { display:none; }
 .invisible { visibility:hidden; }
-.in500 { width:500px; color:#444444; }
-.in100 { width:100px; color:#444444; }
+.in500 { width:500px; color:#222; }
+.in100 { width:100px; color:#222; }
 .task-note a { color:#777777; }
 .task-note a:hover { color:#af0000; }
 
@@ -325,7 +325,13 @@ li.task-row.task-completed .task-note-block .task-note { text-decoration:line-th
 #page_taskedit select.form-input { padding:2px; }
 #page_taskedit .form-bottom-buttons input { padding:4px; border:1px solid #ccc; border-radius:3px; background-color:#efefef; margin:2px; }
 #page_taskedit .form-row .in500 { width:100%; box-sizing:border-box; }
-#page_taskedit .form-row textarea.in500 { height:300px; font-size:13px; font-family: ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace; white-space: pre; }
+#page_taskedit .form-row textarea.in500 {
+  height:300px;
+  font-size:13px;
+  font-family: ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+  white-space: pre;
+  padding: 5px;
+}
 #page_taskedit .form-row-short { float:left; margin-right:12px; }
 #page_taskedit .form-bottom-buttons { text-align:center; margin-top:1rem; }
 #alltags .tag { font-weight:bold; color:#333333; }
@@ -552,9 +558,8 @@ li.mtt-item-hidden { display:none; }
   #tasklist .mtt-task-placeholder { line-height:1rem; padding-top:0.6rem; padding-bottom:0.6rem; }
   #tasklist .ui-sortable-helper { box-shadow:0px 0px 3px #333; }
 
-  #page_taskedit { max-width:99.5%; border:none; position:static; padding:0; }
+  #page_taskedit { max-width:100%; border:none; position:static; padding:0; }
   #page_taskedit .form-table { width:100%; }
-  #page_taskedit .form-row .in500 { color:#444444; }
   #page_taskedit .form-row textarea { height: 70px; }
 
   #loading {  padding:0px; padding-top:1px; padding-right:1px; height:16px; overflow:hidden; }
