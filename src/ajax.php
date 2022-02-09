@@ -301,6 +301,7 @@ elseif(isset($_GET['changeOrder']))
 }
 elseif(isset($_POST['login']))
 {
+    check_token();
     $t = array('logged' => 0);
     if (!need_auth()) {
         $t['disabled'] = 1;
@@ -308,7 +309,6 @@ elseif(isset($_POST['login']))
     }
     if ( isPasswordEqualsToHash(_post('password'), Config::get('password')) ) {
         $t['logged'] = 1;
-        session_regenerate_id(1);
         $_SESSION['logged'] = 1;
         $_SESSION['token'] = generateUUID();
         $_SESSION['sign'] = idSignature(session_id(), Config::get('password'), defined('MTT_SALT') ? MTT_SALT : '');
@@ -321,6 +321,7 @@ elseif(isset($_POST['logout']))
     unset($_SESSION['logged']);
     unset($_SESSION['token']);
     unset($_SESSION['sign']);
+    session_regenerate_id(1);
     $t = array('logged' => 0);
     jsonExit($t);
 }
