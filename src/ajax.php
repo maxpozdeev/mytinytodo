@@ -172,7 +172,7 @@ elseif(isset($_GET['fullNewTask']))
     $listId = (int)_post('list');
     check_write_access($listId);
     $title = trim(_post('title'));
-    $note = str_replace("\r\n", "\n", trim(_post('note')));
+    $note = str_replace("\r\n", "\n", _post('note'));
     $prio = (int)_post('prio');
     if($prio < -1) $prio = -1;
     elseif($prio > 2) $prio = 2;
@@ -233,7 +233,7 @@ elseif(isset($_GET['editNote']))
 {
     check_write_access();
     $id = (int)_post('id');
-    $note = str_replace("\r\n", "\n", trim(_post('note')));
+    $note = str_replace("\r\n", "\n", _post('note'));
     $db->dq("UPDATE {$db->prefix}todolist SET note=?,d_edited=? WHERE id=$id", array($note, time()) );
     $t = array();
     $t['total'] = 1;
@@ -245,7 +245,7 @@ elseif(isset($_GET['editTask']))
     check_write_access();
     $id = (int)_post('id');
     $title = trim(_post('title'));
-    $note = str_replace("\r\n", "\n", trim(_post('note')));
+    $note = str_replace("\r\n", "\n", _post('note'));
     $prio = (int)_post('prio');
     if($prio < -1) $prio = -1;
     elseif($prio > 2) $prio = 2;
@@ -618,12 +618,13 @@ function check_write_access($listId = null)
     jsonExit( array('total'=>0, 'list'=>array(), 'denied'=>1) );
 }
 
+/*
 function inputTaskParams()
 {
     $a = array(
         'id' => _post('id'),
         'title'=> trim(_post('title')),
-        'note' => str_replace("\r\n", "\n", trim(_post('note'))),
+        'note' => str_replace("\r\n", "\n", _post('note')),
         'prio' => (int)_post('prio'),
         'duedate' => '',
         'tags' => trim(_post('tags')),
@@ -634,6 +635,7 @@ function inputTaskParams()
     elseif($a['prio'] > 2) $a['prio'] = 2;
     return $a;
 }
+*/
 
 function prepareTags($tagsStr)
 {
