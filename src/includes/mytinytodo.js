@@ -546,6 +546,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		$(document).ajaxError(function(event, request, settings){
 			var errtxt;
 			if(request.status == 0) errtxt = 'Bad connection';
+			else if(request.status == 403) errtxt = request.responseText;
 			else if(request.status != 200) errtxt = 'HTTP: '+request.status+'/'+request.statusText;
 			else errtxt = request.responseText;
 			flashError(_mtt.lang.get('error'), errtxt);

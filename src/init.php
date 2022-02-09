@@ -132,6 +132,18 @@ function is_readonly(): bool
     return false;
 }
 
+function updateSessionLogged(bool $logged)
+{
+    if ($logged) {
+        $_SESSION['logged'] = 1;
+        $_SESSION['sign'] = idSignature(session_id(), Config::get('password'), defined('MTT_SALT') ? MTT_SALT : '');
+    }
+    else {
+        unset($_SESSION['logged']);
+        unset($_SESSION['sign']);
+    }
+}
+
 function access_token(): string
 {
     if (!need_auth()) return '';
@@ -142,19 +154,18 @@ function access_token(): string
 
 function check_token()
 {
+    if (!need_auth()) return;
     $token = access_token();
-    if ($token == '') return true;
-    if (!isset($_SERVER)) return true;
-    if (!isset($_SERVER['HTTP_MTT_TOKEN']) || $_SERVER['HTTP_MTT_TOKEN'] != $token) {
+    if ($token == '' || !isset($_SERVER['HTTP_MTT_TOKEN']) || $_SERVER['HTTP_MTT_TOKEN'] != $token) {
+        http_response_code(403);
         die("Access denied! Try to reload the page.");
     }
 }
 
-function update_token()
+function update_token(): string
 {
-    if (!need_auth()) return;
     $_SESSION['token'] = generateUUID();
-    $_SESSION['sign'] = idSignature(session_id(), Config::get('password'), defined('MTT_SALT') ? MTT_SALT : '');
+    return $_SESSION['token'];
 }
 
 function setup_and_start_session()

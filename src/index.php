@@ -23,7 +23,7 @@ if (!is_int(Config::get('firstdayofweek')) || Config::get('firstdayofweek')<0 ||
     Config::set('firstdayofweek', 1);
 }
 
-if (access_token() == '' && need_auth()) {
+if (need_auth() && access_token() == '') {
     update_token();
 }
 

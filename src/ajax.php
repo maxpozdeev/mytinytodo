@@ -308,16 +308,16 @@ elseif(isset($_POST['login']))
         jsonExit($t);
     }
     if ( isPasswordEqualsToHash(_post('password'), Config::get('password')) ) {
-        $t['logged'] = 1;
-        $_SESSION['logged'] = 1;
+        updateSessionLogged(true);
         update_token();
+        $t['logged'] = 1;
     }
     jsonExit($t);
 }
 elseif(isset($_POST['logout']))
 {
     check_token();
-    unset($_SESSION['logged']);
+    updateSessionLogged(false);
     update_token();
     session_regenerate_id(1);
     $t = array('logged' => 0);
