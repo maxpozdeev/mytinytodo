@@ -23,6 +23,10 @@ if (!is_int(Config::get('firstdayofweek')) || Config::get('firstdayofweek')<0 ||
     Config::set('firstdayofweek', 1);
 }
 
+if (access_token() == '' && need_auth()) {
+    update_token();
+}
+
 define('TEMPLATEPATH', MTTTHEMES. Config::get('template'). '/');
 
 require(TEMPLATEPATH. 'index.php');

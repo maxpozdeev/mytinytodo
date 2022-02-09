@@ -150,6 +150,13 @@ function check_token()
     }
 }
 
+function update_token()
+{
+    if (!need_auth()) return;
+    $_SESSION['token'] = generateUUID();
+    $_SESSION['sign'] = idSignature(session_id(), Config::get('password'), defined('MTT_SALT') ? MTT_SALT : '');
+}
+
 function setup_and_start_session()
 {
     require_once(MTTINC. 'class.sessionhandler.php');

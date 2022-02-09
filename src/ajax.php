@@ -310,8 +310,7 @@ elseif(isset($_POST['login']))
     if ( isPasswordEqualsToHash(_post('password'), Config::get('password')) ) {
         $t['logged'] = 1;
         $_SESSION['logged'] = 1;
-        $_SESSION['token'] = generateUUID();
-        $_SESSION['sign'] = idSignature(session_id(), Config::get('password'), defined('MTT_SALT') ? MTT_SALT : '');
+        update_token();
     }
     jsonExit($t);
 }
@@ -319,8 +318,7 @@ elseif(isset($_POST['logout']))
 {
     check_token();
     unset($_SESSION['logged']);
-    unset($_SESSION['token']);
-    unset($_SESSION['sign']);
+    update_token();
     session_regenerate_id(1);
     $t = array('logged' => 0);
     jsonExit($t);
