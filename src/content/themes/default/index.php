@@ -152,7 +152,7 @@ $().ready(function(){
 </div>
 <div class="form-row-short-end"></div>
 <div class="form-row"><div class="h"><?php _e('task');?></div> <input type="text" name="task" value="" class="in500 form-input" maxlength="250" autocomplete="off" /></div>
-<div class="form-row"><div class="h"><?php _e('note');?></div> <textarea name="note" class="in500 form-input"></textarea></div>
+<div class="form-row"><div class="h"><?php _e('note');?></div> <textarea name="note" class="in500 form-input" spellcheck="false"></textarea></div>
 <div class="form-row"><div class="h"><?php _e('tags');?></div>
   <table cellspacing="0" cellpadding="0" width="100%"><tr>
     <td><input type="text" name="tags" id="edittags" value="" class="in500 form-input" maxlength="250" autocomplete="off" /></td>
