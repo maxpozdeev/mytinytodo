@@ -708,13 +708,13 @@ var mytinytodo = window.mytinytodo = _mtt = {
 						tabLists._alltasks = item;
 						ti += '<li id="list_all" class="mtt-tab mtt-tabs-alltasks'+(item.hidden?' mtt-tabs-hidden':'')+'">'+
 							'<a href="'+_mtt.urlForList(item)+'" title="'+item.name+'"><span>'+item.name+'</span>'+
-							'<div class="list-action"></div></a></li>';
+							'<div class="list-action mtt-img-button"><span></span></div></a></li>';
 					}
 					else {
 						tabLists.add(item);
 						ti += '<li id="list_'+item.id+'" class="mtt-tab'+(item.hidden?' mtt-tabs-hidden':'')+'">'+
 							'<a href="'+_mtt.urlForList(item)+'" title="'+item.name+'"><span>'+item.name+'</span>'+
-							'<div class="list-action"></div></a></li>';
+							'<div class="list-action mtt-img-button"><span></span></div></a></li>';
 					}
 				});
 			}
