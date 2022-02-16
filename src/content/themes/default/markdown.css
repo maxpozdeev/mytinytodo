@@ -18,7 +18,7 @@
 .markdown-note hr {
   height: 1px;
   border: 0;
-  background-color: #ccc;
+  background-color: var(--color-border-default);
 }
 
 .markdown-note p,
@@ -42,9 +42,9 @@
 
 .markdown-note blockquote {
   margin:15px 0;
-  border-left: 4px solid #DDD;
+  border-left: 4px solid var(--color-md-border);
   padding: 0 15px;
-  color: #777;
+  color: var(--color-md-text-blockquote, #777);
 }
 .markdown-note blockquote > :first-child {
   margin-top: 0px;
@@ -65,15 +65,15 @@
 }
 .markdown-note table th,
 .markdown-note table td {
-  border: 1px solid #ddd;
+  border: 1px solid var(--color-md-border);
   padding: 6px 13px;
 }
 .markdown-note table tr {
-  border-top: 1px solid #ccc;
-  background-color: #fff;
+  border-top: 1px solid var(--color-border-default);
+  background-color: var(--color-tasklist-row);
 }
 .markdown-note table tr:nth-child(2n) {
-  background-color: #f8f8f8;
+  background-color: var(--color-md-bg-highlighted);
 }
 
 
@@ -83,8 +83,8 @@
   font-family: ui-monospace,Consolas,"SF Mono",Menlo,"Liberation Mono",monospace;
   margin: 0 2px;
   padding: 0px 5px;
-  border: 1px solid #ddd;
-  background-color: #f8f8f8;
+  border: 1px solid var(--color-md-border);
+  background-color: var(--color-md-bg-highlighted);
   border-radius: 3px;
 }
 .markdown-note code {
@@ -95,8 +95,8 @@
   font-family: ui-monospace,Consolas,"SF Mono",Menlo,"Liberation Mono",monospace;
   line-height: 1.2rem;
   padding: 6px 10px;
-  background-color: #f8f8f8;
-  border: 1px solid #ddd;
+  background-color: var(--color-md-bg-highlighted);
+  border: 1px solid var(--color-md-border);
   overflow: auto;
   border-radius: 3px;
 }
