@@ -285,6 +285,9 @@ function get_unsafe_mttinfo($v)
                 $_mttinfo['version'] = mytinytodo\Version::VERSION;
             }
             return $_mttinfo['version'];
+        case 'appearance':
+            $_mttinfo['appearance'] = Config::get('appearance');
+            return $_mttinfo['appearance'];
     }
 }
 

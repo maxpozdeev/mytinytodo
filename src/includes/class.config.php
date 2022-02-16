@@ -84,6 +84,9 @@ class Config
 
         # Use Markdown syntax for notes. Set to 'v1' to use old v1.6 syntax.
         'markup' => array('default'=>'markdown', 'type'=>'s'),
+
+        # Appearance: system default or always light
+        'appearance' => array('default'=>'system', 'type'=>'s', 'options'=>array('system','light')),
     );
 
     /** @var mixed[] */

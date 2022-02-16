@@ -528,6 +528,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 			});
 			$('#cmenu_note').hide();
 			$("#lists ul").sortable('disable');
+			$("#mtt_body").addClass("touch-device");
 		}
 
 
@@ -618,6 +619,15 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		if (this.options.history) {
 			window.onpopstate = historyOnPopState;
 		}
+
+		// Appearance mode for CSS
+		if (window.matchMedia) {
+			document.documentElement.setAttribute('data-system-appearance', window.matchMedia("(prefers-color-scheme: dark)").matches ? 'dark' : 'light');
+			// TODO: use MediaQueryList.onchange since Safari 14 (macos 10.14) is min target
+			window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+			  document.documentElement.setAttribute('data-system-appearance', e.matches ? 'dark' : 'light');
+			});
+		  }
 
 		this.doAction( 'init' );
 

@@ -1,0 +1,89 @@
+/*
+  This file is a part of myTinyTodo.
+*/
+
+
+/* Dark mode */
+
+@media (prefers-color-scheme: dark) {
+
+  :root {
+    color-scheme: dark;
+
+    --color-bg: #171717;
+    --color-text-default: #eee;
+    --color-text-reduced: #e0e0e0;
+    --color-text-reduced2: #999;
+    --color-text-reduced3: #666;
+    --color-link: #6495ED; /* CornflowerBlue */
+    --color-btn-reduced: #999;
+    --color-btn-reduced-hover: #ddd;
+    --color-btn-default: #fff;
+    --color-btn-hover: #444;
+    --color-submit: #444;
+    --color-row-underlinig: #333333;
+    --color-border-default: #555;
+    --color-border-focus: #5a8df0;
+    --color-error: #ff3333;
+    --color-info: #EFC300;
+
+    --color-toolbar: #3b3b3b;
+    --color-btn-toolbar-hover: #555;
+    --color-content-delimiter: #676767;
+    --color-footer: var(--color-bg);
+
+    /* Tabs */
+    --color-tab: #1b1b1b;
+    --color-tab-selected: var(--color-toolbar);
+    --color-tab-hover: #262626;
+    --color-tab-border: #676767;
+    --color-tab-text: #ddd;
+    --color-btn-tab: #ccc;
+    --color-btn-tab-hover: #fff;
+    --color-btn-tab-hover-bg: #5a5a5a;
+
+    /* Menu */
+    --color-menu: #2b2b2b;
+    --color-menu-border: #555;
+    --color-menu-hover: #5a8df0;
+    --color-menu-text: #eaeaea;
+    --color-menu-text-hover: #ebf0f8;
+    --color-menu-text-disabled: #696969;
+    --color-popup-shadow: 1px 2px 6px 1px rgba(0,0,0,1);
+
+    /* Tasklist */
+    --color-tasklist-row: var(--color-bg);
+    --color-tasklist-row-border: var(--color-row-underlinig);
+    --color-tasklist-row-inter-border: var(--color-tasklist-row-border);
+    --color-tasklist-row-expanded-border: #555;
+    --color-tasklist-tag: var(--color-tab-text);
+    --color-tasklist-note-link: #999;
+    --color-tasklist-link-hover: var(--color-link);
+    --color-taglist-text-hover: var(--color-bg);
+    --color-taglist-text-hover-bg: var(--color-text-default);
+
+
+    /* Priority */
+    --color-priority-none: #676767;
+    --color-priority-text: var(--color-text-default);
+
+    /* DueDates */
+    --color-duedate-default: var(--color-tab-text);
+    --color-duedate-soon: #008000;
+    --color-duedate-today: #FF0000;
+    --color-duedate-past: #A52A2A;
+
+    /* Markdown */
+    --color-md-border: #333;
+    --color-md-bg-highlighted: #222;
+    --color-md-text-blockquote: #777;
+
+    /* Settings */
+    --color-settings-row: #222;
+
+    /* */
+    --color-placeholder: #444;
+    --color-placeholder-border: #555;
+
+  }
+}
