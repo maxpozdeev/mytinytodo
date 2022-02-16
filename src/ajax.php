@@ -309,7 +309,7 @@ elseif(isset($_POST['login']))
     }
     if ( isPasswordEqualsToHash(_post('password'), Config::get('password')) ) {
         updateSessionLogged(true);
-        update_token();
+        $t['token'] = update_token();
         $t['logged'] = 1;
     }
     jsonExit($t);
@@ -540,6 +540,23 @@ elseif(isset($_GET['setHideList']))
         $db->dq("UPDATE {$db->prefix}lists SET taskview=$bitwise WHERE id=$listId");
     }
     jsonExit(array('total'=>1));
+}
+elseif (isset($_POST['createSession']))
+{
+    $t = array();
+    if (!need_auth()) {
+        $t['disabled'] = 1;
+        jsonExit($t);
+    }
+    if (access_token() == '') {
+        update_token();
+    }
+    $t['token'] = access_token();
+    $t['session'] = session_id();
+    jsonExit($t);
+}
+else {
+    jsonExit(['total' => 0]);
 }
 
 
