@@ -24,8 +24,8 @@ function htmlarray_ref(&$a, $exclude=null)
     foreach($a as $k=>$v)
     {
         if(is_array($v)) $a[$k] = htmlarray($v, $exclude);
-        elseif(!$exclude) $a[$k] = htmlspecialchars($v);
-        elseif(!in_array($k, $exclude)) $a[$k] = htmlspecialchars($v);
+        elseif(!$exclude) $a[$k] = htmlspecialchars($v ?? '');
+        elseif(!in_array($k, $exclude)) $a[$k] = htmlspecialchars($v ?? '');
     }
     return;
 }

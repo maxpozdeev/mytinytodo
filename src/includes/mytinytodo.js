@@ -1593,7 +1593,7 @@ function editTask(id)
 	form.task.value = item.titleText;
 	form.note.value = item.noteText;
 	form.id.value = item.id;
-	form.tags.value = item.tags.split(',').join(', ');
+	form.tags.value = dehtml(item.tags).split(',').join(', ');
 	form.duedate.value = item.duedate;
 	form.prio.value = item.prio;
 	$('#taskedit_id').text('#' + item.id);
@@ -2297,7 +2297,7 @@ function isParentId(el, id)
 
 function dehtml(str)
 {
-	return str.replace(/&quot;/g,'"').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&');
+	return str.replace(/&quot;/g, '"').replace(/&#039;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
 };
 
 
