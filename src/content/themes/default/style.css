@@ -437,10 +437,10 @@ li.task-row.task-expanded .task-toggle { transform:rotate(90deg); }
   z-index: 1;
 }
 #tasklist .task-block {
-   display:flex;
-   justify-content:flex-start;
-   align-items:baseline;
-   padding:0px 3px;
+   display: flex;
+   justify-content: flex-start;
+   align-items: stretch;
+   padding: 0.5rem 3px;
 }
 #tasklist li.task-row.task-expanded {
   border:1px solid var(--color-tasklist-row-expanded-border);
@@ -450,16 +450,17 @@ li.task-row.task-expanded .task-toggle { transform:rotate(90deg); }
   border-bottom: 1px solid var(--color-tasklist-row-inter-border);
 }
 .task-left {
-  display:inline-block;
+  display: flex;
+  align-items: center;
+  height: 1.2rem; /* same as line-height of task-middle */
 }
 .task-middle {
   flex-grow:1;
-  margin:0.65rem 0px;
-  margin-left:5px;
+  margin-left: 5px;
   min-width:0; /*for long text*/
-  flex-basis:0; /* IE11 */
-  display:flex;
-  align-items:baseline;
+  display: flex;
+  align-items: baseline;
+  line-height: 1.2rem;
 }
 .task-actions { flex:0 0 1rem; margin-left:5px; }
 
