@@ -150,9 +150,19 @@ a { color: var(--color-link); cursor:pointer; text-decoration:underline; }
 }
 #footer_content a.powered-by-link { font-weight:bold; }
 
-.topblock-title { display:flex; align-items:center; }
+.topblock-title {
+  display:flex;
+  align-items:center;
+  min-width: 0; /* required for h2 ellipsis */
+}
 .topblock-bar { flex-grow:1; display:flex; justify-content:flex-start; border-bottom:1px solid var(--color-content-delimiter); padding-bottom:5px; }
-.bar-menu { flex-grow:1; display:flex; justify-content:flex-end; text-align:right; }
+.bar-menu {
+  flex-grow:1;
+  display:flex;
+  justify-content:flex-end;
+  text-align:right;
+  white-space: nowrap;
+}
 .nodecor { text-decoration:none; }
 #bar_auth::before { content:'\00a0| '; } /* &nbsp; = \00a0 */
 #bar_logout { display:none; }
@@ -895,6 +905,11 @@ li.mtt-item-hidden { display:none; }
   #mtt_body.page-taskedit .topblock { display: none; } /* hide topmost block if edit/add task  page is opened */
 
   h2 { font-size:1rem; }
+  .topblock h2 {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* min-width of parent flex is required for this */
+  }
 
   #bar_login, #bar_logout { padding-right:1px; }
 
