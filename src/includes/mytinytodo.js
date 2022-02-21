@@ -713,18 +713,14 @@ var mytinytodo = window.mytinytodo = _mtt = {
 				// open all tasks tab
 				if(_mtt.options.openList == -1) openListId = -1;
 
-				$.each(res.list, function(i,item) {
-					if ( item.id == -1) {
+				$.each(res.list, function(i, item) {
+					if ( item.id == -1 ) {
 						tabLists._alltasks = item;
-						ti += '<li id="list_all" class="mtt-tab mtt-tabs-alltasks'+(item.hidden?' mtt-tabs-hidden':'')+'">'+
-							'<a href="'+_mtt.urlForList(item)+'" title="'+item.name+'"><span>'+item.name+'</span>'+
-							'<div class="list-action mtt-img-button"><span></span></div></a></li>';
+						ti += prepareListHtml(item);
 					}
 					else {
 						tabLists.add(item);
-						ti += '<li id="list_'+item.id+'" class="mtt-tab'+(item.hidden?' mtt-tabs-hidden':'')+'">'+
-							'<a href="'+_mtt.urlForList(item)+'" title="'+item.name+'"><span>'+item.name+'</span>'+
-							'<div class="list-action mtt-img-button"><span></span></div></a></li>';
+						ti += prepareListHtml(item);
 					}
 				});
 			}
@@ -954,13 +950,13 @@ function addList()
 			var item = json.list[0];
 			var i = tabLists.length();
 			tabLists.add(item);
-			if(i > 0) {
-				$('#lists ul').append('<li id="list_'+item.id+'" class="mtt-tab">'+
-						'<a href="#" title="'+item.name+'"><span>'+item.name+'</span>'+
-						'<div class="list-action"></div></a></li>');
+			if (i > 0) {
+				$('#lists ul').append(prepareListHtml(item));
 				mytinytodo.doAction('listAdded', item);
 			}
-			else _mtt.loadLists();
+			else {
+				_mtt.loadLists();
+			}
 		});
 	});
 };
@@ -1047,6 +1043,19 @@ function loadTasks(opts)
 	});
 };
 
+function prepareListHtml(list)
+{
+	var opentag = '';
+	if (list.id == -1) {
+		opentag = '<li id="list_all" class="mtt-tab mtt-tabs-alltasks' + (list.hidden ? ' mtt-tabs-hidden' : '') + '">';
+	}
+	else {
+		opentag = '<li id="list_' + list.id + '" class="mtt-tab' + (list.hidden ? ' mtt-tabs-hidden' : '') + '">';
+	}
+	return opentag +
+		   '<a href="' + _mtt.urlForList(list) + '" title="' + list.name + '"><span>' + list.name + '</span>' +
+		   '<div class="list-action mtt-img-button"><span></span></div></a></li>';
+}
 
 function prepareTaskStr(item, noteExp)
 {
