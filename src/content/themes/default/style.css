@@ -117,6 +117,7 @@ body, td, th, input, textarea, select {
   max-width:1000px;
   padding:8px;
   margin-bottom:8px;
+  box-sizing: border-box;
 }
 
 form { display: inline; }
