@@ -560,13 +560,13 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		});
 
 
-		// Authorization
-		$('#bar_login').click(function(){
-			showAuth(this);
+		// Authentication
+		$('#login_btn').click(function(){
+			showLogin();
 			return false;
 		});
 
-		$('#bar_logout').click(function(){
+		$('#logout_btn').click(function(){
 			logout();
 			return false;
 		});
@@ -2450,10 +2450,10 @@ function updateAccessStatus()
 	if(flag.needAuth)
 	{
 		if (flag.isLogged) {
-			showhide( $("#bar_logout"), $("#bar_login") );
+			showhide( $("#logout_btn"), $("#login_btn") );
 		}
 		else {
-			showhide( $("#bar_login"), $("#bar_logout") );
+			showhide( $("#login_btn"), $("#logout_btn") );
 		}
 	}
 	else {
@@ -2476,23 +2476,13 @@ function updateAccessStatus()
 	$('#page_ajax').hide();
 }
 
-function showAuth(el)
+function showLogin()
 {
-	var w = $('#authform');
-	if(w.css('display') == 'none')
-	{
-		var offset = $(el).offset();
-		w.css({
-			position: 'absolute',
-			top: offset.top + el.offsetHeight + 3,
-			left: offset.left + el.offsetWidth - w.outerWidth()
-		}).show();
-		$('#password').focus();
+	if (_mtt.pages.current && _mtt.pages.current.page == 'login') {
+		return false;
 	}
-	else {
-		w.hide();
-		el.blur();
-	}
+	_mtt.pageSet('login', '');
+	$('#password').val('').focus();
 }
 
 function doAuth(form)
@@ -2509,7 +2499,6 @@ function doAuth(form)
 			$('#password').focus();
 		}
 	}, 'json');
-	$('#authform').hide();
 }
 
 function logout()

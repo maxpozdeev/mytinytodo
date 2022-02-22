@@ -163,27 +163,34 @@ a { color: var(--color-link); cursor:pointer; text-decoration:underline; }
   text-align:right;
   white-space: nowrap;
 }
-.nodecor { text-decoration:none; }
+
 #bar_auth::before { content:'\00a0| '; } /* &nbsp; = \00a0 */
 #bar_logout { display:none; }
 #mtt_body.no-need-auth #bar_auth { display:none; }
 #mtt_body.readonly .need-owner { display:none; }
 #mtt_body.readonly #bar_auth::before { display:none; }
 
+#page_login {
+  max-width: 250px;
+  margin:0 auto; /* center */
+  margin-top: 100px;
+}
+#page_login > div {
+  padding: 10px;
+}
 #authform {
-  overflow: hidden;
-  z-index:100;
   background-color: var(--color-menu);
-  border:1px solid var(--color-menu-border);
-  border-radius:2px;
-  padding:10px;
-  min-width:160px;
-  box-shadow: var(--color-popup-shadow);
+  border: 1px solid var(--color-menu-border);
+  border-radius: 5px;
 }
 #authform div { padding:2px 0px; }
 #authform div.h { font-weight:bold; }
 #authform input { padding:3px; border:1px solid var(--color-border-default); border-radius:2px; }
+#authform input[type=password] { width: 100%; box-sizing: border-box; }
 #authform input[type="submit"] { padding:4px; border-radius:3px; background-color: var(--color-submit); }
+#authform .form-bottom-buttons {
+  padding-top: 10px;
+}
 
 #msg .msg-text {  font-weight:bold; cursor:pointer; }
 #msg .msg-details {
@@ -911,7 +918,7 @@ li.mtt-item-hidden { display:none; }
     text-overflow: ellipsis; /* min-width of parent flex is required for this */
   }
 
-  #bar_login, #bar_logout { padding-right:1px; }
+  #login_btn, #logout_btn { padding-right:1px; }
 
   .mtt-img-button { padding:4px; }
   .mtt-menu-button { padding:4px; }

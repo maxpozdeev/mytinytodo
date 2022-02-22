@@ -53,8 +53,8 @@ $().ready(function(){
     </span>
     <span id="bar_auth">
       <span id="bar_public" style="display:none"><?php _e('public_tasks');?> |</span>
-      <a href="#login" id="bar_login" class="nodecor"><u><?php _e('a_login');?></u> <span class="arrdown"></span></a>
-      <a href="#logout" id="bar_logout"><?php _e('a_logout');?></a>
+      <a href="#login" id="login_btn"><?php _e('a_login');?></a>
+      <a href="#logout" id="logout_btn"><?php _e('a_logout');?></a>
     </span>
   </div>
   </div>
@@ -180,13 +180,21 @@ $().ready(function(){
 </div>
 
 
-<div id="authform" style="display:none">
-<form id="login_form">
-  <div class="h"><?php _e('password');?></div>
-  <div><input type="password" name="password" id="password" /></div>
-  <div><input type="submit" value="<?php _e('btn_login');?>" /></div>
-</form>
+<!-- Page: Login -->
+<div id="page_login" style="display:none">
+  <div id="authform">
+    <form id="login_form">
+    <div class="h"><?php _e('password');?></div>
+    <div><input type="password" name="password" id="password" /></div>
+    <div class="form-bottom-buttons"><input type="submit" value="<?php _e('btn_login');?>" /></div>
+    </form>
+  </div>
+  <div>
+    <a href="#" class="mtt-back-button"><?php _e('cancel');?></a>
+  </div>
 </div>
+<!-- end of page_login -->
+
 
 <div id="priopopup" style="display:none">
   <span class="prio-neg prio-neg-1">&minus;1</span>
