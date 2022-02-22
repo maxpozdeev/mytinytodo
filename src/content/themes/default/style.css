@@ -103,14 +103,21 @@ body {
   height: 100%;
   background-color: var(--color-bg);
   color: var(--color-text-default);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
 }
 body, td, th, input, textarea, select {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", /*Roboto,*/ Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
   font-size: 1rem;
 }
-#wrapper { display:flex; flex-direction:column; align-items:center; height:100%; }
-#container { flex: 1 0 auto; width:100%; max-width:1000px; }
-#mtt_body { padding:8px; margin-bottom:8px; } /* TODO: can combine container and mtt_body */
+#mtt_body {
+  flex: 1 0 auto;
+  width:100%;
+  max-width:1000px;
+  padding:8px;
+  margin-bottom:8px;
+}
 
 form { display: inline; }
 .topblock h2 {
