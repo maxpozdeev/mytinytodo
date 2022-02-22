@@ -171,12 +171,12 @@ a { color: var(--color-link); cursor:pointer; text-decoration:underline; }
   text-align:right;
   white-space: nowrap;
 }
+.bar-menu > * {
+  margin-left: 10px;
+}
 
-#bar_auth::before { content:'\00a0| '; } /* &nbsp; = \00a0 */
-#bar_logout { display:none; }
-#mtt_body.no-need-auth #bar_auth { display:none; }
-#mtt_body.readonly .need-owner { display:none; }
-#mtt_body.readonly #bar_auth::before { display:none; }
+
+#mtt_body.no-need-auth .mtt-need-auth-enabled { display:none; }
 
 #page_login {
   max-width: 250px;
@@ -850,7 +850,7 @@ li.mtt-item-hidden { display:none; }
 #slmenucontainer li.mtt-list-hidden a { font-style:italic; }
 #cmenulistscontainer li.mtt-list-hidden { font-style:italic; }
 #mtt_body.readonly .mtt-need-list { display:none; }
-#mtt_body.readonly .mtt-need-authorized { display:none; }
+#mtt_body.readonly .mtt-only-authorized { display:none; }
 
 /**/
 
@@ -925,8 +925,6 @@ li.mtt-item-hidden { display:none; }
     overflow: hidden;
     text-overflow: ellipsis; /* min-width of parent flex is required for this */
   }
-
-  #login_btn, #logout_btn { padding-right:1px; }
 
   .mtt-img-button { padding:4px; }
   .mtt-menu-button { padding:4px; }

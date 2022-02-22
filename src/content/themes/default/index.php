@@ -46,13 +46,10 @@ $().ready(function(){
   <div class="topblock-bar">
   <div id="msg"><span class="msg-text"></span><div class="msg-details"></div></div>
   <div class="bar-menu">
-    <span class="need-owner">
-      <a href="#settings" id="settings_btn"><?php _e('a_settings');?></a>
-    </span>
-    <span id="bar_auth">
-      <span id="bar_public" style="display:none"><?php _e('public_tasks');?> |</span>
-      <a href="#login" id="login_btn"><?php _e('a_login');?></a>
-      <a href="#logout" id="logout_btn"><?php _e('a_logout');?></a>
+    <a href="#settings" id="settings_btn" class="mtt-only-authorized"><?php _e('a_settings');?></a>
+    <span id="bar_public" style="display:none" class="mtt-need-auth-enabled"><?php _e('public_tasks');?></span>
+    <a href="#login" id="login_btn" class="mtt-need-auth-enabled"><?php _e('a_login');?></a>
+    <a href="#logout" id="logout_btn" class="mtt-need-auth-enabled" style="display:none" ><?php _e('a_logout');?></a>
     </span>
   </div>
   </div>
@@ -271,7 +268,7 @@ $().ready(function(){
 
 <div id="slmenucontainer" class="mtt-menu-container" style="display:none">
 <ul>
-  <li id="slmenu_list:-1" class="list-id--1 mtt-need-authorized"><div class="menu-icon"></div><a href="#alltasks"><?php _e('alltasks'); ?></a></li>
+  <li id="slmenu_list:-1" class="list-id--1 mtt-only-authorized"><div class="menu-icon"></div><a href="#alltasks"><?php _e('alltasks'); ?></a></li>
   <li class="mtt-menu-delimiter slmenu-lists-begin mtt-need-list"></li>
 </ul>
 </div>
