@@ -29,7 +29,7 @@
 $().ready(function(){
 	mytinytodo.init({
 		token: "<?php echo htmlspecialchars(access_token()); ?>" ,
-		title: <?php echo json_encode(get_unsafe_mttinfo('title'), JSON_UNESCAPED_UNICODE); ?> ,
+		title: <?php echo mtt_quoted_title() ?> ,
 		lang: <?php echo Lang::instance()->makeJS() ?>,
 		mttUrl: "<?php mttinfo('mtt_url'); ?>",
 		homeUrl: "<?php mttinfo('url'); ?>",

@@ -250,6 +250,15 @@ function reset_mttinfo($key)
 	unset( $_mttinfo[$key] );
 }
 
+function mtt_quoted_title()
+{
+	$s = json_encode(get_unsafe_mttinfo('title'), JSON_UNESCAPED_UNICODE);
+	if ($s === false) {
+		return '""';
+	}
+	return $s;
+}
+
 function getRequestUri()
 {
 	// Do not use HTTP_X_REWRITE_URL due to CVE-2018-14773
