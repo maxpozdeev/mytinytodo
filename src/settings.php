@@ -114,6 +114,9 @@ function selectOptionsA($a, $key, $default=null)
     $s = '';
     if($default !== null && !isset($a[$key])) $key = $default;
     foreach($a as $k=>$v) {
+        if (!is_array($v)) {
+			$v = array('name' => $k);
+		}
         $s .= '<option value="'.htmlspecialchars($k).'" '.($k===$key?'selected="selected"':'').
             (isset($v['title']) ? ' title="'.htmlspecialchars($v['title']).'"' : '').
             '>'.htmlspecialchars($v['name']).'</option>';
@@ -141,7 +144,7 @@ header('Content-type:text/html; charset=utf-8');
     if (isset($_GET['json'])) {
         $j = Config::requestDefaultDomain();
         if ($j['password'] != '') $j['password'] = "<not empty>";
-        $j = json_encode($j, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
+        $j = json_encode($j, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_INVALID_UTF8_SUBSTITUTE);
 ?>
 <div class="mtt-settings-table">
   <div class="tr">
