@@ -54,6 +54,9 @@ class Lang
 	{
 		$this->code = $code;
 		$json = json_decode($jsonString, true);
+		if ($json === null) {
+			$json = array();
+		}
 
 		//load default language
 		if ( $code != $this->default ) {
@@ -72,6 +75,9 @@ class Lang
 		}
 		$defStr = file_get_contents($this->langDir(). "{$this->default}.json");
 		$this->strings = json_decode($defStr, true);
+		if ($this->strings === null) {
+			die("Invalid JSON in default language file (". htmlspecialchars($this->default). ".json)");
+		}
 	}
 
 	function get($key)
