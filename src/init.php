@@ -5,9 +5,8 @@
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
-##### MyTinyTodo requires php 7.0 and above! #####
-if (version_compare(PHP_VERSION, '7.0.0') < 0) {
-    die("PHP 7.0+ is required");
+if (version_compare(PHP_VERSION, '7.2.0') < 0) {
+    die("PHP 7.2 or above is required");
 }
 
 if(!defined('MTTPATH')) define('MTTPATH', dirname(__FILE__) .'/');
