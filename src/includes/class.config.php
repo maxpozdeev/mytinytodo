@@ -213,7 +213,11 @@ class Config
         $db = DBConnection::instance();
         $json = $db->sq("SELECT param_value FROM {$db->prefix}settings WHERE param_key = ?", array($key));
         if (!$json) return array();
-        $j = json_decode($json, true);
+        $j = json_decode($json, true, 100, JSON_INVALID_UTF8_SUBSTITUTE);
+        if ($j === false) {
+            error_log("MTT Error: Failed to decode JSON object with settings. Code: ". (int)json_last_error());
+            return array();
+        }
         return $j;
     }
 
@@ -238,7 +242,10 @@ class Config
      */
     public static function saveDomain($key, $array)
     {
-        $json = json_encode($array, JSON_PRETTY_PRINT);
+        $json = json_encode($array, JSON_PRETTY_PRINT /*| JSON_INVALID_UTF8_SUBSTITUTE*/);
+        if ($json === false) {
+            throw new Exception("Failed to create JSON object with settings. Code: ". (int)json_last_error());
+        }
         $db = DBConnection::instance();
         $keyExists = $db->sq("SELECT COUNT(param_key) FROM {$db->prefix}settings WHERE param_key = ?", array($key) );
         if ($keyExists) {
