@@ -82,5 +82,12 @@ function js_options()
         "autotag" => Config::get('autotag') ? true : false,
         "markdown" => Config::get('markup') == 'v1' ? false : true
     );
-    echo json_encode($a, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    $json = json_encode($a, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_INVALID_UTF8_SUBSTITUTE);
+    if ($json === false) {
+        error_log("MTT Error: Failed to encode array of options to JSON. Code: ". (int)json_last_error());
+        echo "{}";
+    }
+    else {
+        echo $json;
+    }
 }
