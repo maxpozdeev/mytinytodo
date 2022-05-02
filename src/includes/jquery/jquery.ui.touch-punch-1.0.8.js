@@ -10,6 +10,9 @@
  *
  * Fork: https://github.com/RWAP/jquery-ui-touch-punch
  *
+ * Modified by Max Pozdeev in 2022
+ * - Added delay before mousedown dispatch
+ *
  * Depends:
  * jquery.ui.widget.js
  * jquery.ui.mouse.js
@@ -28,7 +31,7 @@
 }(function ($) {
 
   // Detect touch support - Windows Surface devices and other touch devices
-  $.support.mspointer = window.navigator.msPointerEnabled;		
+  $.support.mspointer = window.navigator.msPointerEnabled;
   $.support.touch = ( 'ontouchstart' in document
    	|| 'ontouchstart' in window
    	|| window.TouchEvent
@@ -39,13 +42,20 @@
 
   // Ignore browsers without touch or mouse support
   if ((!$.support.touch && !$.support.mspointer) || !$.ui.mouse) {
-	return;
+		return;
   }
 
   var mouseProto = $.ui.mouse.prototype,
       _mouseInit = mouseProto._mouseInit,
       _mouseDestroy = mouseProto._mouseDestroy,
       touchHandled;
+
+	var delay = 300,
+  		delayTimer,
+			delayEvent,
+			delayStarted = false,
+			delayFinished = false;
+
 
     /**
     * Get the x,y position of a touch event
@@ -101,6 +111,39 @@
     event.target.dispatchEvent(simulatedEvent);
   }
 
+	function startDelayTimer (event) {
+		clearTimeout(delayTimer);
+		delayEvent = event;
+		delayTimer = setTimeout(function() {
+			fireMouseDown.call(this);
+		}, delay);
+		delayStarted = true;
+		delayFinished = false;
+	}
+
+	function fireMouseDown () {
+
+		var self = this;
+
+		delayFinished = true;
+
+		// Set the flag to prevent other widgets from inheriting the touch event
+		touchHandled = true;
+
+		// Track movement to determine if interaction was a click
+		self._touchMoved = false;
+
+		// Simulate the mouseover event
+		simulateMouseEvent(delayEvent, 'mouseover');
+
+		// Simulate the mousemove event
+		simulateMouseEvent(delayEvent, 'mousemove');
+
+		// Simulate the mousedown event
+		simulateMouseEvent(delayEvent, 'mousedown');
+	}
+
+
   /**
    * Handle the jQuery UI widget's touchstart events
    * @param {Object} event The widget element's touchstart event
@@ -120,20 +163,9 @@
       return;
     }
 
-    // Set the flag to prevent other widgets from inheriting the touch event
-    touchHandled = true;
-
-    // Track movement to determine if interaction was a click
-    self._touchMoved = false;
-
-    // Simulate the mouseover event
-    simulateMouseEvent(event, 'mouseover');
-
-    // Simulate the mousemove event
-    simulateMouseEvent(event, 'mousemove');
-
-    // Simulate the mousedown event
-    simulateMouseEvent(event, 'mousedown');
+		if (!delayStarted) {
+			startDelayTimer.call(self, event);
+		}
   };
 
   /**
@@ -141,6 +173,13 @@
    * @param {Object} event The document's touchmove event
    */
   mouseProto._touchMove = function (event) {
+
+		//
+		if (!delayFinished) {
+			delayStarted = false;
+			clearTimeout(delayTimer);
+			return;
+		}
 
     // Ignore event if not handled
     if (!touchHandled) {
@@ -159,6 +198,13 @@
    * @param {Object} event The document's touchend event
    */
   mouseProto._touchEnd = function (event) {
+
+		//
+		if (delayStarted) {
+			clearTimeout(delayTimer);
+			delayStarted = false;
+			fireMouseDown();
+		}
 
     // Ignore event if not handled
     if (!touchHandled) {
@@ -206,11 +252,11 @@
   mouseProto._mouseInit = function () {
 
     var self = this;
-	  
+
     // Microsoft Surface Support = remove original touch Action
     if ($.support.mspointer) {
       self.element[0].style.msTouchAction = 'none';
-    }	  
+    }
 
     // Delegate the touch handlers to the widget's element
     self.element.on({
@@ -239,6 +285,11 @@
 
     // Call the original $.ui.mouse destroy method
     _mouseDestroy.call(self);
+
+    //
+    clearTimeout(delayTimer);
+    delayEvent = null
+
   };
 
 }));
