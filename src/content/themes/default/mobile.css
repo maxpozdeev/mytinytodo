@@ -33,6 +33,7 @@ h2 { margin:0; margin-bottom:2px; font-size:1rem; }
 .task-note-block { margin-left:0px; border-left:1px solid #777777; background:none; padding-left:4px; display:none; }
 body[dir="rtl"] .task-note-block { border-left:none; border-right:1px solid #777777; padding-left:0; padding-right:4px; }
 .task-note-area textarea { width:95%; }
+.taskactionbtn { padding: 0.4rem; }
 
 #tasklist li .task-through { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 #tasklist li:hover { background-color:#ffffff; }
