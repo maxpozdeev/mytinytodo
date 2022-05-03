@@ -24,7 +24,7 @@
 
 <script type="text/javascript" src="<?php mttinfo('includes_url'); ?>jquery/jquery-3.6.0.min.js"></script>
 <script type="text/javascript" src="<?php mttinfo('includes_url'); ?>jquery/jquery-ui-1.13.1.min.js"></script>
-<script type="text/javascript" src="<?php mttinfo('includes_url'); ?>jquery/jquery.ui.touch-punch.js"></script>
+<script type="text/javascript" src="<?php mttinfo('includes_url'); ?>jquery/jquery.ui.touch-punch-1.0.8.js"></script>
 <script type="text/javascript" src="<?php mttinfo('includes_url'); ?>mytinytodo.js?v=<?php mttinfo('version'); ?>"></script>
 <script type="text/javascript" src="<?php mttinfo('includes_url'); ?>mytinytodo_ajax_storage.js?v=<?php mttinfo('version'); ?>"></script>
 
