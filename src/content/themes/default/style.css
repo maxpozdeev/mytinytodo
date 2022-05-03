@@ -531,13 +531,17 @@ li.task-row.task-completed .duedate { /*font-size:0.8rem;*/ display:none; }
 }
 
 .taskactionbtn {
-  height:1rem; width:1rem;
-  visibility:hidden; /* allocate space */
+  height: 1rem;
+  width: 1rem;
+  visibility: hidden; /* allocate space */
   mask: url(images/task-menu2.svg) no-repeat; -webkit-mask: url(images/task-menu2.svg) no-repeat;
   background-color: var(--color-btn-reduced);
   transition: background-color 0.1s ease-in;
 }
-.taskactionbtn::after { content:'0'; color:transparent; } /* for baseline */
+.taskactionbtn::after {  /* for baseline */
+  content:'0';
+  color:transparent;
+}
 li.task-row:hover .taskactionbtn {
   visibility:visible;
 }
@@ -945,7 +949,6 @@ li.mtt-item-hidden { display:none; }
   #toolbar.mtt-insearch .searchbox-c { width:100%; max-width:100%; }
   #search { padding:5px 20px; border-radius:15px; }
 
-  .task-actions { display:none; }
   .task-date { display:none; }
   .task-note-actions { display:block; padding-top:8px; }
   .task-note-block {
@@ -954,6 +957,12 @@ li.mtt-item-hidden { display:none; }
     display: none;
   }
   .task-note-area textarea { width:95%; }
+  .taskactionbtn {
+    padding: 2px 0.5rem;
+    mask-origin: content-box;
+    -webkit-mask-origin: content-box;
+    visibility: visible;
+  }
 
   #tasklist li.task-row .task-through { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   #tasklist li.task-row.task-expanded .task-note-block { display:none; }
