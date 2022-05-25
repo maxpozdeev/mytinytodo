@@ -7,9 +7,9 @@ networks:
 services:
   web:
     build:
-      context: ../mtt-php71-apache/
+      context: ../mtt-php72-apache/
       dockerfile: Dockerfile-web
-    image: mytinytodo-dev:php7.1-apache
+    image: mytinytodo-dev:php7.2-apache
     container_name: ${PLATFORM_NAME}-web
     ports:
       - "8080:80"
@@ -24,6 +24,8 @@ services:
       - MTT_DB_DRIVER=mysqli
     volumes:
       - ../../../src:/var/www/html
+      - ../mtt-php72-apache/php-mtt.ini:/usr/local/etc/php/conf.d/php-mtt.ini
+      - ../mtt-php72-apache/php-opcache.ini:/usr/local/etc/php/conf.d/php-opcache.ini
     depends_on:
       - db
     networks:
