@@ -1,9 +1,9 @@
-
 FROM php:8.1-apache
 
 RUN docker-php-ext-install mysqli && \
   mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" && \
-  mkdir /var/www/phpinfo
+  mkdir /var/www/phpinfo && \
+  a2enmod rewrite
 
 COPY php-mtt.ini     /usr/local/etc/php/conf.d/
 COPY php-opcache.ini /usr/local/etc/php/conf.d/

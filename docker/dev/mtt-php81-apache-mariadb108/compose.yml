@@ -31,9 +31,9 @@ services:
 
   db:
     build:
-      context: ../_mariadb105
+      context: ../_mariadb108
       dockerfile: Dockerfile-db
-    image: mytinytodo-dev:mariadb10.5
+    image: mytinytodo-dev:mariadb10.8
     container_name: ${PLATFORM_NAME}-db
     #restart: always
     environment:
@@ -42,6 +42,6 @@ services:
       MARIADB_PASSWORD: mtt
       MARIADB_DATABASE: mytinytodo
     volumes:
-      - ../_mariadb105/db_data:/var/lib/mysql
+      - ../_mariadb108/db_data:/var/lib/mysql
     networks:
       - network

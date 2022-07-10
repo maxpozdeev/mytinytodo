@@ -1,8 +1,10 @@
 services:
   web:
-    build: ./
+    build:
+      context: .
+      dockerfile: Dockerfile-web
     image: mytinytodo-dev:php7.4-apache
-    container_name: mtt-dev-php74-apache
+    container_name: ${PLATFORM_NAME}-web
     ports:
     - "8080:80"
     environment:

@@ -1,0 +1,3 @@
+FROM mariadb:10.8
+
+COPY my.cnf /etc/mysql/conf.d/
