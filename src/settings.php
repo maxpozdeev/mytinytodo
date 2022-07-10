@@ -115,8 +115,8 @@ function selectOptionsA($a, $key, $default=null)
     if($default !== null && !isset($a[$key])) $key = $default;
     foreach($a as $k=>$v) {
         if (!is_array($v)) {
-			$v = array('name' => $k);
-		}
+            $v = array('name' => $k);
+        }
         $s .= '<option value="'.htmlspecialchars($k).'" '.($k===$key?'selected="selected"':'').
             (isset($v['title']) ? ' title="'.htmlspecialchars($v['title']).'"' : '').
             '>'.htmlspecialchars($v['name']).'</option>';

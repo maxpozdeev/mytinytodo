@@ -112,10 +112,10 @@ function printICal($listData, $data)
     # events
     foreach($data as $r)
     {
-        if(!$r['duedate'] || $r['compl']) continue;	# skip tasks completed and without duedate
+        if(!$r['duedate'] || $r['compl']) continue;  # skip tasks completed and without duedate
         $a = array();
         $a[] = "BEGIN:VEVENT";
-        $a[] = "UID:_". $r['uuid'];	# do not duplicate VTODO UID
+        $a[] = "UID:_". $r['uuid'];  # do not duplicate VTODO UID
         $a[] = "CREATED:". gmdate('Ymd\THis\Z', $r['d_created']);
         $a[] = "DTSTAMP:". gmdate('Ymd\THis\Z', $r['d_edited']);
         $a[] = "LAST-MODIFIED:". gmdate('Ymd\THis\Z', $r['d_edited']);

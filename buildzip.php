@@ -68,7 +68,7 @@ closedir($dh);
 chdir('..'); # to the root of repo
 rename('src', 'mytinytodo') or die("Cant rename 'src'\n");
 
-`zip -9 -r mytinytodo.zip mytinytodo`;	#OS dep.!!!
+`zip -9 -r mytinytodo.zip mytinytodo`;  #OS dep.!!!
 if (!file_exists('mytinytodo.zip')) {
     die("Failed to pack files (no output zip file)\n");
 }

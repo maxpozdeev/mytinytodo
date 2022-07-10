@@ -126,7 +126,7 @@ function myErrorHandler($errno, $errstr, $errfile, $errline)
     elseif ($errno==E_NOTICE || $errno==E_USER_NOTICE || $errno==E_DEPRECATED || $errno==E_USER_DEPRECATED) {
         if (error_reporting() & $errno) $error = 'Notice'; else return;
     }
-    else $error = "Error ($errno)";	# here may be E_RECOVERABLE_ERROR
+    else $error = "Error ($errno)"; // here may be E_RECOVERABLE_ERROR
     throw new Exception("$error: '$errstr' in $errfile:$errline", -1);
 }
 

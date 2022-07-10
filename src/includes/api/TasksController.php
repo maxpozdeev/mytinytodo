@@ -363,7 +363,7 @@ class TasksController extends ApiController {
         $db = DBConnection::instance();
         $compl = (int)($this->req->jsonBody['compl'] ?? 0);
         $listId = (int)$db->sq("SELECT list_id FROM {$db->prefix}todolist WHERE id=$id");
-        if ($compl)	$ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->prefix}todolist WHERE list_id=$listId AND compl=1");
+        if ($compl) $ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->prefix}todolist WHERE list_id=$listId AND compl=1");
         else $ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->prefix}todolist WHERE list_id=$listId AND compl=0");
         $dateCompleted = $compl ? time() : 0;
         $db->dq("UPDATE {$db->prefix}todolist SET compl=$compl,ow=$ow,d_completed=?,d_edited=? WHERE id=$id",
@@ -542,15 +542,15 @@ class TasksController extends ApiController {
         $a['timestamp'] = mktime(0,0,0, (int)$ad[1], (int)$ad[2], (int)$ad[0]);
         $diff = mktime(0,0,0, (int)$ad[1], (int)$ad[2], (int)$ad[0]) - mktime(0,0,0, (int)$at[1], (int)$at[2], (int)$at[0]);
 
-        if ($diff < -604800 && $ad[0] == $at[0])	{ $a['class'] = 'past'; $a['str'] = formatDate3(Config::get('dateformatshort'), (int)$ad[0], (int)$ad[1], (int)$ad[2], $lang); }
-        elseif ($diff < -604800)	{ $a['class'] = 'past'; $a['str'] = formatDate3(Config::get('dateformat2'), (int)$ad[0], (int)$ad[1], (int)$ad[2], $lang); }
-        elseif ($diff < -86400)		{ $a['class'] = 'past'; $a['str'] = sprintf($lang->get('daysago'),ceil(abs($diff)/86400)); }
-        elseif ($diff < 0)			{ $a['class'] = 'past'; $a['str'] = $lang->get('yesterday'); }
-        elseif ($diff < 86400)		{ $a['class'] = 'today'; $a['str'] = $lang->get('today'); }
-        elseif ($diff < 172800)		{ $a['class'] = 'today'; $a['str'] = $lang->get('tomorrow'); }
-        elseif ($diff < 691200)		{ $a['class'] = 'soon'; $a['str'] = sprintf($lang->get('indays'),ceil($diff/86400)); }
-        elseif ($ad[0] == $at[0])	{ $a['class'] = 'future'; $a['str'] = formatDate3(Config::get('dateformatshort'), (int)$ad[0], (int)$ad[1], (int)$ad[2], $lang); }
-        else						{ $a['class'] = 'future'; $a['str'] = formatDate3(Config::get('dateformat2'), (int)$ad[0], (int)$ad[1], (int)$ad[2], $lang); }
+        if ($diff < -604800 && $ad[0] == $at[0]) { $a['class'] = 'past'; $a['str'] = formatDate3(Config::get('dateformatshort'), (int)$ad[0], (int)$ad[1], (int)$ad[2], $lang); }
+        elseif ($diff < -604800)    { $a['class'] = 'past'; $a['str'] = formatDate3(Config::get('dateformat2'), (int)$ad[0], (int)$ad[1], (int)$ad[2], $lang); }
+        elseif ($diff < -86400)     { $a['class'] = 'past'; $a['str'] = sprintf($lang->get('daysago'),ceil(abs($diff)/86400)); }
+        elseif ($diff < 0)          { $a['class'] = 'past'; $a['str'] = $lang->get('yesterday'); }
+        elseif ($diff < 86400)      { $a['class'] = 'today'; $a['str'] = $lang->get('today'); }
+        elseif ($diff < 172800)     { $a['class'] = 'today'; $a['str'] = $lang->get('tomorrow'); }
+        elseif ($diff < 691200)     { $a['class'] = 'soon'; $a['str'] = sprintf($lang->get('indays'),ceil($diff/86400)); }
+        elseif ($ad[0] == $at[0])   { $a['class'] = 'future'; $a['str'] = formatDate3(Config::get('dateformatshort'), (int)$ad[0], (int)$ad[1], (int)$ad[2], $lang); }
+        else                        { $a['class'] = 'future'; $a['str'] = formatDate3(Config::get('dateformat2'), (int)$ad[0], (int)$ad[1], (int)$ad[2], $lang); }
 
         #avoid short year
         $fmt = str_replace('y', 'Y', Config::get('dateformat2'));

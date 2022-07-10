@@ -112,7 +112,7 @@ class Config
                 $val = passwordHash($val); // in v1.7 password is hashed
             }
             // if (!isset(self::$dbparams[$key])) {
-            // 	throw new Exception("Unknown key: $key");
+            //     throw new Exception("Unknown key: $key");
             // }
             self::$config[$key] = $val;
         }

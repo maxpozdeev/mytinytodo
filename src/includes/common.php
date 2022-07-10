@@ -32,7 +32,7 @@ function htmlarray_ref(&$a, $exclude=null)
 
 function _post($param,$defvalue = '')
 {
-    if(!isset($_POST[$param])) 	{
+    if(!isset($_POST[$param])) {
         return $defvalue;
     }
     else {

@@ -219,9 +219,9 @@ function createMysqlTables($db)
     `compl` TINYINT UNSIGNED NOT NULL default 0,
     `title` VARCHAR(250) NOT NULL,
     `note` TEXT,
-    `prio` TINYINT NOT NULL default 0,			/* priority -,0,+ */
-    `ow` INT NOT NULL default 0,				/* order weight */
-    `tags` VARCHAR(600) NOT NULL default '',	/* for fast access to task tags */
+    `prio` TINYINT NOT NULL default 0,          /* priority -,0,+ */
+    `ow` INT NOT NULL default 0,                /* order weight */
+    `tags` VARCHAR(600) NOT NULL default '',    /* for fast access to task tags */
     `tags_ids` VARCHAR(250) NOT NULL default '', /* no more than 22 tags (x11 chars) */
     `duedate` DATE default NULL,
     PRIMARY KEY(`id`),
@@ -246,7 +246,7 @@ function createMysqlTables($db)
     `list_id` INT UNSIGNED NOT NULL,
     KEY(`tag_id`),
     KEY(`task_id`),
-    KEY(`list_id`)		/* for tagcloud */
+    KEY(`list_id`)  /* for tagcloud */
 ) CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci ");
 
 
@@ -260,10 +260,10 @@ function createMysqlTables($db)
 
     $db->ex(
 "CREATE TABLE {$db->prefix}sessions (
-    `id`          VARCHAR(64) NOT NULL default '',		/* upto 64 bytes for sha256 */
+    `id`          VARCHAR(64) NOT NULL default '',  /* upto 64 bytes for sha256 */
     `data`        TEXT,
-    `last_access` INT UNSIGNED NOT NULL default 0,		/* time() timestamp */
-    `expires`     INT UNSIGNED NOT NULL default 0,		/* time() timestamp */
+    `last_access` INT UNSIGNED NOT NULL default 0,  /* time() timestamp */
+    `expires`     INT UNSIGNED NOT NULL default 0,  /* time() timestamp */
     UNIQUE KEY `id` (`id`)
 ) CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ");
 }
@@ -324,7 +324,7 @@ function createSqliteTables($db)
 ) ");
     $db->ex("CREATE INDEX tag2task_tag_id ON {$db->prefix}tag2task (tag_id)");
     $db->ex("CREATE INDEX tag2task_task_id ON {$db->prefix}tag2task (task_id)");
-    $db->ex("CREATE INDEX tag2task_list_id ON {$db->prefix}tag2task (list_id)");	/* for tagcloud */
+    $db->ex("CREATE INDEX tag2task_list_id ON {$db->prefix}tag2task (list_id)");    /* for tagcloud */
 
 
     $db->ex(
