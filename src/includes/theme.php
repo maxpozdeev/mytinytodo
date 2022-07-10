@@ -9,6 +9,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <title><?php mttinfo('title'); ?></title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/gig" href="<?php mttinfo('theme_url'); ?>images/logo.gif" />
   <link rel="stylesheet" type="text/css" href="<?php mttinfo('theme_url'); ?>style.css?v=<?php mttinfo('version'); ?>" media="all" />
   <link rel="stylesheet" type="text/css" href="<?php mttinfo('theme_url'); ?>markdown.css?v=<?php mttinfo('version'); ?>" media="all" />
   <?php if (get_mttinfo('appearance') == 'system'): ?>
