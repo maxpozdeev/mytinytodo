@@ -8,7 +8,7 @@ if ( !isset($argv) || !isset($argv[1]) ) {
 }
 
 $repo = $argv[1];
-$dir = sys_get_temp_dir(). DIRECTORY_SEPARATOR. "mytinytodo.build"; #php 5.2.1
+$dir = sys_get_temp_dir(). DIRECTORY_SEPARATOR. "mytinytodo.build";
 $curdir = getcwd();
 $zipfile = $curdir. DIRECTORY_SEPARATOR. 'mytinytodo-v@VERSION-@REV.zip';
 $ver = 0;
@@ -43,14 +43,8 @@ print "> Version is $ver\n";
 
 rename('db/todolist.db.empty', 'db/todolist.db');
 
-/*
-$fh = fopen("./content/themes/default/index.php", 'a') or die("cant write index.php\n");
-fwrite($fh, "\n<!-- $rev -->");
-fclose($fh);
-*/
-
 unlink('./docker-config.php');
-unlink('./content/lang/en-rtl.json');
+unlink('./includes/lang/en-rtl.json');
 unlink('./mtt-edit-settings.php');
 
 /*

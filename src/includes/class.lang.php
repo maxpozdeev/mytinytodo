@@ -13,7 +13,7 @@
 class Lang
 {
     protected static $instance;
-    protected static $langDir = MTTLANG;
+    protected static $langDir = MTTINC . 'lang/';
     protected $code = 'en';
     protected $default = 'en';
     protected $strings;
