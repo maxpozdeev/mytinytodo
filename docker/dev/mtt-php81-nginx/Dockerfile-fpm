@@ -1,0 +1,11 @@
+FROM php:8.1-fpm
+
+RUN docker-php-ext-install mysqli && \
+  mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" && \
+  mkdir /var/www/phpinfo
+
+#COPY php-mtt.ini     /usr/local/etc/php/conf.d/
+#COPY php-opcache.ini /usr/local/etc/php/conf.d/
+COPY phpinfo.php     /var/www/phpinfo/
+
+VOLUME /var/www/html

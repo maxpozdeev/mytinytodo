@@ -1,0 +1,38 @@
+version: "3.9"
+
+networks:
+  network:
+    name: "${PLATFORM_NAME}-network"
+
+services:
+  web:
+    build:
+      context: ../_nginx
+      dockerfile: Dockerfile-nginx
+    image: mytinytodo-dev:nginx
+    container_name: ${PLATFORM_NAME}-web
+    ports:
+      - "8080:80"
+    volumes:
+      - ../../../src:/var/www/html
+    depends_on:
+      - fpm
+    networks:
+      - network
+
+  fpm:
+    build:
+      context: .
+      dockerfile: Dockerfile-fpm
+    image: mytinytodo-dev:php8.1-fpm
+    container_name: ${PLATFORM_NAME}-fpm
+    hostname: php-fpm
+    environment:
+      - MTT_ENABLE_DEBUG=YES
+      - MTT_DB_TYPE=sqlite
+    volumes:
+      - ../../../src:/var/www/html
+      - ./php-mtt.ini:/usr/local/etc/php/conf.d/php-mtt.ini
+      - ./php-opcache.ini:/usr/local/etc/php/conf.d/php-opcache.ini
+    networks:
+      - network
