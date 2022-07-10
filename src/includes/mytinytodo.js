@@ -50,6 +50,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 	menus: {},
 	mttUrl: '',
 	homeUrl: '',
+	apiUrl: '',
 	options: {
 		token: '',
 		title: '',
@@ -119,9 +120,9 @@ var mytinytodo = window.mytinytodo = _mtt = {
 	lastHistoryState: null,
 
 	// procs
-	setApi: function(storage)
+	setApiDriver: function(driver)
 	{
-		this.db = new storage(this);
+		this.db = new driver(_mtt);
 		return this;
 	},
 
@@ -135,6 +136,13 @@ var mytinytodo = window.mytinytodo = _mtt = {
 		if (options.hasOwnProperty('mttUrl')) {
 			this.mttUrl = options.mttUrl;
 			delete options.mttUrl;
+		}
+		if (options.hasOwnProperty('apiUrl')) {
+			this.apiUrl = options.apiUrl;
+			delete options.apiUrl;
+		}
+		else {
+			this.apiUrl = this.mttUrl + 'api.php/';
 		}
 		if (options.hasOwnProperty('db')) {
 			delete options.db;
@@ -546,9 +554,9 @@ var mytinytodo = window.mytinytodo = _mtt = {
 
 		$(document).ajaxError(function(event, request, settings){
 			var errtxt;
-			if(request.status == 0) errtxt = 'Bad connection';
+			if (request.status == 0) errtxt = 'Bad connection';
 			else if(request.status == 403) errtxt = request.responseText;
-			else if(request.status != 200) errtxt = 'HTTP: '+request.status+'/'+request.statusText;
+			else if (request.status != 200) errtxt = 'HTTP: '+request.status+'/'+request.statusText + "\n" + request.responseText;
 			else errtxt = request.responseText;
 			flashError(_mtt.lang.get('error'), errtxt);
 		});
@@ -1729,6 +1737,7 @@ function loadTags(listId, callback)
 		else tagsList = json.cloud;
 		var cloud = '';
 		$.each(tagsList, function(i,item){
+			// item.tag is escaped with htmlspecialchars()
 			cloud += ' <a href="#" tag="'+item.tag+'" tagid="'+item.id+'" class="tag w'+item.w+'" >'+item.tag+'</a>';
 		});
 		$('#tagcloudcontent').html(cloud)
@@ -2487,7 +2496,7 @@ function showLogin()
 
 function doAuth(form)
 {
-	$.post(mytinytodo.mttUrl+'ajax.php?login', { login:1, password: form.password.value }, function(json){
+	_mtt.db.request( 'login', { password: form.password.value }, function(json) {
 		form.password.value = '';
 		if(json.logged)
 		{
@@ -2498,16 +2507,16 @@ function doAuth(form)
 			flashError(_mtt.lang.get('invalidpass'));
 			$('#password').focus();
 		}
-	}, 'json');
+	});
 }
 
 function logout()
 {
-	$.post(mytinytodo.mttUrl+'ajax.php?logout', { logout:1 }, function(json){
+	_mtt.db.request( 'logout', {}, function(json) {
 		flag.isLogged = false;
 		window.location.hash = '';
 		window.location.reload();
-	}, 'json');
+	});
 	return false;
 }
 

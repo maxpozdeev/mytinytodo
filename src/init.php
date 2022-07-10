@@ -157,7 +157,7 @@ function check_token()
     $token = access_token();
     if ($token == '' || !isset($_SERVER['HTTP_MTT_TOKEN']) || $_SERVER['HTTP_MTT_TOKEN'] != $token) {
         http_response_code(403);
-        die("Access denied! Try to reload the page.");
+        die("Access denied! You must authenticate first.");
     }
 }
 
@@ -268,12 +268,19 @@ function get_unsafe_mttinfo($v)
             }
             return $_mttinfo['url'];
         case 'mtt_url':
-            /* Directory with ajax.php. No need to set if you use default directory structure. */
+            /* Directory with settings.php. No need to set if you use default directory structure. */
             $_mttinfo['mtt_url'] = Config::getUrl('mtt_url'); // need to have a trailing slash
             if ($_mttinfo['mtt_url'] == '') {
                 $_mttinfo['mtt_url'] = url_dir( get_unsafe_mttinfo('url'), 0 );
             }
             return $_mttinfo['mtt_url'];
+        case 'api_url':
+            /* URL for API, like http://localhost/mytinytodo/api/. No need to set by default. */
+            $_mttinfo['api_url'] = Config::getUrl('api_url'); // need to have a trailing slash
+            if ($_mttinfo['api_url'] == '') {
+                $_mttinfo['api_url'] = get_unsafe_mttinfo('mtt_url'). 'api/';
+            }
+            return $_mttinfo['api_url'];
         case 'title':
             $_mttinfo['title'] = (Config::get('title') != '') ? Config::get('title') : __('My Tiny Todolist');
             return $_mttinfo['title'];
