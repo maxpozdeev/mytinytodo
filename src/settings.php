@@ -51,6 +51,7 @@ if(isset($_POST['save']))
     Config::set('dateformatshort', removeNewLines(_post('dateformatshort')) );
     Config::set('title', removeNewLines(trim(_post('title'))) );
     Config::set('showdate', (int)_post('showdate'));
+    Config::set('appearance', removeNewLines(trim(_post('appearance'))) );
     Config::save();
     $t['saved'] = 1;
     jsonExit($t);
@@ -262,6 +263,14 @@ header('Content-type:text/html; charset=utf-8');
 <div class="td">
  <label><input type="radio" name="showdate" value="1" <?php if(_c('showdate')) echo 'checked="checked"'; ?> /><?php _e('set_enabled');?></label> <br/>
  <label><input type="radio" name="showdate" value="0" <?php if(!_c('showdate')) echo 'checked="checked"'; ?> /><?php _e('set_disabled');?></label>
+</div>
+</div>
+
+<div class="tr">
+<div class="th"><?php _e('set_appearance');?>:</div>
+<div class="td">
+ <label><input type="radio" name="appearance" value="system" <?php if(_c('appearance') == 'system') echo 'checked="checked"'; ?> /><?php _e('set_appearance_system');?></label> <br/>
+ <label><input type="radio" name="appearance" value="light"  <?php if(_c('appearance') == 'light')  echo 'checked="checked"'; ?> /><?php _e('set_appearance_light');?></label>
 </div>
 </div>
 
