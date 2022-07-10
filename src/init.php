@@ -11,8 +11,6 @@ if (version_compare(PHP_VERSION, '7.2.0') < 0) {
 
 if(!defined('MTTPATH')) define('MTTPATH', dirname(__FILE__) .'/');
 if(!defined('MTTINC'))  define('MTTINC', MTTPATH. 'includes/');
-if(!defined('MTTCONTENT'))  define('MTTCONTENT', MTTPATH. 'content/');
-if(!defined('MTTTHEMES'))  define('MTTTHEMES', MTTCONTENT. 'themes/');
 
 if (getenv('MTT_ENABLE_DEBUG') == 'YES') {
     define('MTT_DEBUG', true);
