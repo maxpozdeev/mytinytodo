@@ -6,7 +6,7 @@ root = true
 [*]
 charset = utf-8
 end_of_line = lf
-# tab_width here used only to represent tabs if indent_size is not set
+# tab_width here is only used to represent tabs if indent_size is not set
 tab_width = 4
 trim_trailing_whitespace = true
 insert_final_newline = true
@@ -15,9 +15,8 @@ insert_final_newline = true
 indent_style = space
 indent_size = 4
 
-# temporary. spaces will be used later.
 [*.js]
-indent_style = tab
+indent_style = space
 tab_width = 4
 
 [*.{css,yml,html,svg}]

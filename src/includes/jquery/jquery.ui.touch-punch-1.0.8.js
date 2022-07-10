@@ -33,16 +33,16 @@
   // Detect touch support - Windows Surface devices and other touch devices
   $.support.mspointer = window.navigator.msPointerEnabled;
   $.support.touch = ( 'ontouchstart' in document
-   	|| 'ontouchstart' in window
-   	|| window.TouchEvent
-   	|| (window.DocumentTouch && document instanceof DocumentTouch)
-   	|| navigator.maxTouchPoints > 0
-   	|| navigator.msMaxTouchPoints > 0
+       || 'ontouchstart' in window
+       || window.TouchEvent
+       || (window.DocumentTouch && document instanceof DocumentTouch)
+       || navigator.maxTouchPoints > 0
+       || navigator.msMaxTouchPoints > 0
   );
 
   // Ignore browsers without touch or mouse support
   if ((!$.support.touch && !$.support.mspointer) || !$.ui.mouse) {
-		return;
+        return;
   }
 
   var mouseProto = $.ui.mouse.prototype,
@@ -50,11 +50,11 @@
       _mouseDestroy = mouseProto._mouseDestroy,
       touchHandled;
 
-	var delay = 300,
-  		delayTimer,
-			delayEvent,
-			delayStarted = false,
-			delayFinished = false;
+    var delay = 300,
+          delayTimer,
+            delayEvent,
+            delayStarted = false,
+            delayFinished = false;
 
 
     /**
@@ -111,37 +111,37 @@
     event.target.dispatchEvent(simulatedEvent);
   }
 
-	function startDelayTimer (event) {
-		clearTimeout(delayTimer);
-		delayEvent = event;
-		delayTimer = setTimeout(function() {
-			fireMouseDown.call(this);
-		}, delay);
-		delayStarted = true;
-		delayFinished = false;
-	}
+    function startDelayTimer (event) {
+        clearTimeout(delayTimer);
+        delayEvent = event;
+        delayTimer = setTimeout(function() {
+            fireMouseDown.call(this);
+        }, delay);
+        delayStarted = true;
+        delayFinished = false;
+    }
 
-	function fireMouseDown () {
+    function fireMouseDown () {
 
-		var self = this;
+        var self = this;
 
-		delayFinished = true;
+        delayFinished = true;
 
-		// Set the flag to prevent other widgets from inheriting the touch event
-		touchHandled = true;
+        // Set the flag to prevent other widgets from inheriting the touch event
+        touchHandled = true;
 
-		// Track movement to determine if interaction was a click
-		self._touchMoved = false;
+        // Track movement to determine if interaction was a click
+        self._touchMoved = false;
 
-		// Simulate the mouseover event
-		simulateMouseEvent(delayEvent, 'mouseover');
+        // Simulate the mouseover event
+        simulateMouseEvent(delayEvent, 'mouseover');
 
-		// Simulate the mousemove event
-		simulateMouseEvent(delayEvent, 'mousemove');
+        // Simulate the mousemove event
+        simulateMouseEvent(delayEvent, 'mousemove');
 
-		// Simulate the mousedown event
-		simulateMouseEvent(delayEvent, 'mousedown');
-	}
+        // Simulate the mousedown event
+        simulateMouseEvent(delayEvent, 'mousedown');
+    }
 
 
   /**
@@ -163,9 +163,9 @@
       return;
     }
 
-		if (!delayStarted) {
-			startDelayTimer.call(self, event);
-		}
+        if (!delayStarted) {
+            startDelayTimer.call(self, event);
+        }
   };
 
   /**
@@ -174,12 +174,12 @@
    */
   mouseProto._touchMove = function (event) {
 
-		//
-		if (!delayFinished) {
-			delayStarted = false;
-			clearTimeout(delayTimer);
-			return;
-		}
+        //
+        if (!delayFinished) {
+            delayStarted = false;
+            clearTimeout(delayTimer);
+            return;
+        }
 
     // Ignore event if not handled
     if (!touchHandled) {
@@ -199,12 +199,12 @@
    */
   mouseProto._touchEnd = function (event) {
 
-		//
-		if (delayStarted) {
-			clearTimeout(delayTimer);
-			delayStarted = false;
-			fireMouseDown();
-		}
+        //
+        if (delayStarted) {
+            clearTimeout(delayTimer);
+            delayStarted = false;
+            fireMouseDown();
+        }
 
     // Ignore event if not handled
     if (!touchHandled) {
