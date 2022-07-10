@@ -251,9 +251,9 @@ function get_unsafe_mttinfo($v)
         case 'theme_url':
             $_mttinfo['theme_url'] = get_unsafe_mttinfo('mtt_url'). 'content/theme/';
             return $_mttinfo['theme_url'];
-        case 'includes_url':
-            $_mttinfo['includes_url'] = get_unsafe_mttinfo('mtt_url'). 'includes/';
-            return $_mttinfo['includes_url'];
+        case 'content_url':
+            $_mttinfo['content_url'] = get_unsafe_mttinfo('mtt_url'). 'content/';
+            return $_mttinfo['content_url'];
         case 'url':
             /* full url to homepage: directory with root index.php or custom index file in the root. */
             /* ex: http://my.site/mytinytodo/   or  https://my.site/mytinytodo/home_for_2nd_theme.php  */
