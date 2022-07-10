@@ -63,7 +63,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
         saveShowNotes: false,
         firstdayofweek: 1,
         touchDevice: false,
-        calendarIcon: 'calendar.png', // need templateUrl+icon
+        calendarIcon: 'calendar.png', // need themeUrl+icon
         history: true,
         markdown: true,
     },

@@ -77,7 +77,6 @@ class Config
         'dateformat' => array('default'=>'j M Y', 'type'=>'s'),
         'dateformat2' => array('default'=>'n/j/y', 'type'=>'s'),
         'dateformatshort' => array('default'=>'j M', 'type'=>'s'),
-        'template' => array('default'=>'default', 'type'=>'s'),
 
         # Show task date in list
         'showdate' => array('default'=>0, 'type'=>'i'),
