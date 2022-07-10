@@ -10,7 +10,7 @@
   :root {
     color-scheme: dark;
 
-    --color-bg: #171717;
+    --color-bg: #151515;
     --color-text-default: #eee;
     --color-text-reduced: #e0e0e0;
     --color-text-reduced2: #999;
@@ -21,7 +21,7 @@
     --color-btn-default: #fff;
     --color-btn-hover: #444;
     --color-submit: #444;
-    --color-row-underlinig: #333333;
+    --color-row-underlinig: #303030;
     --color-border-default: #555;
     --color-border-focus: #5a8df0;
     --color-error: #ff3333;
