@@ -9,14 +9,14 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <title><?php mttinfo('title'); ?></title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" type="text/css" href="<?php mttinfo('template_url'); ?>style.css?v=<?php mttinfo('version'); ?>" media="all" />
-  <link rel="stylesheet" type="text/css" href="<?php mttinfo('template_url'); ?>markdown.css?v=<?php mttinfo('version'); ?>" media="all" />
+  <link rel="stylesheet" type="text/css" href="<?php mttinfo('theme_url'); ?>style.css?v=<?php mttinfo('version'); ?>" media="all" />
+  <link rel="stylesheet" type="text/css" href="<?php mttinfo('theme_url'); ?>markdown.css?v=<?php mttinfo('version'); ?>" media="all" />
   <?php if (get_mttinfo('appearance') == 'system'): ?>
-  <link rel="stylesheet" type="text/css" href="<?php mttinfo('template_url'); ?>dark.css?v=<?php mttinfo('version'); ?>" media="screen" />
+  <link rel="stylesheet" type="text/css" href="<?php mttinfo('theme_url'); ?>dark.css?v=<?php mttinfo('version'); ?>" media="screen" />
   <?php endif; ?>
-  <link rel="stylesheet" type="text/css" href="<?php mttinfo('template_url'); ?>print.css?v=<?php mttinfo('version'); ?>" media="print" />
+  <link rel="stylesheet" type="text/css" href="<?php mttinfo('theme_url'); ?>print.css?v=<?php mttinfo('version'); ?>" media="print" />
   <?php if(Config::get('rtl')): ?>
-  <link rel="stylesheet" type="text/css" href="<?php mttinfo('template_url'); ?>style_rtl.css?v=<?php mttinfo('version'); ?>" media="all" />
+  <link rel="stylesheet" type="text/css" href="<?php mttinfo('theme_url'); ?>style_rtl.css?v=<?php mttinfo('version'); ?>" media="all" />
   <?php endif; ?>
 </head>
 

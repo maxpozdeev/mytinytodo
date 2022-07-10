@@ -27,9 +27,7 @@ if (need_auth() && access_token() == '') {
     update_token();
 }
 
-define('TEMPLATEPATH', MTTTHEMES. Config::get('template'). '/');
-
-require(TEMPLATEPATH. 'index.php');
+require(MTTINC. 'theme.php');
 
 // end
 
@@ -79,7 +77,7 @@ function js_options()
         "showdate" => Config::get('showdate') ? true : false,
         "duedatepickerformat" => htmlspecialchars(Config::get('dateformat2')),
         "firstdayofweek" => (int) Config::get('firstdayofweek'),
-        "calendarIcon" => get_mttinfo('template_url'). 'images/calendar.svg',
+        "calendarIcon" => get_mttinfo('theme_url'). 'images/calendar.svg',
         "autotag" => Config::get('autotag') ? true : false,
         "markdown" => Config::get('markup') == 'v1' ? false : true
     );

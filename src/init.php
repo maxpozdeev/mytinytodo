@@ -251,9 +251,9 @@ function get_unsafe_mttinfo($v)
     }
     switch($v)
     {
-        case 'template_url':
-            $_mttinfo['template_url'] = get_unsafe_mttinfo('mtt_url'). 'content/themes/'. Config::get('template') . '/';
-            return $_mttinfo['template_url'];
+        case 'theme_url':
+            $_mttinfo['theme_url'] = get_unsafe_mttinfo('mtt_url'). 'content/theme/';
+            return $_mttinfo['theme_url'];
         case 'includes_url':
             $_mttinfo['includes_url'] = get_unsafe_mttinfo('mtt_url'). 'includes/';
             return $_mttinfo['includes_url'];
