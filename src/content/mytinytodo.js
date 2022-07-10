@@ -434,14 +434,14 @@ var mytinytodo = window.mytinytodo = _mtt = {
             }
         });
 
-        $('#tasklist').on('dblclick', '> li.task-row', function(){
-            //clear selection
-            if(document.selection && document.selection.empty && document.selection.createRange().text) document.selection.empty();
-            else if(window.getSelection) window.getSelection().removeAllRanges();
+        $('#tasklist').on('dblclick', '> li.task-row .task-middle', function(){
+            var id = parseInt(getLiTaskId(this));
+            if (id) {
+                //clear selection
+                if (document.selection && document.selection.empty && document.selection.createRange().text) document.selection.empty();
+                else if(window.getSelection) window.getSelection().removeAllRanges();
 
-            if (this.id) {
-                var id = this.id.split('_',2)[1];
-                if (id) editTask(parseInt(id));
+                editTask(parseInt(id));
             }
         });
 
