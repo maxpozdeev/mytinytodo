@@ -90,6 +90,7 @@ function deleteTreeIfDir($dir)
     if ( is_dir($dir) ) {
         switch (PHP_OS) {
             case 'Darwin':
+            case 'Linux':
                 system("rm -rf $dir");
                 break;
             case 'Windows':
