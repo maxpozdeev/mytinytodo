@@ -5,6 +5,7 @@
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
+$checkDbExists = true;
 require_once('./init.php');
 
 //Parse query string

@@ -24,53 +24,15 @@ else {
     define('MTT_DEBUG', false);
 }
 
-requireConfig();
 require_once(MTTINC. 'common.php');
 require_once(MTTINC. 'class.dbconnection.php');
 require_once(MTTINC. 'class.dbcore.php');
 require_once(MTTINC. 'class.config.php');
 require_once(MTTINC. 'version.php');
 
+requireConfig();
+configureDbConnection();
 
-# MySQL Database Connection
-if (MTT_DB_TYPE == 'mysql')
-{
-    if (defined('MTT_DB_DRIVER') && MTT_DB_DRIVER == 'mysqli') {
-        require_once(MTTINC. 'class.db.mysqli.php');
-        $db = new Database_Mysqli();
-    }
-    else {
-        require_once(MTTINC. 'class.db.mysql.php');
-        $db = new Database_Mysql();
-    }
-    DBConnection::init($db);
-    try {
-        $db->connect( array(
-            'host' => MTT_DB_HOST,
-            'user' => MTT_DB_USER,
-            'password' => MTT_DB_PASSWORD,
-            'db' => MTT_DB_NAME,
-        ));
-    }
-    catch(Exception $e) {
-        logAndDie("Failed to connect to mysql database: ". $e->getMessage());
-    }
-    $db->dq("SET NAMES utf8mb4");
-}
-
-# SQLite3 Database
-elseif (MTT_DB_TYPE == 'sqlite')
-{
-    require_once(MTTINC. 'class.db.sqlite3.php');
-    $db = DBConnection::init(new Database_Sqlite3);
-    $db->connect( array( 'filename' => MTTPATH. 'db/todolist.db' ) );
-}
-else {
-    die("Incorrect database connection config");
-}
-
-DBConnection::setTablePrefix(MTT_DB_PREFIX);
-DBCore::setDefaultInstance(new DBCore($db));
 Config::load();
 
 
@@ -106,6 +68,59 @@ function requireConfig()
     # It seems not installed
     if (!$defined) {
         die("Not installed. Run <a href=setup.php>setup.php</a> first.");
+    }
+}
+
+function configureDbConnection()
+{
+
+    # MySQL Database Connection
+    if (MTT_DB_TYPE == 'mysql')
+    {
+        if (defined('MTT_DB_DRIVER') && MTT_DB_DRIVER == 'mysqli') {
+            require_once(MTTINC. 'class.db.mysqli.php');
+            $db = new Database_Mysqli();
+        }
+        else {
+            require_once(MTTINC. 'class.db.mysql.php');
+            $db = new Database_Mysql();
+        }
+        DBConnection::init($db);
+        try {
+            $db->connect( array(
+                'host' => MTT_DB_HOST,
+                'user' => MTT_DB_USER,
+                'password' => MTT_DB_PASSWORD,
+                'db' => MTT_DB_NAME,
+            ));
+        }
+        catch(Exception $e) {
+            logAndDie("Failed to connect to mysql database: ". $e->getMessage());
+        }
+        $db->dq("SET NAMES utf8mb4");
+    }
+
+    # SQLite3 Database
+    elseif (MTT_DB_TYPE == 'sqlite')
+    {
+        require_once(MTTINC. 'class.db.sqlite3.php');
+        $db = DBConnection::init(new Database_Sqlite3);
+        $db->connect( array( 'filename' => MTTPATH. 'db/todolist.db' ) );
+    }
+    else {
+        die("Incorrect database connection config");
+    }
+
+    DBConnection::setTablePrefix(MTT_DB_PREFIX);
+    DBCore::setDefaultInstance(new DBCore($db));
+
+    # Check tables created
+    global $checkDbExists;
+    if (!Config::$noDatabase && isset($checkDbExists) && $checkDbExists) {
+        $exists = $db->tableExists($db->prefix.'settings');
+        if (!$exists) {
+            die("Need to create or update the database. Run <a href=setup.php>setup.php</a> first.");
+        }
     }
 }
 
