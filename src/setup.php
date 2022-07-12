@@ -196,7 +196,7 @@ function createMysqlTables($db)
     `id` INT UNSIGNED NOT NULL auto_increment,
     `uuid` CHAR(36) NOT NULL default '',
     `ow` INT NOT NULL default 0,
-    `name` VARCHAR(50) NOT NULL default '',
+    `name` VARCHAR(250) NOT NULL default '',
     `d_created` INT UNSIGNED NOT NULL default 0,
     `d_edited` INT UNSIGNED NOT NULL default 0,
     `sorting` TINYINT UNSIGNED NOT NULL default 0,
@@ -329,7 +329,7 @@ function createSqliteTables($db)
 
     $db->ex(
 "CREATE TABLE {$db->prefix}settings (
-    param_key   VARCHAR(100) NOT NULL default '',
+    param_key   VARCHAR(250) NOT NULL default '',
     param_value TEXT
 ) ");
 
@@ -519,6 +519,12 @@ function update_14_17(Database_Abstract $db, $dbtype)
     {
         $db->ex("ALTER TABLE {$db->prefix}lists ADD `extra` TEXT");
 
+        # increase the length of list and tag name
+        # (not applicable to sqlite cause it uses VARCHAR fields of eny length as TEXT)
+        $db->ex("ALTER TABLE {$db->prefix}todolist CHANGE `tags` `tags` VARCHAR(2000) NOT NULL default '' ");
+        $db->ex("ALTER TABLE {$db->prefix}tags CHANGE `name` `name` VARCHAR(250) NOT NULL default '' ");
+        $db->ex("ALTER TABLE {$db->prefix}lists CHANGE `name` `name` VARCHAR(250) NOT NULL default '' ");
+
         # convert charset to utf8mb4
 
         $db->ex("ALTER TABLE {$db->prefix}lists    CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
@@ -530,7 +536,7 @@ function update_14_17(Database_Abstract $db, $dbtype)
 
         $db->ex(
 "CREATE TABLE {$db->prefix}settings (
- `param_key`   VARCHAR(100) NOT NULL default '',
+ `param_key`   VARCHAR(250) NOT NULL default '',
  `param_value` TEXT,
 UNIQUE KEY `param_key` (`param_key`)
 ) CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ");
@@ -565,7 +571,7 @@ UNIQUE KEY `id` (`id`)
 
         $db->ex(
 "CREATE TABLE {$db->prefix}sessions (
- id          VARCHAR(100) NOT NULL default '',
+ id          VARCHAR(250) NOT NULL default '',
  data        TEXT,
  last_access INTEGER UNSIGNED NOT NULL default 0,
  expires     INTEGER UNSIGNED NOT NULL default 0
