@@ -16,4 +16,4 @@ else if (getenv('MTT_DB_TYPE') == 'sqlite') {
     define("MTT_DB_PREFIX", "");
 }
 
-define("MTT_SALT", "Random text");
+define("MTT_SALT", "Put Random Text Here");
