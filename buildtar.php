@@ -4,19 +4,19 @@
 // PHP 5.4 is required
 
 if ( !isset($argv) || !isset($argv[1]) ) {
-    die("Usage: buildzip.php <path_to_repo> [-o source.zip] [-v VERSION]\n");
+    die("Usage: buildtar.php <path_to_repo> [-o source.tar.gz] [-v VERSION]\n");
 }
 
 $repo = $argv[1];
 $dir = sys_get_temp_dir(). DIRECTORY_SEPARATOR. "mytinytodo.build";
 $curdir = getcwd();
-$zipfile = $curdir. DIRECTORY_SEPARATOR. 'mytinytodo-v@VERSION-@REV.zip';
+$archive = $curdir. DIRECTORY_SEPARATOR. 'mytinytodo-v@VERSION-@REV.tar.gz';
 $ver = 0;
 
 while ($arg = next($argv))
 {
     if ($arg == '-o') {
-        $zipfile = next($argv);
+        $archive = next($argv);
     }
     elseif ($arg == '-v') {
         $ver = next($argv);
@@ -62,23 +62,23 @@ closedir($dh);
 chdir('..'); # to the root of repo
 rename('src', 'mytinytodo') or die("Cant rename 'src'\n");
 
-`zip -9 -r mytinytodo.zip mytinytodo`;  #OS dep.!!!
-if (!file_exists('mytinytodo.zip')) {
-    die("Failed to pack files (no output zip file)\n");
+`tar -czf mytinytodo.tar.gz mytinytodo`;  #OS dep.!!!
+if (!file_exists('mytinytodo.tar.gz')) {
+    die("Failed to pack files (no output tar.gz file)\n");
 }
 
-$zipfile = str_replace('@VERSION', $ver, $zipfile);
-$zipfile = str_replace('@REV', $rev, $zipfile);
+$archive = str_replace('@VERSION', $ver, $archive);
+$archive = str_replace('@REV', $rev, $archive);
 
 chdir($curdir);
-if ( ! rename("$dir/mytinytodo.zip", $zipfile) ) {
-    die("Failed to move mytinytodo.zip to $zipfile");
+if ( ! rename("$dir/mytinytodo.tar.gz", $archive) ) {
+    die("Failed to move mytinytodo.tar.gz to $archive");
 }
 
 deleteTreeIfDir($dir);
 echo("> Temp dir was cleaned\n");
 
-echo("> Build is stored in $zipfile\n");
+echo("> Build is stored in $archive\n");
 
 
 
