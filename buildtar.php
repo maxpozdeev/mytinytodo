@@ -41,8 +41,6 @@ $rev = substr($rev, 0, 8);
 ##$ver = str_replace('@REV', $rev, $ver);
 print "> Version is $ver\n";
 
-rename('db/todolist.db.empty', 'db/todolist.db');
-
 unlink('./docker-config.php');
 unlink('./includes/lang/en-rtl.json');
 unlink('./mtt-edit-settings.php');
