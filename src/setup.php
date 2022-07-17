@@ -520,7 +520,7 @@ function update_14_17(Database_Abstract $db, $dbtype)
         $db->ex("ALTER TABLE {$db->prefix}lists ADD `extra` TEXT");
 
         # increase the length of list and tag name
-        # (not applicable to sqlite cause it uses VARCHAR fields of eny length as TEXT)
+        # (not applicable to sqlite because it uses VARCHAR fields of eny length as TEXT)
         $db->ex("ALTER TABLE {$db->prefix}todolist CHANGE `tags` `tags` VARCHAR(2000) NOT NULL default '' ");
         $db->ex("ALTER TABLE {$db->prefix}tags CHANGE `name` `name` VARCHAR(250) NOT NULL default '' ");
         $db->ex("ALTER TABLE {$db->prefix}lists CHANGE `name` `name` VARCHAR(250) NOT NULL default '' ");

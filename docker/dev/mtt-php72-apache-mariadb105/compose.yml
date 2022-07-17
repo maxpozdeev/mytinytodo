@@ -17,7 +17,7 @@ services:
       - MTT_ENABLE_DEBUG=YES
       - MTT_DB_TYPE=mysql
       - MTT_DB_HOST=db
-      - MTT_DB=mytinytodo
+      - MTT_DB_NAME=mytinytodo
       - MTT_DB_USER=mtt
       - MTT_DB_PASSWORD=mtt
       - MTT_DB_PREFIX=mtt_
