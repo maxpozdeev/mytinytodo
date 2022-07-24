@@ -534,7 +534,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
                 cancel: 'input',
                 distance: 0
             });
-            $('#cmenu_note').hide();
+            /*$('#cmenu_note').hide();*/
             $("#lists ul").sortable('disable');
             $("#mtt_body").addClass("touch-device");
         }
@@ -2149,7 +2149,7 @@ function taskContextClick(el, menu)
     }
     switch(id) {
         case 'cmenu_edit': editTask(taskId); break;
-        case 'cmenu_note': toggleTaskNote(taskId); break;
+        /*case 'cmenu_note': toggleTaskNote(taskId); break;*/
         case 'cmenu_delete': deleteTask(taskId); break;
         case 'cmenu_prio': setTaskPrio(taskId, parseInt(value)); break;
         case 'cmenu_list':

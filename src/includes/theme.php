@@ -246,7 +246,7 @@ $().ready(function(){
 <div id="taskcontextcontainer" class="mtt-menu-container" style="display:none">
 <ul>
   <li id="cmenu_edit"><b><?php _e('action_edit');?></b></li>
-  <li id="cmenu_note"><?php _e('action_note');?></li>
+  <!--<li id="cmenu_note"><?php _e('action_note');?></li>-->
   <li id="cmenu_prio" class="mtt-menu-indicator" submenu="cmenupriocontainer"><div class="submenu-icon"></div><?php _e('action_priority');?></li>
   <li id="cmenu_move" class="mtt-menu-indicator" submenu="cmenulistscontainer"><div class="submenu-icon"></div><?php _e('action_move');?></li>
   <li id="cmenu_delete"><?php _e('action_delete');?></li>
