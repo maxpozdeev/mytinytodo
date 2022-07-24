@@ -45,19 +45,15 @@ unlink('./docker-config.php');
 unlink('./includes/lang/en-rtl.json');
 unlink('./mtt-edit-settings.php');
 
-/*
-# save only 2 languages
-$dh = opendir('./content/lang/') or die("Cant opendir lang\n");
-while (false !== ($f = readdir($dh))) {
-    if (!in_array($f, ['.', '..', '.htaccess', 'en.json', 'ru.json'])) {
-        unlink('./content/lang/'. $f);
-    }
-}
-closedir($dh);
- */
-
-
 chdir('..'); # to the root of repo
+
+assert( strpos(getcwd(), ':') === false ); # FIXME: if path contains a colon ':'
+echo("> Run Composer\n");
+$retval = 0;
+if (false === system( "./composer.sh install --no-dev --no-interaction --optimize-autoloader", $retval) || $retval != 0) {
+    die("Failed to install composer libs via docker\n");
+}
+
 rename('src', 'mytinytodo') or die("Cant rename 'src'\n");
 
 `tar -czf mytinytodo.tar.gz mytinytodo`;  #OS dep.!!!
