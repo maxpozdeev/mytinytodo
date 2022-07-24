@@ -434,7 +434,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
             }
         });
 
-        $('#tasklist').on('dblclick', '> li.task-row .task-middle', function(){
+        $('#tasklist').on('dblclick', '> li.task-row .task-middle, > li.task-row .task-note-block', function(){
             var id = parseInt(getLiTaskId(this));
             if (id) {
                 //clear selection
