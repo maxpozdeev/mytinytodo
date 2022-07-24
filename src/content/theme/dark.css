@@ -71,7 +71,7 @@
     --color-duedate-default: var(--color-tab-text);
     --color-duedate-soon: #008000;
     --color-duedate-today: #FF0000;
-    --color-duedate-past: #A52A2A;
+    --color-duedate-past: #B52D2D;
 
     /* Markdown */
     --color-md-border: #333;
