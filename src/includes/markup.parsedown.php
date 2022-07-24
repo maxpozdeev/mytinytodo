@@ -6,7 +6,8 @@
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
-require_once(MTTINC. 'parsedown/Parsedown.php');
+# We do not use composer autoloader because only one class is declared in Parsedown.
+require_once(MTTINC. 'vendor/erusev/parsedown/Parsedown.php');
 
 class MTTParsedownWrapper implements MTTMarkdownInterface
 {
