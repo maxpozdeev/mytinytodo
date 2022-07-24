@@ -3,10 +3,9 @@
 .markdown-note {
   line-height: 1.3;
 }
-/*
+
 .markdown-note > *:first-child { margin-top: 0 !important; }
 .markdown-note > *:last-child { margin-bottom: 0 !important; }
-*/
 
 .markdown-note h1 { font-size:2rem; }
 .markdown-note h2 { font-size:1.5rem; }

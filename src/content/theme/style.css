@@ -569,7 +569,7 @@ li.task-row:hover .taskactionbtn {
 }
 
 .task-note-block {
-  padding: 0px 2rem;
+  padding: 10px 2rem;
   color: var(--color-text-reduced);
   background-size:16px 16px;
   min-height:16px;
