@@ -6,9 +6,30 @@
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
-require_once(MTTINC. 'parsedown/Parsedown.php');
-require_once(MTTINC. 'parsedown/MTTParsedown.php');
+require_once(MTTINC. 'markup.parsedown.php');
 
+interface MTTMarkdownInterface
+{
+    public function convert(string $s, bool $toExternal = false);
+}
+
+final class MTTMarkdown
+{
+    /** @var MTTMarkdownInterface */
+    private static $instance;
+
+    /**
+     *
+     * @return MTTMarkdownInterface
+     */
+    public static function instance() : MTTMarkdownInterface
+    {
+        if (!isset(self::$instance)) {
+            self::$instance = new MTTParsedownWrapper();
+        }
+        return self::$instance;
+    }
+}
 
 function noteMarkup($note, $toExternal = false)
 {
@@ -21,14 +42,9 @@ function noteMarkup($note, $toExternal = false)
     return markdownToHtml($note, $toExternal);
 }
 
-// Markdown converter (Parsedown)
 function markdownToHtml($s, $toExternal = false)
 {
-    $parser = MTTParsedown::instance();
-    $parser->setToExternal($toExternal);
-    $parser->setSafeMode(true);
-    //$parser->setBreaksEnabled(true);
-    return $parser->text($s);
+    return MTTMarkdown::instance()->convert($s, $toExternal);
 }
 
 

@@ -6,6 +6,28 @@
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
+require_once(MTTINC. 'parsedown/Parsedown.php');
+
+class MTTParsedownWrapper implements MTTMarkdownInterface
+{
+    /** @var MTTParsedown */
+    protected $converter;
+
+    function __construct()
+    {
+        $this->converter = new MTTParsedown();
+        $this->converter->setSafeMode(true);
+        //$this->converter->setBreaksEnabled(true);
+    }
+
+    public function convert(string $s, bool $toExternal = false)
+    {
+        $this->converter->setToExternal($toExternal);
+        return $this->converter->text($s);
+    }
+}
+
+
 class MTTParsedown extends Parsedown
 {
 
@@ -34,7 +56,7 @@ class MTTParsedown extends Parsedown
             );
             if (!$this->toExternal) {
                 $attrs['class'] = 'mtt-link-to-task';
-                $attrs['target-id'] = $matches[1];
+                $attrs['data-target-id'] = $matches[1];
             }
             return array(
 
@@ -50,5 +72,4 @@ class MTTParsedown extends Parsedown
             );
         }
     }
-
 }
