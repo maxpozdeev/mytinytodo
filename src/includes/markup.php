@@ -7,6 +7,7 @@
 */
 
 require_once(MTTINC. 'markup.parsedown.php');
+//require_once(MTTINC. 'markup.commonmark.php');
 
 interface MTTMarkdownInterface
 {
@@ -26,6 +27,7 @@ final class MTTMarkdown
     {
         if (!isset(self::$instance)) {
             self::$instance = new MTTParsedownWrapper();
+            //self::$instance = new MTTCommonmarkWrapper();
         }
         return self::$instance;
     }

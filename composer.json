@@ -4,5 +4,8 @@
     },
     "require": {
         "erusev/parsedown": "^1.7"
+    },
+    "require-dev": {
+        "league/commonmark": "^2.3"
     }
 }
