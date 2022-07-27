@@ -35,7 +35,7 @@ $().ready(function(){
 });
 </script>
 
-<div id="mtt_body">
+<div id="mtt">
 
 <!-- Top block -->
 <div class="topblock">
@@ -274,7 +274,7 @@ $().ready(function(){
 </ul>
 </div>
 
-</div><!-- end of #mtt_body -->
+</div><!-- end of #mtt -->
 
 <div id="footer">
   <div id="footer_content">

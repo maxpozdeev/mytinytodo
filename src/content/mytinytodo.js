@@ -167,7 +167,9 @@ var mytinytodo = window.mytinytodo = _mtt = {
         flag.needAuth = options.needAuth ? true : false;
         flag.isLogged = options.isLogged ? true : false;
 
-        if(this.options.showdate) $('#page_tasks').addClass('show-inline-date');
+        if (this.options.showdate) {
+            $('#mtt').addClass('show-inline-date');
+        }
 
         // handlers
         $('.mtt-tabs-new-button').click(function(){
@@ -536,7 +538,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
             });
             /*$('#cmenu_note').hide();*/
             $("#lists ul").sortable('disable');
-            $("#mtt_body").addClass("touch-device");
+            $("#mtt").addClass("touch-device");
         }
 
 
@@ -544,12 +546,14 @@ var mytinytodo = window.mytinytodo = _mtt = {
         $(document).ajaxSend(function(r,s){
             $("#msg").hide().removeClass('mtt-error mtt-info').find('.msg-details').hide();
             clearTimeout(_mtt.timers.ajaxAnimation);
-            _mtt.timers.ajaxAnimation = setTimeout(function(){ $("#mtt_body").addClass("ajax-loading"); }, _mtt.options.ajaxAnimationDelay);
+            _mtt.timers.ajaxAnimation = setTimeout( function(){
+                $("#mtt").addClass("ajax-loading");
+            }, _mtt.options.ajaxAnimationDelay );
         });
 
         $(document).ajaxStop(function(r,s){
             clearTimeout(_mtt.timers.ajaxAnimation);
-            $("#mtt_body").removeClass("ajax-loading");
+            $("#mtt").removeClass("ajax-loading");
         });
 
         $(document).ajaxError(function(event, request, settings){
@@ -738,14 +742,14 @@ var mytinytodo = window.mytinytodo = _mtt = {
             }
 
             if (_mtt.options.markdown == true) {
-                $('#mtt_body').addClass('markdown-enabled');
+                $('#mtt').addClass('markdown-enabled');
             }
 
             if (tabLists.length() > 0) {
-                $('#mtt_body').removeClass('no-lists');
+                $('#mtt').removeClass('no-lists');
             }
             else {
-                $('#mtt_body').addClass('no-lists');
+                $('#mtt').addClass('no-lists');
             }
 
             if (_mtt.options.openList != 0 && openListId == 0) {
@@ -761,7 +765,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 
             _mtt.options.openList = 0;
             $('#lists .mtt-tab-selected').removeClass('mtt-tab-selected');
-            $('#mtt_body').addClass('no-list-selected');
+            $('#mtt').addClass('no-list-selected');
             $('#lists ul').html(ti);
             $('#lists').show();
             _mtt.doAction('listsLoaded');
@@ -807,11 +811,11 @@ var mytinytodo = window.mytinytodo = _mtt = {
             var prev = this.pages.current;
             prev.lastScrollTop = $(window).scrollTop();
             this.pages.prev.push(this.pages.current);
-            $('#mtt_body').removeClass('page-' + prev.page);
+            $('#mtt').removeClass('page-' + prev.page);
             $('#page_'+ prev.page).removeClass('mtt-page-'+prev.page.pageClass).hide();
         }
         this.pages.current = { page:page, pageClass:pageClass };
-        $('#mtt_body').addClass('page-' + page);
+        $('#mtt').addClass('page-' + page);
         $('#page_'+ this.pages.current.page).show().addClass('mtt-page-'+ this.pages.current.pageClass);
     },
 
@@ -829,13 +833,13 @@ var mytinytodo = window.mytinytodo = _mtt = {
         }
         if (this.pages.current) {
             var prev = this.pages.current;
-            $('#mtt_body').removeClass('page-' + prev.page);
+            $('#mtt').removeClass('page-' + prev.page);
             $('#page_'+ prev.page).removeClass('mtt-page-'+prev.page.pageClass);
             $('#page_'+ prev.page).hide();
         }
         var cur = this.pages.prev.pop();
         this.pages.current = cur ? cur : this.pageDefault;
-        $('#mtt_body').addClass('page-' + this.pages.current.page);
+        $('#mtt').addClass('page-' + this.pages.current.page);
         $('#page_'+ this.pages.current.page).addClass('mtt-page-'+ this.pages.current.pageClass).show();
         $(window).scrollTop(this.pages.current.lastScrollTop);
         if (!cur && this.pages.current.onOpen) {
@@ -1427,7 +1431,7 @@ function tabSelect(elementOrId)
     else {
         $('#tasks_info').hide();
         $('.mtt-need-list').removeClass('mtt-item-disabled');
-        $('#mtt_body').removeClass('no-list-selected');
+        $('#mtt').removeClass('no-list-selected');
     }
 
     var prevList = curList;
@@ -1444,11 +1448,10 @@ function tabSelect(elementOrId)
         $('#listmenucontainer .mtt-need-real-list').removeClass('mtt-item-hidden');
     }
 
-    if(prevList.id != id)
-    {
-        if(id == -1) $('#mtt_body').addClass('show-all-tasks');
-        else $('#mtt_body').removeClass('show-all-tasks');
-        if(filter.search != '') liveSearchToggle(0, 1);
+    if (prevList.id != id) {
+        if (id == -1) $('#mtt').addClass('show-all-tasks');
+        else $('#mtt').removeClass('show-all-tasks');
+        if (filter.search != '') liveSearchToggle(0, 1);
         mytinytodo.doAction('listSelected', tabLists.get(id));
     }
     var newTitle = curList.name + ' - ' + _mtt.options.title;
@@ -2466,19 +2469,19 @@ function updateAccessStatus()
         }
     }
     else {
-        $('#mtt_body').addClass('no-need-auth');
+        $('#mtt').addClass('no-need-auth');
     }
     if(flag.needAuth && !flag.isLogged) {
         flag.readOnly = true;
         $("#bar_public").show();
-        $('#mtt_body').addClass('readonly')
+        $('#mtt').addClass('readonly')
         liveSearchToggle(1);
         // remove some tab menu items
         $('#btnRenameList,#btnDeleteList,#btnClearCompleted,#btnPublish').remove();
     }
     else {
         flag.readOnly = false;
-        $('#mtt_body').removeClass('readonly')
+        $('#mtt').removeClass('readonly')
         $("#bar_public").hide();
         liveSearchToggle(0);
     }
