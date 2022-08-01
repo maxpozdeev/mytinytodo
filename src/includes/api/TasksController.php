@@ -233,9 +233,10 @@ class TasksController extends ApiController {
             $tags .= ',' . ($this->req->jsonBody['tag'] ?? '');
         }
         $ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->prefix}todolist WHERE list_id=$listId AND compl=0");
+        $date = time();
         $db->ex("BEGIN");
         $db->dq("INSERT INTO {$db->prefix}todolist (uuid,list_id,title,d_created,d_edited,ow,prio) VALUES (?,?,?,?,?,?,?)",
-                    array(generateUUID(), $listId, $title, time(), time(), $ow, $prio) );
+                    array(generateUUID(), $listId, $title, $date, $date, $ow, $prio) );
         $id = (int) $db->lastInsertId();
         if ($tags != '')
         {
@@ -270,9 +271,10 @@ class TasksController extends ApiController {
         if (Config::get('autotag'))
             $tags .= ',' . ($this->req->jsonBody['tag'] ?? '');
         $ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->prefix}todolist WHERE list_id=$listId AND compl=0");
+        $date = time();
         $db->ex("BEGIN");
         $db->dq("INSERT INTO {$db->prefix}todolist (uuid,list_id,title,d_created,d_edited,ow,prio,note,duedate) VALUES (?,?,?,?,?,?,?,?,?)",
-                    array(generateUUID(), $listId, $title, time(), time(), $ow, $prio, $note, $duedate) );
+                    array(generateUUID(), $listId, $title, $date, $date, $ow, $prio, $note, $duedate) );
         $id = (int) $db->lastInsertId();
         if ($tags != '')
         {
@@ -365,9 +367,10 @@ class TasksController extends ApiController {
         $listId = (int)$db->sq("SELECT list_id FROM {$db->prefix}todolist WHERE id=$id");
         if ($compl) $ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->prefix}todolist WHERE list_id=$listId AND compl=1");
         else $ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->prefix}todolist WHERE list_id=$listId AND compl=0");
-        $dateCompleted = $compl ? time() : 0;
+        $date = time();
+        $dateCompleted = $compl ? $date : 0;
         $db->dq("UPDATE {$db->prefix}todolist SET compl=$compl,ow=$ow,d_completed=?,d_edited=? WHERE id=$id",
-                    array($dateCompleted, time()) );
+                    array($dateCompleted, $date) );
         $t = array();
         $t['total'] = 1;
         $r = $db->sqa("SELECT * FROM {$db->prefix}todolist WHERE id=$id");
@@ -442,13 +445,9 @@ class TasksController extends ApiController {
     {
         $lang = Lang::instance();
         $dueA = $this->prepareDuedate($r['duedate']);
-        $formatCreatedInline = $formatCompletedInline = Config::get('dateformatshort');
-        if (date('Y') != date('Y', (int)$r['d_created']))
-            $formatCreatedInline = Config::get('dateformat2');
-        if ($r['d_completed'] && date('Y') != date('Y', (int)$r['d_completed']))
-            $formatCompletedInline = Config::get('dateformat2');
-
         $dCreated = timestampToDatetime($r['d_created']);
+        $isEdited = $r['d_edited'] != $r['d_created'];
+        $dEdited = $isEdited ? timestampToDatetime($r['d_edited']) : '';
         $dCompleted = $r['d_completed'] ? timestampToDatetime($r['d_completed']) : '';
 
         return array(
@@ -458,11 +457,12 @@ class TasksController extends ApiController {
             'listId' => $r['list_id'],
             'date' => htmlarray($dCreated),
             'dateInt' => (int)$r['d_created'],
-            'dateInline' => htmlarray(formatTime($formatCreatedInline, $r['d_created'])),
             'dateInlineTitle' => htmlarray(sprintf($lang->get('taskdate_inline_created'), $dCreated)),
+            'dateEdited' => htmlarray($dEdited),
             'dateEditedInt' => (int)$r['d_edited'],
+            'dateEditedInlineTitle' => htmlarray(sprintf($lang->get('taskdate_inline_edited'), $dEdited)),
+            'isEdited' => (bool)$isEdited,
             'dateCompleted' => htmlarray($dCompleted),
-            'dateCompletedInline' => $r['d_completed'] ? htmlarray(formatTime($formatCompletedInline, $r['d_completed'])) : '',
             'dateCompletedInlineTitle' => htmlarray(sprintf($lang->get('taskdate_inline_completed'), $dCompleted)),
             'compl' => (int)$r['compl'],
             'prio' => $r['prio'],
@@ -473,7 +473,7 @@ class TasksController extends ApiController {
             'tags_ids' => htmlarray($r['tags_ids']),
             'duedate' => $dueA['formatted'],
             'dueClass' => $dueA['class'],
-            'dueStr' => htmlarray($r['compl'] && $dueA['timestamp'] ? formatTime($formatCompletedInline, $dueA['timestamp']) : $dueA['str']),
+            'dueStr' => htmlarray($dueA['str']),
             'dueInt' => $this->date2int($r['duedate']),
             'dueTitle' => htmlarray(sprintf($lang->get('taskdate_inline_duedate'), $dueA['formattedlong'])),
         );
@@ -560,7 +560,7 @@ class TasksController extends ApiController {
         return $a;
     }
 
-    private function date2int($d)
+    private function date2int($d) : int
     {
         if (!$d) return 33330000;
         $ad = explode('-', $d);

@@ -134,7 +134,8 @@ $().ready(function(){
 <div id="taskedit_info" class="mtt-inedit">
     <div class="date-created"><?php _e('taskdate_created'); ?>: <span class="date-created-value"></span></div>
     <div class="date-completed"><?php _e('taskdate_completed'); ?>: <span class="date-completed-value"></span></div>
-  </div>
+    <div class="date-edited"><?php _e('taskdate_edited'); ?>: <span class="date-edited-value"></span></div>
+</div>
 
 <form id="taskedit_form" name="edittask" method="post">
 <input type="hidden" name="isadd" value="0" />

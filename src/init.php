@@ -206,13 +206,13 @@ function setup_and_start_session()
     session_start();
 }
 
-function timestampToDatetime($timestamp)
+function timestampToDatetime($timestamp) : string
 {
     $format = Config::get('dateformat') .' '. (Config::get('clock') == 12 ? 'g:i A' : 'H:i');
     return formatTime($format, $timestamp);
 }
 
-function formatTime($format, $timestamp=0)
+function formatTime($format, $timestamp=0) : string
 {
     $lang = Lang::instance();
     if($timestamp == 0) $timestamp = time();

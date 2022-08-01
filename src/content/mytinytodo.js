@@ -1175,7 +1175,14 @@ _mtt.prepareDueDate = prepareDueDate;
 
 function prepareInlineDate(item)
 {
-    return '<span class="task-id">#' + item.id + '</span> ' + (item.compl ? item.dateCompletedInlineTitle : item.dateInlineTitle) ;
+    var inlineDate = item.dateInlineTitle;
+    if (item.compl) {
+        inlineDate = item.dateCompletedInlineTitle;
+    }
+    else if ( item.isEdited && (curList.sort == 4 || curList.sort == 104) ) {
+        inlineDate = item.dateEditedInlineTitle;
+    }
+    return '<span class="task-id">#' + item.id + '</span> ' + inlineDate;
 }
 _mtt.prepareInlineDate = prepareInlineDate;
 
@@ -1617,11 +1624,20 @@ function editTask(id)
     form.prio.value = item.prio;
     $('#taskedit_id').text('#' + item.id);
     $('#taskedit_info .date-created-value').text(item.date);
-    if(item.compl) {
+    if (item.isEdited && !item.compl) {
+        $('#taskedit_info .date-edited-value').text(item.dateEdited);
+        $('#taskedit_info .date-edited').show()
+    }
+    else {
+        $('#taskedit_info .date-edited').hide();
+    }
+    if (item.compl) {
         $('#taskedit_info .date-completed-value').text(item.dateCompleted);
         $('#taskedit_info .date-completed').show()
     }
-    else $('#taskedit_info .date-completed').hide();
+    else {
+        $('#taskedit_info .date-completed').hide();
+    }
     toggleEditAllTags(0);
     showEditForm();
     return false;
