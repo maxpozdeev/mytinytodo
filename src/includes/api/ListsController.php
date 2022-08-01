@@ -157,17 +157,19 @@ class ListsController extends ApiController {
         //default values
         $hidden = 1;
         $sort = 3;
+        $showCompleted = 1;
 
         $opts = Config::requestDomain('alltasks.json');
         if ( isset($opts['hidden']) ) $hidden = (int)$opts['hidden'] ? 1 : 0;
         if ( isset($opts['sort']) ) $sort = (int)$opts['sort'];
+        if ( isset($opts['showCompleted']) ) $showCompleted = (int)$opts['showCompleted'];
 
         return array(
             'id' => -1,
             'name' => htmlarray(__('alltasks')),
             'sort' => $sort,
             'published' => 0,
-            'showCompl' => 1,
+            'showCompl' => $showCompleted,
             'showNotes' => 0,
             'hidden' => $hidden,
         );
@@ -223,6 +225,20 @@ class ListsController extends ApiController {
         }
         else {
             $db->ex("UPDATE {$db->prefix}lists SET sorting=$sort,d_edited=? WHERE id=$listId", array(time()));
+        }
+    }
+
+    static function setListShowCompletedById(int $listId, bool $showCompleted)
+    {
+        $db = DBConnection::instance();
+        if ($listId == -1) {
+            $opts = Config::requestDomain('alltasks.json');
+            $opts['showCompleted'] = (int)$showCompleted;
+            Config::saveDomain('alltasks.json', $opts);
+        }
+        else {
+            $bitwise = $showCompleted ? 'taskview & ~1' : 'taskview | 1';
+            $db->dq("UPDATE {$db->prefix}lists SET taskview=$bitwise WHERE id=?", [$listId]);
         }
     }
 
