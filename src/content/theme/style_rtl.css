@@ -25,7 +25,6 @@ h2 { padding-left:10px; padding-right:0px; }
 .duedate { margin-left:0; margin-right:5px; }
 .duedate-arrow { display:none; }
 .duedate:before { content:'\20\2190\20'; }
-.task-date-completed { margin-left:0; margin-right:5px; }
 
 #tagcloud { box-shadow:-1px 2px 5px rgba(0,0,0,0.5); }
 #tagcloudcancel { float:left; }

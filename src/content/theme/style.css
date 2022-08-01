@@ -482,19 +482,26 @@ li.task-row.task-expanded .task-toggle { transform:rotate(90deg); }
 .task-middle {
   flex-grow:1;
   margin-left: 5px;
-  min-width:0; /*for long text*/
-  display: flex;
   align-items: baseline;
   line-height: 1.2rem;
+  min-width: 0; /*for long text*/
+}
+.task-middle-top {
+  display: flex;
 }
 .task-actions { flex:0 0 1rem; margin-left:5px; }
 
 .task-left label { min-width:18px; text-align:center; } /* Safari has small checkboxes */
-.task-date { color:var(--color-text-reduced3); font-size:0.8rem; margin-left:4px; display:none; }
-.task-date-completed { color:var(--color-text-reduced3); display:none; margin-left:5px; }
-#mtt.show-inline-date .task-date { display:inline; }
-#mtt.show-inline-date li.task-row.task-completed .task-date-completed { display:inline; }
-#mtt.show-inline-date li.task-row.task-completed .task-date { display:none; }
+.task-date {
+  color: var(--color-text-reduced3);
+  font-size: 0.8rem;
+  margin-top: 0.2rem;
+  display: none;
+}
+.task-id {
+  /*display: none;*/
+}
+#mtt.show-inline-date .task-date { display: block; }
 .task-through { overflow:hidden; flex-grow:1; }
 .task-title a { color: var(--color-text-default); }
 .task-title a:hover { color: var(--color-tasklist-link-hover); }
@@ -953,7 +960,11 @@ li.mtt-item-hidden { display:none; }
   #toolbar.mtt-insearch .searchbox-c { width:100%; max-width:100%; }
   #search { padding:5px 20px; border-radius:15px; }
 
-  .task-date { display:none; }
+  .task-date {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
   .task-note-actions { display:block; padding-top:8px; }
   .task-note-block {
     padding-left: 0.625rem;

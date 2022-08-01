@@ -17,7 +17,7 @@
     "searching": "Поиск",
     "tasks": "Задачи",
     "taskdate_inline_created": "добавлена %s",
-    "taskdate_inline_completed": "Завершена %s",
+    "taskdate_inline_completed": "завершена %s",
     "taskdate_inline_duedate": "В срок %s",
     "taskdate_created": "Дата создания",
     "taskdate_completed": "Дата завершения",

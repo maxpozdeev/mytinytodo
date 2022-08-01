@@ -17,7 +17,7 @@
     "searching": "Searching for",
     "tasks": "Tasks",
     "taskdate_inline_created": "created at %s",
-    "taskdate_inline_completed": "Completed at %s",
+    "taskdate_inline_completed": "completed at %s",
     "taskdate_inline_duedate": "Due %s",
     "taskdate_created": "Created",
     "taskdate_completed": "Completed",

@@ -1090,14 +1090,18 @@ function prepareTaskBlocks(item)
             "</div>\n" +
 
             '<div class="task-middle">' +
-                '<div class="task-through">' +
-                    preparePrio(item.prio,id) +
-                    '<span class="task-title">' + prepareTaskTitleInlineHtml(item.title) + '</span> ' +
-                    (curList.id == -1 ? '<span class="task-listname">'+ tabLists.get(item.listId).name +'</span>' : '') +
-                    prepareTagsStr(item) +
-                    '<span class="task-date">'+item.dateInlineTitle+'</span>' +
+                '<div class="task-middle-top">' +
+                    '<div class="task-through">' +
+                        preparePrio(item.prio,id) +
+                        '<span class="task-title">' + prepareTaskTitleInlineHtml(item.title) + '</span> ' +
+                        (curList.id == -1 ? '<span class="task-listname">'+ tabLists.get(item.listId).name +'</span>' : '') +
+                        prepareTagsStr(item) +
+                    '</div>' +
+                    '<div class="task-through-right">' + prepareDueDate(item) + "</div>" +
                 '</div>' +
-                '<div class="task-through-right">' + prepareDueDate(item) + prepareCompletedDate(item) + "</div>" +
+                '<div class="task-date">' +
+                    prepareInlineDate(item) +
+                '</div>' +
             "</div>" +
 
             '<div class="task-actions"><div class="taskactionbtn"></div></div>' +
@@ -1169,16 +1173,11 @@ function prepareDueDate(item)
 };
 _mtt.prepareDueDate = prepareDueDate;
 
-function prepareCompletedDate(item)
+function prepareInlineDate(item)
 {
-    // &mdash; = &#8212; = —
-    return  '<span class="task-date-completed">' +
-                '<span title="' + item.dateInlineTitle + '">' + item.dateInline + '</span>&#8212;' +
-                '<span title="' + item.dateCompletedInlineTitle + '">' + item.dateCompletedInline + '</span>' +
-            '</span>';
-};
-_mtt.prepareCompletedDate = prepareCompletedDate;
-
+    return '<span class="task-id">#' + item.id + '</span> ' + (item.compl ? item.dateCompletedInlineTitle : item.dateInlineTitle) ;
+}
+_mtt.prepareInlineDate = prepareInlineDate;
 
 function submitNewTask(form)
 {
