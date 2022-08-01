@@ -37,6 +37,7 @@ MytinytodoAjaxApi.prototype =
         if (params.search && params.search != '') q += '&s=' + encodeURIComponent(params.search);
         if (params.tag && params.tag != '') q += '&t=' + encodeURIComponent(params.tag);
         if (params.setCompl && params.setCompl != 0) q += '&setCompl=1';
+        if (params.saveSort && params.saveSort != 0) q += '&saveSort=1';
 
         $.getJSON(mtt.apiUrl + 'tasks?list='+params.list+'&compl='+params.compl+'&sort='+params.sort+q, callback);
     },

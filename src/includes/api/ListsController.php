@@ -206,8 +206,14 @@ class ListsController extends ApiController {
 
     private function sortList(int $listId)
     {
-        $db = DBConnection::instance();
         $sort = (int)($this->req->jsonBody['sort'] ?? 0);
+        self::setListSortingById($listId, $sort);
+        return ['total'=>1];
+    }
+
+    static function setListSortingById(int $listId, int $sort)
+    {
+        $db = DBConnection::instance();
         if ($sort < 0 || $sort > 104) $sort = 0;
         elseif ($sort < 101 && $sort > 4) $sort = 0;
         if ($listId == -1) {
@@ -218,7 +224,6 @@ class ListsController extends ApiController {
         else {
             $db->ex("UPDATE {$db->prefix}lists SET sorting=$sort,d_edited=? WHERE id=$listId", array(time()));
         }
-        return ['total'=>1];
     }
 
     private function publishList(int $listId)

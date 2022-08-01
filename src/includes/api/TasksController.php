@@ -102,6 +102,9 @@ class TasksController extends ApiController {
             $bitwise = (_get('compl') == 0) ? 'taskview & ~1' : 'taskview | 1';
             $db->dq("UPDATE {$db->prefix}lists SET taskview=$bitwise WHERE id=$listId");
         }
+        if (_get('saveSort') == 1 && haveWriteAccess($listId)) {
+            ListsController::setListSortingById($listId, $sort);
+        }
         return $t;
     }
 

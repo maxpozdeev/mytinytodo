@@ -1022,7 +1022,7 @@ function publishCurList()
 function loadTasks(opts)
 {
     if(!curList) return false;
-    setSort(curList.sort, 1);
+    updateSortUI(curList.sort);
     opts = opts || {};
     if(opts.clearTasklist) {
         $('#tasklist').html('');
@@ -1035,7 +1035,8 @@ function loadTasks(opts)
         sort: curList.sort,
         search: filter.search,
         tag: _mtt.filter.getTags(true),
-        setCompl: opts.setCompl
+        setCompl: opts.setCompl,
+        saveSort: opts.saveSort
     }, function(json){
         taskList.length = 0;
         taskOrder.length = 0;
@@ -1328,8 +1329,18 @@ function setTaskPrio(id, prio)
 
 function setSort(v, init)
 {
+    if (v < 0 || (v > 4 && v < 101) || v > 104) {
+        return;
+    }
+    curList.sort = v;
+    loadTasks({saveSort:1});
+};
+
+
+function updateSortUI(v)
+{
     $('#listmenucontainer .sort-item').removeClass('mtt-item-checked').children('.mtt-sort-direction').text('');
-    if(v == 0) $('#sortByHand').addClass('mtt-item-checked');
+    if (v == 0) $('#sortByHand').addClass('mtt-item-checked');
     else if(v==1 || v==101) $('#sortByPrio').addClass('mtt-item-checked').children('.mtt-sort-direction').text(v==1 ? '↑' : '↓');
     else if(v==2 || v==102) $('#sortByDueDate').addClass('mtt-item-checked').children('.mtt-sort-direction').text(v==2 ? '↑' : '↓');
     else if(v==3 || v==103) $('#sortByDateCreated').addClass('mtt-item-checked').children('.mtt-sort-direction').text(v==3 ? '↓' : '↑');
@@ -1337,14 +1348,8 @@ function setSort(v, init)
     else return;
 
     curList.sort = v;
-    if(v == 0 && !flag.readOnly) $("#tasklist").sortable('enable');
+    if (v == 0 && !flag.readOnly) $("#tasklist").sortable('enable');
     else $("#tasklist").sortable('disable');
-
-    if(!init)
-    {
-        changeTaskOrder();
-        if(!flag.readOnly) _mtt.db.request('setSort', {list:curList.id, sort:curList.sort});
-    }
 };
 
 
