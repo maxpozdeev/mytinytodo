@@ -65,6 +65,8 @@
   --color-tasklist-link-hover: var(--color-link); /* #af0000 */
   --color-taglist-text-hover: var(--color-bg);
   --color-taglist-text-hover-bg: var(--color-btn-tab-hover-bg);
+  --color-tasklist-listname: #555;
+  --color-tasklist-listname-bg: #eee;
 
   /* Priority */
   --color-priority-none: #dedede;
@@ -507,9 +509,10 @@ li.task-row.task-expanded .task-toggle { transform:rotate(90deg); }
 .task-title a:hover { color: var(--color-tasklist-link-hover); }
 #mtt.readonly #tasklist li.task-row .task-actions { display:none; }
 .task-listname {
-  background-color:#eee;
-  color:#555;
-  padding:0px 3px;
+  background-color: var(--color-tasklist-listname-bg);
+  color: var(--color-tasklist-listname);
+  padding: 0px 3px;
+  margin: 0px 2px;
 }
 .task-tags { padding:0px 2px; }
 .task-tags .tag { font-size:0.9rem; font-weight:bold; color: var(--color-tasklist-tag); text-decoration:underline;  }

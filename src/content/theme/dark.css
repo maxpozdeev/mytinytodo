@@ -61,6 +61,8 @@
     --color-tasklist-link-hover: var(--color-link);
     --color-taglist-text-hover: var(--color-bg);
     --color-taglist-text-hover-bg: var(--color-text-default);
+    --color-tasklist-listname: #bbb;
+    --color-tasklist-listname-bg: #333;
 
 
     /* Priority */
