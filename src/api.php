@@ -186,7 +186,7 @@ function haveWriteAccess(?int $listId = null)
         return false;
     }
     // check list exist
-    if ($listId !== null)
+    if ($listId !== null && $listId != -1)
     {
         $db = DBConnection::instance();
         $count = $db->sq("SELECT COUNT(*) FROM {$db->prefix}lists WHERE id=?", array($listId));
