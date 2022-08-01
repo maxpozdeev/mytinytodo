@@ -72,6 +72,20 @@
         "November",
         "December"
     ],
+    "months_calendar": [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December"
+    ],
     "days_min": [
         "Su",
         "Mo",

@@ -109,7 +109,7 @@ class Lang
         $a['daysMin'] = $this->get('days_min');
         $a['daysLong'] = $this->get('days_long');
         $a['monthsShort'] = $this->get('months_short');
-        $a['monthsLong'] = $this->get('months_long');
+        $a['monthsLong'] = $this->get('months_calendar');
 
         $this->fillWithValues($a, [
             'confirmDelete',
