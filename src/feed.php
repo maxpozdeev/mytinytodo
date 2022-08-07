@@ -13,7 +13,7 @@ require_once(MTTINC. 'markup.php');
 $lang = Lang::instance();
 
 $listId = (int)_get('list');
-
+$db = DBConnection::instance();
 $listData = $db->sqa("SELECT * FROM {$db->prefix}lists WHERE id=$listId");
 if (need_auth() && (!$listData || !$listData['published'])) {
     die("Access denied!<br> List is not published.");

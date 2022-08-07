@@ -13,6 +13,7 @@ $onlyPublishedList = false;
 if(!have_write_access()) $onlyPublishedList = true;
 
 $listId = (int)_get('list');
+$db = DBConnection::instance();
 $listData = $db->sqa("SELECT * FROM {$db->prefix}lists WHERE id=$listId ". ($onlyPublishedList ? "AND published=1" : "") );
 if(!$listData) {
     die("No such list or access denied");
