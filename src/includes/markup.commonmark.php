@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
     This file is a part of myTinyTodo.
@@ -40,7 +40,7 @@ class MTTCommonmarkWrapper implements MTTMarkdownInterface
                         $mention->setUrl(\sprintf(get_mttinfo('url'). "?task=%d", $mention->getIdentifier()));
                         if (!$this->toExternal) {
                             $mention->data->append('attributes/class', 'mtt-link-to-task');
-                            $mention->data->append('attributes/data-target-id', $attrs['target-id'] = $mention->getIdentifier());
+                            $mention->data->append('attributes/data-target-id', $mention->getIdentifier());
                         }
                         return $mention;
                     },
