@@ -62,7 +62,7 @@ function _c($key)
     return Config::get($key);
 }
 
-function getLangs($withContents = 0)
+function getLangs()
 {
     $langDir = Lang::instance()->langDir();
     if ( ! $h = opendir($langDir) ) {
@@ -89,9 +89,15 @@ function getLangs($withContents = 0)
         }
     }
     closedir($h);
+    uasort($a, 'cmpLangs');
     return $a;
 }
 
+function cmpLangs($a, $b) : int
+{
+    //return strcmp( mb_strtoupper($a['name']), mb_strtoupper($b['name']) );
+    return strcasecmp($a['title'], $b['title']);
+}
 
 function selectOptions($a, $value, $default=null)
 {
@@ -113,7 +119,10 @@ function selectOptionsA($a, $key, $default=null)
 {
     if(!$a) return '';
     $s = '';
-    if($default !== null && !isset($a[$key])) $key = $default;
+    if ($default !== null && !isset($a[$key])) $key = $default;
+    else if ($default === null && !isset($a[$key])) {
+        $s .= '<option hidden disabled selected value></option>';
+    }
     foreach($a as $k=>$v) {
         if (!is_array($v)) {
             $v = array('name' => $k);
