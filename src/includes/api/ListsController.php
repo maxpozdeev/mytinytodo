@@ -56,8 +56,9 @@ class ListsController extends ApiController {
             trim( $this->req->jsonBody['name'] ?? '' )
         );
         $ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->prefix}lists");
+        $time = time();
         $db->dq("INSERT INTO {$db->prefix}lists (uuid,name,ow,d_created,d_edited,taskview) VALUES (?,?,?,?,?,?)",
-                    array(generateUUID(), $name, $ow, time(), time(), 1) );
+                    array(generateUUID(), $name, $ow, $time, $time, 1) );
         $id = $db->lastInsertId();
         $t['total'] = 1;
         $r = $db->sqa("SELECT * FROM {$db->prefix}lists WHERE id=$id");
@@ -260,7 +261,7 @@ class ListsController extends ApiController {
     {
         $db = DBConnection::instance();
         $publish = (int)($this->req->jsonBody['publish'] ?? 0);
-        $db->ex("UPDATE {$db->prefix}lists SET published=?,d_created=? WHERE id=$listId", array($publish ? 1 : 0, time()));
+        $db->ex("UPDATE {$db->prefix}lists SET published=?,d_edited=? WHERE id=$listId", array($publish ? 1 : 0, time()));
         return ['total'=>1];
     }
 
