@@ -940,9 +940,9 @@ var mytinytodo = window.mytinytodo = _mtt = {
 
     urlForFeed: function(list)
     {
-        var l = list || curList;
-        if (l === undefined) return '';
-        return _mtt.mttUrl + 'feed.php?list='+l.id;
+        list = list || curList;
+        if (list === undefined) return '';
+        return _mtt.mttUrl + 'feed.php?list=' + list.id;
     },
 
     urlForSettings: function(json = 0)
@@ -1016,6 +1016,35 @@ function publishCurList()
             $('#btnRssFeed').addClass('mtt-item-disabled');
         }
     });
+};
+
+function enableFeedKeyInCurList()
+{
+    if (!curList) return false;
+    _mtt.db.request('enableFeedKey', {
+        list: curList.id,
+        enable: (curList.feedKey === undefined || curList.feedKey === '') ? 1 : 0
+    }, function(json){
+        if (!parseInt(json.total)) return;
+        var item = json.list[0];
+        curList.feedKey = item.feedKey;
+        if (curList.feedKey) {
+            $('#btnFeedKey').addClass('mtt-item-checked');
+            $('#btnShowFeedKey').removeClass('mtt-item-disabled');
+            alert(curList.feedKey);
+        }
+        else {
+            $('#btnFeedKey').removeClass('mtt-item-checked');
+            $('#btnShowFeedKey').addClass('mtt-item-disabled');
+        }
+    });
+};
+
+function showFeedKeyInCurList()
+{
+    if (!curList) return false;
+    if (curList.feedKey === undefined || curList.feedKey === '') return false;
+    alert(curList.feedKey);
 };
 
 
@@ -1504,6 +1533,8 @@ function listMenuClick(el, menu)
         case 'btnRenameList': renameCurList(); break;
         case 'btnDeleteList': deleteCurList(); break;
         case 'btnPublish': publishCurList(); break;
+        case 'btnFeedKey': enableFeedKeyInCurList(); break;
+        case 'btnShowFeedKey': showFeedKeyInCurList(); break;
         case 'btnHideList': hideList(curList.id); break;
         case 'btnExportCSV': return true;
         case 'btnExportICAL': return true;
@@ -2258,7 +2289,7 @@ function cmenuOnListHidden(list)
 
 function tabmenuOnListSelected(list)
 {
-    if(list.published) {
+    if (list.published) {
         $('#btnPublish').addClass('mtt-item-checked');
         $('#btnRssFeed').removeClass('mtt-item-disabled');
     }
@@ -2266,8 +2297,20 @@ function tabmenuOnListSelected(list)
         $('#btnPublish').removeClass('mtt-item-checked');
         $('#btnRssFeed').addClass('mtt-item-disabled');
     }
-    if(list.showCompl) $('#btnShowCompleted').addClass('mtt-item-checked');
-    else $('#btnShowCompleted').removeClass('mtt-item-checked');
+    if (list.showCompl) {
+        $('#btnShowCompleted').addClass('mtt-item-checked');
+    }
+    else {
+        $('#btnShowCompleted').removeClass('mtt-item-checked');
+    }
+    if (list.feedKey !== undefined && list.feedKey !== '') {
+        $('#btnFeedKey').addClass('mtt-item-checked');
+        $('#btnShowFeedKey').removeClass('mtt-item-disabled');
+    }
+    else {
+        $('#btnFeedKey').removeClass('mtt-item-checked');
+        $('#btnShowFeedKey').addClass('mtt-item-disabled');
+    }
 };
 
 

@@ -175,3 +175,15 @@ function isValidSignature(string $signature, string $id, string $key, string $sa
     if ( hash_equals($signature, idSignature($id, $key, $salt)) ) return true;
     return false;
 }
+
+
+function randomString(int $len = 16) : string
+{
+    $chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    $a = [];
+    $max = strlen($chars) - 1;
+    for ($i = 0; $i < $len; $i++) {
+        $a[]= $chars[random_int(0, $max)];
+    }
+    return implode('', $a);
+}

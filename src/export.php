@@ -9,14 +9,19 @@
 //$dontStartSession = 1;
 require_once('./init.php');
 
-$onlyPublishedList = false;
-if(!have_write_access()) $onlyPublishedList = true;
-
 $listId = (int)_get('list');
 $db = DBConnection::instance();
-$listData = $db->sqa("SELECT * FROM {$db->prefix}lists WHERE id=$listId ". ($onlyPublishedList ? "AND published=1" : "") );
-if(!$listData) {
-    die("No such list or access denied");
+$listData = $db->sqa("SELECT * FROM {$db->prefix}lists WHERE id=$listId");
+if ( $listData && !is_logged() && !$listData['published'] ) {
+    $extra = json_decode($listData['extra'] ?? '', true, 10, JSON_INVALID_UTF8_SUBSTITUTE);
+    $feedKey = (string)$extra['feedKey'] ?? '';
+    $inFeedKey = trim(_get('key'));
+    if ($feedKey == '' || $feedKey != $inFeedKey) {
+        die("Access denied.");
+    }
+}
+if (!$listData) {
+    die("No list found.");
 }
 
 $sqlSort = "ORDER BY compl ASC, ";
@@ -35,13 +40,6 @@ $format = _get('format');
 
 if($format == 'ical') printICal($listData, $data);
 else printCSV($listData, $data);
-
-
-function have_write_access()
-{
-    if(is_logged()) return true;
-    return false;
-}
 
 
 function printCSV($listData, $data)

@@ -180,7 +180,7 @@ function checkWriteAccess(?int $listId = null)
     jsonExit( array('total'=>0, 'list'=>array(), 'denied'=>1) );
 }
 
-function haveWriteAccess(?int $listId = null)
+function haveWriteAccess(?int $listId = null) : bool
 {
     if (is_readonly()) {
         return false;

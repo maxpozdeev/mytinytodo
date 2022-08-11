@@ -19,7 +19,8 @@ class ListsController extends ApiController {
         check_token();
         $t = array();
         $t['total'] = 0;
-        if (!is_logged()) {
+        $haveWriteAccess = haveWriteAccess();
+        if (!$haveWriteAccess) {
             $sqlWhere = 'WHERE published=1';
         }
         else {
@@ -31,7 +32,7 @@ class ListsController extends ApiController {
         while ($r = $q->fetchAssoc())
         {
             $t['total']++;
-            $t['list'][] = $this->prepareList($r);
+            $t['list'][] = $this->prepareList($r, $haveWriteAccess);
         }
         return $t;
     }
@@ -60,7 +61,7 @@ class ListsController extends ApiController {
         $id = $db->lastInsertId();
         $t['total'] = 1;
         $r = $db->sqa("SELECT * FROM {$db->prefix}lists WHERE id=$id");
-        $t['list'][] = $this->prepareList($r);
+        $t['list'][] = $this->prepareList($r, true);
         return $t;
     }
 
@@ -96,7 +97,7 @@ class ListsController extends ApiController {
         if (!$r) {
             return null;
         }
-        $t = $this->prepareList($r);
+        $t = $this->prepareList($r, haveWriteAccess());
         return $t;
     }
 
@@ -142,6 +143,7 @@ class ListsController extends ApiController {
             case 'rename':         return $this->renameList($id);     break;
             case 'sort':           return $this->sortList($id);       break;
             case 'publish':        return $this->publishList($id);    break;
+            case 'enableFeedKey':  return $this->enableFeedKey($id);  break;
             case 'showNotes':      return $this->showNotes($id);      break;
             case 'hide':           return $this->hideList($id);       break;
             case 'clearCompleted': return $this->clearCompleted($id); break;
@@ -172,12 +174,23 @@ class ListsController extends ApiController {
             'showCompl' => $showCompleted,
             'showNotes' => 0,
             'hidden' => $hidden,
+            'feedKey' => '',
         );
     }
 
-    private function prepareList($row)
+    private function prepareList($row, bool $haveWriteAccess)
     {
         $taskview = (int)$row['taskview'];
+        $feedKey = '';
+        if ($haveWriteAccess) {
+            $extra = json_decode($row['extra'] ?? '', true, 10, JSON_INVALID_UTF8_SUBSTITUTE);
+            if ($extra === false) {
+                error_log("Failed to decodes JSON data of list extra listId=". (int)$row['id'] . ": " . json_last_error_msg());
+                $extra = [];
+            }
+            $feedKey = (string)$extra['feedKey'] ?? '';
+        }
+
         return array(
             'id' => $row['id'],
             'name' => htmlarray($row['name']),
@@ -186,6 +199,7 @@ class ListsController extends ApiController {
             'showCompl' => $taskview & 1 ? 1 : 0,
             'showNotes' => $taskview & 2 ? 1 : 0,
             'hidden' => $taskview & 4 ? 1 : 0,
+            'feedKey' => $feedKey,
         );
     }
 
@@ -202,7 +216,7 @@ class ListsController extends ApiController {
         $db->dq("UPDATE {$db->prefix}lists SET name=?,d_edited=? WHERE id=$id", array($name, time()) );
         $t['total'] = $db->affected();
         $r = $db->sqa("SELECT * FROM {$db->prefix}lists WHERE id=$id");
-        $t['list'][] = $this->prepareList($r);
+        $t['list'][] = $this->prepareList($r, true);
         return $t;
     }
 
@@ -248,6 +262,33 @@ class ListsController extends ApiController {
         $publish = (int)($this->req->jsonBody['publish'] ?? 0);
         $db->ex("UPDATE {$db->prefix}lists SET published=?,d_created=? WHERE id=$listId", array($publish ? 1 : 0, time()));
         return ['total'=>1];
+    }
+
+    private function enableFeedKey(int $listId)
+    {
+        $db = DBConnection::instance();
+        $flag = (int)($this->req->jsonBody['enable'] ?? 0);
+        $json = $db->sq("SELECT extra FROM {$db->prefix}lists WHERE id=$listId") ?? '';
+        $extra = strlen($json) > 0 ? json_decode($json, true, 10, JSON_INVALID_UTF8_SUBSTITUTE) : [];
+        if ($extra === false) {
+            error_log("Failed to decodes JSON data of list extra listId=$listId: " . json_last_error_msg());
+            $extra = [];
+        }
+        if ($flag == 0) {
+            $extra['feedKey'] = '';
+        }
+        else {
+            $extra['feedKey'] = randomString();
+        }
+        $json = json_encode($extra, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        $db->ex("UPDATE {$db->prefix}lists SET extra=?,d_edited=? WHERE id=$listId", array($json, time()));
+        return [
+            'total' => 1,
+            'list' => [[
+                'id' => $listId,
+                'feedKey' => $extra['feedKey']
+            ]]
+        ];
     }
 
     private function showNotes(int $listId)

@@ -296,6 +296,21 @@ MytinytodoAjaxApi.prototype =
         });
     },
 
+    enableFeedKey: function(params, callback)
+    {
+        $.ajax({
+            url: mtt.apiUrl + 'lists/' + encodeURIComponent(params.list),
+            method: 'PUT',
+            contentType : 'application/json',
+            data: JSON.stringify({
+                action: 'enableFeedKey',
+                enable: params.enable,
+            }),
+            success: callback,
+            dataType: 'json'
+        });
+    },
+
     setShowNotesInList: function(params, callback)
     {
         $.ajax({
