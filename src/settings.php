@@ -192,7 +192,7 @@ header('Content-type:text/html; charset=utf-8');
 
 <div class="tr">
 <div class="th"><?php _e('set_newpass');?>:<br/><span class="descr"><?php _e('set_newpass_descr');?></span></div>
-<div class="td"> <input type="password" name="password" <?php if(_c('password')=='') echo "disabled"; ?> /> </div>
+<div class="td"> <input type="password" name="password" autocomplete="new-password" <?php if(_c('password')=='') echo "disabled"; ?> /> </div>
 </div>
 
 <div class="tr">
