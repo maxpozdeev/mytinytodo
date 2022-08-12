@@ -17,7 +17,7 @@ $db = DBConnection::instance();
 $listData = $db->sqa("SELECT * FROM {$db->prefix}lists WHERE id=$listId");
 if ( $listData && need_auth() && !$listData['published'] ) {
     $extra = json_decode($listData['extra'] ?? '', true, 10, JSON_INVALID_UTF8_SUBSTITUTE);
-    $feedKey = (string)$extra['feedKey'] ?? '';
+    $feedKey = (string) ($extra['feedKey'] ?? '');
     $inFeedKey = trim(_get('key'));
     if ($feedKey == '' || $feedKey != $inFeedKey) {
         die("Access denied!<br> List is not published.");

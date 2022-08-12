@@ -189,7 +189,7 @@ class ListsController extends ApiController {
                 error_log("Failed to decodes JSON data of list extra listId=". (int)$row['id'] . ": " . json_last_error_msg());
                 $extra = [];
             }
-            $feedKey = (string)$extra['feedKey'] ?? '';
+            $feedKey = (string) ($extra['feedKey'] ?? '');
         }
 
         return array(
