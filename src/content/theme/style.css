@@ -520,7 +520,7 @@ li.task-row.task-expanded .task-toggle { transform:rotate(90deg); }
 .duedate { color:var(--color-duedate-default); padding:0px; padding-left:1px; margin-left:5px; white-space:nowrap; }
 .duedate:before {
   content:'\2192\20';
-  font-family: -apple-system, "DejaVu Sans", serif;
+  font-family: -apple-system, "DejaVu Sans", sans-serif;
 }
 li.task-row.task-completed .duedate { /*font-size:0.8rem;*/ display:none; }
 #tasklist li.task-row.soon  .duedate { color: var(--color-duedate-soon); }
