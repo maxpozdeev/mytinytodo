@@ -518,7 +518,10 @@ li.task-row.task-expanded .task-toggle { transform:rotate(90deg); }
 .task-tags { padding:0px 2px; }
 .task-tags .tag { font-size:0.9rem; font-weight:bold; color: var(--color-tasklist-tag); text-decoration:underline;  }
 .duedate { color:var(--color-duedate-default); padding:0px; padding-left:1px; margin-left:5px; white-space:nowrap; }
-.duedate:before { content:'\2192\20'; }
+.duedate:before {
+  content:'\2192\20';
+  font-family: -apple-system, "DejaVu Sans", serif;
+}
 li.task-row.task-completed .duedate { /*font-size:0.8rem;*/ display:none; }
 #tasklist li.task-row.soon  .duedate { color: var(--color-duedate-soon); }
 #tasklist li.task-row.today .duedate { color: var(--color-duedate-today); }
@@ -1016,6 +1019,9 @@ li.mtt-item-hidden { display:none; }
     mask-origin: content-box;
     -webkit-mask-origin: content-box;
     visibility: visible;
+  }
+  .duedate:before {
+    content:'\279d\20'; /* Use another arrow, because Rightwards Arrow U+2192 is ugly in Noto font used in some Androids */
   }
 
   #tasklist li.task-row .task-through { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
