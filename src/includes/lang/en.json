@@ -117,6 +117,7 @@
     "action_delete": "Delete",
     "action_priority": "Priority",
     "action_move": "Move to",
+    "action_ok": "OK",
     "notes": "Notes:",
     "notes_show": "Show",
     "notes_hide": "Hide",

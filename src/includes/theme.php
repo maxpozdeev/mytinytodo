@@ -278,6 +278,13 @@ $().ready(function(){
 </ul>
 </div>
 
+<div id="modal" style="display:none">
+  <div class="modal-content"></div>
+  <div class="modal-bottom">
+    <button id="btnModalOk"><?php _e('action_ok');?></button>
+  </div>
+</div>
+
 </div><!-- end of #mtt -->
 
 <div id="footer">

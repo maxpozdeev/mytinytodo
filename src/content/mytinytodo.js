@@ -1031,7 +1031,7 @@ function enableFeedKeyInCurList()
         if (curList.feedKey) {
             $('#btnFeedKey').addClass('mtt-item-checked');
             $('#btnShowFeedKey').removeClass('mtt-item-disabled');
-            alert(curList.feedKey);
+            mttAlert(curList.feedKey);
         }
         else {
             $('#btnFeedKey').removeClass('mtt-item-checked');
@@ -1044,7 +1044,7 @@ function showFeedKeyInCurList()
 {
     if (!curList) return false;
     if (curList.feedKey === undefined || curList.feedKey === '') return false;
-    alert(curList.feedKey);
+    mttAlert(curList.feedKey);
 };
 
 
@@ -2650,6 +2650,26 @@ function mttPrompt(msg, defaultValue, callbackOk, callbackCancel)
         if (typeof callbackCancel === 'function')
             callbackCancel();
     }
+}
+
+function mttAlert(msg, callbackOk)
+{
+    $("#btnModalOk").click(function() {
+        $("#modal_overlay, #modal").hide();
+        $("body").css("overflow", "");
+        if (typeof callbackOk === 'function')
+            callbackOk();
+    });
+    var modalOverlay = document.getElementById("modal_overlay");
+    if (!modalOverlay) {
+        modalOverlay = document.createElement("div");
+        modalOverlay.id = "modal_overlay";
+        modalOverlay.style.cssText = "position: absolute; z-index: 999; left: 0; top: 0; width: 100%; height: 100%; background-color: black; opacity: 0.8; display:none;";
+        document.getElementsByTagName('body')[0].appendChild(modalOverlay);
+    }
+    $("#modal .modal-content").text(msg);
+    $("body").css("overflow", "hidden");
+    $("#modal_overlay, #modal").show();
 }
 
 
