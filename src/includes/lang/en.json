@@ -118,6 +118,7 @@
     "action_priority": "Priority",
     "action_move": "Move to",
     "action_ok": "OK",
+    "action_cancel": "Cancel",
     "notes": "Notes:",
     "notes_show": "Show",
     "notes_hide": "Hide",

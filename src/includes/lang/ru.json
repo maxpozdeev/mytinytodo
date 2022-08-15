@@ -118,6 +118,7 @@
     "action_priority": "Приоритет",
     "action_move": "Переместить в",
     "action_ok": "ОК",
+    "action_cancel": "Отмена",
     "notes": "Заметки:",
     "notes_show": "Показать",
     "notes_hide": "Скрыть",

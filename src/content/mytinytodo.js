@@ -2628,50 +2628,101 @@ function saveSettings(frm)
 
 function mttConfirm(msg, callbackOk, callbackCancel)
 {
-    var r = confirm(msg);
-    if (r) {
-        if (typeof callbackOk === 'function')
-            callbackOk();
-    }
-    else {
-        if (typeof callbackCancel === 'function')
-            callbackCancel();
-    }
+    mttModalDialog('confirm').message(msg).ok(callbackOk).cancel(callbackCancel).show();
 }
 
 function mttPrompt(msg, defaultValue, callbackOk, callbackCancel)
 {
-    var r = prompt(msg, defaultValue);
-    if (r !== null) {
-        if (typeof callbackOk === 'function')
-            callbackOk(r);
-    }
-    else {
-        if (typeof callbackCancel === 'function')
-            callbackCancel();
-    }
+    mttModalDialog('prompt').message(msg).default(defaultValue).ok(callbackOk).cancel(callbackCancel).show();
 }
 
 function mttAlert(msg, callbackOk)
 {
-    $("#btnModalOk").click(function() {
-        $("#modal_overlay, #modal").hide();
-        $("body").css("overflow", "");
-        if (typeof callbackOk === 'function')
-            callbackOk();
-    });
-    var modalOverlay = document.getElementById("modal_overlay");
-    if (!modalOverlay) {
-        modalOverlay = document.createElement("div");
-        modalOverlay.id = "modal_overlay";
-        modalOverlay.style.cssText = "position: absolute; z-index: 999; left: 0; top: 0; width: 100%; height: 100%; background-color: black; opacity: 0.8; display:none;";
-        document.getElementsByTagName('body')[0].appendChild(modalOverlay);
-    }
-    $("#modal .modal-content").text(msg);
-    $("body").css("overflow", "hidden");
-    $("#modal_overlay, #modal").show();
+    mttModalDialog().ok(callbackOk).message(msg).show();
 }
 
+function mttModalDialog(dialogType = 'alert')
+{
+    if ( ! (this instanceof mttModalDialog) ) return new mttModalDialog(dialogType);
+    var dialog = this;
+    this.type = dialogType;
+
+    this.close = function() {
+        $("#modal_overlay, #modal").hide();
+        $("body").css("overflow", "");
+        $("#btnModalOk").off('click');
+        $("#btnModalCancel").off('click');
+        $("#modalMessage").text('');
+        $("#modalTextInput").val('').off('keyup.mttmodal');
+        $(document).off('keydown.mttmodal');
+    } ;
+
+    this.ok = function(callback) {
+        $("#btnModalOk").on('click', function() {
+            var value = $("#modalTextInput").val();
+            dialog.close();
+            if (typeof callback === 'function')
+                callback( dialog.type === 'prompt' ? value : null );
+        });
+        return dialog;
+    };
+
+    this.cancel = function(callback) {
+        $("#btnModalCancel").on('click', function() {
+            dialog.close();
+            if (typeof callback === 'function')
+                callback();
+        });
+        return dialog;
+    };
+
+    this.message = function(msg = '') {
+        $("#modalMessage").text(msg);
+        return dialog;
+    };
+
+    this.default = function(value = '') {
+        $("#modalTextInput").val(value);
+        return dialog;
+    }
+
+    this.show = function() {
+        var modalOverlay = document.getElementById("modal_overlay");
+        if (!modalOverlay) {
+            modalOverlay = document.createElement("div");
+            modalOverlay.id = "modal_overlay";
+            modalOverlay.style.cssText = "position: absolute; z-index: 999; left: 0; top: 0; width: 100%; height: 100%; background-color: black; opacity: 0.8; display:none;";
+            document.getElementsByTagName('body')[0].appendChild(modalOverlay);
+        }
+
+        if (dialog.type === 'confirm') {
+            $("#btnModalCancel").show();
+            $("#modalTextInput").hide();
+        }
+        else if(dialog.type === 'prompt') {
+            $("#btnModalCancel").show();
+            $("#modalTextInput").show();
+            $("#modalTextInput").on("keyup.mttmodal", function(e) {
+                if (e.keyCode == 13) {
+                    $("#btnModalOk").click();
+                }
+            });
+        }
+        else {
+            $("#btnModalCancel").hide();
+            $("#modalTextInput").hide();
+        }
+
+        $(document).on('keydown.mttmodal', function(event) {
+            if (event.keyCode == 27) {
+                dialog.close();
+            }
+        });
+        $("body").css("overflow", "hidden");
+        $("#modal_overlay, #modal").show();
+        return dialog;
+    };
+}
 
 /*
  *  History and Hash change

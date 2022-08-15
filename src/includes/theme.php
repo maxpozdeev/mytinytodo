@@ -279,8 +279,12 @@ $().ready(function(){
 </div>
 
 <div id="modal" style="display:none">
-  <div class="modal-content"></div>
+  <div class="modal-content">
+    <div id="modalMessage"></div>
+    <input id="modalTextInput" type="text" />
+  </div>
   <div class="modal-bottom">
+    <button id="btnModalCancel"><?php _e('action_cancel');?></button>
     <button id="btnModalOk"><?php _e('action_ok');?></button>
   </div>
 </div>

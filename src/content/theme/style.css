@@ -931,7 +931,7 @@ li.mtt-item-hidden { display:none; }
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  min-width: 200px;
+  min-width: 350px;
   max-width: 1000px; /* same as #mtt */
   border: 1px solid var(--color-menu-border);
   background: var(--color-bg);
@@ -941,6 +941,15 @@ li.mtt-item-hidden { display:none; }
 }
 #modal .modal-content {
   padding: 1.5rem;
+}
+#modal .modal-content input {
+  margin-top: 1.5rem;
+  width: 100%;
+}
+#modal input {
+  padding: 3px;
+  border: 1px solid var(--color-border-default);
+  border-radius: 2px;
 }
 #modal .modal-bottom {
   border-top: 1px solid var(--color-border-default);
