@@ -181,27 +181,60 @@ a { color: var(--color-link); cursor:pointer; text-decoration:underline; }
 
 #mtt.no-need-auth .mtt-need-auth-enabled { display:none; }
 
+.form-input {
+  padding: 3px;
+  border: 1px solid var(--color-border-default);
+  border-radius: 2px;
+  transition: box-shadow .15s ease-in-out;
+}
+select.form-input {
+  padding:2px;
+}
+.form-input:focus {
+  outline: none;
+  border-color: var(--color-border-focus);
+  box-shadow: 0 0 0 2px var(--color-border-focus-shadow);
+}
+.form-bottom-buttons {
+  display: flex;
+  justify-content: center;
+  padding: 1rem 0;
+}
+.form-bottom-buttons > * {
+  min-width: 4rem;
+  padding: 4px 6px;
+  margin: 0 6px;
+  background-color: var(--color-submit);
+  border: 1px solid var(--color-border-default);
+  border-radius: 3px;
+  transition: background-color 0.1s ease-out, box-shadow .15s ease-in-out;
+}
+.form-bottom-buttons > *:hover {
+  background-color: var(--color-submit-hover);
+}
+
+
 #page_login {
   max-width: 250px;
   margin:0 auto; /* center */
   margin-top: 100px;
-}
-#page_login > div {
-  padding: 10px;
 }
 #authform {
   background-color: var(--color-menu);
   border: 1px solid var(--color-menu-border);
   border-radius: 5px;
 }
-#authform div { padding:2px 0px; }
-#authform div.h { font-weight:bold; }
-#authform input { padding:3px; border:1px solid var(--color-border-default); border-radius:2px; }
-#authform input[type=password] { width: 100%; box-sizing: border-box; }
-#authform input[type="submit"] { padding:4px; border-radius:3px; background-color: var(--color-submit); }
-#authform .form-bottom-buttons {
-  padding-top: 10px;
+#authform .auth-content {
+  padding: 1.5rem;
 }
+#authform div { padding:2px 0px; }
+#authform .form-bottom-buttons {
+  border-top: 1px solid var(--color-border-default);
+  padding: 0.8rem 0;
+}
+
+#authform div.h { font-weight:bold; }
+#authform input[type=password] { width: 100%; box-sizing: border-box; }
 
 #msg .msg-text {  font-weight:bold; cursor:pointer; }
 #msg .msg-details {
@@ -634,15 +667,6 @@ li.task-row.task-completed .task-note-block .task-note { text-decoration:line-th
 }
 .form-row div.h { margin-bottom:3px; }
 .form-row-short-end { clear:both; }
-#page_taskedit .form-input { padding:3px; border:1px solid var(--color-border-default); border-radius:2px; }
-#page_taskedit select.form-input { padding:2px; }
-#page_taskedit .form-bottom-buttons input {
-  padding: 4px;
-  margin: 0 4px;
-  background-color: var(--color-submit);
-  border: 1px solid var(--color-border-default);
-  border-radius: 3px;
-}
 #page_taskedit .form-row .in500 { width:100%; box-sizing:border-box; }
 #page_taskedit .form-row textarea.in500 {
   height:300px;
@@ -652,10 +676,6 @@ li.task-row.task-completed .task-note-block .task-note { text-decoration:line-th
   padding: 5px;
 }
 #page_taskedit .form-row-short { float:left; margin-right:12px; }
-#page_taskedit .form-bottom-buttons {
-  text-align: center;
-  margin: 1rem 0;
-}
 #alltags .tag { font-weight:bold; color:var(--color-tasklist-tag); }
 #alltags .tag:hover {
   background-color:var(--color-taglist-text-hover-bg);
@@ -879,19 +899,17 @@ li.mtt-item-hidden { display:none; }
 #btnRssFeed .menu-icon { background:url(images/rss.svg) no-repeat; }
 #btnRssFeed.mtt-item-disabled .menu-icon { background:url(images/rss-disabled.svg) no-repeat; }
 
-#task, #search, #page_taskedit .form-input, #page_taskedit .form-bottom-buttons input { transition: box-shadow .15s ease-in-out; }
-#task:focus,
-#search:focus,
-#page_taskedit .form-input:focus,
-#page_taskedit .form-bottom-buttons input:focus {
-  outline:none;
+#task, #search {
+  transition: box-shadow .15s ease-in-out;
+}
+#task:focus, #search:focus {
+  outline: none;
   border-color: var(--color-border-focus);
-  box-shadow:0 0 0 2px var(--color-border-focus-shadow);
+  box-shadow: 0 0 0 2px var(--color-border-focus-shadow);
 }
 
 .mtt-settings-table { width:100%; }
 .mtt-settings-table .tr { border-bottom:1px solid var(--color-row-underlinig); padding:0px; vertical-align:top; display: flex;}
-.mtt-settings-table .form-bottom-buttons { border-bottom:none; text-align:center; display: block; padding:15px 0px; }
 .mtt-settings-table .th,
 .mtt-settings-table .td {
   padding: 10px;
@@ -910,13 +928,6 @@ li.mtt-item-hidden { display:none; }
   color: var(--color-text-default)
 }
 .mtt-settings-table select { padding:2px; }
-.mtt-settings-table .form-bottom-buttons input {
-  padding: 4px;
-  border:1px solid var(--color-border-default);
-  border-radius:3px;
-  background-color:var(--color-submit);
-  margin: 0px 4px;
-}
 .mtt-settings-table input:focus,
 .mtt-settings-table select:focus {
   outline:none;
@@ -953,20 +964,7 @@ li.mtt-item-hidden { display:none; }
 }
 #modal .modal-bottom {
   border-top: 1px solid var(--color-border-default);
-  text-align: center;
   padding: 0.8rem;
-}
-#modal .modal-bottom button {
-  min-width: 4rem;
-  padding: 4px 6px;
-  margin: 0 4px;
-  background-color: var(--color-submit);
-  border: 1px solid var(--color-border-default);
-  border-radius: 3px;
-  transition: background-color 0.1s ease-out;
-}
-#modal .modal-bottom button:hover {
-  background-color: var(--color-submit-hover);
 }
 
 /* font for small screens */
@@ -1062,22 +1060,24 @@ li.mtt-item-hidden { display:none; }
   .mtt-menu-container li { padding-top:0.3rem; padding-bottom:0.3rem; }
 
   .mtt-settings-table .tr { display: block; }
-  .mtt-settings-table .tr:not(.form-bottom-buttons) { background-color:var(--color-settings-row); border:1px solid var(--color-settings-row); border-radius: 10px; padding:0 15px; margin-bottom: 5px;}
+  .mtt-settings-table .tr:not(.form-bottom-buttons) {
+    background-color:var(--color-settings-row);
+    border:1px solid var(--color-settings-row);
+    border-radius: 10px;
+    padding:0 15px;
+    margin-bottom: 5px;
+  }
   .mtt-settings-table .th { width: auto; padding-bottom: 4px; padding-left: 0px; }
   .mtt-settings-table .td {  padding-top: 4px; padding-left: 0px; }
   .mtt-settings-table input , .mtt-settings-table select, .mtt-settings-table label { margin-top:5px; background-color: var(--color-settings-row); }
-  .mtt-settings-table .form-bottom-buttons input,
-  #page_taskedit .form-bottom-buttons input {
+
+  .form-bottom-buttons > * {
     padding: 7px;
-    border-radius:14px;
+    border-radius: 14px;
   }
 
   #modal {
     width: 90%;
-  }
-  #modal .modal-bottom button {
-    padding: 7px;
-    border-radius:14px;
   }
 
 } /* end of @media min 600px */

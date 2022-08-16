@@ -283,9 +283,9 @@ header('Content-type:text/html; charset=utf-8');
 </div>
 </div>
 
-<div class="tr form-bottom-buttons">
-  <input type="submit" value="<?php _e('set_submit');?>" />
-  <input type="button" class="mtt-back-button" value="<?php _e('set_cancel');?>" />
+<div class="form-bottom-buttons">
+  <button type="submit"><?php _e('set_submit'); ?></button>
+  <button type="button" class="mtt-back-button"><?php _e('set_cancel'); ?></button>
 </div>
 
 </div>

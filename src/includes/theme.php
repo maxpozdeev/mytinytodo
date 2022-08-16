@@ -164,8 +164,8 @@ $().ready(function(){
 </div>
 <div class="form-row" id="alltags" style="display:none;"><?php _e('alltags');?> <span class="tags-list"></span></div>
 <div class="form-row form-bottom-buttons">
-  <input type="submit" value="<?php _e('save');?>" class="form-input-button" />
-  <input type="button" id="mtt_edit_cancel" class="mtt-back-button form-input-button" value="<?php _e('cancel');?>" />
+  <button type="submit"><?php _e('save');?></button>
+  <button class="mtt-back-button"><?php _e('cancel');?></button>
 </div>
 </form>
 
@@ -180,15 +180,17 @@ $().ready(function(){
 <!-- Page: Login -->
 <div id="page_login" style="display:none">
   <div id="authform">
-    <form id="login_form">
-    <div class="h"><?php _e('password');?></div>
-    <div><input type="password" name="password" id="password" /></div>
-    <div class="form-bottom-buttons"><input type="submit" value="<?php _e('btn_login');?>" /></div>
-    </form>
-  </div>
-  <div>
-    <a href="#" class="mtt-back-button"><?php _e('cancel');?></a>
-  </div>
+  <form id="login_form">
+    <div class="auth-content">
+      <div class="h"><?php _e('password');?></div>
+      <div><input type="password" name="password" id="password" class="form-input" /></div>
+    </div>
+    <div class="form-bottom-buttons">
+        <button type="submit"><?php _e('btn_login'); ?></button>
+        <button type="button" class="mtt-back-button"><?php _e('cancel'); ?></button>
+    </div>
+  </form>
+</div>
 </div>
 <!-- end of page_login -->
 
@@ -283,9 +285,9 @@ $().ready(function(){
     <div id="modalMessage"></div>
     <input id="modalTextInput" type="text" />
   </div>
-  <div class="modal-bottom">
+  <div class="modal-bottom form-bottom-buttons">
+    <button type="submit" id="btnModalOk"><?php _e('action_ok');?></button>
     <button id="btnModalCancel"><?php _e('action_cancel');?></button>
-    <button id="btnModalOk"><?php _e('action_ok');?></button>
   </div>
 </div>
 
