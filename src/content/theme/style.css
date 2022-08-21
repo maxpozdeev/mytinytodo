@@ -139,7 +139,7 @@ form { display: inline; }
 /* preload images */
 body::after {
   position:absolute; width:0; height:0; overflow:hidden; z-index:-1;
-  content:url(images/logo-loading.gif);
+  content:url(images/logo-loading.gif) url(images/checkmark.svg) url(images/arr-right.svg) url(images/closetag.svg)  url(images/rss.svg) url(images/rss-disabled.svg);
 }
 
 h3.page-title { margin:0; border-bottom:2px solid var(--color-content-delimiter); margin-bottom:10px; padding:0.6rem 0; font-size:1.1rem; }
