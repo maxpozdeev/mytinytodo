@@ -391,7 +391,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
         $("#edittags").autocomplete({
             source: function(request, response) {
                 var taskId = document.getElementById('taskedit_form').id.value;
-                var listId = taskList[taskId].listId;
+                var listId = (taskId != '') ? taskList[taskId].listId : curList.id;
                 _mtt.db.request('suggestTags', {list:listId, q:ac_extractLast(request.term)}, function(json){
                     response(json);
                 })
