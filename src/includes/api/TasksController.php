@@ -350,7 +350,7 @@ class TasksController extends ApiController {
         if (!$r || $listId == $r['list_id']) return false;
 
         // Check target list exists
-        if (!$db->sq("SELECT COUNT(*) FROM {$db->prefix}lists WHERE id=?", $listId))
+        if (!$db->sq("SELECT COUNT(*) FROM {$db->prefix}lists WHERE id=?", [$listId]))
             return false;
 
         $ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->prefix}todolist WHERE list_id=? AND compl=?", array($listId, $r['compl']?1:0));

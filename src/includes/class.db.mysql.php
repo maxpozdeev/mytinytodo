@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
     This file is a part of myTinyTodo.
@@ -11,14 +11,16 @@ class DatabaseResult_Mysql extends DatabaseResult_Abstract
 {
     /** @var PDOStatement */
     protected $q;
+
+    /** @var int */
     protected $affected;
 
-    function __construct($dbh, $query, $resultless = 0)
+    function __construct(PDO $dbh, string $query, bool $resultless = false)
     {
         // use with DELETE, INSERT, UPDATE
         if ($resultless)
         {
-            $this->affected = $dbh->exec($query); //throws PDOException
+            $this->affected = (int) $dbh->exec($query); //throws PDOException
         }
         // SELECT
         else
@@ -28,17 +30,25 @@ class DatabaseResult_Mysql extends DatabaseResult_Abstract
         }
     }
 
-    function fetchRow()
+    function fetchRow(): ?array
     {
-        return $this->q->fetch(PDO::FETCH_NUM);
+        $res = $this->q->fetch(PDO::FETCH_NUM);
+        if ($res === false || !is_array($res)) {
+            return null;
+        }
+        return $res;
     }
 
-    function fetchAssoc()
+    function fetchAssoc(): ?array
     {
-        return $this->q->fetch(PDO::FETCH_ASSOC);
+        $res = $this->q->fetch(PDO::FETCH_ASSOC);
+        if ($res === false || !is_array($res)) {
+            return null;
+        }
+        return $res;
     }
 
-    function rowsAffected()
+    function rowsAffected(): int
     {
         return $this->affected;
     }
@@ -49,14 +59,17 @@ class Database_Mysql extends Database_Abstract
 {
     /** @var PDO */
     protected $dbh;
-    protected $affected = null;
+
+    /** @var int */
+    protected $affected = 0;
+
     protected $dbname;
 
     function __construct()
     {
     }
 
-    function connect($params)
+    function connect(array $params): void
     {
         $host = $params['host'];
         $user = $params['user'];
@@ -67,9 +80,7 @@ class Database_Mysql extends Database_Abstract
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
         );
         $this->dbname = $db;
-
         $this->dbh = new PDO("mysql:host=$host;dbname=$db", $user, $pass, $options);
-        return true;
     }
 
 
@@ -78,12 +89,14 @@ class Database_Mysql extends Database_Abstract
         Returns single row of SELECT query as indexed array (FETCH_NUM).
         Returns single field value if resulting array has only one field.
     */
-    function sq($query, $p = NULL)
+    function sq(string $query, ?array $values = null)
     {
-        $q = $this->_dq($query, $p);
+        $q = $this->_dq($query, $values);
 
         $res = $q->fetchRow();
-        if ($res === false) return NULL;
+        if ($res === false || !is_array($res)) {
+            return null;
+        }
 
         if (sizeof($res) > 1) return $res;
         else return $res[0];
@@ -91,51 +104,44 @@ class Database_Mysql extends Database_Abstract
 
     /*
         Returns single row of SELECT query as dictionary array (FETCH_ASSOC).
-        Returns single field value if resulting array has only one field.
     */
-    function sqa($query, $p = NULL)
+    function sqa(string $query, ?array $values = null): ?array
     {
-        $q = $this->_dq($query, $p);
-
+        $q = $this->_dq($query, $values);
         $res = $q->fetchAssoc();
-        if ($res === false) return NULL;
-
-        if (sizeof($res) > 1) return $res;
-        else return $res[0];
+        if ($res === false || !is_array($res)){
+            return null;
+        }
+        return $res;
     }
 
-    function dq($query, $p = NULL) : DatabaseResult_Abstract
+    function dq(string $query, ?array $values = null) : DatabaseResult_Abstract
     {
-        return $this->_dq($query, $p);
+        return $this->_dq($query, $values);
     }
 
     /*
         for resultless queries like INSERT,UPDATE,DELETE
     */
-    function ex($query, $p = NULL)
+    function ex(string $query, ?array $values = null): void
     {
-        $dbr = $this->_dq($query, $p, true);
-        return $this->affected();
+        $this->_dq($query, $values, true);
     }
 
-    private function _dq($query, $p = NULL, $resultless = 0) : DatabaseResult_Abstract
+    private function _dq(string $query, ?array $values = null, bool $resultless = false) : DatabaseResult_Abstract
     {
-        if (!isset($p)) $p = array();
-        elseif (!is_array($p)) $p = array($p);
-
-        $m = explode('?', $query);
-
-        if (sizeof($p) > 0)
+        if (null !== $values && sizeof($values) > 0)
         {
-            if (sizeof($m) < sizeof($p)+1) {
+            $m = explode('?', $query);
+            if (sizeof($m) < sizeof($values)+1) {
                 throw new Exception("params to set MORE than query params");
             }
-            if (sizeof($m) > sizeof($p)+1) {
+            if (sizeof($m) > sizeof($values)+1) {
                 throw new Exception("params to set LESS than query params");
             }
             $query = "";
             for ($i=0; $i<sizeof($m)-1; $i++) {
-                $query .= $m[$i]. (is_null($p[$i]) ? 'NULL' : $this->quote($p[$i]));
+                $query .= $m[$i]. $this->quote($values[$i]);
             }
             $query .= $m[$i];
         }
@@ -145,28 +151,35 @@ class Database_Mysql extends Database_Abstract
         return $dbr;
     }
 
-    function affected()
+    function affected(): int
     {
         return $this->affected;
     }
 
-    function quote($s)
+    function quote($value): string
     {
-        return '\''. addslashes($s). '\'';
+        if (null === $value) {
+            return 'null';
+        }
+        return '\''. addslashes( (string) $value). '\'';
     }
 
-    function quoteForLike($format, $s)
+    function quoteForLike(string $format, string $string): string
     {
-        $s = str_replace(array('%','_'), array('\%','\_'), addslashes($s));
-        return '\''. sprintf($format, $s). '\'';
+        $string = str_replace(array('%','_'), array('\%','\_'), addslashes($string));
+        return '\''. sprintf($format, $string). '\'';
     }
 
-    function lastInsertId($name = null)
+    function lastInsertId(?string $name = null): ?string
     {
-        return $this->dbh->lastInsertId();
+        $ret = $this->dbh->lastInsertId();
+        if (false === $ret) {
+            return null;
+        }
+        return (string) $ret;
     }
 
-    function tableExists($table)
+    function tableExists(string $table): bool
     {
         $r = $this->sq("SELECT 1 FROM information_schema.tables WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ?",
                         array($this->dbname, $table) );
@@ -174,7 +187,7 @@ class Database_Mysql extends Database_Abstract
         return true;
     }
 
-    function tableFieldExists($table, $field): bool
+    function tableFieldExists(string $table, string $field): bool
     {
         $table = str_replace('`', '\\`', addslashes($table));
         $q = $this->dq("DESCRIBE `$table`");

@@ -42,7 +42,7 @@ class MTTSessionHandler implements SessionHandlerInterface
         // read session data if not expired
         $time = time();
         $expire = $time;
-        $r = $this->db->sq("SELECT data,last_access FROM {$this->db->prefix}sessions WHERE id = ? AND expires >= $expire", $id);
+        $r = $this->db->sq("SELECT data,last_access FROM {$this->db->prefix}sessions WHERE id = ? AND expires >= $expire", [$id]);
         if ( is_null($r) ) return '';
 
         // update last access time and set expires in 14 days
@@ -63,7 +63,7 @@ class MTTSessionHandler implements SessionHandlerInterface
      */
     public function write($id, $data): bool
     {
-        $exists = $this->db->sq("SELECT COUNT(*) FROM {$this->db->prefix}sessions WHERE id = ?", $id);
+        $exists = $this->db->sq("SELECT COUNT(*) FROM {$this->db->prefix}sessions WHERE id = ?", [$id]);
         if (!$exists) {
             // Create new session with 14 days lifetime
             $expire = time() + 14 * 86400;
@@ -85,7 +85,7 @@ class MTTSessionHandler implements SessionHandlerInterface
      */
     public function destroy($id): bool
     {
-        $this->db->ex("DELETE FROM {$this->db->prefix}sessions WHERE id = ?", $id);
+        $this->db->ex("DELETE FROM {$this->db->prefix}sessions WHERE id = ?", [$id]);
         return true;
     }
 
@@ -98,8 +98,8 @@ class MTTSessionHandler implements SessionHandlerInterface
     {
         // We ignore php runtime 'session.gc_maxlifetime'
         $expire = time();
-        $affected = $this->db->ex("DELETE FROM {$this->db->prefix}sessions WHERE expires < $expire");
-        return $affected;
+        $this->db->ex("DELETE FROM {$this->db->prefix}sessions WHERE expires < $expire");
+        return $this->db->affected();
     }
 }
 

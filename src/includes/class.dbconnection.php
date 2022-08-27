@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
     This file is a part of myTinyTodo.
@@ -41,17 +41,17 @@ abstract class Database_Abstract
     /** @var string */
     protected $lastQuery = '';
 
-    abstract function connect($params);
-    abstract function sq($query, $p = NULL);
-    abstract function sqa($query, $p = NULL);
-    abstract function dq($query, $p = NULL) : DatabaseResult_Abstract;
-    abstract function ex($query, $p = NULL);
-    abstract function affected();
-    abstract function quote($s);
-    abstract function quoteForLike($format, $s);
-    abstract function lastInsertId($name = null);
-    abstract function tableExists($table);
-    abstract function tableFieldExists($table, $field): bool;
+    abstract function connect(array $params): void;
+    abstract function sq(string $query, ?array $values = null);
+    abstract function sqa(string $query, ?array $values = null): ?array;
+    abstract function dq(string $query, ?array $values = null): DatabaseResult_Abstract;
+    abstract function ex(string $query, ?array $values = null): void;
+    abstract function affected(): int;
+    abstract function quote($value): string;
+    abstract function quoteForLike(string $format, string $string): string;
+    abstract function lastInsertId(?string $name = null): ?string;
+    abstract function tableExists(string $table): bool;
+    abstract function tableFieldExists(string $table, string $field): bool;
 
     function __get(string $propName) {
         if ( in_array($propName, self::$readonlyProps) ) {
@@ -60,7 +60,7 @@ abstract class Database_Abstract
         throw new Error("Attempt to read undefined property ". get_class($this). "::\$$propName");
     }
 
-    function setPrefix(string $prefix) {
+    function setPrefix(string $prefix): void {
         if ($prefix != '' && !preg_match("/^[a-zA-Z0-9_]+$/", $prefix)) {
             throw new Exception("Incorrect table prefix");
         }
@@ -70,7 +70,7 @@ abstract class Database_Abstract
 
 abstract class DatabaseResult_Abstract
 {
-    abstract function fetchRow();
-    abstract function fetchAssoc();
+    abstract function fetchRow(): ?array;
+    abstract function fetchAssoc(): ?array;
 }
 

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
     This file is a part of myTinyTodo.
@@ -12,19 +12,27 @@ class DatabaseResult_Mysqli extends DatabaseResult_Abstract
     /** @var mysqli_result */
     protected $q;
 
-    function __construct(mysqli $dbh, $query, $resultless = 0)
+    function __construct(mysqli $dbh, string $query, bool $resultless = false)
     {
         $this->q = $dbh->query($query); //throws mysqli_sql_exception
     }
 
-    function fetchRow()
+    function fetchRow(): ?array
     {
-        return $this->q->fetch_row();
+        $res = $this->q->fetch_row();
+        if ($res === null || $res === false || !is_array($res)) {
+            return null;
+        }
+        return $res;
     }
 
-    function fetchAssoc()
+    function fetchAssoc(): ?array
     {
-        return $this->q->fetch_assoc();
+        $res = $this->q->fetch_assoc();
+        if ($res === null || $res === false || !is_array($res)) {
+            return null;
+        }
+        return $res;
     }
 }
 
@@ -41,7 +49,7 @@ class Database_Mysqli extends Database_Abstract
         mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
     }
 
-    function connect($params)
+    function connect(array $params): void
     {
         $host = $params['host'];
         $user = $params['user'];
@@ -49,67 +57,66 @@ class Database_Mysqli extends Database_Abstract
         $db = $params['db'];
         $this->dbname = $db;
         $this->dbh = new mysqli($host, $user, $pass, $db); //throws mysqli_sql_exception
-        return true;
     }
 
-    function lastInsertId($name = null)
+    function lastInsertId(?string $name = null): ?string
     {
-        return $this->dbh->insert_id;
+        return (string) $this->dbh->insert_id;
     }
 
-    function sq($query, $p = NULL)
+    function sq(string $query, ?array $values = null)
     {
-        $q = $this->_dq($query, $p);
+        $q = $this->_dq($query, $values);
 
         $res = $q->fetchRow();
-        if ($res === false || $res === null) return NULL;
+        if ($res === false || !is_array($res)) {
+            return null;
+        }
 
         if (sizeof($res) > 1) return $res;
         else return $res[0];
     }
 
-    function sqa($query, $p = NULL)
+    /*
+        Returns single row of SELECT query as dictionary array (fetch_assoc()).
+    */
+    function sqa(string $query, ?array $values = null): ?array
     {
-        $q = $this->_dq($query, $p);
-
+        $q = $this->_dq($query, $values);
         $res = $q->fetchAssoc();
-        if ($res === false || $res === null) return NULL;
-
+        if ($res === false || !is_array($res)){
+            return null;
+        }
         return $res;
     }
 
-    function dq($query, $p = NULL) : DatabaseResult_Abstract
+    function dq(string $query, ?array $values = null) : DatabaseResult_Abstract
     {
-        return $this->_dq($query, $p);
+        return $this->_dq($query, $values);
     }
 
     /*
         for resultless queries like INSERT,UPDATE,DELETE
     */
-    function ex($query, $p = NULL)
+    function ex(string $query, ?array $values = null): void
     {
-        $dbr = $this->_dq($query, $p, 1);
-        return $this->affected();
+        $this->_dq($query, $values, true);
     }
 
-    private function _dq($query, $p = NULL, $resultless = 0) : DatabaseResult_Abstract
+    private function _dq(string $query, ?array $values = null, bool $resultless = false) : DatabaseResult_Abstract
     {
-        if (!isset($p)) $p = array();
-        elseif (!is_array($p)) $p = array($p);
-
-        $m = explode('?', $query);
-
-        if (sizeof($p) > 0)
+        if (null !== $values && sizeof($values) > 0)
         {
-            if (sizeof($m) < sizeof($p)+1) {
+            $m = explode('?', $query);
+            if (sizeof($m) < sizeof($values)+1) {
                 throw new Exception("params to set MORE than query params");
             }
-            if (sizeof($m) > sizeof($p)+1) {
+            if (sizeof($m) > sizeof($values)+1) {
                 throw new Exception("params to set LESS than query params");
             }
             $query = "";
             for ($i=0; $i < sizeof($m)-1; $i++) {
-                $query .= $m[$i]. (is_null($p[$i]) ? 'NULL' : $this->quote($p[$i]));
+                $query .= $m[$i]. $this->quote($values[$i]);
             }
             $query .= $m[$i];
         }
@@ -117,23 +124,26 @@ class Database_Mysqli extends Database_Abstract
         return new DatabaseResult_Mysqli($this->dbh, $query, $resultless);
     }
 
-    function affected()
+    function affected(): int
     {
-        return $this->dbh->affected_rows;
+        return max( (int)$this->dbh->affected_rows, 0 );
     }
 
-    function quote($s)
+    function quote($value): string
     {
-        return '\''. addslashes($s). '\'';
+        if (null === $value) {
+            return 'null';
+        }
+        return '\''. addslashes( (string) $value). '\'';
     }
 
-    function quoteForLike($format, $s)
+    function quoteForLike(string $format, string $string): string
     {
-        $s = str_replace(array('%','_'), array('\%','\_'), addslashes($s));
-        return '\''. sprintf($format, $s). '\'';
+        $string = str_replace(array('%','_'), array('\%','\_'), addslashes($string));
+        return '\''. sprintf($format, $string). '\'';
     }
 
-    function tableExists($table)
+    function tableExists(string $table): bool
     {
         $r = $this->sq("SELECT 1 FROM information_schema.tables WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ?",
                         array($this->dbname, $table) );
@@ -141,7 +151,7 @@ class Database_Mysqli extends Database_Abstract
         return true;
     }
 
-    function tableFieldExists($table, $field): bool
+    function tableFieldExists(string $table, string $field): bool
     {
         $table = str_replace('`', '\\`', addslashes($table));
         $q = $this->dq("DESCRIBE `$table`");
