@@ -62,7 +62,9 @@ class ListsController extends ApiController {
         $id = $db->lastInsertId();
         $t['total'] = 1;
         $r = $db->sqa("SELECT * FROM {$db->prefix}lists WHERE id=$id");
-        $t['list'][] = $this->prepareList($r, true);
+        $oo = $this->prepareList($r, true);
+        MTTNotificationCenter::postNotification(MTTNotification::didCreateList, $oo);
+        $t['list'][] = $oo;
         return $t;
     }
 

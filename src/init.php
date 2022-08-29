@@ -25,10 +25,11 @@ else {
 }
 
 require_once(MTTINC. 'common.php');
+require_once(MTTINC. 'version.php');
 require_once(MTTINC. 'class.dbconnection.php');
 require_once(MTTINC. 'class.dbcore.php');
 require_once(MTTINC. 'class.config.php');
-require_once(MTTINC. 'version.php');
+require_once(MTTINC. 'notifications.php');
 
 requireConfig();
 configureDbConnection();
@@ -322,6 +323,7 @@ function jsonExit($data)
     header('Pragma: no-cache'); // for old HTTP/1.0 intermediate caches
     header_remove('Expires');
     echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    MTTNotificationCenter::notifyDelayedObservers();
     exit;
 }
 

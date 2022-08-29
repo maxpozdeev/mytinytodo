@@ -250,7 +250,9 @@ class TasksController extends ApiController {
         }
         $db->ex("COMMIT");
         $r = $db->sqa("SELECT * FROM {$db->prefix}todolist WHERE id=$id");
-        $t['list'][] = $this->prepareTaskRow($r);
+        $oo = $this->prepareTaskRow($r);
+        MTTNotificationCenter::postNotification(MTTNotification::didCreateTask, $oo);
+        $t['list'][] = $oo;
         $t['total'] = 1;
         return $t;
     }
@@ -288,7 +290,9 @@ class TasksController extends ApiController {
         }
         $db->ex("COMMIT");
         $r = $db->sqa("SELECT * FROM {$db->prefix}todolist WHERE id=$id");
-        $t['list'][] = $this->prepareTaskRow($r);
+        $oo = $this->prepareTaskRow($r);
+        MTTNotificationCenter::postNotification(MTTNotification::didCreateTask, $oo);
+        $t['list'][] = $oo;
         $t['total'] = 1;
         return $t;
     }
