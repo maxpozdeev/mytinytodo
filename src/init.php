@@ -323,7 +323,7 @@ function jsonExit($data)
     header('Pragma: no-cache'); // for old HTTP/1.0 intermediate caches
     header_remove('Expires');
     echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-    MTTNotificationCenter::notifyDelayedObservers();
+    MTTNotificationCenter::postDidFinishRequestNotification();
     exit;
 }
 

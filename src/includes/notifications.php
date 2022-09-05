@@ -8,11 +8,6 @@ class MTTNotificationCenter
     private static $observers = [];
 
     /**
-     * @var array<array>
-     */
-    private static $notificationStore = [];
-
-    /**
      * @param string $notification
      * @param MTTNotificationObserverInterface $observer
      * @return void
@@ -22,7 +17,10 @@ class MTTNotificationCenter
         if (!isset(self::$observers[$notification])) {
             self::$observers[$notification] = [];
         }
-        self::$observers[$notification][] = $observer;
+        if (!in_array($observer, self::$observers[$notification])) {
+            // do not duplicate same observer
+            self::$observers[$notification][] = $observer;
+        }
     }
 
     /**
@@ -40,35 +38,30 @@ class MTTNotificationCenter
 
     public static function postNotification(string $notification, $object)
     {
-        self::$notificationStore[] = [
-            'notification' => $notification,
-            'object' => $object
-        ];
+        if (!isset(self::$observers[$notification])) {
+            return; // No observers for this notification
+        }
+        foreach (self::$observers[$notification] as $observer) {
+            $observer->notification($notification, $object);
+        }
     }
 
     /**
      * Run this near exit()
      * @return void
      */
-    public static function notifyDelayedObservers()
+    public static function postDidFinishRequestNotification()
     {
-        if (count(self::$notificationStore) == 0) {
-            return; // No notifications
-        }
-        if (session_status() == PHP_SESSION_ACTIVE) {
-            session_write_close(); // Close active session
+        if ( ! isset(self::$observers[MTTNotification::didFinishRequest]) ) {
+            return; // No observers for didFinishRequest
         }
         if (function_exists('fastcgi_finish_request')) {
+            if (session_status() == PHP_SESSION_ACTIVE) {
+                session_write_close(); // Close active session
+            }
             fastcgi_finish_request();
         }
-        foreach (self::$notificationStore as $notificationItem) {
-            $notification = $notificationItem['notification'];
-            $object = $notificationItem['object'];
-            $observers = self::$observers[$notification] ?? [];
-            foreach ($observers as $observer) {
-                $observer->notification($notification, $object);
-            }
-        }
+        self::postNotification(MTTNotification::didFinishRequest, null);
     }
 }
 
@@ -80,6 +73,7 @@ interface MTTNotificationObserverInterface
 // Enum
 abstract class MTTNotification
 {
+    const didFinishRequest = 'didFinishRequest';
     const didCreateTask = 'didCreateTask';
     const didCreateList = 'didCreateList';
 }
