@@ -13,7 +13,7 @@ class TasksController extends ApiController {
     /**
      * Get tasks.
      * Filters are set with query parameters.
-     * @return array
+     * @return void
      * @throws Exception
      */
     function get()
@@ -104,13 +104,13 @@ class TasksController extends ApiController {
         if (_get('saveSort') == 1 && haveWriteAccess($listId)) {
             ListsController::setListSortingById($listId, $sort);
         }
-        return $t;
+        $this->response->data = $t;
     }
 
     /**
      * Create new task
      * action: simple or full
-     * @return mixed
+     * @return void
      * @throws Exception
      */
     function post()
@@ -119,14 +119,14 @@ class TasksController extends ApiController {
         checkWriteAccess($listId);
         $action = $this->req->jsonBody['action'] ?? '';
         if ($action == 'full') {
-            return $this->fullNewTaskInList($listId);
+            $this->response->data = $this->fullNewTaskInList($listId);
         }
-        return $this->newTaskInList($listId);
+        $this->response->data = $this->newTaskInList($listId);
     }
 
     /**
      * Actions with multiple tasks
-     * @return array
+     * @return void
      * @throws Exception
      */
     function put()
@@ -134,8 +134,8 @@ class TasksController extends ApiController {
         checkWriteAccess();
         $action = $this->req->jsonBody['action'] ?? '';
         switch ($action) {
-            case 'order': return $this->changeTaskOrder(); break;
-            default:      return ['total' => 0]; // error 400 ?
+            case 'order': $this->response->data = $this->changeTaskOrder(); break;
+            default:      $this->response->data = ['total' => 0]; // error 400 ?
         }
     }
 
@@ -143,7 +143,7 @@ class TasksController extends ApiController {
     /**
      * Delete task by Id
      * @param mixed $id
-     * @return array
+     * @return void
      * @throws Exception
      */
     function deleteId($id)
@@ -160,13 +160,13 @@ class TasksController extends ApiController {
         $t = array();
         $t['total'] = $deleted;
         $t['list'][] = array('id' => $id);
-        return $t;
+        $this->response->data = $t;
     }
 
     /**
      * Edit some properties of Task
      * @param mixed $id
-     * @return array
+     * @return void
      * @throws Exception
      */
     function putId($id)
@@ -176,19 +176,19 @@ class TasksController extends ApiController {
 
         $action = $this->req->jsonBody['action'] ?? '';
         switch ($action) {
-            case 'edit':     return $this->editTask($id);     break;
-            case 'complete': return $this->completeTask($id); break;
-            case 'note':     return $this->editNote($id);     break;
-            case 'move':     return $this->moveTask($id);     break;
-            case 'priority': return $this->priorityTask($id); break;
-            default:         return ['total' => 0];
+            case 'edit':     $this->response->data = $this->editTask($id);     break;
+            case 'complete': $this->response->data = $this->completeTask($id); break;
+            case 'note':     $this->response->data = $this->editNote($id);     break;
+            case 'move':     $this->response->data = $this->moveTask($id);     break;
+            case 'priority': $this->response->data = $this->priorityTask($id); break;
+            default:         $this->response->data = ['total' => 0];
         }
     }
 
 
     /**
      * Parse task input string to components for representing in edit/add form
-     * @return array
+     * @return void
      * @throws Exception
      */
     function postTitleParse()
@@ -205,12 +205,12 @@ class TasksController extends ApiController {
             $t['prio'] = $a['prio'];
             $t['tags'] = $a['tags'];
         }
-        return $t;
+        $this->response->data = $t;
     }
 
     /* Private Functions */
 
-    private function newTaskInList(int $listId)
+    private function newTaskInList(int $listId): ?array
     {
         $db = DBConnection::instance();
         $t = array();
@@ -257,7 +257,7 @@ class TasksController extends ApiController {
         return $t;
     }
 
-    private function fullNewTaskInList(int $listId)
+    private function fullNewTaskInList(int $listId): ?array
     {
         $db = DBConnection::instance();
         $title = trim($this->req->jsonBody['title'] ?? '');
@@ -297,7 +297,7 @@ class TasksController extends ApiController {
         return $t;
     }
 
-    private function editTask(int $id)
+    private function editTask(int $id): ?array
     {
         $db = DBConnection::instance();
         $title = trim($this->req->jsonBody['title'] ?? '');
@@ -332,7 +332,7 @@ class TasksController extends ApiController {
         return $t;
     }
 
-    private function moveTask(int $id)
+    private function moveTask(int $id): ?array
     {
         $db = DBConnection::instance();
         $fromId = (int)($this->req->jsonBody['from'] ?? 0);
@@ -345,7 +345,7 @@ class TasksController extends ApiController {
         return $t;
     }
 
-    private function doMoveTask(int $id, int $listId)
+    private function doMoveTask(int $id, int $listId): bool
     {
         $db = DBConnection::instance();
 
@@ -366,7 +366,7 @@ class TasksController extends ApiController {
         return true;
     }
 
-    private function completeTask(int $id)
+    private function completeTask(int $id): ?array
     {
         $db = DBConnection::instance();
         $compl = (int)($this->req->jsonBody['compl'] ?? 0);
@@ -384,7 +384,7 @@ class TasksController extends ApiController {
         return $t;
     }
 
-    private function editNote(int $id)
+    private function editNote(int $id): ?array
     {
         $db = DBConnection::instance();
         $note = $this->req->jsonBody['note'] ?? '';
@@ -396,7 +396,7 @@ class TasksController extends ApiController {
         return $t;
     }
 
-    private function priorityTask(int $id)
+    private function priorityTask(int $id): ?array
     {
         $db = DBConnection::instance();
         $prio = (int)($this->req->jsonBody['prio'] ?? 0);
@@ -410,7 +410,7 @@ class TasksController extends ApiController {
     }
 
 
-    private function changeTaskOrder()
+    private function changeTaskOrder(): ?array
     {
         $db = DBConnection::instance();
         $order = $this->req->jsonBody['order'] ?? null;
@@ -436,7 +436,7 @@ class TasksController extends ApiController {
         return $t;
     }
 
-    private function getUserListsSimple()
+    private function getUserListsSimple(): array
     {
         $db = DBConnection::instance();
         $a = array();
@@ -447,7 +447,7 @@ class TasksController extends ApiController {
         return $a;
     }
 
-    private function prepareTaskRow(array $r)
+    private function prepareTaskRow(array $r): array
     {
         $lang = Lang::instance();
         $dueA = $this->prepareDuedate($r['duedate']);
@@ -486,7 +486,7 @@ class TasksController extends ApiController {
     }
 
 
-    private function parseDuedate($s)
+    private function parseDuedate($s): ?string
     {
         $df2 = Config::get('dateformat2');
         if (max((int)strpos($df2,'n'), (int)strpos($df2,'m')) > max((int)strpos($df2,'d'), (int)strpos($df2,'j'))) $formatDayFirst = true;
@@ -535,7 +535,7 @@ class TasksController extends ApiController {
         return "$y-$m-$d";
     }
 
-    private function prepareDuedate($duedate)
+    private function prepareDuedate($duedate): array
     {
         $lang = Lang::instance();
 
@@ -568,7 +568,9 @@ class TasksController extends ApiController {
 
     private function date2int($d) : int
     {
-        if (!$d) return 33330000;
+        if (!$d) {
+            return 33330000;
+        }
         $ad = explode('-', $d);
         $s = $ad[0];
         if (strlen($ad[1]) < 2) $s .= "0$ad[1]"; else $s .= $ad[1];
@@ -576,7 +578,7 @@ class TasksController extends ApiController {
         return (int)$s;
     }
 
-    private function daysInMonth(int $m, int $y = 0)
+    private function daysInMonth(int $m, int $y = 0): int
     {
         if ($y == 0)  $y = (int)date('Y');
         $a = array(1=>31,(($y-2000)%4?28:29),31,30,31,30,31,31,30,31,30,31);
@@ -591,7 +593,7 @@ class TasksController extends ApiController {
         return $id ? $id : 0;
     }
 
-    private function getOrCreateTag($name)
+    private function getOrCreateTag($name): array
     {
         $db = DBConnection::instance();
         $tagId = $db->sq("SELECT id FROM {$db->prefix}tags WHERE name=?", array($name));
@@ -605,10 +607,10 @@ class TasksController extends ApiController {
         );
     }
 
-    private function prepareTags(string $tagsStr)
+    private function prepareTags(string $tagsStr): ?array
     {
         $tags = explode(',', $tagsStr);
-        if (!$tags) return 0;
+        if (!$tags) return null;
 
         $aTags = array('tags'=>array(), 'ids'=>array());
         foreach ($tags as $tag)
@@ -637,7 +639,7 @@ class TasksController extends ApiController {
         }
     }
 
-    private function parseSmartSyntax($title)
+    private function parseSmartSyntax($title): array
     {
         $a = [
             'prio' => 0,

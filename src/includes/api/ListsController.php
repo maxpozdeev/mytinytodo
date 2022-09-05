@@ -10,7 +10,7 @@ class ListsController extends ApiController {
 
     /**
      * Get all lists
-     * @return array
+     * @return void
      * @throws Exception
      */
     function get()
@@ -34,14 +34,14 @@ class ListsController extends ApiController {
             $t['total']++;
             $t['list'][] = $this->prepareList($r, $haveWriteAccess);
         }
-        return $t;
+        $this->response->data = $t;
     }
 
 
     /**
      * Create new list
      * Code 201 on success
-     * @return array
+     * @return void
      * @throws Exception
      */
     function post()
@@ -65,12 +65,12 @@ class ListsController extends ApiController {
         $oo = $this->prepareList($r, true);
         MTTNotificationCenter::postNotification(MTTNotification::didCreateList, $oo);
         $t['list'][] = $oo;
-        return $t;
+        $this->response->data = $t;
     }
 
     /**
      * Actions with all lists
-     * @return array
+     * @return void
      * @throws Exception
      */
     function put()
@@ -78,8 +78,8 @@ class ListsController extends ApiController {
         checkWriteAccess();
         $action = $this->req->jsonBody['action'] ?? '';
         switch ($action) {
-            case 'order': return $this->changeListOrder(); break;
-            default:      return ['total' => 0]; // error 400 ?
+            case 'order': $this->response->data = $this->changeListOrder(); break;
+            default:      $this->response->data = ['total' => 0]; // error 400 ?
         }
     }
 
@@ -89,7 +89,7 @@ class ListsController extends ApiController {
     /**
      * Get single list by Id
      * @param mixed $id
-     * @return null|array
+     * @return void
      * @throws Exception
      */
     function getId($id)
@@ -98,16 +98,17 @@ class ListsController extends ApiController {
         $db = DBConnection::instance();
         $r = $db->sqa( "SELECT * FROM {$db->prefix}lists WHERE id=?", array($id) );
         if (!$r) {
-            return null;
+            $this->response->data = null;
+            return;
         }
         $t = $this->prepareList($r, haveWriteAccess());
-        return $t;
+        $this->response->data = $t;
     }
 
     /**
      * Delete list by Id
      * @param mixed $id
-     * @return array
+     * @return void
      * @throws Exception
      */
     function deleteId($id)
@@ -125,7 +126,7 @@ class ListsController extends ApiController {
             $db->ex("DELETE FROM {$db->prefix}todolist WHERE list_id=$id");
         }
         $db->ex("COMMIT");
-        return $t;
+        $this->response->data = $t;
     }
 
 
@@ -133,7 +134,7 @@ class ListsController extends ApiController {
      * Edit some properties of List
      * Actions: rename
      * @param mixed $id
-     * @return array
+     * @return void
      * @throws Exception
      */
     function putId($id)
@@ -143,21 +144,21 @@ class ListsController extends ApiController {
 
         $action = $this->req->jsonBody['action'] ?? '';
         switch ($action) {
-            case 'rename':         return $this->renameList($id);     break;
-            case 'sort':           return $this->sortList($id);       break;
-            case 'publish':        return $this->publishList($id);    break;
-            case 'enableFeedKey':  return $this->enableFeedKey($id);  break;
-            case 'showNotes':      return $this->showNotes($id);      break;
-            case 'hide':           return $this->hideList($id);       break;
-            case 'clearCompleted': return $this->clearCompleted($id); break;
-            default:               return ['total' => 0];
+            case 'rename':         $this->response->data = $this->renameList($id);     break;
+            case 'sort':           $this->response->data = $this->sortList($id);       break;
+            case 'publish':        $this->response->data = $this->publishList($id);    break;
+            case 'enableFeedKey':  $this->response->data = $this->enableFeedKey($id);  break;
+            case 'showNotes':      $this->response->data = $this->showNotes($id);      break;
+            case 'hide':           $this->response->data = $this->hideList($id);       break;
+            case 'clearCompleted': $this->response->data = $this->clearCompleted($id); break;
+            default:               $this->response->data = ['total' => 0];
         }
     }
 
 
     /* Private Functions */
 
-    private function prepareAllTasksList()
+    private function prepareAllTasksList(): array
     {
         //default values
         $hidden = 1;
@@ -181,7 +182,7 @@ class ListsController extends ApiController {
         );
     }
 
-    private function prepareList($row, bool $haveWriteAccess)
+    private function prepareList($row, bool $haveWriteAccess): array
     {
         $taskview = (int)$row['taskview'];
         $feedKey = '';
@@ -206,7 +207,7 @@ class ListsController extends ApiController {
         );
     }
 
-    private function renameList(int $id)
+    private function renameList(int $id): ?array
     {
         $db = DBConnection::instance();
         $t = array();
@@ -223,7 +224,7 @@ class ListsController extends ApiController {
         return $t;
     }
 
-    private function sortList(int $listId)
+    private function sortList(int $listId): ?array
     {
         $sort = (int)($this->req->jsonBody['sort'] ?? 0);
         self::setListSortingById($listId, $sort);
@@ -259,7 +260,7 @@ class ListsController extends ApiController {
         }
     }
 
-    private function publishList(int $listId)
+    private function publishList(int $listId): ?array
     {
         $db = DBConnection::instance();
         $publish = (int)($this->req->jsonBody['publish'] ?? 0);
@@ -267,7 +268,7 @@ class ListsController extends ApiController {
         return ['total'=>1];
     }
 
-    private function enableFeedKey(int $listId)
+    private function enableFeedKey(int $listId): ?array
     {
         $db = DBConnection::instance();
         $flag = (int)($this->req->jsonBody['enable'] ?? 0);
@@ -294,7 +295,7 @@ class ListsController extends ApiController {
         ];
     }
 
-    private function showNotes(int $listId)
+    private function showNotes(int $listId): ?array
     {
         $db = DBConnection::instance();
         $flag = (int)($this->req->jsonBody['shownotes'] ?? 0);
@@ -303,7 +304,7 @@ class ListsController extends ApiController {
         return ['total'=>1];
     }
 
-    private function hideList(int $listId)
+    private function hideList(int $listId): ?array
     {
         $db = DBConnection::instance();
         $flag = (int)($this->req->jsonBody['hide'] ?? 0);
@@ -319,7 +320,7 @@ class ListsController extends ApiController {
         return ['total'=>1];
     }
 
-    private function clearCompleted(int $listId)
+    private function clearCompleted(int $listId): ?array
     {
         $db = DBConnection::instance();
         $t = array();
@@ -332,7 +333,7 @@ class ListsController extends ApiController {
         return $t;
     }
 
-    private function changeListOrder()
+    private function changeListOrder(): ?array
     {
         $t = array();
         $t['total'] = 0;

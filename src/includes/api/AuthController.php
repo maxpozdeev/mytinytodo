@@ -11,14 +11,14 @@ class AuthController extends ApiController {
     function postAction($action)
     {
         switch ($action) {
-            case 'login':   return $this->login();         break;
-            case 'logout':  return $this->logout();        break;
-            case 'session': return $this->createSession(); break;
-            default:              return ['total' => 0]; // error 400 ?
+            case 'login':   $this->response->data = $this->login();         break;
+            case 'logout':  $this->response->data = $this->logout();        break;
+            case 'session': $this->response->data = $this->createSession(); break;
+            default:        $this->response->data = ['total' => 0]; // error 400 ?
         }
     }
 
-    private function login()
+    private function login(): ?array
     {
         check_token();
         $t = array('logged' => 0);
@@ -35,7 +35,7 @@ class AuthController extends ApiController {
         return $t;
     }
 
-    private function logout()
+    private function logout(): ?array
     {
         check_token();
         updateSessionLogged(false);
@@ -45,7 +45,7 @@ class AuthController extends ApiController {
         return $t;
     }
 
-    private function createSession()
+    private function createSession(): ?array
     {
         $t = array();
         if (!need_auth()) {

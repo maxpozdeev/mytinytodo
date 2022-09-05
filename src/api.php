@@ -21,8 +21,6 @@ require_once(MTTINC. 'api/TasksController.php');
 require_once(MTTINC. 'api/TagsController.php');
 require_once(MTTINC. 'api/AuthController.php');
 
-$req = new ApiRequest();
-
 $endpoints = array(
     '/lists' => [
         'GET'  => [ ListsController::class , 'get' ],
@@ -57,20 +55,21 @@ $endpoints = array(
     ],
 );
 
+$req = new ApiRequest();
+$response = new ApiResponse();
 $executed = false;
 $data = null;
+
 foreach ($endpoints as $search => $methods) {
     $m = array();
     if (preg_match("#^$search$#", $req->path, $m)) {
         $classDescr = $methods[$req->method] ?? null;
         // check if http method is supported for path
         if ( is_null($classDescr) ) {
-            http_response_code(500);
-            die ("Unknown method for resource");
+            $response->htmlContent("Unknown method for resource", 500)->exit();
         }
         if ( !is_array($classDescr) || count($classDescr) != 2) {
-            http_response_code(500);
-            die ("Incorrect method definition");
+            $response->htmlContent("Incorrect method definition", 500)->exit();
         }
         // check if class method exists
         $class = $classDescr[0];
@@ -82,36 +81,27 @@ foreach ($endpoints as $search => $methods) {
         if (method_exists($class, $classMethod)) { // test for static with ReflectionMethod?
             if ($req->method != 'GET' && $req->contentType == 'application/json') {
                 if ($req->decodeJsonBody() === false) {
-                    http_response_code(500);
-                    die ("Failed to parse JSON body");
+                    $response->htmlContent("Failed to parse JSON body", 500)->exit();
                 }
             }
-            $instance = new $class($req);
-            $data = $instance->$classMethod($param);
+            $instance = new $class($req, $response);
+            $instance->$classMethod($param);
             $executed = true;
             break;
         }
         else {
-            http_response_code(405);
             if (MTT_DEBUG) {
-                die ("Class method $class:$classMethod() not found");
+                $response->htmlContent("Class method $class:$classMethod() not found", 405)->exit();
             }
-            die ("Class method not found");
+            $response->htmlContent("Class method not found", 405)->exit();
         }
     }
 }
 
-if ($executed) {
-    if (is_null($data)) {
-        http_response_code(404);
-    }
-    jsonExit($data);
+if (!$executed) {
+    $response->htmlContent("Unknown command", 404);
 }
-else {
-    http_response_code(404);
-    die ("Unknown command");
-}
-
+$response->exit();
 
 
 
@@ -195,6 +185,7 @@ function haveWriteAccess(?int $listId = null) : bool
     return true;
 }
 
+
 class ApiRequest
 {
     public $path;
@@ -214,14 +205,46 @@ class ApiRequest
     }
 }
 
+class ApiResponse
+{
+    public $data = null;
+    public $contentType = 'application/json';
+    public $code = null;
+
+    function htmlContent(string $content, int $code = 200): ApiResponse
+    {
+        $this->contentType = 'text/html';
+        $this->data = $content;
+        $this->code = $code;
+        return $this;
+    }
+
+    function  exit()
+    {
+        if (is_null($this->data) && is_null($this->code)) {
+            http_response_code(404);
+        }
+        if (!is_null($this->code)) {
+            http_response_code($this->code);
+        }
+        if ($this->contentType == 'text/html') {
+            print $this->data;
+            exit();
+        }
+        jsonExit($this->data);
+    }
+}
+
 abstract class ApiController
 {
-    /**
-     * @var ApiRequest
-     */
+    /** @var ApiRequest */
     protected $req;
 
-    function __construct(ApiRequest $req) {
+    /** @var ApiResponse */
+    protected $response;
+
+    function __construct(ApiRequest $req, ApiResponse $response) {
         $this->req = $req;
+        $this->response = $response;
     }
 }

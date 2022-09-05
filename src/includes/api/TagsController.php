@@ -10,7 +10,7 @@ class TagsController extends ApiController {
 
     /**
      * Get tag cloud
-     * @return array
+     * @return void
      * @throws Exception
      */
     function getCloud($listId)
@@ -35,7 +35,8 @@ class TagsController extends ApiController {
         $t['total'] = 0;
         $count = sizeof($at);
         if (!$count) {
-            return $t;
+            $this->response->data = $t;
+            return;
         }
 
         $qmax = max($ac);
@@ -52,9 +53,13 @@ class TagsController extends ApiController {
             );
         }
         $t['total'] = $count;
-        return $t;
+        $this->response->data = $t;
     }
 
+    /**
+     * @return void
+     * @throws Exception
+     */
     function getSuggestions($listId)
     {
         $listId = (int)_get('list');
@@ -68,15 +73,15 @@ class TagsController extends ApiController {
         while ($r = $q->fetchRow()) {
             $t[] = $r[0];
         }
-        return $t;
+        $this->response->data = $t;
     }
 
-    private function tagWeight(int $qmin, int $q, float $step)
+    private function tagWeight(int $qmin, int $q, float $step): float
     {
-        if ($step == 0) return 1;
+        if ($step == 0) return 1.0;
         $v = ceil(($q - $qmin)/$step);
-        if ($v == 0) return 0;
-        else return $v-1;
+        if ($v == 0) return 0.0;
+        else return $v - 1.0;
     }
 
 
