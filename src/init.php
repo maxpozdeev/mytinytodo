@@ -25,6 +25,7 @@ else {
 }
 
 require_once(MTTINC. 'common.php');
+require_once(MTTINC. 'common_classes.php');
 require_once(MTTINC. 'version.php');
 require_once(MTTINC. 'class.dbconnection.php');
 require_once(MTTINC. 'class.dbcore.php');
