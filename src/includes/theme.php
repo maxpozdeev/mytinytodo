@@ -47,7 +47,7 @@ $().ready(function(){
   <div class="topblock-bar">
   <div id="msg"><span class="msg-text"></span><div class="msg-details"></div></div>
   <div class="bar-menu">
-    <a href="#settings" id="settings_btn" class="mtt-only-authorized"><?php _e('a_settings');?></a>
+    <a href="#settings" class="mtt-only-authorized" data-settings-link="index"><?php _e('a_settings');?></a>
     <span id="bar_public" style="display:none" class="mtt-need-auth-enabled"><?php _e('public_tasks');?></span>
     <a href="#login" id="login_btn" class="mtt-need-auth-enabled"><?php _e('a_login');?></a>
     <a href="#logout" id="logout_btn" class="mtt-need-auth-enabled" style="display:none" ><?php _e('a_logout');?></a>

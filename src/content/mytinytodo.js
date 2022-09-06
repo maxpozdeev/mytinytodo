@@ -590,8 +590,11 @@ var mytinytodo = window.mytinytodo = _mtt = {
 
 
         // Settings
-        $("#settings_btn").click(function(event){
-            showSettings( (event.metaKey || event.ctrlKey) ? 1 : 0 );
+        $("a[data-settings-link]").click(function(event){
+            var settingsPage = this.dataset.settingsLink;
+            if (settingsPage == 'index') {
+                showSettings( (event.metaKey || event.ctrlKey) ? 1 : 0 );
+            }
             return false;
         });
 
@@ -600,7 +603,11 @@ var mytinytodo = window.mytinytodo = _mtt = {
             return false;
         });
 
-        $(document).on('click', '.mtt-back-button', function(){ _mtt.pageBack(true); this.blur(); return false; } );
+        $(document).on('click', '.mtt-back-button', function() {
+            _mtt.pageBack(true);
+            this.blur();
+            return false;
+        });
 
         $(window).bind('beforeunload', function() {
             if (_mtt.pages.current && _mtt.pages.current.page == 'taskedit' && flag.editFormChanged) {
