@@ -24,7 +24,7 @@ if(isset($_POST['save']))
     Config::set('lang', _post('lang'));
 
     // in Demo mode we can set only language by cookies
-    if(defined('MTTDEMO')) {
+    if (defined('MTTDEMO')) {
         setcookie('lang', Config::get('lang'), 0, url_dir(Config::get('url')=='' ? getRequestUri() : Config::getUrl('url')));
         $t['saved'] = 1;
         jsonExit($t);
@@ -53,6 +53,42 @@ if(isset($_POST['save']))
     Config::set('showdate', (int)_post('showdate'));
     Config::set('appearance', removeNewLines(trim(_post('appearance'))) );
     Config::save();
+    $t['saved'] = 1;
+    jsonExit($t);
+}
+else if (isset($_POST['activate']))
+{
+    check_token();
+
+    $t = array('saved'=>0);
+
+    // in Demo mode we do nothing
+    if (defined('MTTDEMO')) {
+        $t['saved'] = 1;
+        jsonExit($t);
+    }
+
+    $activate = (int)_post('activate');
+    $ext = _post('ext');
+
+    $exts = MTTExtensionLoader::bundles();
+    if (in_array($ext, $exts)) {
+        $a = Config::get('extensions');
+        if (!is_array($a)) $a = [];
+        if ($activate) {
+            try {
+                MTTExtensionLoader::loadExtension($ext);
+                $a[] = $ext;
+            }
+            catch (Exception $e) {
+                http_response_code(500);
+                logAndDie($e->getMessage());
+            }
+        }
+        else $a = array_diff($a, [$ext]);
+        Config::set('extensions', $a);
+        Config::save();
+    }
     $t['saved'] = 1;
     jsonExit($t);
 }
@@ -142,6 +178,24 @@ function timezoneIdentifiers()
         $a[$v] = $v;
     }
     return $a;
+}
+
+function listExtensions()
+{
+    $exts = MTTExtensionLoader::bundles();
+    $activatedExts = Config::get('extensions');
+    if (!is_array($activatedExts)) $activatedExts = [];
+    foreach ($exts as $ext) {
+        $out = "$ext ";
+        if (in_array($ext, $activatedExts)) {
+            $out .= "<a href='#' data-settings-link='ext-deactivate' data-ext='". htmlspecialchars($ext).  "'>". __('set_deactivate', true). '</a>';
+        }
+        else {
+            $out .= "<a href='#' data-settings-link='ext-activate' data-ext='". htmlspecialchars($ext). "'>". __('set_activate', true). '</a>';
+        }
+        $a[] = $out;
+    }
+    print( implode("<br>\n", $a) );
 }
 
 header('Content-type:text/html; charset=utf-8');
@@ -282,6 +336,18 @@ header('Content-type:text/html; charset=utf-8');
  <label><input type="radio" name="appearance" value="light"  <?php if(_c('appearance') == 'light')  echo 'checked="checked"'; ?> /><?php _e('set_appearance_light');?></label>
 </div>
 </div>
+
+<?php
+    if (defined('MTT_ENABLE_EXT') && MTT_ENABLE_EXT) {
+?>
+<div class="tr">
+ <div class="th"><?php _e('set_extensions');?>:</div>
+ <div class="td"> <?php listExtensions(); ?>
+ </div>
+</div>
+<?php
+    }
+?>
 
 <div class="form-bottom-buttons">
   <button type="submit"><?php _e('set_submit'); ?></button>

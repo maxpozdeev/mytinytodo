@@ -86,6 +86,9 @@ class Config
 
         # Appearance: system default or always light
         'appearance' => array('default'=>'system', 'type'=>'s', 'options'=>array('system','light')),
+
+        # Array of activated extensions
+        'extensions' => array('default'=>[], 'type'=>'a')
     );
 
     /** @var mixed[] */
@@ -193,8 +196,15 @@ class Config
             elseif ( isset($v['options']) && !in_array(self::$config[$param], $v['options'])) $val = $v['default'];
             else $val = self::$config[$param];
 
-            if ($v['type']=='i') $val = (int)$val;
-            else $val = strval($val);
+            if ($v['type'] == 'i') {
+                $val = (int)$val;
+            }
+            else if ($v['type'] == 'a') {
+                if (!is_array($val)) $val = [];
+            }
+            else {
+                $val = strval($val);
+            }
 
             $j[$param] = $val;
         }

@@ -25,7 +25,7 @@ else {
 }
 
 require_once(MTTINC. 'common.php');
-require_once(MTTINC. 'common_classes.php');
+require_once(MTTINC. 'classes.php');
 require_once(MTTINC. 'version.php');
 require_once(MTTINC. 'class.dbconnection.php');
 require_once(MTTINC. 'class.dbcore.php');
@@ -56,6 +56,11 @@ $_mttinfo = array();
 
 if (need_auth() && !isset($dontStartSession)) {
     setup_and_start_session();
+}
+
+if (defined('MTT_ENABLE_EXT') && MTT_ENABLE_EXT) {
+    define('MTT_EXT', MTTPATH . 'ext/');
+    loadExtensions();
 }
 
 
@@ -339,4 +344,23 @@ function logAndDie($userText, $errText = null)
         echo "Error! See details in error log.";
     }
     exit(1);
+}
+
+function loadExtensions()
+{
+    $a = Config::get('extensions');
+    if (!$a || !is_array($a)) {
+        return;
+    }
+    foreach ($a as $ext) {
+        if (is_string($ext)) {
+            try {
+                MTTExtensionLoader::loadExtension($ext);
+            }
+            catch (Exception $e) {
+                error_log($e->getMessage());
+            }
+
+        }
+    }
 }

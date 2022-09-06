@@ -590,10 +590,13 @@ var mytinytodo = window.mytinytodo = _mtt = {
 
 
         // Settings
-        $("a[data-settings-link]").click(function(event){
+        $(document).on('click', 'a[data-settings-link]', function(event) {
             var settingsPage = this.dataset.settingsLink;
             if (settingsPage == 'index') {
                 showSettings( (event.metaKey || event.ctrlKey) ? 1 : 0 );
+            }
+            else if (settingsPage == 'ext-activate' || settingsPage == 'ext-deactivate') {
+                activateExtension(settingsPage == 'ext-activate' ? true : false, this.dataset.ext);
             }
             return false;
         });
@@ -2631,6 +2634,19 @@ function saveSettings(frm)
     }, 'json');
 }
 
+function activateExtension(activate, ext)
+{
+    var params = {
+        'activate': activate ? 1 : 0,
+        'ext': ext
+    }
+    $.post(_mtt.mttUrl+'settings.php', params, function(json){
+        if(json.saved) {
+            flashInfo(_mtt.lang.get('settingsSaved'));
+            showSettings(0);
+        }
+    }, 'json');
+}
 
 /*
  *  Dialogs
