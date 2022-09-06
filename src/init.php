@@ -233,14 +233,15 @@ function formatTime($format, $timestamp=0) : string
     return $s;
 }
 
-function _e($s)
+function _e(string $s)
 {
-    echo htmlspecialchars(Lang::instance()->get($s));
+    echo __($s, true);
 }
 
-function __($s)
+function __(string $s, bool $escape = false)
 {
-    return Lang::instance()->get($s);
+    $v = Lang::instance()->get($s);
+    return $escape ? htmlspecialchars($v) : $v;
 }
 
 function mttinfo($v)
