@@ -235,7 +235,7 @@ function formatTime($format, $timestamp=0) : string
 
 function _e($s)
 {
-    echo Lang::instance()->get($s);
+    echo htmlspecialchars(Lang::instance()->get($s));
 }
 
 function __($s)
