@@ -2600,15 +2600,18 @@ function logout()
 
 function showSettings(json = 0)
 {
+    var reload = false;
     if (_mtt.pages.current && _mtt.pages.current.page == 'ajax' && _mtt.pages.current.pageClass == 'settings') {
-        return false;
+        reload = true;
     }
     var jsonParam = (json == 1) ? '&json=1' : '';
     $('#page_ajax').load(_mtt.mttUrl + 'settings.php?ajax=yes' + jsonParam, null, function(){
-        _mtt.pageSet('ajax','settings');
-        var newTitle = _mtt.lang.get('set_header') + ' - ' + _mtt.options.title;
-        updateHistoryState( { settings:1, settingsJson:json }, _mtt.urlForSettings(json), newTitle );
-        _mtt.doAction('settingsLoaded');
+        if (!reload) {
+            _mtt.pageSet('ajax','settings');
+            var newTitle = _mtt.lang.get('set_header') + ' - ' + _mtt.options.title;
+            updateHistoryState( { settings:1, settingsJson:json }, _mtt.urlForSettings(json), newTitle );
+            _mtt.doAction('settingsLoaded');
+        }
     })
 }
 
