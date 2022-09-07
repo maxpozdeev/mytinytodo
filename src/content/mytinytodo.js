@@ -544,7 +544,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 
         // AJAX Errors
         $(document).ajaxSend(function(r,s){
-            $("#msg").hide().removeClass('mtt-error mtt-info').find('.msg-details').hide();
+            hideAlert();
             clearTimeout(_mtt.timers.ajaxAnimation);
             _mtt.timers.ajaxAnimation = setTimeout( function(){
                 $("#mtt").addClass("ajax-loading");
@@ -831,6 +831,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 
     pageBack: function(clicked)
     {
+        hideAlert();
         // If clicked on back button in settings we'll use history navigation
         if ( clicked &&
              this.pages.current && this.pages.current.page == 'ajax' && this.pages.current.pageClass == 'settings' &&
@@ -2523,6 +2524,11 @@ function toggleMsgDetails()
     if(!el) return;
     if(el.css('display') == 'none') el.show();
     else el.hide()
+}
+
+function hideAlert()
+{
+    $("#msg").hide().removeClass('mtt-error mtt-info').find('.msg-details').hide();
 }
 
 
