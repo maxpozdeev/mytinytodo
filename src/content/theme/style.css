@@ -29,8 +29,10 @@
   --color-border-default: #ccc;
   --color-border-focus: #5a8df0;
   --color-border-focus-shadow: rgba(90,141,240,0.7);
-  --color-error: #ff3333;
-  --color-info: #EFC300;
+  --color-error: var(--color-text-reduced);
+  --color-error-bg: #ff3333;
+  --color-info: var(--color-text-reduced);
+  --color-info-bg: #EFC300;
 
   --color-toolbar: #ededed;
   --color-btn-toolbar-hover: #ddd;
@@ -246,10 +248,12 @@ select.form-input {
   z-index:2;
   white-space: pre-line;
 }
-#msg.mtt-error .msg-text { background-color: var(--color-error) }
-#msg.mtt-error .msg-details { border:1px solid var(--color-error);  }
-#msg.mtt-info .msg-text { background-color: var(--color-info); }
-#msg.mtt-info .msg-details { border:1px solid var(--color-info); }
+#msg.mtt-error .msg-text { background-color: var(--color-error-bg) }
+#msg.mtt-error .msg-details { border:1px solid var(--color-error-bg);  }
+#msg.mtt-error .msg-text, #msg.mtt-error .msg-details { color: var(--color-error); }
+#msg.mtt-info .msg-text { background-color: var(--color-info-bg); }
+#msg.mtt-info .msg-details { border:1px solid var(--color-info-bg); }
+#msg.mtt-info .msg-text, #msg.mtt-info .msg-details { color: var(--color-info); }
 
 #lists { font-size:0.95rem; display:flex; align-items:flex-start; justify-content:flex-end; }
 #mtt.readonly.no-lists #lists > * { visibility: hidden; }
