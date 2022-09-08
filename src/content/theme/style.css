@@ -913,13 +913,20 @@ li.mtt-item-hidden { display:none; }
 }
 
 .mtt-settings-table { width:100%; }
-.mtt-settings-table .tr { border-bottom:1px solid var(--color-row-underlinig); padding:0px; vertical-align:top; display: flex;}
-.mtt-settings-table .th,
-.mtt-settings-table .td {
+.mtt-settings-table .tr {
+  border-bottom:1px solid var(--color-row-underlinig);
   padding: 10px;
+  vertical-align:top;
+  display: flex;
 }
 .mtt-settings-table .th {  width:30%; font-weight: bold; }
-.mtt-settings-table .descr { font-size:0.8rem; font-weight:normal; color:var(--color-text-reduced); }
+.mtt-settings-table .descr {
+  display: block;
+  font-size:0.8rem;
+  font-weight:normal;
+  color:var(--color-text-reduced);
+  padding-top: 4px;
+}
 .mtt-settings-table .in350 { min-width:350px; }
 .mtt-settings-table textarea.in350 { height:400px; }
 .mtt-settings-table input,
@@ -1070,10 +1077,10 @@ li.mtt-item-hidden { display:none; }
     background-color:var(--color-settings-row);
     border:1px solid var(--color-settings-row);
     border-radius: 10px;
-    padding:0 15px;
+    padding:10px 15px;
     margin-bottom: 5px;
   }
-  .mtt-settings-table .th { width: auto; padding-bottom: 4px; padding-left: 0px; }
+  .mtt-settings-table .th { width: auto; padding-left: 0px; }
   .mtt-settings-table .td {  padding-top: 4px; padding-left: 0px; }
   .mtt-settings-table input , .mtt-settings-table select, .mtt-settings-table label { margin-top:5px; background-color: var(--color-settings-row); }
 
