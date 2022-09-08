@@ -60,6 +60,20 @@ $endpoints = array(
     ]
 );
 
+// look for extensions
+foreach (MTTExtensionLoader::registeredExtensions() as $instance) {
+    if ($instance instanceof MTTHttpApiExtender) {
+        $newRoutes = $instance->extendHttpApi();
+        foreach ($newRoutes as $endpoint => $methods) {
+            $endpoint = '/ext/'. $instance::codename. $endpoint;
+            foreach ($methods as $k => &$v) {
+                $v[2] = true; // Mark extension method
+            }
+            $endpoints[$endpoint] = $methods;
+        }
+    }
+}
+
 $req = new ApiRequest();
 $response = new ApiResponse();
 $executed = false;
@@ -73,12 +87,16 @@ foreach ($endpoints as $search => $methods) {
         if ( is_null($classDescr) ) {
             $response->htmlContent("Unknown method for resource", 500)->exit();
         }
-        if ( !is_array($classDescr) || count($classDescr) != 2) {
+        if ( !is_array($classDescr) || count($classDescr) < 2) {
             $response->htmlContent("Incorrect method definition", 500)->exit();
         }
         // check if class method exists
         $class = $classDescr[0];
         $classMethod = $classDescr[1];
+        $isExt = $classDescr[2] ?? false;
+        if ($isExt) {
+            checkWriteAccess();
+        }
         $param = null;
         if (count($m) >= 2) {
             $param = $m[1];

@@ -626,6 +626,11 @@ var mytinytodo = window.mytinytodo = _mtt = {
             }
         });
 
+        $("#page_ajax").on('click', 'a[data-ext-settings-action]', function() {
+            extensionSettingsAction(this.dataset.extSettingsAction, this.dataset.ext);
+            return false;
+        });
+
 
         // tab menu
         this.addAction('listSelected', tabmenuOnListSelected);
@@ -2684,7 +2689,30 @@ function saveExtensionSettings(frm)
                     flashInfo(json.msg);
                 });
                 else showExtensionSettings(ext);
+            }
+        }
+    });
+}
 
+function extensionSettingsAction(actionString, ext)
+{
+    if (actionString === undefined || ext === undefined) return false;
+    var a = actionString.split(':', 2);
+    if (a.length !== 2) return false;
+    var method = a[0],
+        action = a[1];
+    $.ajax({
+        url: _mtt.apiUrl + 'ext/' + ext + '/' + action,
+        method: method.toUpperCase(),
+        contentType : 'application/json',
+        data: '{}',
+        dataType: 'json',
+        success: function(json) {
+            if (json.total && json.total > 0) {
+                showExtensionSettings(ext, json.msg ? function(){flashInfo(json.msg)} : null);
+            }
+            else if (json.msg) {
+                flashInfo(json.msg);
             }
         }
     });

@@ -78,6 +78,10 @@ abstract class MTTExtension
     abstract function init();
 }
 
+interface MTTHttpApiExtender
+{
+    function extendHttpApi(): array;
+}
 
 interface MTTExtensionSettingsInterface
 {
