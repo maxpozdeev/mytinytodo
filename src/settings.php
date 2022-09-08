@@ -244,7 +244,7 @@ header('Content-type:text/html; charset=utf-8');
 <div class="mtt-settings-table">
 
 <div class="tr">
-  <div class="th"> <?php _e('set_title');?>:<br/><span class="descr"><?php _e('set_title_descr');?></span></div>
+  <div class="th"> <?php _e('set_title');?>: <div class="descr"><?php _e('set_title_descr');?></div></div>
   <div class="td"> <input name="title" value="<?php echo htmlspecialchars(_c('title'));?>" class="in350" autocomplete="off" /> </div>
 </div>
 
@@ -261,26 +261,26 @@ header('Content-type:text/html; charset=utf-8');
 </div></div>
 
 <div class="tr">
-<div class="th"><?php _e('set_newpass');?>:<br/><span class="descr"><?php _e('set_newpass_descr');?></span></div>
+<div class="th"><?php _e('set_newpass');?>: <div class="descr"><?php _e('set_newpass_descr');?></div></div>
 <div class="td"> <input type="password" name="password" autocomplete="new-password" <?php if(_c('password')=='') echo "disabled"; ?> /> </div>
 </div>
 
 <div class="tr">
-<div class="th"><?php _e('set_smartsyntax');?>:<br/><span class="descr"><?php _e('set_smartsyntax2_descr');?></span></div>
+<div class="th"><?php _e('set_smartsyntax');?>: <div class="descr"><?php _e('set_smartsyntax2_descr');?></div></div>
 <div class="td">
  <label><input type="radio" name="smartsyntax" value="1" <?php if(_c('smartsyntax')) echo 'checked="checked"'; ?> /><?php _e('set_enabled');?></label> <br/>
  <label><input type="radio" name="smartsyntax" value="0" <?php if(!_c('smartsyntax')) echo 'checked="checked"'; ?> /><?php _e('set_disabled');?></label>
 </div></div>
 
 <div class="tr">
-<div class="th"><?php _e('set_autotag');?>:<br/><span class="descr"><?php _e('set_autotag_descr');?></span></div>
+<div class="th"><?php _e('set_autotag');?>: <div class="descr"><?php _e('set_autotag_descr');?></div></div>
 <div class="td">
  <label><input type="radio" name="autotag" value="1" <?php if(_c('autotag')) echo 'checked="checked"'; ?> /><?php _e('set_enabled');?></label> <br/>
  <label><input type="radio" name="autotag" value="0" <?php if(!_c('autotag')) echo 'checked="checked"'; ?> /><?php _e('set_disabled');?></label>
 </div></div>
 
 <div class="tr">
-<div class="th"><?php _e('set_markdown');?>:<br/><span class="descr"><?php _e('set_markdown_descr');?></span></div>
+<div class="th"><?php _e('set_markdown');?>: <div class="descr"><?php _e('set_markdown_descr');?></div></div>
 <div class="td">
  <label><input type="radio" name="markdown" value="1" <?php if (_c('markup') != 'v1') echo 'checked="checked"'; ?> /><?php _e('set_enabled');?></label> <br/>
  <label><input type="radio" name="markdown" value="0" <?php if (_c('markup') == 'v1') echo 'checked="checked"'; ?> /><?php _e('set_disabled');?></label>
