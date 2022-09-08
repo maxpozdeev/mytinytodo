@@ -79,6 +79,11 @@ abstract class MTTExtension
 }
 
 
+interface MTTExtensionSettingsInterface
+{
+    function settingsPage(): string;
+    function saveSettings(array $array, ?string &$userError): bool;
+}
 
 
 class MTTExtensionLoader

@@ -20,6 +20,7 @@ require_once(MTTINC. 'api/ListsController.php');
 require_once(MTTINC. 'api/TasksController.php');
 require_once(MTTINC. 'api/TagsController.php');
 require_once(MTTINC. 'api/AuthController.php');
+require_once(MTTINC. 'api/ExtSettingsController.php');
 
 $endpoints = array(
     '/lists' => [
@@ -53,6 +54,10 @@ $endpoints = array(
     '/(login|logout|session)' => [
         'POST' => [ AuthController::class , 'postAction' ],
     ],
+    '/ext-settings/(.+)' => [
+        'GET'     => [ ExtSettingsController::class , 'get' ],
+        'PUT'     => [ ExtSettingsController::class , 'put' ],
+    ]
 );
 
 $req = new ApiRequest();

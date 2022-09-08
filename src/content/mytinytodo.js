@@ -598,11 +598,19 @@ var mytinytodo = window.mytinytodo = _mtt = {
             else if (settingsPage == 'ext-activate' || settingsPage == 'ext-deactivate') {
                 activateExtension(settingsPage == 'ext-activate' ? true : false, this.dataset.ext);
             }
+            else if (settingsPage == 'ext-index') {
+                showExtensionSettings(this.dataset.ext);
+            }
             return false;
         });
 
         $("#page_ajax").on('submit', '#settings_form', function() {
             saveSettings(this);
+            return false;
+        });
+
+        $("#page_ajax").on('submit', '#ext_settings_form', function() {
+            saveExtensionSettings(this);
             return false;
         });
 
@@ -2518,16 +2526,10 @@ function flashInfo(str, details)
     $("#msg").addClass('mtt-info').effect("highlight", {color:_mtt.theme.msgFlashColor}, 700);
 }
 
-function toggleMsgDetails()
-{
-    var el = $("#msg>.msg-details");
-    if(!el) return;
-    if(el.css('display') == 'none') el.show();
-    else el.hide()
-}
-
 function hideAlert()
 {
+    $("#msg>.msg-text").text('');
+    $("#msg>.msg-details").text('');
     $("#msg").hide().removeClass('mtt-error mtt-info').find('.msg-details').hide();
 }
 
@@ -2652,6 +2654,40 @@ function activateExtension(activate, ext)
             showSettings(0);
         }
     }, 'json');
+}
+
+function showExtensionSettings(ext, callback)
+{
+    if (_mtt.pages.current && _mtt.pages.current.page == 'ajax' && _mtt.pages.current.pageClass == 'settings') {
+        $('#page_ajax').load(_mtt.apiUrl + 'ext-settings/' + ext, null, function() {
+            if (callback !== undefined) callback();
+        });
+    }
+
+}
+
+function saveExtensionSettings(frm)
+{
+    if (!frm) return false;
+    var ext = frm.dataset.ext;
+    var params = {};
+    $(frm).find("input:hidden,input:text,input:password,input:checked,select").filter(":enabled").each(function() { params[this.name || '__'] = this.value; });
+    $.ajax({
+        url: _mtt.apiUrl + 'ext-settings/' + ext,
+        method: 'PUT',
+        contentType : 'application/json',
+        data: JSON.stringify(params),
+        dataType: 'json',
+        success: function(json) {
+            if (json.saved) {
+                if (json.msg) showExtensionSettings(ext, function(){
+                    flashInfo(json.msg);
+                });
+                else showExtensionSettings(ext);
+
+            }
+        }
+    });
 }
 
 /*

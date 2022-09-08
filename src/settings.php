@@ -189,6 +189,10 @@ function listExtensions()
         $out = "$ext ";
         if (in_array($ext, $activatedExts)) {
             $out .= "<a href='#' data-settings-link='ext-deactivate' data-ext='". htmlspecialchars($ext).  "'>". __('set_deactivate', true). '</a>';
+            $instance = MTTExtensionLoader::extensionInstance($ext);
+            if ($instance instanceof MTTExtensionSettingsInterface) {
+                $out .= " <a href='#' data-settings-link='ext-index' data-ext='". htmlspecialchars($ext). "'>". __('a_settings', true). "</a>";
+            }
         }
         else {
             $out .= "<a href='#' data-settings-link='ext-activate' data-ext='". htmlspecialchars($ext). "'>". __('set_activate', true). '</a>';

@@ -938,7 +938,9 @@ li.mtt-item-hidden { display:none; }
   border-color: var(--color-border-focus);
   box-shadow:0 0 0 2px var(--color-border-focus-shadow);
 }
-
+.mtt-settings-table a {
+  color: var(--color-text-default);
+}
 
 #modal {
   position: absolute;
