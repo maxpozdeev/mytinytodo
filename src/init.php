@@ -194,6 +194,13 @@ function setup_and_start_session()
     ini_set('session.use_cookies', true);
     ini_set('session.use_only_cookies', true);
 
+    /*
+        After any request we may have 14 days of inactivity (i.e. not requesting session data),
+        then we have to re-login (look at MTTSessionHandler).
+        Activity without re-login lasts for max 60 days, the cookie lifetime, then cookie dies
+        and we have to re-login having new session id.
+    */
+
     $lifetime = 5184000; # 60 days session cookie lifetime
     $path = url_dir(Config::get('url')=='' ? getRequestUri() : Config::getUrl('url'));
     $samesite = 'lax';

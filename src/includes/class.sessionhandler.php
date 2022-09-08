@@ -42,8 +42,12 @@ class MTTSessionHandler implements SessionHandlerInterface
         // read session data if not expired
         $time = time();
         $expire = $time;
-        $r = $this->db->sq("SELECT data,last_access FROM {$this->db->prefix}sessions WHERE id = ? AND expires >= $expire", [$id]);
+        $r = $this->db->sq("SELECT data,last_access,expires FROM {$this->db->prefix}sessions WHERE id = ?", [$id]);
         if ( is_null($r) ) return '';
+        if ( (int)$r[2] < $time) {
+            // maybe regenerate id?
+            $r[0] = '';
+        }
 
         // update last access time and set expires in 14 days
         // refresh once in a second
