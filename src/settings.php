@@ -72,9 +72,10 @@ else if (isset($_POST['activate']))
     $ext = _post('ext');
 
     $exts = MTTExtensionLoader::bundles();
+    $a = Config::get('extensions');
+    if (!is_array($a)) $a = [];
+
     if (in_array($ext, $exts)) {
-        $a = Config::get('extensions');
-        if (!is_array($a)) $a = [];
         if ($activate) {
             try {
                 MTTExtensionLoader::loadExtension($ext);
@@ -86,6 +87,11 @@ else if (isset($_POST['activate']))
             }
         }
         else $a = array_diff($a, [$ext]);
+        Config::set('extensions', $a);
+        Config::save();
+    }
+    else if (!$activate && in_array($ext, $a)) {
+        $a = array_diff($a, [$ext]);
         Config::set('extensions', $a);
         Config::save();
     }
@@ -193,10 +199,16 @@ function listExtensions()
             if ($instance instanceof MTTExtensionSettingsInterface) {
                 $out .= " <a href='#' data-settings-link='ext-index' data-ext='". htmlspecialchars($ext). "'>". __('a_settings', true). "</a>";
             }
+            $activatedExts = array_diff($activatedExts, [$ext]);
         }
         else {
             $out .= "<a href='#' data-settings-link='ext-activate' data-ext='". htmlspecialchars($ext). "'>". __('set_activate', true). '</a>';
         }
+        $a[] = $out;
+    }
+    // removed and not deactivated
+    foreach ($activatedExts as $ext) {
+        $out = "$ext &lt;not found&gt; "."<a href='#' data-settings-link='ext-deactivate' data-ext='". htmlspecialchars($ext). "'>". __('set_deactivate', true). '</a>';
         $a[] = $out;
     }
     print( implode("<br>\n", $a) );
