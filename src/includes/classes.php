@@ -124,7 +124,7 @@ class MTTExtensionLoader
             throw new Exception("Failed to register extension '$ext': require class constants (codename, title)");
         }
         if ($instance::codename != $ext) {
-            throw new Exception("Extension '$ext' codename does not equal to extension dir");
+            throw new Exception("Extension '$ext' codename does not conforms to extension dir");
         }
 
         $instance->init();
@@ -134,7 +134,7 @@ class MTTExtensionLoader
     /**
      * @return MTTExtension[]
      */
-    public static function registeredExtensions(): array
+    public static function loadedExtensions(): array
     {
         $a = [];
         foreach (self::$exts as $ext => $instance) {
@@ -164,7 +164,7 @@ class MTTExtensionLoader
         return self::$exts[$ext] ?? null;
     }
 
-    public static function isRegistered(string $ext): bool
+    public static function isLoaded(string $ext): bool
     {
         return isset(self::$exts[$ext]);
     }
