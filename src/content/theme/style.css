@@ -238,7 +238,7 @@ select.form-input {
 #authform div.h { font-weight:bold; }
 #authform input[type=password] { width: 100%; box-sizing: border-box; }
 
-#msg .msg-text {  font-weight:bold; cursor:pointer; }
+#msg .msg-text {  font-weight:bold; cursor:pointer; padding:0 1px; }
 #msg .msg-details {
   display:none;
   padding:1px 4px;
@@ -915,9 +915,13 @@ li.mtt-item-hidden { display:none; }
 .mtt-settings-table { width:100%; }
 .mtt-settings-table .tr {
   border-bottom:1px solid var(--color-row-underlinig);
-  padding: 10px;
+  padding: 10px 0;
   vertical-align:top;
   display: flex;
+}
+.mtt-settings-table .th,
+.mtt-settings-table .td {
+  padding: 0 10px;
 }
 .mtt-settings-table .th {  width:30%; font-weight: bold; }
 .mtt-settings-table .descr {

@@ -2690,6 +2690,9 @@ function saveExtensionSettings(frm)
                 });
                 else showExtensionSettings(ext);
             }
+            else if (json.msg) {
+                flashError(json.msg);
+            }
         }
     });
 }
