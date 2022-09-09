@@ -121,7 +121,10 @@ class TasksController extends ApiController {
         if ($action == 'full') {
             $this->response->data = $this->fullNewTaskInList($listId);
         }
-        $this->response->data = $this->newTaskInList($listId);
+        else {
+            $this->response->data = $this->newTaskInList($listId);
+        }
+
     }
 
     /**
@@ -477,7 +480,7 @@ class TasksController extends ApiController {
             'ow' => (int)$r['ow'],
             'tags' => htmlarray($r['tags']),
             'tags_ids' => htmlarray($r['tags_ids']),
-            'duedate' => $dueA['formatted'],
+            'duedate' => htmlarray($dueA['formatted']),
             'dueClass' => $dueA['class'],
             'dueStr' => htmlarray($dueA['str']),
             'dueInt' => $this->date2int($r['duedate']),
