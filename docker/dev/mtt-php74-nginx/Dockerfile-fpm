@@ -2,10 +2,10 @@ FROM php:7.4-fpm
 
 RUN docker-php-ext-install mysqli && \
   mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" && \
-  mkdir /var/www/phpinfo
+  mkdir /var/www/phpinfo && \
+  echo "<?php\nphpinfo();" > /var/www/phpinfo/phpinfo.php
 
 #COPY php-mtt.ini     /usr/local/etc/php/conf.d/
 #COPY php-opcache.ini /usr/local/etc/php/conf.d/
-COPY phpinfo.php     /var/www/phpinfo/
 
 VOLUME /var/www/html

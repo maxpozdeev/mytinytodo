@@ -24,6 +24,7 @@ services:
       - MTT_DB_DRIVER=mysqli
     volumes:
       - ../../../src:/var/www/html
+      - ../../../tests:/var/www/tests
     depends_on:
       - db
     networks:
@@ -35,7 +36,7 @@ services:
       dockerfile: Dockerfile-db
     image: mytinytodo-dev:mariadb10.8
     container_name: ${PLATFORM_NAME}-db
-    #restart: always
+    restart: always
     environment:
       MARIADB_ROOT_PASSWORD: JustForDev
       MARIADB_USER: mtt
@@ -43,5 +44,13 @@ services:
       MARIADB_DATABASE: mytinytodo
     volumes:
       - ../_mariadb108/db_data:/var/lib/mysql
+    networks:
+      - network
+
+  adminer:
+    image: adminer
+    container_name: ${PLATFORM_NAME}-adminer
+    ports:
+      - 8079:8080
     networks:
       - network
