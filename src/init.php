@@ -279,10 +279,24 @@ function get_unsafe_mttinfo($v)
     switch($v)
     {
         case 'theme_url':
-            $_mttinfo['theme_url'] = get_unsafe_mttinfo('mtt_url'). 'content/theme/';
+            if (!isset($_mttinfo['theme_url'])) {
+                if ( Config::getUrl('url') == '' && Config::getUrl('mtt_url') == ''
+                    && (!defined('MTT_USE_HTTPS') || !MTT_USE_HTTPS) ) {
+                    $_mttinfo['theme_url'] = url_dir(getRequestUri()). 'content/theme/';
+                } else {
+                    $_mttinfo['theme_url'] = get_unsafe_mttinfo('mtt_url'). 'content/theme/';
+                }
+            }
             return $_mttinfo['theme_url'];
         case 'content_url':
-            $_mttinfo['content_url'] = get_unsafe_mttinfo('mtt_url'). 'content/';
+            if (!isset($_mttinfo['content_url'])) {
+                if ( Config::getUrl('url') == '' && Config::getUrl('mtt_url') == ''
+                    && (!defined('MTT_USE_HTTPS') || !MTT_USE_HTTPS) ) {
+                    $_mttinfo['content_url'] = url_dir(getRequestUri()). 'content/';
+                } else {
+                    $_mttinfo['content_url'] = get_unsafe_mttinfo('mtt_url'). 'content/';
+                }
+            }
             return $_mttinfo['content_url'];
         case 'url':
             /* full url to homepage: directory with root index.php or custom index file in the root. */
@@ -290,7 +304,7 @@ function get_unsafe_mttinfo($v)
             /* Should not contain a query string. Have to be set in config if custom port is used or wrong detection. */
             $_mttinfo['url'] = Config::getUrl('url');
             if ($_mttinfo['url'] == '') {
-                $is_https = (isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) == 'on') ? true : false;
+                $is_https = is_https();
                 $_mttinfo['url'] = ($is_https ? 'https://' : 'http://'). $_SERVER['HTTP_HOST']. url_dir(getRequestUri());
             }
             return $_mttinfo['url'];
@@ -328,6 +342,17 @@ function reset_mttinfo($key)
 {
     global $_mttinfo;
     unset( $_mttinfo[$key] );
+}
+
+function is_https(): bool
+{
+    if (isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) == 'on') {
+        return true;
+    }
+    if (defined('MTT_USE_HTTPS') && MTT_USE_HTTPS) {
+        return true;
+    }
+    return false;
 }
 
 function jsonExit($data)
