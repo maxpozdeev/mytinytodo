@@ -24,7 +24,7 @@ if(isset($_POST['save']))
     Config::set('lang', _post('lang'));
 
     // in Demo mode we can set only language by cookies
-    if (defined('MTTDEMO')) {
+    if (defined('MTT_DEMO')) {
         setcookie('lang', Config::get('lang'), 0, url_dir(Config::get('url')=='' ? getRequestUri() : Config::getUrl('url')));
         $t['saved'] = 1;
         jsonExit($t);
@@ -63,7 +63,7 @@ else if (isset($_POST['activate']))
     $t = array('saved'=>0);
 
     // in Demo mode we do nothing
-    if (defined('MTTDEMO')) {
+    if (defined('MTT_DEMO')) {
         $t['saved'] = 1;
         jsonExit($t);
     }
@@ -354,7 +354,7 @@ header('Content-type:text/html; charset=utf-8');
 </div>
 
 <?php
-    if (defined('MTT_ENABLE_EXT') && MTT_ENABLE_EXT) {
+    if (!defined('MTT_DISABLE_EXT')) {
 ?>
 <div class="tr">
  <div class="th"><?php _e('set_extensions');?>:</div>

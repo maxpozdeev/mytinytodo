@@ -86,7 +86,7 @@ interface MTTHttpApiExtender
 interface MTTExtensionSettingsInterface
 {
     function settingsPage(): string;
-    function saveSettings(array $array, ?string &$userError): bool;
+    function saveSettings(array $array, ?string &$outMesssage): bool;
 }
 
 

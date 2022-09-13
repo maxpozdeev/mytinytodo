@@ -58,7 +58,7 @@ if (need_auth() && !isset($dontStartSession)) {
     setup_and_start_session();
 }
 
-if (defined('MTT_ENABLE_EXT') && MTT_ENABLE_EXT) {
+if (!defined('MTT_DISABLE_EXT')) {
     define('MTT_EXT', MTTPATH . 'ext/');
     loadExtensions();
 }
