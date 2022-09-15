@@ -255,7 +255,7 @@ class ListsController extends ApiController {
             Config::saveDomain('alltasks.json', $opts);
         }
         else {
-            $bitwise = $showCompleted ? 'taskview & ~1' : 'taskview | 1';
+            $bitwise = $showCompleted ? 'taskview | 1' : 'taskview & ~1';
             $db->dq("UPDATE {$db->prefix}lists SET taskview=$bitwise WHERE id=?", [$listId]);
         }
     }
