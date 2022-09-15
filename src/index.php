@@ -30,6 +30,7 @@ if (need_auth() && access_token() == '') {
 
 require(MTTINC. 'theme.php');
 
+MTTNotificationCenter::postDidFinishRequestNotification();
 // end
 
 
