@@ -177,6 +177,7 @@
     "set_submit": "Сохранить изменения",
     "set_cancel": "Отмена",
     "set_showdate": "Показывать дату создания задачи",
+    "set_showtime": "Показывать время",
     "set_appearance": "Тема оформления",
     "set_appearance_system": "Как в системе",
     "set_appearance_light": "Светлая",

@@ -177,6 +177,7 @@
     "set_submit": "Submit changes",
     "set_cancel": "Cancel",
     "set_showdate": "Show task date in list",
+    "set_showtime": "Show time",
     "set_appearance": "Appearance",
     "set_appearance_system": "Same as system",
     "set_appearance_light": "Light theme",

@@ -455,9 +455,19 @@ class TasksController extends ApiController {
         $lang = Lang::instance();
         $dueA = $this->prepareDuedate($r['duedate']);
         $dCreated = timestampToDatetime($r['d_created']);
-        $isEdited = $r['d_edited'] != $r['d_created'];
+        $isEdited = ($r['d_edited'] != $r['d_created']);
         $dEdited = $isEdited ? timestampToDatetime($r['d_edited']) : '';
         $dCompleted = $r['d_completed'] ? timestampToDatetime($r['d_completed']) : '';
+        if (!Config::get('showtime')) {
+            $dCreatedFull = timestampToDatetime($r['d_created'], true);
+            $dEditedFull = $isEdited ? timestampToDatetime($r['d_edited'], true) : '';
+            $dCompletedFull = $r['d_completed'] ? timestampToDatetime($r['d_completed'], true) : '';
+        }
+        else {
+            $dCreatedFull = $dCreated;
+            $dEditedFull = $dEdited;
+            $dCompletedFull = $dCompleted;
+        }
 
         return array(
             'id' => $r['id'],
@@ -466,12 +476,15 @@ class TasksController extends ApiController {
             'listId' => $r['list_id'],
             'date' => htmlarray($dCreated),
             'dateInt' => (int)$r['d_created'],
+            'dateFull' => htmlarray($dCreatedFull),
             'dateInlineTitle' => htmlarray(sprintf($lang->get('taskdate_inline_created'), $dCreated)),
             'dateEdited' => htmlarray($dEdited),
             'dateEditedInt' => (int)$r['d_edited'],
+            'dateEditedFull' => htmlarray($dEditedFull),
             'dateEditedInlineTitle' => htmlarray(sprintf($lang->get('taskdate_inline_edited'), $dEdited)),
             'isEdited' => (bool)$isEdited,
             'dateCompleted' => htmlarray($dCompleted),
+            'dateCompletedFull' => htmlarray($dCompletedFull),
             'dateCompletedInlineTitle' => htmlarray(sprintf($lang->get('taskdate_inline_completed'), $dCompleted)),
             'compl' => (int)$r['compl'],
             'prio' => $r['prio'],

@@ -1230,13 +1230,16 @@ _mtt.prepareDueDate = prepareDueDate;
 function prepareInlineDate(item)
 {
     var inlineDate = item.dateInlineTitle;
+    var title = item.dateFull;
     if (item.compl) {
         inlineDate = item.dateCompletedInlineTitle;
+        title = item.dateCompletedFull;
     }
     else if ( item.isEdited && (curList.sort == 4 || curList.sort == 104) ) {
         inlineDate = item.dateEditedInlineTitle;
+        title = item.dateEditedFull;
     }
-    return '<span class="task-id">#' + item.id + '</span> ' + inlineDate;
+    return '<span class="task-id">#' + item.id + '</span> <span title="' + title +'">' + inlineDate + '</span>';
 }
 _mtt.prepareInlineDate = prepareInlineDate;
 
@@ -1683,16 +1686,16 @@ function editTask(id)
     form.duedate.value = item.duedate;
     form.prio.value = item.prio;
     $('#taskedit_id').text('#' + item.id);
-    $('#taskedit_info .date-created-value').text(item.date);
+    $('#taskedit_info .date-created-value').text(item.date).attr('title', item.dateFull);;
     if (item.isEdited && !item.compl) {
-        $('#taskedit_info .date-edited-value').text(item.dateEdited);
+        $('#taskedit_info .date-edited-value').text(item.dateEdited).attr('title', item.dateEditedFull);
         $('#taskedit_info .date-edited').show()
     }
     else {
         $('#taskedit_info .date-edited').hide();
     }
     if (item.compl) {
-        $('#taskedit_info .date-completed-value').text(item.dateCompleted);
+        $('#taskedit_info .date-completed-value').text(item.dateCompleted).attr('title', item.dateCompletedFull);;
         $('#taskedit_info .date-completed').show()
     }
     else {

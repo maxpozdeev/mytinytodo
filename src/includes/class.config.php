@@ -80,6 +80,7 @@ class Config
 
         # Show task date in list
         'showdate' => array('default'=>0, 'type'=>'i'),
+        'showtime' => array('default'=>0, 'type'=>'i'),
 
         # Use Markdown syntax for notes. Set to 'v1' to use old v1.6 syntax.
         'markup' => array('default'=>'markdown', 'type'=>'s'),

@@ -220,9 +220,12 @@ function setup_and_start_session()
     session_start();
 }
 
-function timestampToDatetime($timestamp) : string
+function timestampToDatetime($timestamp, $forceTime = false) : string
 {
-    $format = Config::get('dateformat') .' '. (Config::get('clock') == 12 ? 'g:i A' : 'H:i');
+    $format = Config::get('dateformat');
+    if ($forceTime || Config::get('showtime')) {
+        $format .= ' '. (Config::get('clock') == 12 ? 'g:i A' : 'H:i');
+    }
     return formatTime($format, $timestamp);
 }
 

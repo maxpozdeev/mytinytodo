@@ -930,6 +930,9 @@ li.mtt-item-hidden { display:none; }
   color:var(--color-text-reduced);
   padding-top: 4px;
 }
+.mtt-settings-table .td {
+  line-height: 1.5em;
+}
 .mtt-settings-table .in350 { min-width:350px; }
 .mtt-settings-table textarea.in350 { height:400px; }
 .mtt-settings-table input,

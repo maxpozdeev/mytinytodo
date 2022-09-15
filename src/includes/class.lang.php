@@ -103,7 +103,7 @@ class Lang
     }
 
     /* minimal number of translated strings to use in js front-end */
-    function jsStrings()
+    function jsStrings(bool $escape = true)
     {
         $a = array();
         $a['daysMin'] = $this->get('days_min');
@@ -137,17 +137,7 @@ class Lang
         ]);
         $a['_rtl'] = $this->rtl() ? 1 : 0;
 
-        return $a;
-    }
-
-    function makeJS($pretty = 0)
-    {
-        $a = $this->jsStrings();
-        $opts = JSON_UNESCAPED_UNICODE;
-        if ($pretty) {
-            $opts |= JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES;
-        }
-        return json_encode($a, $opts);
+        return ($escape ? htmlarray($a) : $a);
     }
 
     protected function fillWithValues(array &$a, array $keys)
