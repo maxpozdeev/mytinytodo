@@ -57,6 +57,7 @@ $_mttinfo = array();
 if (need_auth() && !isset($dontStartSession)) {
     setup_and_start_session();
 }
+set_nocache_headers();
 
 if (!defined('MTT_DISABLE_EXT')) {
     define('MTT_EXT', MTTPATH . 'ext/');
@@ -358,12 +359,17 @@ function is_https(): bool
     return false;
 }
 
+function set_nocache_headers()
+{
+    // little more info at https://www.php.net/manual/en/function.session-cache-limiter.php
+    header('Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0');
+    header('Expires: Wed, 29 Apr 2009 10:00:00 GMT');
+    header('Pragma: no-cache'); // for old HTTP/1.0 intermediate caches
+}
+
 function jsonExit($data)
 {
     header('Content-type: application/json; charset=utf-8');
-    header('Cache-Control: no-store');
-    header('Pragma: no-cache'); // for old HTTP/1.0 intermediate caches
-    header_remove('Expires');
     echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     MTTNotificationCenter::postDidFinishRequestNotification();
     exit;
