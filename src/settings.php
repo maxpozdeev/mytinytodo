@@ -72,7 +72,8 @@ else if (isset($_POST['activate']))
     $activate = (int)_post('activate');
     $ext = _post('ext');
 
-    $exts = MTTExtensionLoader::bundles();
+    $extBundles = MTTExtensionLoader::bundles();
+    $exts = array_keys($extBundles);
     $a = Config::get('extensions');
     if (!is_array($a)) $a = [];
 
@@ -189,11 +190,11 @@ function timezoneIdentifiers()
 
 function listExtensions()
 {
-    $exts = MTTExtensionLoader::bundles();
+    $extBundles = MTTExtensionLoader::bundles();
     $activatedExts = Config::get('extensions');
     if (!is_array($activatedExts)) $activatedExts = [];
-    foreach ($exts as $ext) {
-        $out = "$ext ";
+    foreach ($extBundles as $ext => $meta) {
+        $out = htmlspecialchars($meta['title']). ' ';
         if (in_array($ext, $activatedExts)) {
             $out .= "<a href='#' data-settings-link='ext-deactivate' data-ext='". htmlspecialchars($ext).  "'>". __('set_deactivate', true). '</a>';
             $instance = MTTExtensionLoader::extensionInstance($ext);

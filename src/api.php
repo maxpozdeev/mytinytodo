@@ -65,7 +65,7 @@ foreach (MTTExtensionLoader::loadedExtensions() as $instance) {
     if ($instance instanceof MTTHttpApiExtender) {
         $newRoutes = $instance->extendHttpApi();
         foreach ($newRoutes as $endpoint => $methods) {
-            $endpoint = '/ext/'. $instance::codename. $endpoint;
+            $endpoint = '/ext/'. $instance::bundleId. $endpoint;
             foreach ($methods as $k => &$v) {
                 $v[2] = true; // Mark extension method
             }

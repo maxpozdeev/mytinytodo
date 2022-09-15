@@ -73,7 +73,7 @@ abstract class ApiController
 
 abstract class MTTExtension
 {
-    const codename = '';
+    const bundleId = '';
     const title = '';
     abstract function init();
 }
@@ -120,11 +120,11 @@ class MTTExtensionLoader
         }
 
         $className = get_class($instance);
-        if (!defined("$className::codename") || !defined("$className::title")) {
-            throw new Exception("Failed to register extension '$ext': require class constants (codename, title)");
+        if (!defined("$className::bundleId") || !defined("$className::title")) {
+            throw new Exception("Failed to register extension '$ext': require class constants (bundleId, title)");
         }
-        if ($instance::codename != $ext) {
-            throw new Exception("Extension '$ext' codename does not conforms to extension dir");
+        if ($instance::bundleId != $ext) {
+            throw new Exception("Extension '$ext' bundleId does not conforms to extension dir");
         }
 
         $instance->init();
@@ -151,10 +151,23 @@ class MTTExtensionLoader
         $a = [];
         $files = array_diff(scandir(MTT_EXT) ?? [], ['.', '..']);
         foreach ($files as $ext) {
-            if ( !is_dir(MTT_EXT. $ext) || !file_exists(MTT_EXT. $ext. '/loader.php') ) {
+            if ( !is_dir(MTT_EXT. $ext)
+                || !file_exists(MTT_EXT. $ext. '/loader.php')
+                || !file_exists(MTT_EXT. $ext. '/extension.json') ) {
                 continue;
             }
-            $a[] = $ext;
+            $jsonData = file_get_contents(MTT_EXT. $ext. '/extension.json');
+            if ($jsonData === false) {
+                continue;
+            }
+            $meta = json_decode($jsonData, true);
+            if (!is_array($meta) || !isset($meta['bundleId']) || !isset($meta['title']) || !isset($meta['description'])) {
+                continue;
+            }
+            if (!is_string($meta['bundleId']) || !is_string($meta['title']) || !is_string($meta['description'])) {
+                continue;
+            }
+            $a[$ext] = $meta;
         }
         return $a;
     }
