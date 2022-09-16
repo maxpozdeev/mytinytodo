@@ -19,12 +19,19 @@ class ExtSettingsController extends ApiController {
 
         $data = $instance->settingsPage();
 
-        $title = htmlspecialchars($instance::title);
+        $lang = Lang::instance();
+        $nameKey = 'ext.'. $ext. '.name';
+        if ($lang->hasKey($nameKey)) {
+            $name = htmlspecialchars($lang->get($nameKey));
+        }
+        else {
+            $name = htmlspecialchars($instance::name);
+        }
         $escapedExt = htmlspecialchars($ext);
-        $e = function($s) { return __($s, true); };
+        $e = function($s) use($lang) { return htmlspecialchars($lang->get($s)); };
         $data =
 <<<EOD
-<h3 class="page-title"><a class="mtt-back-button"></a> $title </h3>
+<h3 class="page-title"><a class="mtt-back-button"></a> $name </h3>
 <div id="settings_msg" style="display:none"></div>
 <form id="ext_settings_form" data-ext="$escapedExt">
   <div class="mtt-settings-table">

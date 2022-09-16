@@ -94,6 +94,11 @@ class Lang
         return $key;
     }
 
+    function hasKey(string $key): bool
+    {
+        return isset($this->strings[$key]);
+    }
+
     function rtl()
     {
         if ( isset($this->strings['_rtl']) ) {
@@ -155,6 +160,33 @@ class Lang
     function langCode()
     {
         return $this->code;
+    }
+
+    public function loadExtensionLang(string $ext)
+    {
+        $langDir = MTT_EXT. $ext. '/lang/';
+        if (!is_dir($langDir)) {
+            return;
+        }
+        if (!file_exists($langDir. 'en.json')) {
+            return;
+        }
+        if (file_exists($langDir. $this->code. '.json')) {
+            $langStr = file_get_contents($langDir. $this->code. '.json');
+            $lang = json_decode($langStr, true) ?? [];
+        }
+        $defStr = file_get_contents($langDir. 'en.json');
+        $def = json_decode($defStr, true) ?? [];
+
+        $lang = array_replace($def, $lang);
+        if (isset($lang['_header'])) {
+            unset($lang['_header']);
+        }
+        if (isset($lang['_ltr'])) {
+            unset($lang['_ltr']);
+        }
+
+        $this->strings = array_replace($this->strings, $lang);
     }
 
 }

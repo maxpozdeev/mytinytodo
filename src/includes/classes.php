@@ -74,7 +74,7 @@ abstract class ApiController
 abstract class MTTExtension
 {
     const bundleId = '';
-    const title = '';
+    const name = '';
     abstract function init();
 }
 
@@ -120,12 +120,14 @@ class MTTExtensionLoader
         }
 
         $className = get_class($instance);
-        if (!defined("$className::bundleId") || !defined("$className::title")) {
-            throw new Exception("Failed to register extension '$ext': require class constants (bundleId, title)");
+        if (!defined("$className::bundleId") || !defined("$className::name")) {
+            throw new Exception("Failed to register extension '$ext': require class constants (bundleId, name)");
         }
         if ($instance::bundleId != $ext) {
             throw new Exception("Extension '$ext' bundleId does not conforms to extension dir");
         }
+
+        Lang::instance()->loadExtensionLang($ext);
 
         $instance->init();
         self::$exts[$ext] = $instance;
@@ -148,6 +150,7 @@ class MTTExtensionLoader
      */
     public static function bundles(): array
     {
+        $lang = Lang::instance();
         $a = [];
         $files = array_diff(scandir(MTT_EXT) ?? [], ['.', '..']);
         foreach ($files as $ext) {
@@ -161,11 +164,22 @@ class MTTExtensionLoader
                 continue;
             }
             $meta = json_decode($jsonData, true);
-            if (!is_array($meta) || !isset($meta['bundleId']) || !isset($meta['title']) || !isset($meta['description'])) {
+            if (!is_array($meta) || !isset($meta['bundleId']) || !isset($meta['name']) || !isset($meta['description'])) {
                 continue;
             }
-            if (!is_string($meta['bundleId']) || !is_string($meta['title']) || !is_string($meta['description'])) {
+            if (!is_string($meta['bundleId']) || !is_string($meta['name']) || !is_string($meta['description'])) {
                 continue;
+            }
+            if ( $lang->langCode() != 'en' && is_dir(MTT_EXT. $ext. '/lang') ) {
+                $lf = MTT_EXT. $ext. '/lang/'. $lang->langCode(). '.json';
+                if (file_exists($lf)) {
+                    $jsonText = file_get_contents($lf) ?? '';
+                    $json = json_decode($jsonText, true) ?? [];
+                    $lt = $json['ext.'.$ext.'.name'] ?? null;
+                    if ($lt !== null) {
+                        $meta['name'] = $lt;
+                    }
+                }
             }
             $a[$ext] = $meta;
         }

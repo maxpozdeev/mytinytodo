@@ -194,7 +194,7 @@ function listExtensions()
     $activatedExts = Config::get('extensions');
     if (!is_array($activatedExts)) $activatedExts = [];
     foreach ($extBundles as $ext => $meta) {
-        $out = htmlspecialchars($meta['title']). ' ';
+        $out = htmlspecialchars($meta['name']). ' ';
         if (in_array($ext, $activatedExts)) {
             $out .= "<a href='#' data-settings-link='ext-deactivate' data-ext='". htmlspecialchars($ext).  "'>". __('set_deactivate', true). '</a>';
             $instance = MTTExtensionLoader::extensionInstance($ext);
