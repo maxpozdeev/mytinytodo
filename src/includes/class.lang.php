@@ -18,7 +18,7 @@ class Lang
     protected $default = 'en';
     protected $strings;
 
-    public static function instance()
+    public static function instance(): Lang
     {
         if (!isset(self::$instance)) {
             $c = __CLASS__;
@@ -162,23 +162,36 @@ class Lang
         return $this->code;
     }
 
-    public function loadExtensionLang(string $ext)
+    public function getExtensionLang(string $ext): ?array
     {
         $langDir = MTT_EXT. $ext. '/lang/';
         if (!is_dir($langDir)) {
-            return;
+            return null;
         }
         if (!file_exists($langDir. 'en.json')) {
-            return;
+            return null;
         }
-        if (file_exists($langDir. $this->code. '.json')) {
+        $lang = [];
+        if ($this->code != 'en') {
+            if (!file_exists($langDir. $this->code. '.json')) {
+                return null;
+            }
             $langStr = file_get_contents($langDir. $this->code. '.json');
             $lang = json_decode($langStr, true) ?? [];
         }
         $defStr = file_get_contents($langDir. 'en.json');
         $def = json_decode($defStr, true) ?? [];
-
         $lang = array_replace($def, $lang);
+        return $lang;
+    }
+
+    public function loadExtensionLang(string $ext)
+    {
+        $lang = $this->getExtensionLang($ext);
+        if (!$lang) {
+            return;
+        }
+
         if (isset($lang['_header'])) {
             unset($lang['_header']);
         }

@@ -76,6 +76,28 @@ abstract class MTTExtension
     const bundleId = '';
     const name = '';
     abstract function init();
+
+    public static function extMetaInfo(string $ext): ?array
+    {
+        $file = MTT_EXT. $ext. '/extension.json';
+        if ( file_exists($file)
+            && false !== ($json = file_get_contents($file))
+            && ($meta = json_decode($json, true))
+            && is_array($meta) )
+        {
+            // check mandatory keys
+            if (!isset($meta['bundleId']) || !isset($meta['name']) || !isset($meta['version']) || !isset($meta['description'])) {
+                return null;
+            }
+            if (!is_string($meta['bundleId']) || !is_string($meta['name']) || !is_string($meta['version']) || !is_string($meta['description'])) {
+                return null;
+            }
+            return $meta;
+        }
+        error_log("$ext/extension.json is missing or invalid");
+        return null;
+    }
+
 }
 
 interface MTTHttpApiExtender
@@ -155,31 +177,19 @@ class MTTExtensionLoader
         $files = array_diff(scandir(MTT_EXT) ?? [], ['.', '..']);
         foreach ($files as $ext) {
             if ( !is_dir(MTT_EXT. $ext)
-                || !file_exists(MTT_EXT. $ext. '/loader.php')
-                || !file_exists(MTT_EXT. $ext. '/extension.json') ) {
+                || !file_exists(MTT_EXT. $ext. '/loader.php') ) {
                 continue;
             }
-            $jsonData = file_get_contents(MTT_EXT. $ext. '/extension.json');
-            if ($jsonData === false) {
+
+            $meta = MTTExtension::extMetaInfo($ext);
+            if (!$meta) {
                 continue;
             }
-            $meta = json_decode($jsonData, true);
-            if (!is_array($meta) || !isset($meta['bundleId']) || !isset($meta['name']) || !isset($meta['description'])) {
-                continue;
-            }
-            if (!is_string($meta['bundleId']) || !is_string($meta['name']) || !is_string($meta['description'])) {
-                continue;
-            }
-            if ( $lang->langCode() != 'en' && is_dir(MTT_EXT. $ext. '/lang') ) {
-                $lf = MTT_EXT. $ext. '/lang/'. $lang->langCode(). '.json';
-                if (file_exists($lf)) {
-                    $jsonText = file_get_contents($lf) ?? '';
-                    $json = json_decode($jsonText, true) ?? [];
-                    $lt = $json['ext.'.$ext.'.name'] ?? null;
-                    if ($lt !== null) {
-                        $meta['name'] = $lt;
-                    }
-                }
+
+            if ( $lang->langCode() != 'en'
+                && null !== ($translation = $lang->getExtensionLang($ext))
+                && null !== ($locName = $translation['ext.'.$ext.'.name'] ?? null) ) {
+                $meta['name'] = $locName;
             }
             $a[$ext] = $meta;
         }

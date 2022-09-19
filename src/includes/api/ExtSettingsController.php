@@ -7,7 +7,7 @@ class ExtSettingsController extends ApiController {
      * @return void
      * @throws Exception
      */
-    function get($ext)
+    function get(string $ext)
     {
         checkWriteAccess();
 
@@ -52,7 +52,7 @@ EOD;
      * @return void
      * @throws Exception
      */
-    function put($ext)
+    function put(string $ext)
     {
         checkWriteAccess();
 
@@ -70,7 +70,7 @@ EOD;
         $this->response->data = $a;
     }
 
-    private function extInstance($ext): ?MTTExtensionSettingsInterface
+    private function extInstance(string $ext): ?MTTExtensionSettingsInterface
     {
         $instance = MTTExtensionLoader::extensionInstance($ext);
         if (!$instance) {
