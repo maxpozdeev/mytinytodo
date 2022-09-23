@@ -16,6 +16,10 @@ class ExtSettingsController extends ApiController {
         if (!$instance) {
             return;
         }
+        $meta = MTTExtension::extMetaInfo($ext);
+        if (!$meta || !isset($meta['name'])) {
+            return;
+        }
 
         $data = $instance->settingsPage();
 
@@ -25,7 +29,7 @@ class ExtSettingsController extends ApiController {
             $name = htmlspecialchars($lang->get($nameKey));
         }
         else {
-            $name = htmlspecialchars($instance::name);
+            $name = htmlspecialchars($meta['name']);
         }
         $escapedExt = htmlspecialchars($ext);
         $e = function($s) use($lang) { return htmlspecialchars($lang->get($s)); };

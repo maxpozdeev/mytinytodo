@@ -74,7 +74,7 @@ abstract class ApiController
 abstract class MTTExtension
 {
     const bundleId = '';
-    const name = '';
+
     abstract function init();
 
     public static function extMetaInfo(string $ext): ?array
@@ -142,11 +142,11 @@ class MTTExtensionLoader
         }
 
         $className = get_class($instance);
-        if (!defined("$className::bundleId") || !defined("$className::name")) {
-            throw new Exception("Failed to register extension '$ext': require class constants (bundleId, name)");
+        if (!defined("$className::bundleId")) {
+            throw new Exception("Failed to load extension '$ext': missing required class constants (bundleId)");
         }
         if ($instance::bundleId != $ext) {
-            throw new Exception("Extension '$ext' bundleId does not conforms to extension dir");
+            throw new Exception("Failed to load extension '$ext': bundleId does not conforms to extension dir");
         }
 
         Lang::instance()->loadExtensionLang($ext);
