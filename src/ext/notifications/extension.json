@@ -1,0 +1,6 @@
+{
+    "bundleId": "notifications",
+    "name": "Notifications",
+    "version": "0.9",
+    "description": "Notify about new tasks and lists on e-mail or telegram"
+}
