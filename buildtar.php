@@ -54,6 +54,28 @@ if (false === system( "./composer.sh install --no-dev --no-interaction --optimiz
     die("Failed to install composer libs via docker\n");
 }
 
+# ext
+if (is_dir('src/ext')) {
+    mkdir('src/ext2');
+    chdir('src/ext');
+    $extCount = 0;
+    $exts = array_diff(scandir('.') ?? [], ['.', '..']);
+    foreach ($exts as $ext) {
+        if (is_dir($ext)) {
+            rename($ext, "../ext2/$ext");
+            $extCount++;
+        }
+    }
+    chdir('../ext2');
+    if ($extCount > 0) {
+        `tar -czf ../ext/extensions.tar.gz *`;  #OS dep.!!!
+    }
+    chdir('../..');
+    deleteTreeIfDir('src/ext2');
+    echo("> Extensions were packed\n");
+}
+
+
 rename('src', 'mytinytodo') or die("Cant rename 'src'\n");
 
 `tar -czf mytinytodo.tar.gz mytinytodo`;  #OS dep.!!!
@@ -81,17 +103,18 @@ echo("> Build is stored in $archive\n");
 
 function deleteTreeIfDir($dir)
 {
-    if ( is_dir($dir) ) {
-        switch (PHP_OS) {
-            case 'Darwin':
-            case 'Linux':
-                system("rm -rf $dir");
-                break;
-            case 'Windows':
-                system("rmdir /s /q $dir");
-                break;
-            default:
-                die("Unknown system ". PHP_OS. "\n");
-        }
+    if ( !is_dir($dir) ) {
+        return;
+    }
+    switch (PHP_OS) {
+        case 'Darwin':
+        case 'Linux':
+            system("rm -rf ". escapeshellarg($dir));
+            break;
+        case 'Windows':
+            system("rmdir /s /q ". escapeshellarg($dir));
+            break;
+        default:
+            die("Unknown system ". PHP_OS. "\n");
     }
 }
