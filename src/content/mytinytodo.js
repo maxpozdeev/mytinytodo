@@ -729,26 +729,28 @@ var mytinytodo = window.mytinytodo = _mtt = {
         {
             var ti = '';
             var openListId = 0;
-            if(res && res.total && res.list)
+
+            if (res && res.total && res.list)
             {
-                // open required or first non-hidden list
-                for(var i=0; i<res.list.length; i++) {
-                    if(_mtt.options.openList) {
-                        if(_mtt.options.openList == res.list[i].id) {
-                            openListId = res.list[i].id;
-                            break;
-                        }
+                // open required or last opened or first non-hidden list
+                let list;
+                if (_mtt.options.openList) {
+                    list = res.list.find( item => _mtt.options.openList == item.id );
+                }
+                else {
+                    const lastOpenList = getLocalStorageItem('lastList');
+                    if (lastOpenList) {
+                        list = res.list.find( item => !item.hidden && lastOpenList == item.id );
                     }
-                    else if(!res.list[i].hidden) {
-                        openListId = res.list[i].id;
-                        break;
+                    if (!list) {
+                        list = res.list.find( item => !item.hidden );
                     }
                 }
+                if (list) {
+                    openListId = list.id;
+                }
 
-                // open all tasks tab
-                if(_mtt.options.openList == -1) openListId = -1;
-
-                $.each(res.list, function(i, item) {
+                res.list.forEach( (item) => {
                     if ( item.id == -1 ) {
                         tabLists._alltasks = item;
                         ti += prepareListHtml(item);
@@ -1524,6 +1526,7 @@ function tabSelect(elementOrId)
     var newTitle = curList.name + ' - ' + _mtt.options.title;
     var isFirstLoad = flag.firstLoad;
     updateHistoryState( { list:id }, _mtt.urlForList(curList), newTitle );
+    setLocalStorageItem('lastList', ''+id);
 
     if (curList.hidden && flag.readOnly != true) {
         curList.hidden = false;
@@ -2509,6 +2512,27 @@ function hideList(listId)
 
     if(listIdToSelect) {
         tabSelect(listIdToSelect);
+    }
+}
+
+function getLocalStorageItem(key)
+{
+    try {
+        return localStorage.getItem(key);
+    }
+    catch (e) {
+        console.log(e);
+    }
+    return null;
+}
+
+function setLocalStorageItem(key, value)
+{
+    try {
+        localStorage.setItem(key, value);
+    }
+    catch (e) {
+        console.log(e);
     }
 }
 
