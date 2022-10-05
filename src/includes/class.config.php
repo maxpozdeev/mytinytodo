@@ -300,14 +300,14 @@ class Config
         if (!preg_match("/^[a-zA-Z0-9_]+$/", $key)) {
             throw new Exception("Unexpected constant name: ". $key);
         }
-        if (preg_match('~\R~', $value)) {
+        if (preg_match('~\R~', $value)) { # newlines
             throw new Exception("Unexpected constant value: ". $value);
         }
-        return "define(\"$key\", \"". str_replace(
-                                                array("\\",   "'",   "\""),
-                                                array("\\\\", "\\'", "\\\""),
-                                                $value )
-                                    . "\");";
+        return "define('$key', '". str_replace(
+                                        array("\\",   "'" ),
+                                        array("\\\\", "\\'"),
+                                        $value
+                                ) . "');";
     }
 
     public static function saveDbConfig()
