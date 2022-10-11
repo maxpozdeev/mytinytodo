@@ -280,8 +280,8 @@ var mytinytodo = window.mytinytodo = _mtt = {
             if(_mtt.menus.tagcloud) _mtt.menus.tagcloud.close();
         });
 
-        $('#tagcloudcontent').on('click', '.tag', function(){
-            addFilterTag( $(this).attr('tag'), $(this).attr('tagid'), (event.metaKey || event.ctrlKey ? true : false) );
+        $('#tagcloudcontent').on('click', '.tag', function(event){
+            addFilterTag( this.dataset.tag, this.dataset.tagId, (event.metaKey || event.ctrlKey ? true : false) );
             if(_mtt.menus.tagcloud) _mtt.menus.tagcloud.close();
             return false;
         });
@@ -362,7 +362,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
         });
 
         $('#alltags').on('click', '.tag', function(){
-            addEditTag($(this).attr('tag'));
+            addEditTag(this.dataset.tag);
             return false;
         });
 
@@ -1796,9 +1796,9 @@ function toggleEditAllTags(show)
 function fillEditAllTags()
 {
     var a = [];
-    for(var i=tagsList.length-1; i>=0; i--) {
-        a.push('<a href="#" class="tag" tag="'+tagsList[i].tag+'">'+tagsList[i].tag+'</a>');
-    }
+    tagsList.forEach( (item) => {
+        a.push('<a href="#" class="tag" data-tag="' + item.tag +'">' + item.tag + '</a>');
+    });
     $('#alltags .tags-list').html(a.join(', '));
     $('#alltags').show();
 };
@@ -1817,12 +1817,12 @@ function addEditTag(tag)
 function loadTags(listId, callback)
 {
     _mtt.db.request('tagCloud', {list:listId}, function(json){
-        if(!parseInt(json.total)) tagsList = [];
-        else tagsList = json.cloud;
+        if (!parseInt(json.total)) tagsList = [];
+        else tagsList = json.items;
         var cloud = '';
-        $.each(tagsList, function(i,item){
+        tagsList.forEach( item => {
             // item.tag is escaped with htmlspecialchars()
-            cloud += ' <a href="#" tag="'+item.tag+'" tagid="'+item.id+'" class="tag w'+item.w+'" >'+item.tag+'</a>';
+            cloud += ' <a href="#" class="tag" data-tag="' + item.tag + '" data-tag-id="' + item.id + '">' + item.tag + '</a>';
         });
         $('#tagcloudcontent').html(cloud)
         flag.tagsChanged = false;

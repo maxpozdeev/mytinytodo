@@ -739,28 +739,24 @@ h3.page-title a.mtt-back-button {
   border:1px solid var(--color-border-default);
   padding:5px;
   width: 100%;
-  max-width: 450px;
+  max-width: 600px;
   text-align: center;
   box-shadow: var(--color-popup-shadow);
 }
 #tagcloud.mtt-left-adjusted { margin-left:5px; }
 #tagcloud.mtt-right-adjusted { margin-right:5px; }
 #tagcloud.mtt-left-adjusted.mtt-right-adjusted { margin-bottom:5px; }
-#tagcloud .tag { margin:1px 0px; padding:2px; line-height:140%; color: var(--color-text-default); }
+#tagcloud .tag {
+  margin: 2px;
+  padding: 2px;
+  line-height:160%;
+  color: var(--color-text-default);
+  white-space: nowrap;
+}
 #tagcloud .tag:hover {
   background-color:var(--color-taglist-text-hover-bg);
   color: var(--color-taglist-text-hover);
 }
-#tagcloud .w0 { font-size:80%; }
-#tagcloud .w1 { font-size:90%; }
-#tagcloud .w2 { font-size:100%; }
-#tagcloud .w3 { font-size:110%; }
-#tagcloud .w4 { font-size:120%; }
-#tagcloud .w5 { font-size:130%; }
-#tagcloud .w6 { font-size:140%; }
-#tagcloud .w7 { font-size:150%; }
-#tagcloud .w8 { font-size:160%; }
-#tagcloud .w9 { font-size:170%; }
 
 #tagcloudcancel { float:right; }
 #tagcloudcancel span {

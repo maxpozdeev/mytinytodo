@@ -20,7 +20,7 @@ class TagsController extends ApiController {
         $db = DBConnection::instance();
 
         $q = $db->dq("SELECT name,tag_id,COUNT(tag_id) AS tags_count FROM {$db->prefix}tag2task INNER JOIN {$db->prefix}tags ON tag_id=id ".
-                            "WHERE list_id=$listId GROUP BY (tag_id) ORDER BY tags_count ASC");
+                            "WHERE list_id=$listId GROUP BY (tag_id) ORDER BY tags_count DESC");
         $at = array();
         $ac = array();
         while ($r = $q->fetchAssoc()) {
@@ -33,7 +33,7 @@ class TagsController extends ApiController {
 
         $t = array();
         $t['total'] = 0;
-        $count = sizeof($at);
+        $count = count($at);
         if (!$count) {
             $this->response->data = $t;
             return;
@@ -46,9 +46,10 @@ class TagsController extends ApiController {
         $step = ($qmax - $qmin)/$grades;
         foreach ($at as $i => $tag)
         {
-            $t['cloud'][] = array(
+            $t['items'][] = array(
                 'tag' => htmlspecialchars($tag['name']),
                 'id' => (int)$tag['id'],
+                'count' => $ac[$i],
                 'w' => $this->tagWeight($qmin, $ac[$i], $step)
             );
         }
