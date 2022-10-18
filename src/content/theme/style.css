@@ -778,6 +778,9 @@ h3.page-title a.mtt-back-button {
 #tagcloud .actions > *:first-child {
   flex-grow: 1;
 }
+#tagcloudAllLists:disabled + label {
+  opacity: 0.6;
+}
 #tagcloudcancel span {
   mask: url(images/closetag.svg) no-repeat; -webkit-mask: url(images/closetag.svg) no-repeat;
   background-color: var(--color-btn-reduced);

@@ -272,7 +272,10 @@ var mytinytodo = window.mytinytodo = _mtt = {
         });
 
         $('#tagcloudbtn').click(function(){
-            if (curList.id == -1) {
+            if (flag.readOnly) {
+                $('#tagcloudAllLists').prop('checked', false).prop('disabled', true);
+            }
+            else if (curList.id == -1) {
                 $('#tagcloudAllLists').prop('checked', true).prop('disabled', true);
             }
             else {
