@@ -730,8 +730,11 @@ h3.page-title a.mtt-back-button {
 #priopopup .prio-pos:hover { border-color: var(--color-priority-urgent); }
 #priopopup .prio-pos-1:hover { border-color: var(--color-priority-high); }
 
-#tagcloudbtn { font-size:1rem; font-weight:normal; margin-left:auto; }
-#mtt.show-all-tasks #tagcloudbtn { display:none; }
+#tagcloudbtn {
+  font-size: 1rem;
+  font-weight: normal;
+  margin-left: auto;
+}
 #tagcloud {
   overflow: hidden; z-index:100;
   background-color:var(--color-menu);

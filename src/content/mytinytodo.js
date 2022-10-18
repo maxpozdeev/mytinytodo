@@ -272,7 +272,12 @@ var mytinytodo = window.mytinytodo = _mtt = {
         });
 
         $('#tagcloudbtn').click(function(){
-            $('#tagcloudAllLists').prop('checked', flag.showTagsFromAllLists);
+            if (curList.id == -1) {
+                $('#tagcloudAllLists').prop('checked', true).prop('disabled', true);
+            }
+            else {
+                $('#tagcloudAllLists').prop('checked', flag.showTagsFromAllLists).prop('disabled', false);
+            }
             if(!_mtt.menus.tagcloud) _mtt.menus.tagcloud = new mttMenu('tagcloud', {
                 beforeShow: function(){
                     if(flag.tagsChanged) {
