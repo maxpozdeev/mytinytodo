@@ -14,7 +14,16 @@ var sortOrder; //save task order before dragging
 var searchTimer;
 var objPrio = {};
 var lastClickedNodeId = 0;
-var flag = { needAuth:false, isLogged:false, tagsChanged:true, readOnly:false, editFormChanged:false, firstLoad:true, dontChangeHistoryOnce:false };
+var flag = {
+    needAuth: false,
+    isLogged: false,
+    tagsChanged: true,
+    readOnly: false,
+    editFormChanged: false,
+    firstLoad: true,
+    dontChangeHistoryOnce: false,
+    showTagsFromAllLists: false
+};
 var taskCnt = { total:0, past: 0, today:0, soon:0 };
 var tabLists = {
     _lists: {},
@@ -263,6 +272,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
         });
 
         $('#tagcloudbtn').click(function(){
+            $('#tagcloudAllLists').prop('checked', flag.showTagsFromAllLists);
             if(!_mtt.menus.tagcloud) _mtt.menus.tagcloud = new mttMenu('tagcloud', {
                 beforeShow: function(){
                     if(flag.tagsChanged) {
@@ -284,6 +294,13 @@ var mytinytodo = window.mytinytodo = _mtt = {
             addFilterTag( this.dataset.tag, this.dataset.tagId, (event.metaKey || event.ctrlKey ? true : false) );
             if(_mtt.menus.tagcloud) _mtt.menus.tagcloud.close();
             return false;
+        });
+
+        $('#tagcloudAllLists').click(function(){
+            flag.showTagsFromAllLists = this.checked;
+            $('#tagcloudcontent').html('');
+            $('#tagcloudload').show();
+            loadTags(curList.id, function(){$('#tagcloudload').hide();});
         });
 
         $('#mtt-notes-show').click(function(){
@@ -1816,13 +1833,14 @@ function addEditTag(tag)
 
 function loadTags(listId, callback)
 {
+    if (flag.showTagsFromAllLists) listId = -1;
     _mtt.db.request('tagCloud', {list:listId}, function(json){
         if (!parseInt(json.total)) tagsList = [];
         else tagsList = json.items;
         var cloud = '';
         tagsList.forEach( item => {
             // item.tag is escaped with htmlspecialchars()
-            cloud += ' <a href="#" class="tag" data-tag="' + item.tag + '" data-tag-id="' + item.id + '">' + item.tag + '</a>';
+            cloud += ' <span class="tag" data-tag="' + item.tag + '" data-tag-id="' + item.id + '">' + item.tag + '</span>';
         });
         $('#tagcloudcontent').html(cloud)
         flag.tagsChanged = false;

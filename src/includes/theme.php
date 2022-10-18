@@ -212,9 +212,14 @@ $().ready(function(){
 </div>
 
 <div id="tagcloud" style="display:none">
-  <a id="tagcloudcancel" class="mtt-img-button"><span></span></a>
-  <div id="tagcloudload"></div>
-  <div id="tagcloudcontent"></div>
+  <div class="actions">
+    <div><label><input id="tagcloudAllLists" type="checkbox" /> <?php _e('showTagsFromAllLists');?></label></div>
+    <div id="tagcloudcancel" class="mtt-img-button"><span></span></div>
+  </div>
+  <div class="content">
+    <div id="tagcloudload"></div>
+    <div id="tagcloudcontent"></div>
+  </div>
 </div>
 
 

@@ -38,6 +38,7 @@
     "public_tasks": "Public Tasks",
     "tagcloud": "Tags",
     "tagfilter_cancel": "cancel filter",
+    "showTagsFromAllLists": "Show tags from all lists",
     "sortByHand": "Sort by hand",
     "sortByPriority": "Sort by priority",
     "sortByDueDate": "Sort by due date",

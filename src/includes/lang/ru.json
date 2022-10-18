@@ -38,6 +38,7 @@
     "public_tasks": "Опубликованные задачи",
     "tagcloud": "Теги",
     "tagfilter_cancel": "отменить фильтр по тегу",
+    "showTagsFromAllLists": "Показать теги из всех списков",
     "sortByHand": "Сортировка вручную",
     "sortByPriority": "Сортировка по приоритету",
     "sortByDueDate": "Сортировка по сроку",

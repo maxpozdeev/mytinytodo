@@ -19,8 +19,12 @@ class TagsController extends ApiController {
         checkReadAccess($listId);
         $db = DBConnection::instance();
 
-        $q = $db->dq("SELECT name,tag_id,COUNT(tag_id) AS tags_count FROM {$db->prefix}tag2task INNER JOIN {$db->prefix}tags ON tag_id=id ".
-                            "WHERE list_id=$listId GROUP BY (tag_id) ORDER BY tags_count DESC");
+        $sqlWhere = ($listId == -1) ? "" : "WHERE list_id=$listId";
+        $q = $db->dq("SELECT name,tag_id,COUNT(tag_id) AS tags_count
+                      FROM {$db->prefix}tag2task INNER JOIN {$db->prefix}tags ON tag_id=id
+                      $sqlWhere
+                      GROUP BY (tag_id)
+                      ORDER BY tags_count DESC");
         $at = array();
         $ac = array();
         while ($r = $q->fetchAssoc()) {
