@@ -5,7 +5,7 @@
         "language": "English (for RTL test)",
         "original_name": "English RTL",
         "author": "Max Pozdeev",
-        "author_url": "http://www.mytinytodo.net"
-    },
-	"_rtl": 1
+        "author_url": "http://www.mytinytodo.net",
+        "rtl": 1
+    }
 }

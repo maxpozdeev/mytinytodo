@@ -5,9 +5,9 @@
         "language": "Persian",
         "original_name": "فارسی",
         "author": "Mostafa Khademolmele",
-        "author_url": "http://www.nemov.ir"
+        "author_url": "http://www.nemov.ir",
+        "rtl": 1
     },
-    "_rtl": 1,
     "My Tiny Todolist": "مدیریت وظایف",
     "htab_newtask": "وظیفه جدید",
     "htab_search": "جستجو",

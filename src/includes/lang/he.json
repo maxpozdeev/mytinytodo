@@ -5,9 +5,9 @@
         "language": "Hebrew",
         "original_name": "עברית",
         "author": "Ohad Raz",
-        "author_url": "http://www.Bainternet.info"
+        "author_url": "http://www.Bainternet.info",
+        "rtl": 1
     },
-    "_rtl": 1,
     "My Tiny Todolist": "My Tiny Todolist",
     "htab_newtask": "משימה חדשה",
     "htab_search": "חיפוש",

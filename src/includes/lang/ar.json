@@ -5,9 +5,9 @@
         "language": "Arabic",
         "original_name": "عربي",
         "author": "Majid Al-Dharrab",
-        "author_email": "majid@aldharrab.com"
+        "author_email": "majid@aldharrab.com",
+        "rtl": 1
     },
-    "_rtl": 1,
     "My Tiny Todolist": "My Tiny Todolist",
     "htab_newtask": "مهمة جديدة",
     "htab_search": "بحث",

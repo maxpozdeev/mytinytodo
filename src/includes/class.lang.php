@@ -101,8 +101,8 @@ class Lang
 
     function rtl()
     {
-        if ( isset($this->strings['_rtl']) ) {
-            return intval($this->strings['_rtl']);
+        if ( isset($this->strings['_header']['rtl']) ) {
+            return intval($this->strings['_header']['rtl']);
         }
         return 0;
     }
@@ -191,14 +191,9 @@ class Lang
         if (!$lang) {
             return;
         }
-
         if (isset($lang['_header'])) {
             unset($lang['_header']);
         }
-        if (isset($lang['_ltr'])) {
-            unset($lang['_ltr']);
-        }
-
         $this->strings = array_replace($this->strings, $lang);
     }
 
