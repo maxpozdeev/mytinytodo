@@ -203,7 +203,9 @@
         if (delayStarted) {
             clearTimeout(delayTimer);
             delayStarted = false;
-            fireMouseDown();
+            if (!delayFinished) {
+                fireMouseDown();
+            }
         }
 
     // Ignore event if not handled
