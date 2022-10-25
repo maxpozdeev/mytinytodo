@@ -51,10 +51,12 @@
       touchHandled;
 
     var delay = 300,
-          delayTimer,
-            delayEvent,
-            delayStarted = false,
-            delayFinished = false;
+        delayTimer,
+        delayEvent,
+        delayStarted = false,
+        delayFinished = false,
+        lastClickTimeStamp = 0,
+        lastClickCoord;
 
 
     /**
@@ -163,9 +165,9 @@
       return;
     }
 
-        if (!delayStarted) {
-            startDelayTimer.call(self, event);
-        }
+    if (!delayStarted) {
+        startDelayTimer.call(self, event);
+    }
   };
 
   /**
@@ -174,12 +176,12 @@
    */
   mouseProto._touchMove = function (event) {
 
-        //
-        if (!delayFinished) {
-            delayStarted = false;
-            clearTimeout(delayTimer);
-            return;
-        }
+    //
+    if (!delayFinished) {
+        delayStarted = false;
+        clearTimeout(delayTimer);
+        return;
+    }
 
     // Ignore event if not handled
     if (!touchHandled) {
@@ -199,14 +201,14 @@
    */
   mouseProto._touchEnd = function (event) {
 
-        //
-        if (delayStarted) {
-            clearTimeout(delayTimer);
-            delayStarted = false;
-            if (!delayFinished) {
-                fireMouseDown();
-            }
+    //
+    if (delayStarted) {
+        clearTimeout(delayTimer);
+        delayStarted = false;
+        if (!delayFinished) {
+            fireMouseDown();
         }
+    }
 
     // Ignore event if not handled
     if (!touchHandled) {
@@ -224,18 +226,27 @@
     // Allow for Apple Stylus to be used also
     var timeMoving = event.timeStamp - this._startedMove;
     if (!this._touchMoved || timeMoving < 500) {
+
         // Simulate the click event
         simulateMouseEvent(event, 'click');
-    } else {
-      var endPos = getTouchCoords(event);
-      if ((Math.abs(endPos.x - this._startPos.x) < 10) && (Math.abs(endPos.y - this._startPos.y) < 10)) {
 
-          // If the touch interaction did not move, it should trigger a click
-          if (!this._touchMoved || event.originalEvent.changedTouches[0].touchType === 'stylus') {
-              // Simulate the click event
-              simulateMouseEvent(event, 'click');
-          }
-      }
+        if (lastClickTimeStamp != 0 && event.timeStamp - lastClickTimeStamp < 500 &&
+            Math.abs(lastClickCoord.x - this._startPos.x) < 10 && Math.abs(lastClickCoord.y - this._startPos.y) < 10) {
+            // Simulate the dblclick event
+            simulateMouseEvent(event, 'dblclick');
+        }
+        lastClickTimeStamp = event.timeStamp
+        lastClickCoord = this._startPos;
+    }
+    else {
+        var endPos = getTouchCoords(event);
+        if ((Math.abs(endPos.x - this._startPos.x) < 10) && (Math.abs(endPos.y - this._startPos.y) < 10)) {
+            // If the touch interaction did not move, it should trigger a click
+            if (!this._touchMoved || event.originalEvent.changedTouches[0].touchType === 'stylus') {
+                // Simulate the click event
+                simulateMouseEvent(event, 'click');
+            }
+        }
     }
 
     // Unset the flag to determine the touch movement stopped
