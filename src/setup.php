@@ -28,6 +28,12 @@ $db = null;
 $ver = '';
 $error = '';
 
+$setupToken = stoken();
+if ($setupToken == '' || strlen($setupToken) != 36) {
+    $setupToken = update_stoken();
+}
+$setupToken = htmlspecialchars($setupToken);
+
 $configExists = file_exists(MTTPATH. 'config.php');
 $oldConfigExists = file_exists(MTTPATH. 'db/config.php');
 
@@ -40,8 +46,11 @@ if (!$configExists && $oldConfigExists)
     // First we need to migrate database config
     require_once(MTTPATH. 'db/config.php');
     if (isset($config['password']) && $config['password'] != '') {
-        if (!isset($_POST['configpassword']) || $_POST['configpassword'] != $config['password']) {
-            exitMessage("Enter current password to continue. <form method=post><input type=password name=configpassword> <input type=submit value=' Continue '></form>");
+        if (isset($_POST['configpassword'])) {
+            check_post_stoken();
+        }
+        if ( !isset($_POST['configpassword']) || $_POST['configpassword'] != $config['password'] ) {
+            exitMessage("Enter current password to continue. <form method=post><input type=hidden name=stoken value='$setupToken'><input type=password name=configpassword> <input type=submit value=' Continue '></form>");
         }
     }
     Config::loadConfigV14($config);
@@ -90,7 +99,9 @@ if ($ver == '')
     {
         # We already have settings file and need to create tables.
         exitMessage("<form method=post>Click next to create tables in '". htmlspecialchars($dbtype). "' database.<br><br>
-                    <input type=hidden name=install value=create><input type=submit value=' Next '></form>");
+                    <input type=hidden name=stoken value='$setupToken'>
+                    <input type=hidden name=install value=create>
+                    <input type=submit value=' Next '></form>");
     }
     elseif ($install == '')
     {
@@ -98,6 +109,7 @@ if ($ver == '')
         exitMessage("
             <form method=post>Select database type to use:<br><br>
             <input type=hidden name=install value=config>
+            <input type=hidden name=stoken value='$setupToken'>
             <label><input type=radio name=db_type value=sqlite checked=checked onclick=\"document.getElementById('mysqlsettings').style.display='none'\">SQLite</label><br><br>
             <label><input type=radio name=db_type value=mysql onclick=\"document.getElementById('mysqlsettings').style.display=''\">MySQL</label><br>
             <div id='mysqlsettings' style='display:none; margin-left:30px;'><br><table>
@@ -111,6 +123,7 @@ if ($ver == '')
     }
     elseif ($install == 'config')
     {
+        check_post_stoken();
         # Save configuration
         $dbtype = ($_POST['db_type'] == 'mysql') ? 'mysql' : 'sqlite';
         Config::set('db.type', $dbtype);
@@ -130,10 +143,14 @@ if ($ver == '')
             Config::set('db.driver', MTT_DB_DRIVER);
         }
         tryToSaveDBConfig();
-        exitMessage("This will create myTinyTodo database <br> <form method=post><input type=hidden name=install value=create><input type=submit value=' Install '></form>");
+        exitMessage("<form method=post> This will create myTinyTodo database <br><br>
+                <input type=hidden name=install value=create>
+                <input type=hidden name=stoken value='$setupToken'>
+                <input type=submit value=' Install '></form>");
     }
     elseif ($install == 'create')
     {
+        check_post_stoken();
         # install database
         try {
             createAllTables($db, $dbtype);
@@ -161,13 +178,15 @@ else
     }
 
     if (!isset($_POST['update'])) {
-        exitMessage(htmlspecialchars("Update database v$ver to v$lastVer"). "<br><br>
-        <form name=frm method=post><input type=hidden name=update value=1>
-        <input type=submit value=' Update '>
-        </form>");
+        exitMessage(htmlspecialchars("<form name=frm method=post>Update database v$ver to v$lastVer"). "<br><br>
+            <input type=hidden name=update value=1>
+            <input type=hidden name=stoken value='$setupToken'>
+            <input type=submit value=' Update '>
+            </form>");
     }
 
     # update process
+    check_post_stoken();
     if ($ver == '1.4')
     {
         update_14_17($db, $dbtype);
@@ -176,6 +195,27 @@ else
 
 echo "Done<br><br> <b>Attention!</b> Delete this file for security reasons. <br><br> Go to <a href='". htmlspecialchars(url_dir(getRequestUri())). "'>homepage</a>.";
 printFooter();
+
+
+function stoken()
+{
+    return $_COOKIE['mtt-s-token'] ?? '';
+}
+
+function update_stoken()
+{
+    $token = generateUUID();
+    setcookie('mtt-s-token', $token, 0, url_dir(getRequestUri()) ) ;
+    $_COOKIE['mtt-s-token'] = $token;
+    return $token;
+}
+function check_post_stoken()
+{
+    $token = $_POST['stoken'] ?? '';
+    if ( $token == '' || $token != stoken() ) {
+        die("Access denied! No token provided.");
+    }
+}
 
 
 function createAllTables($db, $dbtype)
