@@ -165,26 +165,36 @@ function updateSessionLogged(bool $logged)
 
 function access_token(): string
 {
-    if (!need_auth()) return '';
-    if (!isset($_SESSION)) return '';
-    if (!isset($_SESSION['token'])) return '';
-    return $_SESSION['token'];
+    if ( need_auth() ) {
+        if (!isset($_SESSION)) return '';
+        return $_SESSION['token'] ?? '';
+    }
+    else {
+        if (!isset($_COOKIE)) return '';
+        return $_COOKIE['mtt-token'] ?? '';
+    }
 }
 
 function check_token()
 {
-    if (!need_auth()) return;
     $token = access_token();
     if ($token == '' || !isset($_SERVER['HTTP_MTT_TOKEN']) || $_SERVER['HTTP_MTT_TOKEN'] != $token) {
         http_response_code(403);
-        die("Access denied! You must authenticate first.");
+        die("Access denied! No token provided.");
     }
 }
 
 function update_token(): string
 {
-    $_SESSION['token'] = generateUUID();
-    return $_SESSION['token'];
+    $token = generateUUID();
+    if ( need_auth() ) {
+        $_SESSION['token'] = $token;
+    }
+    else {
+        setcookie('mtt-token', $token, 0, url_dir(get_unsafe_mttinfo('mtt_url')) );
+        $_COOKIE['mtt-token'] = $token;
+    }
+    return $token;
 }
 
 function setup_and_start_session()
@@ -353,6 +363,9 @@ function is_https(): bool
     if (isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) == 'on') {
         return true;
     }
+    /*
+     TODO: Check for X-Forwarded-Proto==https or X-Forwarded-For==https ?
+     */
     if (defined('MTT_USE_HTTPS') && MTT_USE_HTTPS) {
         return true;
     }
