@@ -193,6 +193,7 @@ function listExtensions()
     $extBundles = MTTExtensionLoader::bundles();
     $activatedExts = Config::get('extensions');
     if (!is_array($activatedExts)) $activatedExts = [];
+    $a = [];
     foreach ($extBundles as $ext => $meta) {
         $out = htmlspecialchars($meta['name']. ' v'. $meta['version']). ' ';
         if (in_array($ext, $activatedExts)) {
