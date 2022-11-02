@@ -191,7 +191,16 @@ function update_token(): string
         $_SESSION['token'] = $token;
     }
     else {
-        setcookie('mtt-token', $token, 0, url_dir(get_unsafe_mttinfo('mtt_url')) );
+        if (PHP_VERSION_ID < 70300) {
+            setcookie('mtt-token', $token, 0, url_dir(get_unsafe_mttinfo('mtt_url')). '; samesite=lax', '', false, true );
+        }
+        else {
+            setcookie('mtt-token', $token, [
+                'path' => url_dir(get_unsafe_mttinfo('mtt_url')),
+                'httponly' => true,
+                'samesite' => 'lax'
+            ]);
+        }
         $_COOKIE['mtt-token'] = $token;
     }
     return $token;
@@ -214,18 +223,17 @@ function setup_and_start_session()
 
     $lifetime = 5184000; # 60 days session cookie lifetime
     $path = url_dir(Config::get('url')=='' ? getRequestUri() : Config::getUrl('url'));
-    $samesite = 'lax';
 
     if (PHP_VERSION_ID < 70300) {
         # this is a known samesite flag workaround, was fixed in 7.3
-        session_set_cookie_params($lifetime, $path. '; samesite='.$samesite, null, null, true);
+        session_set_cookie_params($lifetime, $path. '; samesite=lax', null, null, true);
     } else {
-        session_set_cookie_params(Array(
+        session_set_cookie_params([
             'lifetime' => $lifetime,
             'path' => $path,
             'httponly' => true,
-            'samesite' => $samesite
-        ));
+            'samesite' => 'lax'
+        ]);
     }
     session_name('mtt-session');
     session_start();

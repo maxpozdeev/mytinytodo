@@ -205,7 +205,16 @@ function stoken()
 function update_stoken()
 {
     $token = generateUUID();
-    setcookie('mtt-s-token', $token, 0, url_dir(getRequestUri()) ) ;
+    if (PHP_VERSION_ID < 70300) {
+        setcookie('mtt-s-token', $token, 0, url_dir(getRequestUri()). '; samesite=lax', '', false, true ) ;
+    }
+    else {
+        setcookie('mtt-s-token', $token, [
+            'path' => url_dir(getRequestUri()),
+            'httponly' => true,
+            'samesite' => 'lax'
+        ]);
+    }
     $_COOKIE['mtt-s-token'] = $token;
     return $token;
 }
