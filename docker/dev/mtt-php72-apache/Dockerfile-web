@@ -7,7 +7,7 @@ RUN docker-php-ext-install mysqli && \
   echo 'Alias "/phpinfo" "/var/www/phpinfo/phpinfo.php"' > /etc/apache2/conf-enabled/phpinfo.conf && \
   echo 'LogFormat "%h %l %u %t \"%r\" %>s %O \"%{Referer}i\"" combined' > /etc/apache2/conf-enabled/logformat.conf && \
   a2enmod rewrite && \
-  curl -o /usr/local/bin/phpunit -fL "https://phar.phpunit.de/phpunit-9.phar" && \
+  curl -o /usr/local/bin/phpunit -fL "https://phar.phpunit.de/phpunit-8.phar" && \
   chmod +x /usr/local/bin/phpunit && \
   ln -s html /var/www/src
 
