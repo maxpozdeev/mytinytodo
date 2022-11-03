@@ -178,7 +178,8 @@ else
     }
 
     if (!isset($_POST['update'])) {
-        exitMessage(htmlspecialchars("<form name=frm method=post>Update database v$ver to v$lastVer"). "<br><br>
+        exitMessage(htmlspecialchars("Update database v$ver to v$lastVer"). "<br><br>
+            <form name=frm method=post>
             <input type=hidden name=update value=1>
             <input type=hidden name=stoken value='$setupToken'>
             <input type=submit value=' Update '>
