@@ -14,7 +14,22 @@ class ApiRequest
     public $jsonBody;
 
     function __construct() {
-        $this->path = $_SERVER['PATH_INFO'] ?? '';
+        if (isset($_SERVER['PATH_INFO'])) {
+            $this->path = $_SERVER['PATH_INFO'];
+        }
+        else {
+            $uri = $_SERVER['REQUEST_URI'];
+            if (false !== $p = strpos($uri, '?')) {
+                $uri = substr($uri, 0, $p);
+            }
+            $script = $_SERVER['SCRIPT_NAME'];
+            if (0 === $p = strpos($uri, $script)) {
+                $this->path = substr($uri, strlen($script));
+            }
+            else {
+                $this->path = '';
+            }
+        }
         $this->method = isset($_SERVER['REQUEST_METHOD']) ? strtoupper($_SERVER['REQUEST_METHOD']) : 'GET';
         $this->contentType = $_SERVER['CONTENT_TYPE'] ?? '';
     }
