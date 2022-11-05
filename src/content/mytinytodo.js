@@ -764,7 +764,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
                 }
                 else {
                     const lastOpenList = getLocalStorageItem('lastList');
-                    if (lastOpenList) {
+                    if (lastOpenList && !flag.readOnly) {
                         list = res.list.find( item => !item.hidden && lastOpenList == item.id );
                     }
                     if (!list) {
@@ -1551,7 +1551,9 @@ function tabSelect(elementOrId)
     var newTitle = curList.name + ' - ' + _mtt.options.title;
     var isFirstLoad = flag.firstLoad;
     updateHistoryState( { list:id }, _mtt.urlForList(curList), newTitle );
-    setLocalStorageItem('lastList', ''+id);
+    if (!flag.readOnly) {
+        setLocalStorageItem('lastList', ''+id);
+    }
 
     if (curList.hidden && flag.readOnly != true) {
         curList.hidden = false;
@@ -2643,6 +2645,7 @@ function doAuth(form)
         if(json.logged)
         {
             flag.isLogged = true;
+            window.location.hash = '';
             window.location.reload();
         }
         else {
