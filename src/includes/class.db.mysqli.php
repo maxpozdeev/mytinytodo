@@ -143,6 +143,12 @@ class Database_Mysqli extends Database_Abstract
         return '\''. sprintf($format, $string). '\'';
     }
 
+    function like(string $column, string $format, string $string): string
+    {
+        $column = str_replace('`', '``', $column);
+        return '`'. $column. '` LIKE '. $this->quoteForLike($format, $string);
+    }
+
     function tableExists(string $table): bool
     {
         $r = $this->sq("SELECT 1 FROM information_schema.tables WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ?",

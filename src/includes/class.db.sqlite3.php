@@ -73,6 +73,8 @@ class Database_Sqlite3 extends Database_Abstract
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
         );
         $this->dbh = new PDO("sqlite:$filename", null, null, $options); //throws PDOException
+        $this->dbh->sqliteCreateFunction('utf8_lower', [$this, 'utf8lower'], 1);
+        $this->dbh->sqliteCreateCollation('UTF8CI', [$this, 'utf8ci']);
     }
 
     /*
@@ -162,6 +164,15 @@ class Database_Sqlite3 extends Database_Abstract
         return $this->dbh->quote(sprintf($format, $string)). " ESCAPE '\'";
     }
 
+    /**
+     * Produce case-insensitive like
+     */
+    function like(string $column, string $format, string $string): string
+    {
+        $column = str_replace('"', '""', $column);
+        return 'utf8_lower("'. $column. '") LIKE '. $this->quoteForLike($format, mb_strtolower($string, 'UTF-8'));
+    }
+
     function lastInsertId(?string $name = null): ?string
     {
         $ret = $this->dbh->lastInsertId();
@@ -191,5 +202,16 @@ class Database_Sqlite3 extends Database_Abstract
             if ($r[1] == $field) return true;
         }
         return false;
+    }
+
+    public function utf8lower($value)
+    {
+        if (is_null($value)) return '';
+        return mb_strtolower((string)$value, 'UTF-8');
+    }
+
+    public function utf8ci(string $str1, string $str2): int
+    {
+        return strcmp(mb_strtolower($str1, 'UTF-8'), mb_strtolower($str2, 'UTF-8'));
     }
 }

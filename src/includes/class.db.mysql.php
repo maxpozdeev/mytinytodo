@@ -170,6 +170,12 @@ class Database_Mysql extends Database_Abstract
         return '\''. sprintf($format, $string). '\'';
     }
 
+    function like(string $column, string $format, string $string): string
+    {
+        $column = str_replace('`', '``', $column);
+        return '`'. $column. '` LIKE '. $this->quoteForLike($format, $string);
+    }
+
     function lastInsertId(?string $name = null): ?string
     {
         $ret = $this->dbh->lastInsertId();

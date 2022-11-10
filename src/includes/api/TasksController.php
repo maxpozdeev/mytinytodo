@@ -73,8 +73,12 @@ class TasksController extends ApiController {
 
         $s = trim(_get('s'));
         if ($s != '') {
-            if (preg_match("|^#(\d+)$|", $s, $m)) $sqlWhere .= " AND {$db->prefix}todolist.id = ". (int)$m[1];
-            else $sqlWhere .= " AND (title LIKE ". $db->quoteForLike("%%%s%%",$s). " OR note LIKE ". $db->quoteForLike("%%%s%%",$s). ")";
+            if (preg_match("|^#(\d+)$|", $s, $m)) {
+                $sqlWhere .= " AND {$db->prefix}todolist.id = ". (int)$m[1];
+            }
+            else {
+                $sqlWhere .= " AND (". $db->like("title", "%%%s%%", $s). " OR ". $db->like("note", "%%%s%%", $s). ")";
+            }
         }
 
         $sort = (int)_get('sort');

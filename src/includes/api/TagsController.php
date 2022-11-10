@@ -72,8 +72,10 @@ class TagsController extends ApiController {
         $db = DBConnection::instance();
         $begin = trim(_get('q'));
         $limit = 8;
-        $q = $db->dq("SELECT name,id FROM {$db->prefix}tags INNER JOIN {$db->prefix}tag2task ON id=tag_id WHERE list_id=$listId AND name LIKE ".
-                        $db->quoteForLike('%s%%',$begin) ." GROUP BY tag_id ORDER BY name LIMIT $limit");
+        $q = $db->dq("SELECT name,id FROM {$db->prefix}tags
+                      INNER JOIN {$db->prefix}tag2task ON id=tag_id
+                      WHERE list_id=$listId AND ". $db->like('name', '%s%%', $begin). "
+                      GROUP BY tag_id ORDER BY name LIMIT $limit");
         $t = array();
         while ($r = $q->fetchRow()) {
             $t[] = $r[0];
