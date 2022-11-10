@@ -1780,6 +1780,7 @@ function showEditForm(isAdd)
 
 function saveTask(form)
 {
+    $("#edittags").autocomplete('close');
     if(flag.readOnly) return false;
     if(form.isadd.value != 0)
         return submitFullTask(form);
