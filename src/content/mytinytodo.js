@@ -1294,86 +1294,86 @@ function submitNewTask(form)
 function changeTaskOrder(id)
 {
     id = parseInt(id);
-    if(taskOrder.length < 2) return;
-    var oldOrder = taskOrder.slice();
+    if (taskOrder.length < 2) {
+        return;
+    }
+    const oldOrder = taskOrder.slice();
+    function firstNonZero(order, compl,  ...args) {
+        const m = (order < 100) ? 1 : -1;
+        if (compl != 0) return compl;
+        for (const arg of args) {
+            if (arg != 0) return arg * m;
+        }
+        return 0;
+    }
     // sortByHand
-    if(curList.sort == 0) taskOrder.sort( function(a,b){
-            if(taskList[a].compl != taskList[b].compl) return taskList[a].compl-taskList[b].compl;
-            return taskList[a].ow-taskList[b].ow
-        });
-    // sortByPrio
-    else if(curList.sort == 1) taskOrder.sort( function(a,b){
-            if(taskList[a].compl != taskList[b].compl) return taskList[a].compl-taskList[b].compl;
-            if(taskList[a].prio != taskList[b].prio) return taskList[b].prio-taskList[a].prio;
-            if(taskList[a].dueInt != taskList[b].dueInt) return taskList[a].dueInt-taskList[b].dueInt;
-            return taskList[a].ow-taskList[b].ow;
-        });
-    // sortByPrio (reverse)
-    else if(curList.sort == 101) taskOrder.sort( function(a,b){
-            if(taskList[a].compl != taskList[b].compl) return taskList[a].compl-taskList[b].compl;
-            if(taskList[a].prio != taskList[b].prio) return taskList[a].prio-taskList[b].prio;
-            if(taskList[a].dueInt != taskList[b].dueInt) return taskList[b].dueInt-taskList[a].dueInt;
-            return taskList[b].ow-taskList[a].ow;
-        });
-    // sortByDueDate
-    else if(curList.sort == 2) taskOrder.sort( function(a,b){
-            if(taskList[a].compl != taskList[b].compl) return taskList[a].compl-taskList[b].compl;
-            if(taskList[a].dueInt != taskList[b].dueInt) return taskList[a].dueInt-taskList[b].dueInt;
-            if(taskList[a].prio != taskList[b].prio) return taskList[b].prio-taskList[a].prio;
-            return taskList[a].ow-taskList[b].ow;
-        });
-    // sortByDueDate (reverse)
-    else if(curList.sort == 102) taskOrder.sort( function(a,b){
-            if(taskList[a].compl != taskList[b].compl) return taskList[a].compl-taskList[b].compl;
-            if(taskList[a].dueInt != taskList[b].dueInt) return taskList[b].dueInt-taskList[a].dueInt;
-            if(taskList[a].prio != taskList[b].prio) return taskList[a].prio-taskList[b].prio;
-            return taskList[b].ow-taskList[a].ow;
-        });
-    // sortByDateCreated
-    else if(curList.sort == 3) taskOrder.sort( function(a,b){
-            if(taskList[a].compl != taskList[b].compl) return taskList[a].compl-taskList[b].compl;
-            if(taskList[a].dateInt != taskList[b].dateInt) return taskList[a].dateInt-taskList[b].dateInt;
-            if(taskList[a].prio != taskList[b].prio) return taskList[b].prio-taskList[a].prio;
-            return taskList[a].ow-taskList[b].ow;
-        });
-    // sortByDateCreated (reverse)
-    else if(curList.sort == 103) taskOrder.sort( function(a,b){
-            if(taskList[a].compl != taskList[b].compl) return taskList[a].compl-taskList[b].compl;
-            if(taskList[a].dateInt != taskList[b].dateInt) return taskList[b].dateInt-taskList[a].dateInt;
-            if(taskList[a].prio != taskList[b].prio) return taskList[a].prio-taskList[b].prio;
-            return taskList[b].ow-taskList[a].ow;
-        });
-    // sortByDateModified
-    else if(curList.sort == 4) taskOrder.sort( function(a,b){
-            if(taskList[a].compl != taskList[b].compl) return taskList[a].compl-taskList[b].compl;
-            if(taskList[a].dateEditedInt != taskList[b].dateEditedInt) return taskList[a].dateEditedInt-taskList[b].dateEditedInt;
-            if(taskList[a].prio != taskList[b].prio) return taskList[b].prio-taskList[a].prio;
-            return taskList[a].ow-taskList[b].ow;
-        });
-    // sortByDateModified (reverse)
-    else if(curList.sort == 104) taskOrder.sort( function(a,b){
-            if(taskList[a].compl != taskList[b].compl) return taskList[a].compl-taskList[b].compl;
-            if(taskList[a].dateEditedInt != taskList[b].dateEditedInt) return taskList[b].dateEditedInt-taskList[a].dateEditedInt;
-            if(taskList[a].prio != taskList[b].prio) return taskList[a].prio-taskList[b].prio;
-            return taskList[b].ow-taskList[a].ow;
-        });
-    else return;
-    if(oldOrder.toString() == taskOrder.toString()) return;
-    if(id && taskList[id])
-    {
+    if (curList.sort == 0) {
+        taskOrder.sort( (a, b) => firstNonZero(
+            0,
+            taskList[a].compl - taskList[b].compl,
+            taskList[a].ow - taskList[b].ow
+        ))
+    }
+    // sortByPrio and reverse
+    else if (curList.sort == 1 || curList.sort == 101) {
+        taskOrder.sort( (a, b) => firstNonZero(
+            curList.sort,
+            taskList[a].compl - taskList[b].compl,
+            taskList[b].prio - taskList[a].prio,
+            taskList[a].dueInt - taskList[b].dueInt,
+            taskList[a].ow - taskList[b].ow
+        ));
+    }
+    // sortByDueDate and reverse
+    else if (curList.sort == 2 || curList.sort == 102) {
+        taskOrder.sort( (a, b) => firstNonZero(
+            curList.sort,
+            taskList[a].compl - taskList[b].compl,
+            taskList[a].dueInt - taskList[b].dueInt,
+            taskList[b].prio - taskList[a].prio,
+            taskList[a].ow - taskList[b].ow
+        ))
+    }
+    // sortByDateCreated and reverse
+    else if (curList.sort == 3 || curList.sort == 103) {
+        taskOrder.sort( (a, b) => firstNonZero(
+            curList.sort,
+            taskList[a].compl - taskList[b].compl,
+            taskList[a].dateInt - taskList[b].dateInt,
+            taskList[b].prio - taskList[a].prio,
+            taskList[a].ow - taskList[b].ow
+        ));
+    }
+    // sortByDateModified and reverse
+    else if (curList.sort == 4 || curList.sort == 104) {
+        taskOrder.sort( (a, b) => firstNonZero(
+            curList.sort,
+            taskList[a].compl - taskList[b].compl,
+            taskList[a].dateEditedInt - taskList[b].dateEditedInt,
+            taskList[b].prio - taskList[a].prio,
+            taskList[a].ow - taskList[b].ow
+        ))
+    }
+    else {
+        return;
+    }
+    if (oldOrder.toString() == taskOrder.toString()) {
+        return;
+    }
+    if (id && taskList[id]) {
         // optimization: determine where to insert task: top or after some task
-        var indx = $.inArray(id,taskOrder);
-        if(indx ==0) {
+        const indx = $.inArray(id, taskOrder);
+        if (indx == 0) {
             $('#tasklist').prepend($('#taskrow_'+id))
         } else {
-            var after = taskOrder[indx-1];
-            $('#taskrow_'+after).after($('#taskrow_'+id));
+            const after = taskOrder[indx-1];
+            $('#taskrow_' + after).after($('#taskrow_'+id));
         }
     }
     else {
-        var o = $('#tasklist');
-        for(var i in taskOrder) {
-            o.append($('#taskrow_'+taskOrder[i]));
+        const o = $('#tasklist');
+        for (const i in taskOrder) {
+            o.append($('#taskrow_' + taskOrder[i]));
         }
     }
 };
@@ -1412,7 +1412,7 @@ function setTaskPrio(id, prio)
 
 function setSort(v, init)
 {
-    if (v < 0 || (v > 4 && v < 101) || v > 104) {
+    if (v < 0 || (v > 5 && v < 101) || v > 105) {
         return;
     }
     curList.sort = v;
@@ -1428,6 +1428,7 @@ function updateSortUI(v)
     else if(v==2 || v==102) $('#sortByDueDate').addClass('mtt-item-checked').children('.mtt-sort-direction').text(v==2 ? '↑' : '↓');
     else if(v==3 || v==103) $('#sortByDateCreated').addClass('mtt-item-checked').children('.mtt-sort-direction').text(v==3 ? '↓' : '↑');
     else if(v==4 || v==104) $('#sortByDateModified').addClass('mtt-item-checked').children('.mtt-sort-direction').text(v==4 ? '↓' : '↑');
+    else if(v==5 || v==105) $('#sortByTitle').addClass('mtt-item-checked').children('.mtt-sort-direction').text(v==5 ? '↓' : '↑');
     else return;
 
     curList.sort = v;
@@ -1603,6 +1604,7 @@ function listMenuClick(el, menu)
         case 'sortByDueDate': setSort(curList.sort==2 ? 102 : 2); break;
         case 'sortByDateCreated': setSort(curList.sort==3 ? 103 : 3); break;
         case 'sortByDateModified': setSort(curList.sort==4 ? 104 : 4); break;
+        case 'sortByTitle': setSort(curList.sort==5 ? 105 : 5); break;
     }
     return false;
 };
