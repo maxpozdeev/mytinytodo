@@ -2821,7 +2821,6 @@ function mttModalDialog(dialogType = 'alert')
 
     this.close = function() {
         $("#modal_overlay, #modal").hide();
-        $("body").css("overflow", "");
         $("#btnModalOk").off('click');
         $("#btnModalCancel").off('click');
         $("#modalMessage").text('');
@@ -2890,7 +2889,6 @@ function mttModalDialog(dialogType = 'alert')
                 dialog.close();
             }
         });
-        $("body").css("overflow", "hidden");
         $("#modal_overlay, #modal").show();
         return dialog;
     };

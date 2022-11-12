@@ -101,7 +101,11 @@
 
 /*	default style	*/
 
-html { height:100%; overflow-y:scroll; font-size:14px; /* =1rem */ }
+html {
+  height:100%;
+  overflow-y:hidden; /* for modal overlay */
+  font-size:14px; /* =1rem */
+}
 body {
   margin: 0px;
   padding: 0px;
@@ -111,6 +115,7 @@ body {
   display:flex;
   flex-direction:column;
   align-items:center;
+  overflow-y: scroll; /* always show scrollbar */
 }
 body, td, th, input, textarea, select, button {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", /*Roboto,*/ Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
