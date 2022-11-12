@@ -9,7 +9,7 @@ services:
     build:
       context: ../_nginx
       dockerfile: Dockerfile-nginx
-    image: mytinytodo-dev:nginx
+    image: mtt-dev/nginx
     container_name: ${PLATFORM_NAME}-web
     ports:
       - "8080:80"
@@ -24,7 +24,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile-fpm
-    image: mytinytodo-dev:php8.1-fpm
+    image: mtt-dev/php:8.1-fpm
     container_name: ${PLATFORM_NAME}-fpm
     hostname: php-fpm
     environment:

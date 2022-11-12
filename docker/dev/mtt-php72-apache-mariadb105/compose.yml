@@ -9,7 +9,7 @@ services:
     build:
       context: ../mtt-php72-apache/
       dockerfile: Dockerfile-web
-    image: mytinytodo-dev:php7.2-apache
+    image: mtt-dev/php:7.2-apache
     container_name: ${PLATFORM_NAME}-web
     ports:
       - "8080:80"
@@ -32,10 +32,7 @@ services:
       - network
 
   db:
-    build:
-      context: ../_mariadb105
-      dockerfile: Dockerfile-db
-    image: mytinytodo-dev:mariadb10.5
+    image: mariadb:10.5
     container_name: ${PLATFORM_NAME}-db
     #restart: always
     environment:
@@ -44,6 +41,7 @@ services:
       MARIADB_PASSWORD: mtt
       MARIADB_DATABASE: mytinytodo
     volumes:
+      - ../_mariadb105/my.cnf:/etc/mysql/conf.d/my.cnf
       - ../_mariadb105/db_data:/var/lib/mysql
     networks:
       - network

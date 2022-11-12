@@ -7,9 +7,9 @@ networks:
 services:
   web:
     build:
-      context: ../mtt-php81-apache/
+      context: ../mtt-php72-apache/
       dockerfile: Dockerfile-web
-    image: mtt-dev/php:8.1-apache
+    image: mtt-dev/php:7.2-apache
     container_name: ${PLATFORM_NAME}-web
     ports:
       - "8080:80"
@@ -24,33 +24,24 @@ services:
       - MTT_DB_DRIVER=mysqli
     volumes:
       - ../../../src:/var/www/html
-      - ../../../tests:/var/www/tests
+      - ../mtt-php72-apache/php-mtt.ini:/usr/local/etc/php/conf.d/php-mtt.ini
+      - ../mtt-php72-apache/php-opcache.ini:/usr/local/etc/php/conf.d/php-opcache.ini
     depends_on:
       - db
     networks:
       - network
 
   db:
-    image: mariadb:10.8
+    image: mariadb:10.0.15
     container_name: ${PLATFORM_NAME}-db
     #restart: always
     environment:
-      MARIADB_ROOT_PASSWORD: JustForDev
-      MARIADB_USER: mtt
-      MARIADB_PASSWORD: mtt
-      MARIADB_DATABASE: mytinytodo
+      MYSQL_ROOT_PASSWORD: JustForDev
+      MYSQL_USER: mtt
+      MYSQL_PASSWORD: mtt
+      MYSQL_DATABASE: mytinytodo
     volumes:
-      - ../_mariadb108/my.cnf:/etc/mysql/conf.d/my.cnf
-      - ../_mariadb108/db_data:/var/lib/mysql
-    networks:
-      - network
-
-  adminer:
-    image: adminer:latest
-    container_name: ${PLATFORM_NAME}-adminer
-    environment:
-      ADMINER_DEFAULT_SERVER: db
-    ports:
-      - 8079:8080
+      - ../_mariadb100/my.cnf:/etc/mysql/conf.d/my.cnf
+      - ../_mariadb100/db_data:/var/lib/mysql
     networks:
       - network
