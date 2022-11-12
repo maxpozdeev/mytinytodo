@@ -40,6 +40,7 @@
     "tagfilter_cancel": "cancel filter",
     "showTagsFromAllLists": "Show tags from all lists",
     "sortByHand": "Sort by hand",
+    "sortByTitle": "Sort by title",
     "sortByPriority": "Sort by priority",
     "sortByDueDate": "Sort by due date",
     "sortByDateCreated": "Sort by date created",

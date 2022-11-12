@@ -234,8 +234,9 @@ class ListsController extends ApiController {
     static function setListSortingById(int $listId, int $sort)
     {
         $db = DBConnection::instance();
-        if ($sort < 0 || $sort > 104) $sort = 0;
-        elseif ($sort < 101 && $sort > 4) $sort = 0;
+        if ($sort < 0 || ($sort > 5 && $sort < 101) || $sort > 105) {
+            $sort = 0;
+        }
         if ($listId == -1) {
             $opts = Config::requestDomain('alltasks.json');
             $opts['sort'] = $sort;

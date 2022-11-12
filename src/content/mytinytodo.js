@@ -1297,6 +1297,10 @@ function changeTaskOrder(id)
     if (taskOrder.length < 2) {
         return;
     }
+    if (id && (curList.sort == 5 || curList.sort == 105)) {
+        // re-sort the whole list in case of database sorting is not the same due to collation
+        changeTaskOrder();
+    }
     const oldOrder = taskOrder.slice();
     function firstNonZero(order, compl,  ...args) {
         const m = (order < 100) ? 1 : -1;
@@ -1350,6 +1354,16 @@ function changeTaskOrder(id)
             curList.sort,
             taskList[a].compl - taskList[b].compl,
             taskList[a].dateEditedInt - taskList[b].dateEditedInt,
+            taskList[b].prio - taskList[a].prio,
+            taskList[a].ow - taskList[b].ow
+        ))
+    }
+    // sortByTitle and reverse
+    else if (curList.sort == 5 || curList.sort == 105) {
+        taskOrder.sort( (a, b) => firstNonZero(
+            curList.sort,
+            taskList[a].compl - taskList[b].compl,
+            taskList[a].title.localeCompare(taskList[b].title, 'en', {sensitivity: 'base'}),
             taskList[b].prio - taskList[a].prio,
             taskList[a].ow - taskList[b].ow
         ))

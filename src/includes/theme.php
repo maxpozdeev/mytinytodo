@@ -237,6 +237,7 @@ $().ready(function(){
   <li class="mtt-need-list sort-item" id="sortByPrio"><div class="menu-icon"></div><?php _e('sortByPriority');?> <span class="mtt-sort-direction"></span></li>
   <li class="mtt-need-list sort-item" id="sortByDueDate"><div class="menu-icon"></div><?php _e('sortByDueDate');?> <span class="mtt-sort-direction"></span></li>
   <li class="mtt-need-list sort-item" id="sortByDateModified"><div class="menu-icon"></div><?php _e('sortByDateModified');?> <span class="mtt-sort-direction"></span></li>
+  <!--<li class="mtt-need-list sort-item" id="sortByTitle"><div class="menu-icon"></div><?php _e('sortByTitle');?> <span class="mtt-sort-direction"></span></li>-->
   <li class="mtt-menu-delimiter"></li>
   <li class="mtt-need-list" id="btnShowCompleted"><div class="menu-icon"></div><?php _e('list_showcompleted');?></li>
 </ul>
