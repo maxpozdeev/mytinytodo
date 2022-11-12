@@ -67,7 +67,7 @@ foreach (MTTExtensionLoader::loadedExtensions() as $instance) {
         foreach ($newRoutes as $endpoint => $methods) {
             $endpoint = '/ext/'. $instance::bundleId. $endpoint;
             foreach ($methods as $k => &$v) {
-                $v[2] = true; // Mark extension method
+                $v[3] = true; // Mark extension method
             }
             $endpoints[$endpoint] = $methods;
         }
@@ -93,9 +93,11 @@ foreach ($endpoints as $search => $methods) {
         // check if class method exists
         $class = $classDescr[0];
         $classMethod = $classDescr[1];
-        $isExt = $classDescr[2] ?? false;
+        $isExt = $classDescr[3] ?? false;
         if ($isExt) {
-            checkWriteAccess();
+            if (false == ($classDescr[2] ?? false)) {
+                checkWriteAccess();
+            }
         }
         $param = null;
         if (count($m) >= 2) {

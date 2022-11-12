@@ -46,12 +46,22 @@ class ApiResponse
     public $contentType = 'application/json';
     public $code = null;
 
-    function htmlContent(string $content, int $code = 200): ApiResponse
+    function content(string $contentType, string $content, int $code = 200)
     {
-        $this->contentType = 'text/html';
+        $this->contentType = $contentType;
         $this->data = $content;
         $this->code = $code;
         return $this;
+    }
+
+    function htmlContent(string $content, int $code = 200): ApiResponse
+    {
+        return $this->content('text/html', $content, $code);
+    }
+
+    function cssContent(string $content, int $code = 200): ApiResponse
+    {
+        return $this->content('text/css', $content, $code);
     }
 
     function  exit()
@@ -62,7 +72,8 @@ class ApiResponse
         if (!is_null($this->code)) {
             http_response_code($this->code);
         }
-        if ($this->contentType == 'text/html') {
+        if ($this->contentType != 'application/json') {
+            header('Content-type: '. $this->contentType);
             print $this->data;
             exit();
         }
