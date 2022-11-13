@@ -2821,6 +2821,7 @@ function mttModalDialog(dialogType = 'alert')
 
     this.close = function() {
         $("#modal_overlay, #modal").hide();
+        $('html').css('overflow-y', '');
         $("#btnModalOk").off('click');
         $("#btnModalCancel").off('click');
         $("#modalMessage").text('');
@@ -2858,11 +2859,12 @@ function mttModalDialog(dialogType = 'alert')
     }
 
     this.show = function() {
+        $('html').css('overflow-y', 'hidden'); // disable scrolling
         var modalOverlay = document.getElementById("modal_overlay");
         if (!modalOverlay) {
             modalOverlay = document.createElement("div");
             modalOverlay.id = "modal_overlay";
-            modalOverlay.style.cssText = "position: absolute; z-index: 999; left: 0; top: 0; width: 100%; height: 100%; background-color: black; opacity: 0.8; display:none;";
+            modalOverlay.style.cssText = "position: fixed; z-index: 999; left: 0; top: 0; width: 100%; height: 100%; background-color: black; opacity: 0.8; display:none;";
             document.getElementsByTagName('body')[0].appendChild(modalOverlay);
         }
 

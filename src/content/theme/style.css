@@ -103,7 +103,7 @@
 
 html {
   height:100%;
-  overflow-y:hidden; /* for modal overlay */
+  /*overflow-y:hidden; /* for modal overlay to not hide body scrollbar */
   font-size:14px; /* =1rem */
 }
 body {
@@ -985,7 +985,7 @@ li.mtt-item-hidden { display:none; }
 }
 
 #modal {
-  position: absolute;
+  position: fixed;
   z-index: 1000;
   left: 50%;
   top: 50%;
@@ -1125,6 +1125,7 @@ li.mtt-item-hidden { display:none; }
   }
 
   #modal {
+    min-width: auto;
     width: 90%;
   }
 
