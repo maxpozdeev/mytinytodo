@@ -9,7 +9,7 @@
 class MTTNotificationCenter
 {
     /**
-     * @var array<string, MTTNotificationObserverInterface[]>
+     * @var array<string, MTTNotificationObserverInterface[]|callable[]>
      */
     private static $observers = [];
 
@@ -41,6 +41,20 @@ class MTTNotificationCenter
         }
     }
 
+    /**
+     *
+     * @param string $notification
+     * @param callable $callback
+     * @return void
+     */
+    public static function addCallbackForNotification(string $notification, callable $callback)
+    {
+        if (!isset(self::$observers[$notification])) {
+            self::$observers[$notification] = [];
+        }
+        self::$observers[$notification][] = $callback;
+    }
+
 
     public static function postNotification(string $notification, $object)
     {
@@ -48,7 +62,12 @@ class MTTNotificationCenter
             return; // No observers for this notification
         }
         foreach (self::$observers[$notification] as $observer) {
-            $observer->notification($notification, $object);
+            if ($observer instanceof MTTNotificationObserverInterface) {
+                $observer->notification($notification, $object);
+            }
+            else {
+                $observer($object);
+            }
         }
     }
 
@@ -84,3 +103,12 @@ abstract class MTTNotification
     const didCreateList = 'didCreateList';
 }
 
+function add_action(string $notification, callable $callback)
+{
+    MTTNotificationCenter::addCallbackForNotification($notification, $callback);
+}
+
+function do_action(string $notification, $object = null)
+{
+    MTTNotificationCenter::postNotification($notification, $object);
+}
