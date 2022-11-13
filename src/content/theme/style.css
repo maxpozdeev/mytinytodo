@@ -950,6 +950,7 @@ li.mtt-item-hidden { display:none; }
   padding: 0 10px;
 }
 .mtt-settings-table .th {  width:30%; font-weight: bold; }
+.mtt-settings-table .td { flex-grow: 1; }
 .mtt-settings-table .descr {
   display: block;
   font-size:0.8rem;
@@ -962,6 +963,7 @@ li.mtt-item-hidden { display:none; }
 }
 .mtt-settings-table .in350 { min-width:350px; }
 .mtt-settings-table textarea.in350 { height:400px; }
+.mtt-settings-table textarea.inmax { height:400px; width:100%; }
 .mtt-settings-table input,
 .mtt-settings-table select,
 .mtt-settings-table textarea  {
