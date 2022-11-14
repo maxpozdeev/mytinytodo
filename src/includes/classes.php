@@ -124,6 +124,11 @@ abstract class MTTExtension
         return null;
     }
 
+    public function httpApiUrlPrefix()
+    {
+        return get_unsafe_mttinfo('api_url'). 'ext/'. $this::bundleId;
+    }
+
 }
 
 interface MTTHttpApiExtender
