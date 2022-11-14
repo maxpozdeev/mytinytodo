@@ -2907,6 +2907,7 @@ function mttModalDialog(dialogType = 'alert')
 
         $("html").addClass('mtt-modal-dialog-active');
         $("#modal_overlay, #modal").show();
+        $("#modalTextInput").focus();
         return dialog;
     };
 }
