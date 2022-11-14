@@ -19,6 +19,7 @@
   <?php if(Config::get('rtl')): ?>
   <link rel="stylesheet" type="text/css" href="<?php mttinfo('theme_url'); ?>style_rtl.css?v=<?php mttinfo('version'); ?>" media="all" />
   <?php endif; ?>
+  <?php do_action('theme_head_end'); ?>
 </head>
 
 <body <?php if (Lang::instance()->rtl()) echo 'dir="rtl"'; ?>>
