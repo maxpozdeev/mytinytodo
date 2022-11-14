@@ -61,6 +61,7 @@ class Lang
         $this->code = $code;
         $json = json_decode($jsonString, true);
         if ($json === null) {
+            error_log("Failed to decode translation JSON, language '$code': ". json_last_error_msg());
             $json = array();
         }
 
@@ -82,7 +83,7 @@ class Lang
         $defStr = file_get_contents($this->langDir(). "{$this->default}.json");
         $this->strings = json_decode($defStr, true);
         if ($this->strings === null) {
-            die("Invalid JSON in default language file (". htmlspecialchars($this->default). ".json)");
+            die("Invalid JSON in default language file (". htmlspecialchars($this->default). ".json): ". json_last_error_msg());
         }
     }
 
@@ -177,10 +178,18 @@ class Lang
                 return null;
             }
             $langStr = file_get_contents($langDir. $this->code. '.json');
-            $lang = json_decode($langStr, true) ?? [];
+            $lang = json_decode($langStr, true);
+            if ($lang === null) {
+                error_log("Failed to decode translation JSON of extension '$ext', language '{$this->code}': ". json_last_error_msg());
+                $lang = [];
+            }
         }
         $defStr = file_get_contents($langDir. 'en.json');
-        $def = json_decode($defStr, true) ?? [];
+        $def = json_decode($defStr, true);
+        if ($def === null) {
+            error_log("Failed to decode translation JSON of extension '$ext', language 'en': ". json_last_error_msg());
+            $def = [];
+        }
         $lang = array_replace($def, $lang);
         return $lang;
     }
