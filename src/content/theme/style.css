@@ -103,12 +103,13 @@
 
 html {
   height:100%;
-  /*overflow-y:hidden; /* for modal overlay to not hide body scrollbar */
+  /*overflow-y:hidden; /* for modal overlay to disable scrolling, but breaks position:absolute */
   font-size:14px; /* =1rem */
 }
 body {
   margin: 0px;
   padding: 0px;
+  width: 100%;
   height: 100%;
   background-color: var(--color-bg);
   color: var(--color-text-default);

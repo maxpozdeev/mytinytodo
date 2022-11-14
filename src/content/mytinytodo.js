@@ -2816,12 +2816,19 @@ function mttAlert(msg, callbackOk)
 function mttModalDialog(dialogType = 'alert')
 {
     if ( ! (this instanceof mttModalDialog) ) return new mttModalDialog(dialogType);
-    var dialog = this;
+    let dialog = this;
     this.type = dialogType;
+    let lastScrollTop = 0;
 
     this.close = function() {
+        //restore scrolling
+        $('body').css({
+            'position': '',
+            'top': ''
+        });
+        window.scrollTo(window.pageXOffset,  lastScrollTop);
+        $("html").removeClass('mtt-modal-dialog-active');
         $("#modal_overlay, #modal").hide();
-        $('html').css('overflow-y', '');
         $("#btnModalOk").off('click');
         $("#btnModalCancel").off('click');
         $("#modalMessage").text('');
@@ -2831,7 +2838,7 @@ function mttModalDialog(dialogType = 'alert')
 
     this.ok = function(callback) {
         $("#btnModalOk").on('click', function() {
-            var value = $("#modalTextInput").val();
+            const value = $("#modalTextInput").val();
             dialog.close();
             if (typeof callback === 'function')
                 callback( dialog.type === 'prompt' ? value : null );
@@ -2859,8 +2866,7 @@ function mttModalDialog(dialogType = 'alert')
     }
 
     this.show = function() {
-        $('html').css('overflow-y', 'hidden'); // disable scrolling
-        var modalOverlay = document.getElementById("modal_overlay");
+        let modalOverlay = document.getElementById("modal_overlay");
         if (!modalOverlay) {
             modalOverlay = document.createElement("div");
             modalOverlay.id = "modal_overlay";
@@ -2891,6 +2897,15 @@ function mttModalDialog(dialogType = 'alert')
                 dialog.close();
             }
         });
+
+        //disable background scrolling
+        lastScrollTop = window.pageYOffset;
+        $('body').css({
+            'position': 'fixed',
+            'top': `-${lastScrollTop}px`
+        })
+
+        $("html").addClass('mtt-modal-dialog-active');
         $("#modal_overlay, #modal").show();
         return dialog;
     };
