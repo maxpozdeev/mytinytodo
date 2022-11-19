@@ -29,6 +29,7 @@
     --color-error-bg: var(--color-bg);
     --color-info: #EFC300;
     --color-info-bg: var(--color-bg);
+    --color-input-bg: #1e1e1e;
 
     --color-toolbar: #3b3b3b;
     --color-btn-toolbar-hover: #555;
@@ -90,5 +91,7 @@
     --color-placeholder: #444;
     --color-placeholder-border: #555;
 
+    /*--svg-select: url(images/select-dark.svg);*/
+    --svg-select: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNCAxNCI+PHBvbHlsaW5lIHBvaW50cz0iMiA2LCA3IDExLCAxMiA2IiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZT0iI2FhYSIgZmlsbD0ibm9uZSIvPjwvc3ZnPg==");
   }
 }
