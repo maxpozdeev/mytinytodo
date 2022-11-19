@@ -2785,10 +2785,10 @@ function extensionSettingsAction(actionString, ext)
         dataType: 'json',
         success: function(json) {
             if (json.total && json.total > 0) {
-                showExtensionSettings(ext, json.msg ? function(){flashInfo(json.msg)} : null);
+                showExtensionSettings(ext, json.msg ? function(){flashInfo(json.msg, json.details)} : null);
             }
             else if (json.msg) {
-                flashInfo(json.msg);
+                flashInfo(json.msg, json.details);
             }
         }
     });
