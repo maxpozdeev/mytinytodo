@@ -285,7 +285,18 @@ select.form-input {
   box-sizing:border-box; height:2.2rem; padding:1px 0.3rem 0 0.3rem; display:flex; align-items:center;
 }
 .mtt-tab a:active { outline:0; text-decoration:none; }
-.mtt-tab a>span { display:inline-block; text-align:center; min-width:75px; max-width:195px; cursor:pointer; padding:0; overflow:hidden; padding-left:0.3rem; padding-right:0.3rem;}
+.mtt-tab a>span {
+  display:inline-block;
+  text-align:center;
+  min-width:75px;
+  max-width:195px;
+  cursor:pointer;
+  padding:0;
+  overflow:hidden;
+  text-overflow: ellipsis;
+  margin-left:0.3rem;
+  margin-right:0.3rem;
+}
 .mtt-tab .list-action { display:none; }
 .mtt-tab .mtt-img-button:hover,
 .mtt-tab .mtt-img-button.mtt-menu-button-active {
