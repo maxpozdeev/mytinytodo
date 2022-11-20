@@ -9,6 +9,10 @@
 // Can be used to upgrade database from myTinyTodo v1.4 or later
 $lastVer = '1.7';
 
+if (version_compare(PHP_VERSION, '7.2.0') < 0) {
+    die("PHP 7.2 or above is required");
+}
+
 if (getenv('MTT_ENABLE_DEBUG') == 'YES') {
     set_exception_handler('debugExceptionHandler');
 }
