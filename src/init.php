@@ -13,6 +13,14 @@ if(!defined('MTTPATH')) define('MTTPATH', dirname(__FILE__) .'/');
 if(!defined('MTTINC'))  define('MTTINC', MTTPATH. 'includes/');
 if(!defined('MTT_CONTENT_PATH')) define('MTT_CONTENT_PATH', MTTPATH. 'content/');
 
+requireConfig();
+
+if (!defined('MTT_THEME')) {
+    define('MTT_THEME', 'theme');
+}
+define('MTT_THEME_PATH', MTT_CONTENT_PATH. MTT_THEME. '/');
+
+
 if (getenv('MTT_ENABLE_DEBUG') == 'YES') {
     define('MTT_DEBUG', true);
     error_reporting(E_ALL);
@@ -33,7 +41,6 @@ require_once(MTTINC. 'class.dbcore.php');
 require_once(MTTINC. 'class.config.php');
 require_once(MTTINC. 'notifications.php');
 
-requireConfig();
 configureDbConnection();
 
 Config::load();
@@ -305,9 +312,9 @@ function get_unsafe_mttinfo($v)
             if (!isset($_mttinfo['theme_url'])) {
                 if ( Config::getUrl('url') == '' && Config::getUrl('mtt_url') == ''
                     && (!defined('MTT_USE_HTTPS') || !MTT_USE_HTTPS) ) {
-                    $_mttinfo['theme_url'] = url_dir(getRequestUri()). 'content/theme/';
+                    $_mttinfo['theme_url'] = url_dir(getRequestUri()). 'content/'. MTT_THEME. '/';
                 } else {
-                    $_mttinfo['theme_url'] = get_unsafe_mttinfo('mtt_url'). 'content/theme/';
+                    $_mttinfo['theme_url'] = get_unsafe_mttinfo('mtt_url'). 'content/'. MTT_THEME. '/';
                 }
             }
             return $_mttinfo['theme_url'];

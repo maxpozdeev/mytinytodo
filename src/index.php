@@ -28,7 +28,13 @@ if ( access_token() == '' ) {
     update_token();
 }
 
-require(MTTINC. 'theme.php');
+if (MTT_THEME != 'theme') {
+    // custom theme
+    require(MTT_THEME_PATH. 'index.php');
+}
+else {
+    require(MTTINC. 'theme.php');
+}
 
 MTTNotificationCenter::postDidFinishRequestNotification();
 // end
