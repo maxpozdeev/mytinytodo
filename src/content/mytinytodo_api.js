@@ -39,7 +39,7 @@ MytinytodoAjaxApi.prototype =
         if (params.setCompl && params.setCompl != 0) q += '&setCompl=1';
         if (params.saveSort && params.saveSort != 0) q += '&saveSort=1';
 
-        $.getJSON(mtt.apiUrl + 'tasks?list='+params.list+'&compl='+params.compl+'&sort='+params.sort+q, callback);
+        $.getJSON(mtt.apiUrl + 'tasks' + (mtt.apiUrl.indexOf('?') > -1 ? '&' : '?') + 'list='+params.list+'&compl='+params.compl+'&sort='+params.sort+q, callback);
     },
 
 
