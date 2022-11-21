@@ -1,0 +1,7 @@
+{
+    "ext.CustomCSS.name": "Дополнительные стили",
+    "customcss.h_css": "CSS",
+    "customcss.d_css": "Добавляйте собственные стили CSS",
+    "customcss.not_writable": "Ошибка записи в файл, проверьте права доступа к custom.css",
+    "customcss.saved": "Сохранено"
+}

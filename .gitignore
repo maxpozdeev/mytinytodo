@@ -3,5 +3,6 @@ src/db/config.php
 src/db/config-*
 src/config.php
 src/includes/vendor/
+src/content/theme/custom.css
 
 tests/
