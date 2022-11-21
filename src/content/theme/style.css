@@ -958,6 +958,10 @@ li.mtt-item-hidden { display:none; }
   box-shadow: 0 0 0 2px var(--color-border-focus-shadow);
 }
 
+.monospace {
+  font-family: ui-monospace,Consolas,"SF Mono",Menlo,"Liberation Mono",monospace;
+}
+
 .mtt-settings-table { width:100%; }
 .mtt-settings-table .tr {
   border-bottom:1px solid var(--color-row-underlinig);
@@ -991,7 +995,7 @@ li.mtt-item-hidden { display:none; }
   border: 1px solid var(--color-border-default);
   border-radius: 2px;
   background-color: var(--color-input-bg);
-  color: var(--color-text-default)
+  color: var(--color-text-default);
 }
 .mtt-settings-table select {
   appearance: none;
