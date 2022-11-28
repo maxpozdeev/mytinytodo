@@ -651,7 +651,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
             }
         });
 
-        $("#page_ajax").on('click', 'a[data-ext-settings-action]', function() {
+        $("#page_ajax").on('click', 'a[data-ext-settings-action],button[data-ext-settings-action]', function() {
             extensionSettingsAction(this.dataset.extSettingsAction, this.dataset.ext);
             return false;
         });
@@ -2738,7 +2738,7 @@ function showExtensionSettings(ext, callback)
 {
     if (_mtt.pages.current && _mtt.pages.current.page == 'ajax' && _mtt.pages.current.pageClass == 'settings') {
         $('#page_ajax').load(_mtt.apiUrl + 'ext-settings/' + ext, null, function() {
-            if (callback !== undefined) callback();
+            if (callback) callback();
         });
     }
 
@@ -2785,7 +2785,16 @@ function extensionSettingsAction(actionString, ext)
         dataType: 'json',
         success: function(json) {
             if (json.total && json.total > 0) {
-                showExtensionSettings(ext, json.msg ? function(){flashInfo(json.msg, json.details)} : null);
+                const callback = function() {
+                    if (json.msg) flashInfo(json.msg, json.details);
+                    if (json.reload) {
+                        setTimeout( function(){
+                            //window.location.hash = '';
+                            window.location.reload();
+                        }, 1000);
+                    }
+                }
+                showExtensionSettings(ext, callback);
             }
             else if (json.msg) {
                 flashInfo(json.msg, json.details);

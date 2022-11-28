@@ -990,6 +990,7 @@ li.mtt-item-hidden { display:none; }
 .mtt-settings-table textarea.inmax { height:400px; width:100%; }
 .mtt-settings-table input,
 .mtt-settings-table select,
+.mtt-settings-table button,
 .mtt-settings-table textarea  {
   padding: 3px;
   border: 1px solid var(--color-border-default);
@@ -1012,6 +1013,21 @@ li.mtt-item-hidden { display:none; }
 }
 .mtt-settings-table a {
   color: var(--color-text-default);
+}
+.mtt-settings-table button {
+  padding: 3px 6px;
+  border-radius: 3px;
+}
+.mtt-settings-table .form-bottom-buttons button {
+  min-width: 4rem;
+  padding: 4px 6px;
+  margin: 0 6px;
+  background-color: var(--color-submit);
+  border: 1px solid var(--color-border-default);
+  border-radius: 3px;
+}
+.mtt-settings-table .form-bottom-buttons button:hover {
+  background-color: var(--color-submit-hover);
 }
 
 #modal {
