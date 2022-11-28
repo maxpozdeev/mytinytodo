@@ -455,7 +455,9 @@ function testConnect(&$error)
     $db = null;
     try
     {
-        if (!defined('MTT_DB_TYPE')) throw new Exception("MTT_DB_TYPE is not defined");
+        if (!defined('MTT_DB_TYPE')) {
+            throw new Exception("MTT_DB_TYPE is not defined");
+        }
 
         if (MTT_DB_TYPE == 'mysql')
         {
@@ -535,7 +537,7 @@ function testConnect(&$error)
             $db->connect( array( 'filename' => MTTPATH. 'db/todolist.db' ) );
         }
         else {
-            new Exception("Unsupported database type");
+            throw new Exception("Unsupported database type: ". MTT_DB_TYPE);
         }
 
         if (!defined('MTT_DB_PREFIX')) define('MTT_DB_PREFIX', '');
