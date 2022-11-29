@@ -1,0 +1,13 @@
+{
+    "ext.updater.name": "Обновления",
+    "updater.h_check_updates": "Проверка обновлений",
+    "updater.check": "Проверить",
+    "updater.no_updates": "Нет обновлений",
+    "updater.current_version": "Текущая версия",
+    "updater.last_checked": "Последняя проверка",
+    "updater.updatet_version_avaialable": "Доступно обновление",
+    "updater.update": "Обновить",
+    "updater.updated": "Обновление завершено",
+    "updater.download_error": "Ошибка при загрузке",
+    "updater.update_error": "Ошибка при обновлении"
+}

@@ -1,0 +1,13 @@
+{
+    "ext.updater.name": "Updates",
+    "updater.h_check_updates": "Check updates",
+    "updater.check": "Check",
+    "updater.no_updates": "No updates available",
+    "updater.current_version": "Current version",
+    "updater.last_checked": "Last checked",
+    "updater.updatet_version_avaialable": "Updated version is available",
+    "updater.update": "Update",
+    "updater.updated": "Update has completed",
+    "updater.download_error": "Download failed",
+    "updater.update_error": "Update error"
+}

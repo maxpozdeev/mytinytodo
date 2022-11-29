@@ -1,0 +1,6 @@
+{
+    "bundleId": "updater",
+    "name": "Updates",
+    "version": "0.9",
+    "description": "myTinyTodo self-updater"
+}
