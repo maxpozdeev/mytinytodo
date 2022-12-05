@@ -7,7 +7,7 @@
 */
 
 // Can be used to upgrade database from myTinyTodo v1.4 or later
-$lastVer = '1.7';
+$lastVer = '1.8';
 
 if (version_compare(PHP_VERSION, '7.2.0') < 0) {
     die("PHP 7.2 or above is required");
@@ -85,7 +85,7 @@ if ($configExists)
         DBConnection::init($db);
     }
     else {
-        if ($ver != '1.7') {
+        if ($ver == '') {
             Config::$noDatabase = true; //will not load settings from database in init.php
         }
         require_once('./init.php');
@@ -177,7 +177,7 @@ elseif ($ver == $lastVer)
 }
 else
 {
-    if (!in_array($ver, array('1.4'))) {
+    if (!in_array($ver, array('1.4','1.7'))) {
         exitMessage(htmlspecialchars("Can not update. Unsupported database version ($ver)."));
     }
 
@@ -192,9 +192,12 @@ else
 
     # update process
     check_post_stoken();
-    if ($ver == '1.4')
-    {
+    if ($ver == '1.4') {
         update_14_17($db, $dbtype);
+        update_17_18($db, $dbtype);
+    }
+    elseif ($ver == '1.7') {
+        update_17_18($db, $dbtype);
     }
 }
 
@@ -344,14 +347,14 @@ function createSqliteTables($db)
     $db->ex(
 "CREATE TABLE {$db->prefix}todolist (
     id INTEGER PRIMARY KEY,
-    uuid CHAR(36) NOT NULL,
+    uuid CHAR(36) NOT NULL default '',
     list_id INTEGER UNSIGNED NOT NULL default 0,
     d_created INTEGER UNSIGNED NOT NULL default 0,
     d_completed INTEGER UNSIGNED NOT NULL default 0,
     d_edited INTEGER UNSIGNED NOT NULL default 0,
     compl TINYINT UNSIGNED NOT NULL default 0,
-    title VARCHAR(250) NOT NULL,
-    note TEXT,
+    title VARCHAR(250) NOT NULL default '' COLLATE UTF8CI,
+    note TEXT COLLATE UTF8CI default NULL,
     prio TINYINT NOT NULL default 0,
     ow INTEGER NOT NULL default 0,
     tags VARCHAR(600) NOT NULL default '',
@@ -365,9 +368,9 @@ function createSqliteTables($db)
     $db->ex(
 "CREATE TABLE {$db->prefix}tags (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name VARCHAR(50) NOT NULL COLLATE NOCASE
+    name VARCHAR(50) NOT NULL DEFAULT '' COLLATE UTF8CI
 ) ");
-    $db->ex("CREATE UNIQUE INDEX tags_name ON {$db->prefix}tags (name COLLATE NOCASE)");
+    $db->ex("CREATE INDEX tags_name ON {$db->prefix}tags (name)"); //NB: unique in mysql
 
 
     $db->ex(
@@ -642,3 +645,58 @@ UNIQUE KEY `id` (`id`)
     Config::saveDbConfig();
 }
 ### end of 1.7 #####
+
+### update v1.7 to v1.8 ##########
+function update_17_18(Database_Abstract $db, $dbtype)
+{
+    $db->ex("BEGIN");
+
+    if ($dbtype == 'sqlite')
+    {
+        // Use UTF8CI collate. Old sqlite does not support DROP COLUMN
+        $db->ex("DROP INDEX todo_list_id");
+        $db->ex("DROP INDEX todo_uuid");
+        $db->ex("ALTER TABLE {$db->prefix}todolist RENAME TO {$db->prefix}todolist_old");
+        $db->ex(
+            "CREATE TABLE {$db->prefix}todolist (
+                id INTEGER PRIMARY KEY,
+                uuid CHAR(36) NOT NULL default '',
+                list_id INTEGER UNSIGNED NOT NULL default 0,
+                d_created INTEGER UNSIGNED NOT NULL default 0,
+                d_completed INTEGER UNSIGNED NOT NULL default 0,
+                d_edited INTEGER UNSIGNED NOT NULL default 0,
+                compl TINYINT UNSIGNED NOT NULL default 0,
+                title VARCHAR(250) NOT NULL default '' COLLATE UTF8CI,
+                note TEXT COLLATE UTF8CI default NULL,
+                prio TINYINT NOT NULL default 0,
+                ow INTEGER NOT NULL default 0,
+                tags VARCHAR(600) NOT NULL default '',
+                tags_ids VARCHAR(250) NOT NULL default '',
+                duedate DATE default NULL )"
+        );
+        $db->ex("INSERT INTO {$db->prefix}todolist SELECT * FROM {$db->prefix}todolist_old");
+        $db->ex("CREATE INDEX todo_list_id ON {$db->prefix}todolist (list_id)");
+        $db->ex("CREATE UNIQUE INDEX todo_uuid ON {$db->prefix}todolist (uuid)");
+        $db->ex("DROP TABLE {$db->prefix}todolist_old");
+
+        $db->ex("DROP INDEX tags_name");
+        $db->ex("ALTER TABLE {$db->prefix}tags RENAME TO {$db->prefix}tags_old");
+        $db->ex(
+            "CREATE TABLE {$db->prefix}tags (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name VARCHAR(50) NOT NULL DEFAULT '' COLLATE UTF8CI )"
+        );
+        $db->ex("INSERT INTO {$db->prefix}tags SELECT * FROM {$db->prefix}tags_old");
+        $db->ex("CREATE INDEX tags_name ON {$db->prefix}tags (name)");
+        $db->ex("DROP TABLE {$db->prefix}tags_old");
+    }
+
+    $db->ex("COMMIT");
+
+    if ($dbtype == 'sqlite') {
+        $db->ex("VACUUM");
+    }
+
+
+}
+### end of 1.8 #####
