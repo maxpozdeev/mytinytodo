@@ -27,7 +27,6 @@ require_once(MTTINC. 'class.dbconnection.php');
 require_once(MTTINC. 'class.config.php');
 require_once(MTTINC. 'version.php');
 
-$mttVersion = mytinytodo\Version::VERSION;
 $db = null;
 $ver = '';
 $error = '';
@@ -42,7 +41,8 @@ $configExists = file_exists(MTTPATH. 'config.php');
 $oldConfigExists = file_exists(MTTPATH. 'db/config.php');
 
 
-echo '<html><head><meta name="robots" content="noindex,nofollow"><title>myTinyTodo $mttVersion Setup</title></head><body>';
+$mttVersion = htmlspecialchars(mytinytodo\Version::VERSION);
+echo "<html><head><meta name='robots' content='noindex,nofollow'><title>myTinyTodo $mttVersion Setup</title></head><body>";
 echo "<big><b>myTinyTodo $mttVersion Setup</b></big><br><br>";
 
 if (!$configExists && $oldConfigExists)
