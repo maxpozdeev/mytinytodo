@@ -103,12 +103,12 @@ function configureDbConnection()
         }
         DBConnection::init($db);
         try {
-            $db->connect( array(
+            $db->connect([
                 'host' => MTT_DB_HOST,
                 'user' => MTT_DB_USER,
                 'password' => MTT_DB_PASSWORD,
                 'db' => MTT_DB_NAME,
-            ));
+            ]);
         }
         catch(Exception $e) {
             logAndDie("Failed to connect to mysql database: ". $e->getMessage());
@@ -119,9 +119,12 @@ function configureDbConnection()
     # SQLite3 Database
     elseif (MTT_DB_TYPE == 'sqlite')
     {
+        require_once(MTTINC. 'vendor/autoload.php');
         require_once(MTTINC. 'class.db.sqlite3.php');
-        $db = DBConnection::init(new Database_Sqlite3);
-        $db->connect( array( 'filename' => MTTPATH. 'db/todolist.db' ) );
+        $db = DBConnection::init(new Database_Sqlite3());
+        $db->connect([
+            'filename' => MTTPATH. 'db/todolist.db'
+        ]);
     }
     else {
         die("Incorrect database connection config");

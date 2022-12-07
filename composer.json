@@ -3,7 +3,8 @@
         "vendor-dir": "src/includes/vendor"
     },
     "require": {
-        "erusev/parsedown": "^1.7"
+        "erusev/parsedown": "^1.7",
+        "symfony/polyfill-intl-normalizer": "^1.27"
     },
     "require-dev": {
         "league/commonmark": "^2.3"
