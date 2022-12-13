@@ -22,14 +22,15 @@ class TasksController extends ApiController {
         checkReadAccess($listId);
         $db = DBConnection::instance();
 
-        $sqlWhere = $inner = $sqlWhereListId = $sqlInnerWhereListId = '';
+        $sqlWhere = $sqlWhereListId = $sqlInnerWhereListId = '';
         if ($listId == -1) {
             $userLists = $this->getUserListsSimple();
-            $sqlWhereListId = "{$db->prefix}todolist.list_id IN (". implode(',', array_keys($userLists)). ") ";
-            $sqlInnerWhereListId = "list_id IN (". implode(',', array_keys($userLists)). ") ";
+            $userListsIds = implode(',', array_keys($userLists));
+            $sqlWhereListId = "todo.list_id IN ($userListsIds) ";
+            $sqlInnerWhereListId = "list_id IN ($userListsIds) ";
         }
         else {
-            $sqlWhereListId = "{$db->prefix}todolist.list_id=". $listId;
+            $sqlWhereListId = "todo.list_id=". $listId;
             $sqlInnerWhereListId = "list_id=$listId ";
         }
         if (_get('compl') == 0) {
@@ -52,20 +53,18 @@ class TasksController extends ApiController {
                 }
             }
 
-            // Include tags: All
-            if (sizeof($tagIds) > 1) {
-                $inner .= "INNER JOIN (SELECT task_id, COUNT(tag_id) AS c FROM {$db->prefix}tag2task WHERE $sqlInnerWhereListId AND tag_id IN (".
-                            implode(',',$tagIds). ") GROUP BY task_id) AS t2t ON id=t2t.task_id";
-                $sqlWhere .= " AND c=". sizeof($tagIds);
-            }
-            elseif ($tagIds) {
-                $inner .= "INNER JOIN {$db->prefix}tag2task ON id=task_id";
-                $sqlWhere .= " AND tag_id = {$tagIds[0]}";
+            // Include tags
+            if ($tagIds) {
+                $sqlWhere .= " AND todo.id IN (SELECT task_id FROM {$db->prefix}tag2task WHERE tag_id IN (". implode(',',$tagIds). ")";
+                if (count($tagIds) > 1) {
+                    $sqlWhere .= " GROUP BY task_id HAVING COUNT(tag_id)=". count($tagIds);
+                }
+                $sqlWhere .= ")";
             }
 
             // Exclude tags
-            if (sizeof($tagExIds) > 0) {
-                $sqlWhere .= " AND {$db->prefix}todolist.id NOT IN (SELECT DISTINCT task_id FROM {$db->prefix}tag2task WHERE $sqlInnerWhereListId AND tag_id IN (".
+            if (count($tagExIds) > 0) {
+                $sqlWhere .= " AND todo.id NOT IN (SELECT DISTINCT task_id FROM {$db->prefix}tag2task WHERE $sqlInnerWhereListId AND tag_id IN (".
                             implode(',',$tagExIds). "))";
             }
             //no optimization for single exTag
@@ -74,7 +73,7 @@ class TasksController extends ApiController {
         $s = trim(_get('s'));
         if ($s != '') {
             if (preg_match("|^#(\d+)$|", $s, $m)) {
-                $sqlWhere .= " AND {$db->prefix}todolist.id = ". (int)$m[1];
+                $sqlWhere .= " AND todo.id = ". (int)$m[1];
             }
             else {
                 $sqlWhere .= " AND (". $db->like("title", "%%%s%%", $s). " OR ". $db->like("note", "%%%s%%", $s). ")";
@@ -98,7 +97,12 @@ class TasksController extends ApiController {
         $t = array();
         $t['total'] = 0;
         $t['list'] = array();
-        $q = $db->dq("SELECT *, duedate IS NULL AS ddn FROM {$db->prefix}todolist $inner WHERE $sqlWhereListId $sqlWhere $sqlSort");
+
+        $q = $db->dq("SELECT todo.*, duedate IS NULL AS ddn
+            FROM {$db->prefix}todolist AS todo
+            WHERE $sqlWhereListId $sqlWhere
+            GROUP BY todo.id $sqlSort");
+
         while ($r = $q->fetchAssoc())
         {
             $t['total']++;
