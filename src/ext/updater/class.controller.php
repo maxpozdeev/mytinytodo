@@ -53,6 +53,7 @@ class Controller extends \ApiController
 
         // TODO: need to run post-update by new version
         // ...
+        // remove /includes/lang/cns.json   #renamed to zh-cn.jpon
 
         $prefs['version'] = '';
         $prefs['download'] = '';
