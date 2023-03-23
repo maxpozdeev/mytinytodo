@@ -42,15 +42,15 @@ if($format == 'ical') printICal($listData, $data);
 else printCSV($listData, $data);
 
 
-function printCSV($listData, $data)
+function printCSV(array $listData, array $data)
 {
     $s = "\xEF\xBB\xBF". "Completed;Priority;Task;Notes;Tags;Due;DateCreated;DateCompleted\n";
     foreach($data as $r)
     {
         $s .= ($r['compl']?'1':'0'). ';'.
-            $r['prio']. ';'. escape_csv($r['title']). ';'.
-            escape_csv($r['note']). ';'.
-            escape_csv($r['tags']). ';'.
+            $r['prio']. ';'. escape_csv($r['title'] ?? ''). ';'.
+            escape_csv($r['note'] ?? ''). ';'.
+            escape_csv($r['tags'] ?? ''). ';'.
             $r['duedate']. ';'.
             date('Y-m-d H:i:s O',$r['d_created']). ';'.
             ($r['d_completed'] ? date('Y-m-d H:i:s O',$r['d_completed']) :''). "\n";
@@ -60,7 +60,7 @@ function printCSV($listData, $data)
     print $s;
 }
 
-function escape_csv($v)
+function escape_csv(string $v)
 {
     //escape formulas
     $nf = '';
@@ -71,7 +71,7 @@ function escape_csv($v)
     return '"'. $nf. str_replace('"', '""', $v). '"';
 }
 
-function printICal($listData, $data)
+function printICal(array $listData, array $data)
 {
     $mttToIcalPrio = array("1" => 5, "2" => 1);
     $s = "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nMETHOD:PUBLISH\r\nCALSCALE:GREGORIAN\r\nPRODID:-//myTinyTodo//iCalendar Export v1.4//EN\r\n".

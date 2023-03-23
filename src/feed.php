@@ -62,7 +62,7 @@ htmlarray_ref($listData);
 printRss($data, $listData);
 
 
-function fillData(&$data, $listId, $field, $sqlWhere )
+function fillData(array &$data, int $listId, string $field, string $sqlWhere )
 {
     $lang = Lang::instance();
     $db = DBConnection::instance();
@@ -97,7 +97,7 @@ function fillData(&$data, $listId, $field, $sqlWhere )
     }
 }
 
-function printRss($data, $listData)
+function printRss(array $data, array $listData)
 {
     $lang = Lang::instance();
     $link = get_mttinfo('url'). "?list=". (int)$listData['id'];
@@ -108,7 +108,7 @@ function printRss($data, $listData)
         "<channel>\n".
         "<title>$listData[_feed_title]</title>\n".
         "<link>$link</link>\n".
-        "<atom:link href=\"${listData['_feed_link']}\" rel=\"self\" type=\"application/rss+xml\"/>\n".
+        "<atom:link href=\"{$listData['_feed_link']}\" rel=\"self\" type=\"application/rss+xml\"/>\n".
         "<description>$listData[_feed_descr]</description>\n".
         "<lastBuildDate>$buildDate</lastBuildDate>\n\n";
 
@@ -131,13 +131,13 @@ function printRss($data, $listData)
         }
         if ( $status !='' ) $status = "[$status] ";
 
-        $s .= "<item>\n".
-            "<title>". $status. $v['title']. "</title>\n".
-            "<link>". $itemLink. "</link>\n".
-            "<pubDate>". $v['_d']. "</pubDate>\n".
-            "<description><![CDATA[". $v['_descr']. "]]></description>\n".
-            "<guid isPermaLink=\"false\">$guid</guid>\n".
-            "</item>\n\n";
+        $s .= "\t<item>\n".
+            "\t\t<title>". $status. $v['title']. "</title>\n".
+            "\t\t<link>". $itemLink. "</link>\n".
+            "\t\t<pubDate>". $v['_d']. "</pubDate>\n".
+            "\t\t<description><![CDATA[". $v['_descr']. "]]></description>\n".
+            "\t\t<guid isPermaLink=\"false\">$guid</guid>\n".
+            "\t</item>\n\n";
     }
 
     $s .= "</channel>\n</rss>";
