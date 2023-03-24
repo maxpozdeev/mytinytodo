@@ -44,7 +44,7 @@ class DBCore
      * @return DBCore
      * @throws Exception
      */
-    public static function defaultInstance() : DBCore
+    public static function default() : DBCore
     {
         if (!isset(self::$defaultInstance)) {
             throw new Exception("DBCore defaultInstance is not initialized");

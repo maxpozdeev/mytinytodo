@@ -64,7 +64,7 @@ printRss($data, $listData);
 
 function fillData(array &$data, int $listId, string $field, string $sqlWhere )
 {
-    $tasks = DBCore::defaultInstance()->getTasksByListId($listId, $sqlWhere, "$field DESC", 100);
+    $tasks = DBCore::default()->getTasksByListId($listId, $sqlWhere, "$field DESC", 100);
     $lang = Lang::instance();
     foreach ($tasks as $r)
     {

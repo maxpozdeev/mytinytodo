@@ -49,7 +49,7 @@ function parseRoute($queryString)
         redirectWithHashRoute($hash, $q);
     }
     else if (isset($q['task'])) {
-        $listId = (int)DBCore::defaultInstance()->getListIdByTaskId((int)$q['task']);
+        $listId = (int)DBCore::default()->getListIdByTaskId((int)$q['task']);
         if ($listId > 0) {
             $h = [ 'list', $listId, 'search', '#'. (int)$q['task']];
             redirectWithHashRoute($h);

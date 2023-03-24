@@ -24,7 +24,7 @@ if (!$listData) {
     die("No list found.");
 }
 
-$data = DBCore::defaultInstance()->getTasksByListId($listId, '', (int)$listData['sorting']);
+$data = DBCore::default()->getTasksByListId($listId, '', (int)$listData['sorting']);
 
 if (_get('format') == 'ical') {
     printICal($listData, $data);

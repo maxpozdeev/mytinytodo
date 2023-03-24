@@ -191,7 +191,7 @@ class TasksController extends ApiController {
         checkWriteAccess();
         $id = (int)$id;
 
-        if (!DBCore::defaultInstance()->taskExists($id)) {
+        if (!DBCore::default()->taskExists($id)) {
             $this->response->data = ['total' => 0];
             return;
         }
@@ -461,7 +461,7 @@ class TasksController extends ApiController {
 
     private function getTaskRowById(int $id): ?array
     {
-        $r = DBCore::defaultInstance()->getTaskById($id);
+        $r = DBCore::default()->getTaskById($id);
         if (!$r) {
             throw new Exception("Failed to fetch task data");
         }
