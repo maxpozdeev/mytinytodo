@@ -59,7 +59,7 @@ class NotificationObserver implements \MTTNotificationObserverInterface
     private function init()
     {
         $this->prefs = NotificationsExtension::preferences();
-        $this->token = $this->prefs['token'] ?? '';
+        //$this->token = $this->prefs['token'] ?? '';
     }
 
 }
