@@ -278,8 +278,6 @@ function createMysqlTables($db)
     `note` TEXT,
     `prio` TINYINT NOT NULL default 0,          /* priority -,0,+ */
     `ow` INT NOT NULL default 0,                /* order weight */
-    `tags` VARCHAR(600) NOT NULL default '',    /* for fast access to task tags */
-    `tags_ids` VARCHAR(250) NOT NULL default '', /* no more than 22 tags (x11 chars) */
     `duedate` DATE default NULL,
     PRIMARY KEY(`id`),
     KEY(`list_id`),
@@ -290,7 +288,7 @@ function createMysqlTables($db)
     $db->ex(
 "CREATE TABLE {$db->prefix}tags (
     `id` INT UNSIGNED NOT NULL auto_increment,
-    `name` VARCHAR(50) NOT NULL,
+    `name` VARCHAR(250) NOT NULL default '',
     PRIMARY KEY(`id`),
     UNIQUE KEY `name` (`name`)
 ) CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci ");
@@ -333,7 +331,7 @@ function createSqliteTables($db)
     id INTEGER PRIMARY KEY,
     uuid CHAR(36) NOT NULL,
     ow INTEGER NOT NULL default 0,
-    name VARCHAR(50) NOT NULL,
+    name VARCHAR(250) NOT NULL,
     d_created INTEGER UNSIGNED NOT NULL default 0,
     d_edited INTEGER UNSIGNED NOT NULL default 0,
     sorting TINYINT UNSIGNED NOT NULL default 0,
@@ -357,8 +355,6 @@ function createSqliteTables($db)
     note TEXT COLLATE UTF8CI default NULL,
     prio TINYINT NOT NULL default 0,
     ow INTEGER NOT NULL default 0,
-    tags VARCHAR(600) NOT NULL default '',
-    tags_ids VARCHAR(250) NOT NULL default '',
     duedate DATE default NULL
 ) ");
     $db->ex("CREATE INDEX todo_list_id ON {$db->prefix}todolist (list_id)");
@@ -422,6 +418,8 @@ function databaseVersion(Database_Abstract $db): string
     $v = '1.4';
     if ( !$db->tableExists($db->prefix.'settings') ) return $v;
     $v = '1.7';
+    if ( $db->tableFieldExists($db->prefix.'todolist', 'tags') ) return $v;
+    $v = '1.8';
     return $v;
 }
 
@@ -579,7 +577,7 @@ function update_14_17(Database_Abstract $db, $dbtype)
         $db->ex("ALTER TABLE {$db->prefix}lists ADD `extra` TEXT");
 
         # increase the length of list and tag name
-        # (not applicable to sqlite because it uses VARCHAR fields of eny length as TEXT)
+        # (not applicable to sqlite because it uses VARCHAR fields of any length as TEXT)
         $db->ex("ALTER TABLE {$db->prefix}todolist CHANGE `tags` `tags` VARCHAR(2000) NOT NULL default '' ");
         $db->ex("ALTER TABLE {$db->prefix}tags CHANGE `name` `name` VARCHAR(250) NOT NULL default '' ");
         $db->ex("ALTER TABLE {$db->prefix}lists CHANGE `name` `name` VARCHAR(250) NOT NULL default '' ");
@@ -653,7 +651,7 @@ function update_17_18(Database_Abstract $db, $dbtype)
 
     if ($dbtype == 'sqlite')
     {
-        // Use UTF8CI collate. Old sqlite does not support DROP COLUMN
+        // Use UTF8CI collate. Old sqlite does not support DROP COLUMN (before v3.35.0 2021-03-12)
         $db->ex("DROP INDEX todo_list_id");
         $db->ex("DROP INDEX todo_uuid");
         $db->ex("ALTER TABLE {$db->prefix}todolist RENAME TO {$db->prefix}todolist_old");
@@ -670,11 +668,9 @@ function update_17_18(Database_Abstract $db, $dbtype)
                 note TEXT COLLATE UTF8CI default NULL,
                 prio TINYINT NOT NULL default 0,
                 ow INTEGER NOT NULL default 0,
-                tags VARCHAR(600) NOT NULL default '',
-                tags_ids VARCHAR(250) NOT NULL default '',
                 duedate DATE default NULL )"
         );
-        $db->ex("INSERT INTO {$db->prefix}todolist SELECT * FROM {$db->prefix}todolist_old");
+        $db->ex("INSERT INTO {$db->prefix}todolist SELECT id,uuid,list_id,d_created,d_completed,d_edited,compl,title,note,prio,ow,duedate FROM {$db->prefix}todolist_old");
         $db->ex("CREATE INDEX todo_list_id ON {$db->prefix}todolist (list_id)");
         $db->ex("CREATE UNIQUE INDEX todo_uuid ON {$db->prefix}todolist (uuid)");
         $db->ex("DROP TABLE {$db->prefix}todolist_old");
@@ -684,11 +680,19 @@ function update_17_18(Database_Abstract $db, $dbtype)
         $db->ex(
             "CREATE TABLE {$db->prefix}tags (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name VARCHAR(50) NOT NULL DEFAULT '' COLLATE UTF8CI )"
+                name VARCHAR(250) NOT NULL DEFAULT '' COLLATE UTF8CI )"
         );
         $db->ex("INSERT INTO {$db->prefix}tags SELECT * FROM {$db->prefix}tags_old");
         $db->ex("CREATE INDEX tags_name ON {$db->prefix}tags (name)");
         $db->ex("DROP TABLE {$db->prefix}tags_old");
+    }
+    else // mysql
+    {
+        $db->ex("ALTER TABLE {$db->prefix}todolist DROP COLUMN tags");
+        $db->ex("ALTER TABLE {$db->prefix}todolist DROP COLUMN tags_ids");
+
+        // if mysql db was created in v1.7.x then tags.name field has length of 50 instead of 250
+        $db->ex("ALTER TABLE {$db->prefix}tags CHANGE `name` `name` VARCHAR(250) NOT NULL default '' ");
     }
 
     $db->ex("COMMIT");

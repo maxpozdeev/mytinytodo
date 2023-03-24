@@ -32,7 +32,7 @@ $feedType = _get('feed');
 
 if($feedType == 'completed') {
     $listData['_feed_descr'] = $lang->get('feed_completed_tasks');
-    fillData( $data, $listId, 'd_completed', 'AND compl=1' );
+    fillData( $data, $listId, 'd_completed', 'compl=1' );
 }
 elseif($feedType == 'modified') {
     $listData['_feed_descr'] = $lang->get('feed_modified_tasks');
@@ -40,13 +40,13 @@ elseif($feedType == 'modified') {
 }
 elseif($feedType == 'current') {
     $listData['_feed_descr'] = $lang->get('feed_new_tasks');
-    fillData( $data, $listId, 'd_created', 'AND compl=0' );
+    fillData( $data, $listId, 'd_created', 'compl=0' );
 }
 elseif($feedType == 'status') {
     $listData['_feed_descr'] = $lang->get('feed_tasks');
     fillData( $data, $listId, 'd_created', '' );
-    fillData( $data, $listId, 'd_edited', 'AND compl=0 AND d_edited > d_created' );
-    fillData( $data, $listId, 'd_completed', 'AND compl=1' );
+    fillData( $data, $listId, 'd_edited', 'compl=0 AND d_edited > d_created' );
+    fillData( $data, $listId, 'd_completed', 'compl=1' );
 }
 else {
     $listData['_feed_descr'] = $lang->get('feed_new_tasks');
@@ -64,15 +64,14 @@ printRss($data, $listData);
 
 function fillData(array &$data, int $listId, string $field, string $sqlWhere )
 {
+    $tasks = DBCore::defaultInstance()->getTasksByListId($listId, $sqlWhere, "$field DESC", 100);
     $lang = Lang::instance();
-    $db = DBConnection::instance();
-    $q = $db->dq("SELECT * FROM {$db->prefix}todolist WHERE list_id=$listId $sqlWhere ORDER BY $field DESC LIMIT 100");
-    while ($r = $q->fetchAssoc())
+    foreach ($tasks as $r)
     {
         if ($r['prio'] > 0) {
             $r['prio'] = '+'.$r['prio'];
         }
-        $a = array();
+        $a = array(); //for _descr
         $a[] = $lang->get('task'). ": ". $r['title'];
         if ($r['prio']) {
             $a[] = $lang->get('priority'). ": $r[prio]";
