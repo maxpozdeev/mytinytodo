@@ -1,0 +1,12 @@
+FROM php:8.2-fpm-alpine
+
+RUN docker-php-ext-install pdo_mysql && \
+  mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" && \
+  mkdir /var/www/phpinfo && \
+  echo "<?php phpinfo();" > /var/www/phpinfo/phpinfo.php
+
+#COPY php-mtt.ini      /usr/local/etc/php/conf.d/
+#COPY php-opcache.ini  /usr/local/etc/php/conf.d/
+COPY php-fpm-www.conf /usr/local/etc/php-fpm.d/www.conf
+
+VOLUME /var/www/html

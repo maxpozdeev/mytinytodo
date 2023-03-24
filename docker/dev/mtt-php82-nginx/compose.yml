@@ -8,8 +8,8 @@ services:
   web:
     build:
       context: ../_nginx
-      dockerfile: Dockerfile-nginx
-    image: mtt-dev/nginx
+      dockerfile: Dockerfile-nginx-alpine
+    image: mtt-dev/nginx:alpine
     container_name: ${PLATFORM_NAME}-web
     ports:
       - "8080:80"
@@ -24,12 +24,13 @@ services:
     build:
       context: .
       dockerfile: Dockerfile-fpm
-    image: mtt-dev/php:8.1-fpm
+    image: mtt-dev/php:8.2-fpm-alpine
     container_name: ${PLATFORM_NAME}-fpm
     hostname: php-fpm
     environment:
       - MTT_ENABLE_DEBUG=YES
       - MTT_DB_TYPE=sqlite
+      - MTT_API_USE_PATH_INFO=YES
     volumes:
       - ../../../src:/var/www/html
       - ./php-mtt.ini:/usr/local/etc/php/conf.d/php-mtt.ini
