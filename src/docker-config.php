@@ -17,3 +17,7 @@ else if (getenv('MTT_DB_TYPE') == 'sqlite') {
 }
 
 define("MTT_SALT", "Put Random Text Here");
+//define("MTT_DISABLE_EXT", 1);
+if (getenv('MTT_API_USE_PATH_INFO')) {
+    define("MTT_API_USE_PATH_INFO", 1);
+}

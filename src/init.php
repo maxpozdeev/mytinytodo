@@ -352,7 +352,12 @@ function get_unsafe_mttinfo($v)
             /* URL for API, like http://localhost/mytinytodo/api/. No need to set by default. */
             $_mttinfo['api_url'] = Config::getUrl('api_url'); // need to have a trailing slash
             if ($_mttinfo['api_url'] == '') {
-                $_mttinfo['api_url'] = get_unsafe_mttinfo('mtt_url'). 'api.php?_path=/';
+                if (defined('MTT_API_USE_PATH_INFO')) {
+                    $_mttinfo['api_url'] = get_unsafe_mttinfo('mtt_url'). 'api/';
+                }
+                else {
+                    $_mttinfo['api_url'] = get_unsafe_mttinfo('mtt_url'). 'api.php?_path=/';
+                }
             }
             return $_mttinfo['api_url'];
         case 'title':

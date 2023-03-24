@@ -14,7 +14,7 @@ class ApiRequest
     public $jsonBody;
 
     function __construct() {
-        if (defined('MTT_API_USE_PATH_INFO') && MTT_API_USE_PATH_INFO) {
+        if (defined('MTT_API_USE_PATH_INFO')) {
             $this->path = $_SERVER['PATH_INFO'];
         }
         else {
