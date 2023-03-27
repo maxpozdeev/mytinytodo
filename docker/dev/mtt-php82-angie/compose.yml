@@ -1,0 +1,40 @@
+version: "3.9"
+
+networks:
+  network:
+    name: "${PLATFORM_NAME}-network"
+
+services:
+  web:
+    build:
+      context: ../_nginx
+      dockerfile: Dockerfile-angie-alpine
+    image: mtt-dev/angie:alpine
+    container_name: ${PLATFORM_NAME}-web
+    ports:
+      - "8080:80"
+    volumes:
+      - ../../../src:/var/www/html
+    depends_on:
+      - fpm
+    networks:
+      - network
+
+  fpm:
+    build:
+      context: ../mtt-php82-nginx
+      dockerfile: Dockerfile-fpm
+    image: mtt-dev/php:8.2-fpm-alpine
+    container_name: ${PLATFORM_NAME}-fpm
+    hostname: php-fpm
+    environment:
+      - MTT_ENABLE_DEBUG=YES
+      - MTT_DB_TYPE=sqlite
+      - MTT_API_USE_PATH_INFO=YES
+    volumes:
+      - ../../../src:/var/www/html
+      - ../../../tests:/var/www/tests
+      - ../mtt-php82-nginx/php-mtt.ini:/usr/local/etc/php/conf.d/php-mtt.ini
+      - ../mtt-php82-nginx/php-opcache.ini:/usr/local/etc/php/conf.d/php-opcache.ini
+    networks:
+      - network
