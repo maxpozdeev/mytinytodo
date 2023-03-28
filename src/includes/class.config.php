@@ -218,13 +218,13 @@ class Config
      * @return array
      * @throws Exception
      */
-    public static function requestDomain(string $key)
+    public static function requestDomain(string $key): array
     {
         $db = DBConnection::instance();
         $json = $db->sq("SELECT param_value FROM {$db->prefix}settings WHERE param_key = ?", array($key));
         if (!$json) return array();
         $j = json_decode($json, true, 100, JSON_INVALID_UTF8_SUBSTITUTE);
-        if ($j === false) {
+        if ($j === null) {
             error_log("MTT Error: Failed to decode JSON object with settings. Code: ". (int)json_last_error());
             return array();
         }
@@ -237,7 +237,7 @@ class Config
      * @return array
      * @throws Exception
      */
-    public static function requestDefaultDomain()
+    public static function requestDefaultDomain(): array
     {
         return self::requestDomain('config.json');
     }
