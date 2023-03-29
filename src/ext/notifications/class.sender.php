@@ -2,7 +2,7 @@
 
 /*
     This file is a part of myTinyTodo.
-    (C) Copyright 2022 Max Pozdeev <maxpozdeev@gmail.com>
+    (C) Copyright 2022-2023 Max Pozdeev <maxpozdeev@gmail.com>
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
@@ -147,6 +147,7 @@ class Sender
             return;
         }
         $api = new TelegramApi($this->prefs['token']);
+        $api->logApiErrors = true;
         $blockedChats = [];
         foreach ($this->prefs['chats'] as $chatId) {
             // try-catch?
@@ -156,15 +157,10 @@ class Sender
                 'text' => $text,
                 'disable_web_page_preview' => true
             ]);
-            if (!$result && $api->lastError) {
-                if ($api->lastError['error_code'] == 403) {
-                    // User has blocked the bot
-                    $blockedChats[] = $chatId;
-                    error_log("Bot is blocked in chat $chatId, chat will be deactivated");
-                }
-                else {
-                    error_log("Telegram API Error ". $api->lastError['error_code']. ": ". $api->lastError['description']);
-                }
+            if (!$result && $api->lastError && $api->lastError['error_code'] == 403) {
+                // User has blocked the bot
+                $blockedChats[] = $chatId;
+                error_log("Bot is blocked in chat $chatId, chat will be deactivated");
             }
         }
         //We can remove blocked chats from settings

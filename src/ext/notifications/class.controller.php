@@ -2,7 +2,7 @@
 
 /*
     This file is a part of myTinyTodo.
-    (C) Copyright 2022 Max Pozdeev <maxpozdeev@gmail.com>
+    (C) Copyright 2022-2023 Max Pozdeev <maxpozdeev@gmail.com>
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
@@ -42,6 +42,7 @@ class Controller extends \ApiController
         // Read messages since last check
         $maxId = $prefs['lastUpdateId'] ?? 0;
         $api = new TelegramApi($token);
+        $api->logApiErrors = true;
         $updates = $api->getUpdates([
             'offset' => $maxId + 1,
             'allowed_updates' => ['message']

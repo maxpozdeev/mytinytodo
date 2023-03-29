@@ -2,7 +2,7 @@
 
 /*
     This file is a part of myTinyTodo.
-    (C) Copyright 2022 Max Pozdeev <maxpozdeev@gmail.com>
+    (C) Copyright 2022-2023 Max Pozdeev <maxpozdeev@gmail.com>
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
@@ -176,6 +176,8 @@ EOD;
         // validate token
         if ($token != '' && !$prefs['validToken']) {
             $api = new TelegramApi($token);
+            $api->logApiErrors = true;
+            $api->throwExceptionOnApiError = true;
             try {
                 $result = $api->getMe();
                 if ($result && isset($result['username'])) {
@@ -184,8 +186,11 @@ EOD;
                 $prefs['validToken'] = true;
             }
             catch (Exception $e) {
-                error_log($e->getMessage());
-                $outMessage = __('notifications.no_bot_info');;
+                $prefs['token'] = '';
+                $outMessage = __('notifications.no_bot_info');
+                if (MTT_DEBUG) {
+                    $outMessage .= " (". $e->getMessage(). ")";
+                }
                 return false;
             }
         }
