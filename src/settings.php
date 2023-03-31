@@ -259,34 +259,34 @@ header('Content-type:text/html; charset=utf-8');
 <div class="tr">
 <div class="th"><?php _e('set_protection');?>:</div>
 <div class="td">
- <label><input type="radio" name="allowpassword" value="1" <?php if(_c('password')!='') echo 'checked="checked"'; ?> onclick='$(this.form).find("input[name=password]").attr("disabled",false)' /><?php _e('set_enabled');?></label> <br/>
- <label><input type="radio" name="allowpassword" value="0" <?php if(_c('password')=='') echo 'checked="checked"'; ?> onclick='$(this.form).find("input[name=password]").attr("disabled","disabled")' /><?php _e('set_disabled');?></label> <br/>
+ <label><input type="radio" name="allowpassword" value="1" <?php if(_c('password')!='') echo 'checked="checked"'; ?> onclick='$(this.form).find("input[name=password]").attr("disabled",false)' /> <?php _e('set_enabled');?></label> <br/>
+ <label><input type="radio" name="allowpassword" value="0" <?php if(_c('password')=='') echo 'checked="checked"'; ?> onclick='$(this.form).find("input[name=password]").attr("disabled","disabled")' /> <?php _e('set_disabled');?></label> <br/>
 </div></div>
 
 <div class="tr">
 <div class="th"><?php _e('set_newpass');?>: <div class="descr"><?php _e('set_newpass_descr');?></div></div>
-<div class="td"> <input type="password" name="password" autocomplete="new-password" <?php if(_c('password')=='') echo "disabled"; ?> /> </div>
+<div class="td"><input type="password" name="password" autocomplete="new-password" <?php if(_c('password')=='') echo "disabled"; ?> /> </div>
 </div>
 
 <div class="tr">
 <div class="th"><?php _e('set_smartsyntax');?>: <div class="descr"><?php _e('set_smartsyntax2_descr');?></div></div>
 <div class="td">
- <label><input type="radio" name="smartsyntax" value="1" <?php if(_c('smartsyntax')) echo 'checked="checked"'; ?> /><?php _e('set_enabled');?></label> <br/>
- <label><input type="radio" name="smartsyntax" value="0" <?php if(!_c('smartsyntax')) echo 'checked="checked"'; ?> /><?php _e('set_disabled');?></label>
+ <label><input type="radio" name="smartsyntax" value="1" <?php if(_c('smartsyntax')) echo 'checked="checked"'; ?> /> <?php _e('set_enabled');?></label> <br/>
+ <label><input type="radio" name="smartsyntax" value="0" <?php if(!_c('smartsyntax')) echo 'checked="checked"'; ?> /> <?php _e('set_disabled');?></label>
 </div></div>
 
 <div class="tr">
 <div class="th"><?php _e('set_autotag');?>: <div class="descr"><?php _e('set_autotag_descr');?></div></div>
 <div class="td">
- <label><input type="radio" name="autotag" value="1" <?php if(_c('autotag')) echo 'checked="checked"'; ?> /><?php _e('set_enabled');?></label> <br/>
- <label><input type="radio" name="autotag" value="0" <?php if(!_c('autotag')) echo 'checked="checked"'; ?> /><?php _e('set_disabled');?></label>
+ <label><input type="radio" name="autotag" value="1" <?php if(_c('autotag')) echo 'checked="checked"'; ?> /> <?php _e('set_enabled');?></label> <br/>
+ <label><input type="radio" name="autotag" value="0" <?php if(!_c('autotag')) echo 'checked="checked"'; ?> /> <?php _e('set_disabled');?></label>
 </div></div>
 
 <div class="tr">
 <div class="th"><?php _e('set_markdown');?>: <div class="descr"><?php _e('set_markdown_descr');?></div></div>
 <div class="td">
- <label><input type="radio" name="markdown" value="1" <?php if (_c('markup') != 'v1') echo 'checked="checked"'; ?> /><?php _e('set_enabled');?></label> <br/>
- <label><input type="radio" name="markdown" value="0" <?php if (_c('markup') == 'v1') echo 'checked="checked"'; ?> /><?php _e('set_disabled');?></label>
+ <label><input type="radio" name="markdown" value="1" <?php if (_c('markup') != 'v1') echo 'checked="checked"'; ?> /> <?php _e('set_enabled');?></label> <br/>
+ <label><input type="radio" name="markdown" value="0" <?php if (_c('markup') == 'v1') echo 'checked="checked"'; ?> /> <?php _e('set_disabled');?></label>
 </div></div>
 
 <div class="tr">
@@ -343,17 +343,17 @@ header('Content-type:text/html; charset=utf-8');
 <div class="tr">
 <div class="th"><?php _e('set_showdate');?>:</div>
 <div class="td">
- <label><input type="radio" name="showdate" value="1" <?php if(_c('showdate')) echo 'checked="checked"'; ?> /><?php _e('set_enabled');?></label> <br/>
- <label><input type="radio" name="showdate" value="0" <?php if(!_c('showdate')) echo 'checked="checked"'; ?> /><?php _e('set_disabled');?></label> <br/>
- <label><input type="checkbox" name="showtime" value="1" <?php if(_c('showtime')) echo 'checked="checked"'; ?> /><?php _e('set_showtime');?></label>
+ <label><input type="radio" name="showdate" value="1" <?php if(_c('showdate')) echo 'checked="checked"'; ?> /> <?php _e('set_enabled');?></label> <br/>
+ <label><input type="radio" name="showdate" value="0" <?php if(!_c('showdate')) echo 'checked="checked"'; ?> /> <?php _e('set_disabled');?></label> <br/>
+ <label><input type="checkbox" name="showtime" value="1" <?php if(_c('showtime')) echo 'checked="checked"'; ?> /> <?php _e('set_showtime');?></label>
 </div>
 </div>
 
 <div class="tr">
 <div class="th"><?php _e('set_appearance');?>:</div>
 <div class="td">
- <label><input type="radio" name="appearance" value="system" <?php if(_c('appearance') == 'system') echo 'checked="checked"'; ?> /><?php _e('set_appearance_system');?></label> <br/>
- <label><input type="radio" name="appearance" value="light"  <?php if(_c('appearance') == 'light')  echo 'checked="checked"'; ?> /><?php _e('set_appearance_light');?></label>
+ <label><input type="radio" name="appearance" value="system" <?php if(_c('appearance') == 'system') echo 'checked="checked"'; ?> /> <?php _e('set_appearance_system');?></label> <br/>
+ <label><input type="radio" name="appearance" value="light"  <?php if(_c('appearance') == 'light')  echo 'checked="checked"'; ?> /> <?php _e('set_appearance_light');?></label>
 </div>
 </div>
 
