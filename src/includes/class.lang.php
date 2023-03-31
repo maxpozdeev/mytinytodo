@@ -169,26 +169,27 @@ class Lang
         if (!is_dir($langDir)) {
             return null;
         }
-        if (!file_exists($langDir. 'en.json')) {
-            return null;
+        $def = [];
+        if (file_exists($langDir. 'en.json')) {
+            $defStr = file_get_contents($langDir. 'en.json');
+            $def = json_decode($defStr, true);
+            if ($def === null) {
+                error_log("Failed to decode translation JSON of extension '$ext', language 'en': ". json_last_error_msg());
+                $def = [];
+            }
+        }
+        else {
+            #error_log("Default translation file 'en.json' not found in extension '$ext'");
         }
         $lang = [];
-        if ($this->code != 'en') {
-            if (!file_exists($langDir. $this->code. '.json')) {
-                return null;
-            }
-            $langStr = file_get_contents($langDir. $this->code. '.json');
+        $langFile = $langDir. $this->code. '.json';
+        if ($this->code != 'en' && file_exists($langFile)) {
+            $langStr = file_get_contents($langFile);
             $lang = json_decode($langStr, true);
             if ($lang === null) {
                 error_log("Failed to decode translation JSON of extension '$ext', language '{$this->code}': ". json_last_error_msg());
                 $lang = [];
             }
-        }
-        $defStr = file_get_contents($langDir. 'en.json');
-        $def = json_decode($defStr, true);
-        if ($def === null) {
-            error_log("Failed to decode translation JSON of extension '$ext', language 'en': ". json_last_error_msg());
-            $def = [];
         }
         $lang = array_replace($def, $lang);
         return $lang;
