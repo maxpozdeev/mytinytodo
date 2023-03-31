@@ -100,11 +100,17 @@ class NotificationsExtension extends MTTExtension implements MTTHttpApiExtender,
             $newChat = $e('notifications.bot_not_configured');
         }
 
+        $warning = '';
+        if (!boolval(ini_get('allow_url_fopen'))) {
+            $warning = "<div class=\"tr\"><div style=\"width:100%;text-align:center;\">⚠️ {$e('notifications.urlconfigwarning')}</div></div>";
+        }
+
         //$e = function($s) { return __($s, true); };
         //$c = function($key) { return htmlspecialchars(Config::get($key)); };
 
         return
 <<<EOD
+$warning
 <div class="tr">
  <div class="th"> {$e('notifications.h_email')}
   <div class="descr">{$e('notifications.d_email')}</div>

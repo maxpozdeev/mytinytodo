@@ -1,5 +1,6 @@
 {
     "ext.notifications.name": "Notifications",
+    "notifications.urlconfigwarning": "Enable PHP 'allow_url_fopen' directive to use Telegram notifications.",
     "notifications.check": "Check",
     "notifications.bot_not_configured": "Bot is not configured",
     "notifications.h_email": "E-Mail:",

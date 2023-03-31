@@ -53,7 +53,7 @@ class TelegramApi
             $body = @file_get_contents('https://api.telegram.org/bot'. $this->token .'/'. $method, false, $context);
         }
         catch (\Exception $e) {
-            $err = ini_get('html_errors') ?  htmlspecialchars_decode($e->getMessage()) : $e->getMessage();
+            $err = boolval(ini_get('html_errors')) ?  htmlspecialchars_decode($e->getMessage()) : $e->getMessage();
         }
         restore_error_handler();
         if ($body === false || null !== $err) {
@@ -88,7 +88,7 @@ class TelegramApi
             $body = @file_get_contents('https://api.telegram.org/bot'. $this->token .'/'. $method, false, $context);
         }
         catch (\Exception $e) {
-            $err = ini_get('html_errors') ?  htmlspecialchars_decode($e->getMessage()) : $e->getMessage();
+            $err = boolval(ini_get('html_errors')) ?  htmlspecialchars_decode($e->getMessage()) : $e->getMessage();
         }
         restore_error_handler();
         if ($body === false || null !== $err) {

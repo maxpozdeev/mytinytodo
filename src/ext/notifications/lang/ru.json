@@ -1,5 +1,6 @@
 {
     "ext.notifications.name": "Уведомления",
+    "notifications.urlconfigwarning": "Для использования Telegram требуется включить директиву 'allow_url_fopen' в настройках PHP .",
     "notifications.check": "Проверить",
     "notifications.bot_not_configured": "Бот не настроен",
     "notifications.h_email": "E-Mail:",
