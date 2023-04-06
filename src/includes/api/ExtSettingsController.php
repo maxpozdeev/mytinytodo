@@ -33,6 +33,17 @@ class ExtSettingsController extends ApiController {
         }
         $escapedExt = htmlspecialchars($ext);
         $e = function($s) use($lang) { return htmlspecialchars($lang->get($s)); };
+
+        $formButtons = '';
+        if ($instance->settingsPageType() == 0) {
+            $formButtons =
+<<<EOD
+<div class="tr form-bottom-buttons">
+    <button type="submit">{$e('set_submit')}</button>
+    <button type="button" class="mtt-back-button">{$e('set_cancel')}</button>
+</div>
+EOD;
+        }
         $data =
 <<<EOD
 <h3 class="page-title"><a class="mtt-back-button"></a> $name </h3>
@@ -40,10 +51,7 @@ class ExtSettingsController extends ApiController {
 <form id="ext_settings_form" data-ext="$escapedExt">
   <div class="mtt-settings-table">
     $data
-    <div class="form-bottom-buttons">
-      <button type="submit">{$e('set_submit')}</button>
-      <button type="button" class="mtt-back-button">{$e('set_cancel')}</button>
-    </div>
+    $formButtons
   </div>
 </form>
 EOD;

@@ -965,10 +965,12 @@ li.mtt-item-hidden { display:none; }
 
 .mtt-settings-table { width:100%; }
 .mtt-settings-table .tr {
-  border-bottom:1px solid var(--color-row-underlinig);
-  padding: 10px 0;
+   padding: 10px 0;
   vertical-align:top;
   display: flex;
+}
+.mtt-settings-table .tr:not(:last-child) {
+  border-bottom:1px solid var(--color-row-underlinig);
 }
 .mtt-settings-table .th, .mtt-settings-table .td {
   padding: 0 10px;
@@ -1023,6 +1025,9 @@ li.mtt-item-hidden { display:none; }
 .mtt-settings-table button {
   padding: 3px 6px;
   border-radius: 3px;
+}
+.mtt-settings-table button:hover {
+  background-color: var(--color-btn-hover);
 }
 .mtt-settings-table .form-bottom-buttons button {
   min-width: 4rem;

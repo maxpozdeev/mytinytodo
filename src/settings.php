@@ -369,7 +369,7 @@ header('Content-type:text/html; charset=utf-8');
     }
 ?>
 
-<div class="form-bottom-buttons">
+<div class="tr form-bottom-buttons">
   <button type="submit"><?php _e('set_submit'); ?></button>
   <button type="button" class="mtt-back-button"><?php _e('set_cancel'); ?></button>
 </div>

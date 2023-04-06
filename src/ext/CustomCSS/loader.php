@@ -54,6 +54,11 @@ class CustomCssExtension extends MTTExtension implements MTTExtensionSettingsInt
 EOD;
     }
 
+    function settingsPageType(): int
+    {
+        return 0; //default page
+    }
+
     function saveSettings(array $params, ?string &$outMessage): bool
     {
         if (defined('MTT_DEMO')) {

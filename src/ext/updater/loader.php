@@ -110,6 +110,11 @@ $warning
 EOD;
     }
 
+    function settingsPageType(): int
+    {
+        return 1; // no form buttons
+    }
+
     function saveSettings(array $params, ?string &$outMessage): bool
     {
        return true;
