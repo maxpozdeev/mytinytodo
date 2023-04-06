@@ -2,7 +2,7 @@
 
 /*
     This file is a part of myTinyTodo.
-    (C) Copyright 2022 Max Pozdeev <maxpozdeev@gmail.com>
+    (C) Copyright 2022-2023 Max Pozdeev <maxpozdeev@gmail.com>
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
@@ -11,6 +11,7 @@ if (!defined('MTTPATH')) {
 }
 
 require_once('class.controller.php');
+require_once('class.updater.php');
 
 function mtt_ext_updater_instance(): MTTExtension
 {
@@ -18,6 +19,7 @@ function mtt_ext_updater_instance(): MTTExtension
 }
 
 use UpdaterExtension\Controller;
+use UpdaterExtension\Updater;
 
 class UpdaterExtension extends MTTExtension implements MTTExtensionSettingsInterface, MTTHttpApiExtender
 {
@@ -53,31 +55,50 @@ class UpdaterExtension extends MTTExtension implements MTTExtensionSettingsInter
         $version =  $prefs['version'] ?? '';
         $updateStr = '';
         $curVersion = htmlspecialchars(mytinytodo\Version::VERSION);
+        $err = null;
         if (time() - $lastCheck > 86400*7) {
-            $a = self::lastVersionInfo();
+            $updater = new Updater;
+            $a = $updater->lastVersionInfo();
             if ($a) {
                 $lastCheck = $prefs['lastCheck'] = time();
                 $version = $prefs['version'] = $a['version'] ?? '';
                 $prefs['download'] = $a['download'] ?? '';
                 Config::saveDomain(self::domain, $prefs);
             }
+            else {
+                $err = $updater->lastErrorString;
+            }
         }
+        $warning = '';
         if ($version != '') {
             if ( version_compare($version, mytinytodo\Version::VERSION) > 0 ) {
                 $updateStr = "<br> {$e('updater.updatet_version_avaialable')}: ". htmlspecialchars($version);
+                # allow update to v1.7.x only
                 if ("1.7." == substr($version, 0, 4)) {
                     $updateStr .= "<br><br>\n <a href=\"#\" data-ext-settings-action=\"post:update\" data-ext=\"$ext\">{$e('updater.update')}</a> ";
+                }
+                $retval = 0;
+                $output = null;
+                unset($output);
+                @exec('tar --version', $output, $retval);
+                if ($retval != 0) {
+                    $warning = "<div class=\"tr\"><div style=\"width:100%;text-align:center;\">⚠️ {$e('updater.tarwarning')}</div></div>";
                 }
             }
             else {
                 $updateStr = "<br>{$e('updater.no_updates')}";
             }
         }
-        $lastCheckStr = $lastCheck ? timestampToDatetime($lastCheck, true) : "";
+        $lastCheckStr = $err ? $e('updater.download_error') : ($lastCheck ? timestampToDatetime($lastCheck, true) : "");
+
+        if (!boolval(ini_get('allow_url_fopen'))) {
+            $warning .= "<div class=\"tr\"><div style=\"width:100%;text-align:center;\">⚠️ {$e('updater.urlconfigwarning')}</div></div>";
+        }
 
 
         return
 <<<EOD
+$warning
 <div class="tr">
  <div class="th"> {$e('updater.h_check_updates')} </div>
  <div class="td">
@@ -95,101 +116,9 @@ EOD;
     }
 
 
-
     static function preferences(): array
     {
         $prefs = Config::requestDomain(self::domain);
         return $prefs;
     }
-
-    static function lastVersionInfo(): ?array
-    {
-        $options = array(
-            'http' => array(
-                'header'  => "Content-type: application/json\r\nUser-Agent: mytinytodo\r\n"
-            )
-        );
-        $context  = stream_context_create($options);
-        $json = @file_get_contents("https://api.github.com/repos/maxpozdeev/mytinytodo/releases/latest", false, $context);
-        if ($json === false || $json == '') {
-            return null;
-        }
-        $a = json_decode($json, true) ?? [];
-        $ret = [];
-        if ( isset($a['name']) && isset($a['assets']) &&
-             is_array($a['assets']) && count($a['assets']) > 0 &&
-             ($asset = $a['assets'][0]) && isset($asset['browser_download_url']) )
-        {
-            $ret['version'] = substr($a['name'], 1); //remove first 'v'
-            $ret['download'] = $asset['browser_download_url'];
-        }
-        else {
-            error_log("Unexpected content");
-        }
-        return $ret;
-    }
-
-    static function download(string $url, string $outfile, string &$error = null): bool
-    {
-        $dir = dirname($outfile);
-        if (!is_dir($dir) || !is_writable($dir)) {
-            $error = "myTinyTodo directory is not writable";
-            return false;
-        }
-        $f = @fopen($url, 'r');
-        if ($f === false) {
-            $ea = error_get_last();
-            $error = ($ea && isset($ea['message'])) ? $ea['message'] : "Failed to open stream";
-            return false;
-        }
-        $bytes = @file_put_contents($outfile, $f, LOCK_EX);
-        $ea = error_get_last();
-        fclose($f);
-        if ($bytes === false) {
-            $error = ($ea && isset($ea['message'])) ? $ea['message'] :  "Can not save file";
-            return false;
-        }
-        return true;
-    }
-
-    static function extractAndReplace(string $filename, string &$error = null): bool
-    {
-        $dir = MTTPATH;
-        if (!is_dir($dir) || !is_writable($dir)) {
-            $error = "myTinyTodo directory is not writable";
-            return false;
-        }
-
-        $output = null;
-        $retval = null;
-        $command = "tar xzf ". escapeshellarg($filename). " --strip-components 1 -C ". escapeshellarg($dir). " 2>&1";
-        @exec($command, $output, $retval);
-        if ($retval != 0) {
-            $error = "Failed to execute tar command ($retval): ". ($output ? implode("\n", $output) : "no output");
-            error_log($error);
-            return false;
-        }
-
-        // Extensions
-        $dir = MTT_EXT;
-        $filename = $dir . 'extensions.tar.gz';
-        if (file_exists($filename)) {
-            if (!is_writable($dir)) {
-                $error = "Extensions directory is not writable";
-                return false;
-            }
-            $command = "tar xzf ". escapeshellarg($filename). " -C ". escapeshellarg($dir). " 2>&1";
-            @exec($command, $output, $retval);
-            if ($retval != 0) {
-                $error = "Extensions: failed to execute tar command ($retval): ". ($output ? implode("\n", $output) : "no output");
-                error_log($error);
-                return false;
-            }
-            unlink($filename);
-        }
-
-        return true;
-    }
-
-
 }

@@ -1,5 +1,7 @@
 {
     "ext.updater.name": "Updates",
+    "updater.urlconfigwarning": "Enable PHP 'allow_url_fopen' directive to be able to download updates.",
+    "updater.tarwarning": "Update is not possible, 'tar' utility is not found.",
     "updater.h_check_updates": "Check updates",
     "updater.check": "Check",
     "updater.no_updates": "No updates available",

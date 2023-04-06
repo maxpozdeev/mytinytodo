@@ -1,5 +1,7 @@
 {
     "ext.updater.name": "Обновления",
+    "updater.urlconfigwarning": "Для получения обновлений требуется включить директиву 'allow_url_fopen' в настройках PHP .",
+    "updater.tarwarning": "Исполняемый файл 'tar' не найден, обновление невозможно.",
     "updater.h_check_updates": "Проверка обновлений",
     "updater.check": "Проверить",
     "updater.no_updates": "Нет обновлений",

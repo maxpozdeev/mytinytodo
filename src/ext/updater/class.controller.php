@@ -2,7 +2,7 @@
 
 /*
     This file is a part of myTinyTodo.
-    (C) Copyright 2022 Max Pozdeev <maxpozdeev@gmail.com>
+    (C) Copyright 2022-2023 Max Pozdeev <maxpozdeev@gmail.com>
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
@@ -16,14 +16,22 @@ class Controller extends \ApiController
     function postCheck()
     {
         $prefs = UpdaterExtension::preferences();
-        $a = UpdaterExtension::lastVersionInfo();
+        $updater = new Updater;
+        $a = $updater->lastVersionInfo();
         if ($a) {
             $prefs['lastCheck'] = time();
             $prefs['version'] = $a['version'] ?? '';
             $prefs['download'] = $a['download'] ?? '';
             Config::saveDomain(UpdaterExtension::domain, $prefs);
+            $this->response->data = [ 'total' => 1 ];
         }
-        $this->response->data = [ 'total' => 1 ];
+        else {
+            $this->response->data = [
+                'total' => 0,
+                'msg' => __("error"),
+                'details' => $updater->lastErrorString ?? ''
+            ];
+        }
     }
 
     function postUpdate()
@@ -34,15 +42,22 @@ class Controller extends \ApiController
             $this->response->data = [ 'total' => 0, 'msg' => __("updater.download_error") ];
             return;
         }
+        $updater = new Updater;
         $file = MTTPATH. 'update.tar.gz';
-        $error = null;
-        if (!UpdaterExtension::download($url, $file, $error)) {
-            $this->response->data = [ 'total' => 0, 'msg' => __("updater.download_error"), 'details' => $error ];
+        if (!$updater->download($url, $file)) {
+            $this->response->data = [
+                'total' => 0,
+                'msg' => __("updater.download_error"),
+                'details' => $updater->lastErrorString ?? ''
+            ];
             return;
         }
-        $error = null;
-        if (!UpdaterExtension::extractAndReplace($file, $error)) {
-            $this->response->data = [ 'total' => 0, 'msg' => __("updater.update_error"), 'details' => $error ];
+        if (!$updater->extractAndReplace($file)) {
+            $this->response->data = [
+                'total' => 0,
+                'msg' => __("updater.update_error"),
+                'details' => $updater->lastErrorString ?? ''
+            ];
             return;
         }
         @unlink($file);
