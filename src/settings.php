@@ -362,7 +362,7 @@ header('Content-type:text/html; charset=utf-8');
 ?>
 <div class="tr">
  <div class="th"><?php _e('set_extensions');?>:</div>
- <div class="td"> <?php listExtensions(); ?>
+ <div class="td extensions"> <?php listExtensions(); ?>
  </div>
 </div>
 <?php
