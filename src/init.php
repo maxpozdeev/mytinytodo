@@ -337,24 +337,10 @@ function get_unsafe_mttinfo($v)
     switch($v)
     {
         case 'theme_url':
-            if (!isset($_mttinfo['theme_url'])) {
-                if ( Config::getUrl('url') == '' && Config::getUrl('mtt_url') == ''
-                    && (!defined('MTT_USE_HTTPS') || !MTT_USE_HTTPS) ) {
-                    $_mttinfo['theme_url'] = url_dir(getRequestUri()). 'content/'. MTT_THEME. '/';
-                } else {
-                    $_mttinfo['theme_url'] = get_unsafe_mttinfo('mtt_url'). 'content/'. MTT_THEME. '/';
-                }
-            }
+            $_mttinfo['theme_url'] = get_unsafe_mttinfo('mtt_uri'). 'content/'. MTT_THEME. '/';
             return $_mttinfo['theme_url'];
         case 'content_url':
-            if (!isset($_mttinfo['content_url'])) {
-                if ( Config::getUrl('url') == '' && Config::getUrl('mtt_url') == ''
-                    && (!defined('MTT_USE_HTTPS') || !MTT_USE_HTTPS) ) {
-                    $_mttinfo['content_url'] = url_dir(getRequestUri()). 'content/';
-                } else {
-                    $_mttinfo['content_url'] = get_unsafe_mttinfo('mtt_url'). 'content/';
-                }
-            }
+            $_mttinfo['content_url'] = get_unsafe_mttinfo('mtt_uri'). 'content/';
             return $_mttinfo['content_url'];
         case 'url':
             /* full url to homepage: directory with root index.php or custom index file in the root. */
@@ -373,15 +359,26 @@ function get_unsafe_mttinfo($v)
                 $_mttinfo['mtt_url'] = url_dir( get_unsafe_mttinfo('url'), 0 );
             }
             return $_mttinfo['mtt_url'];
+        case 'mtt_uri':
+            $_mttinfo['mtt_uri'] = Config::getUrl('mtt_url'); // need to have a trailing slash
+            if ($_mttinfo['mtt_uri'] == '') {
+                if ( ''  !=  $url = Config::getUrl('url') ) {
+                    $_mttinfo['mtt_uri'] = url_dir($url);
+                }
+                else {
+                    $_mttinfo['mtt_uri'] = url_dir(getRequestUri());
+                }
+            }
+            return $_mttinfo['mtt_uri'];
         case 'api_url':
             /* URL for API, like http://localhost/mytinytodo/api/. No need to set by default. */
             $_mttinfo['api_url'] = Config::getUrl('api_url'); // need to have a trailing slash
             if ($_mttinfo['api_url'] == '') {
                 if (defined('MTT_API_USE_PATH_INFO')) {
-                    $_mttinfo['api_url'] = get_unsafe_mttinfo('mtt_url'). 'api/';
+                    $_mttinfo['api_url'] = get_unsafe_mttinfo('mtt_uri'). 'api/';
                 }
                 else {
-                    $_mttinfo['api_url'] = get_unsafe_mttinfo('mtt_url'). 'api.php?_path=/';
+                    $_mttinfo['api_url'] = get_unsafe_mttinfo('mtt_uri'). 'api.php?_path=/';
                 }
             }
             return $_mttinfo['api_url'];
