@@ -79,7 +79,7 @@ function js_options()
         "lang" => Lang::instance()->jsStrings(),
         "mttUrl" => get_mttinfo('mtt_url'),
         "homeUrl" => get_mttinfo('url'),
-//        "apiUrl" => get_mttinfo('api_url'),
+        "apiUrl" => get_mttinfo('api_url'),
         "needAuth" => need_auth() ? true : false,
         "isLogged" => is_logged() ? true : false,
         "showdate" => Config::get('showdate') ? true : false,
