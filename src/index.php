@@ -73,12 +73,17 @@ function redirectWithHashRoute(array $hash, array $q = [])
 
 function js_options()
 {
+    // Here we can use URIs instead of full URLs.
+    $homeUrl = htmlspecialchars(Config::getUrl('url'));
+    if ($homeUrl == '') {
+        $homeUrl = get_mttinfo('mtt_uri');
+    }
     $a = array(
         "token" => htmlspecialchars(access_token()),
         "title" => get_unsafe_mttinfo('title'),
         "lang" => Lang::instance()->jsStrings(),
-        "mttUrl" => get_mttinfo('mtt_url'),
-        "homeUrl" => get_mttinfo('url'),
+        "mttUrl" => get_mttinfo('mtt_uri'),
+        "homeUrl" => $homeUrl,
         "apiUrl" => get_mttinfo('api_url'),
         "needAuth" => need_auth() ? true : false,
         "isLogged" => is_logged() ? true : false,
