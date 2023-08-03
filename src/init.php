@@ -116,6 +116,31 @@ function configureDbConnection()
         $db->dq("SET NAMES utf8mb4");
     }
 
+    # PostgreSQL Database
+    else if (MTT_DB_TYPE == 'postgres')
+    {
+        require_once(MTTINC. 'class.db.postgres.php');
+        $db = DBConnection::init(new Database_Postgres());
+        try {
+            $db->connect([
+                'host' => MTT_DB_HOST,
+                'user' => MTT_DB_USER,
+                'password' => MTT_DB_PASSWORD,
+                'db' => MTT_DB_NAME,
+            ]);
+        }
+        catch(Exception $e) {
+            $errlog = "Failed to connect to PostgreSQL database: ". $e->getMessage();
+            if (MTT_DEBUG) {
+                logAndDie($errlog);
+            }
+            else {
+                logAndDie("Failed to connect to database", $errlog);
+            }
+        }
+        $db->dq("SET NAMES 'utf8'");
+    }
+
     # SQLite3 Database
     elseif (MTT_DB_TYPE == 'sqlite')
     {
