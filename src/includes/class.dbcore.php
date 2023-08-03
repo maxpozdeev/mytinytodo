@@ -86,12 +86,20 @@ class DBCore
     public function getTaskById(int $id): ?array
     {
         $db = $this->db;
+        $groupConcat = '';
+        if ($db::DBTYPE == DBConnection::DBTYPE_POSTGRES) {
+            $groupConcat =  "array_to_string(array_agg(tags.id), ',') AS tags_ids, string_agg(tags.name, ',') AS tags";
+        }
+        else {
+            $groupConcat = "GROUP_CONCAT(tags.id) AS tags_ids, GROUP_CONCAT(tags.name) AS tags";
+        }
         $r = $db->sqa("
-            SELECT todo.*, GROUP_CONCAT(tags.id) AS tags_ids, GROUP_CONCAT(tags.name) AS tags
+            SELECT todo.*, $groupConcat
             FROM {$db->prefix}todolist AS todo
             LEFT JOIN {$db->prefix}tag2task AS t2t ON todo.id = t2t.task_id
             LEFT JOIN {$db->prefix}tags AS tags ON t2t.tag_id = tags.id
             WHERE todo.id = $id
+            GROUP BY todo.id
         ");
         return $r;
     }
