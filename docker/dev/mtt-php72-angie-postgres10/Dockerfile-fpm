@@ -1,0 +1,16 @@
+FROM php:7.2-fpm-alpine
+
+RUN  apk add --no-cache postgresql-dev && \
+  docker-php-ext-install pdo_mysql pdo_pgsql && \
+  mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" && \
+  mkdir /var/www/phpinfo && \
+  echo "<?php phpinfo();" > /var/www/phpinfo/phpinfo.php && \
+  curl -o /usr/local/bin/phpunit -fL "https://phar.phpunit.de/phpunit-8.phar" && \
+  chmod +x /usr/local/bin/phpunit && \
+  ln -s html /var/www/src
+
+#COPY php-mtt.ini      /usr/local/etc/php/conf.d/
+#COPY php-opcache.ini  /usr/local/etc/php/conf.d/
+COPY php-fpm-www.conf /usr/local/etc/php-fpm.d/www.conf
+
+VOLUME /var/www/html
