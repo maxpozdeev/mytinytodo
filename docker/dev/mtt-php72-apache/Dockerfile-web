@@ -1,7 +1,8 @@
-FROM php:7.2-apache
+FROM php:7.2-apache-buster
 
-RUN apt-get update && apt-get install -y libicu-dev libpq-dev && apt-get -y autoremove && \
+RUN apt-get update && apt-get install -y libpq5 libpq-dev && \
   docker-php-ext-install mysqli pdo_pgsql && \
+  apt-get remove -y libpq-dev && apt-get -y autoremove && \
   mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" && \
   mkdir /var/www/phpinfo && \
   echo "<?php\nphpinfo();" > /var/www/phpinfo/phpinfo.php && \
@@ -13,5 +14,5 @@ RUN apt-get update && apt-get install -y libicu-dev libpq-dev && apt-get -y auto
   ln -s html /var/www/src
 
 
-#COPY php-mtt.ini     /usr/local/etc/php/conf.d/
-#COPY php-opcache.ini /usr/local/etc/php/conf.d/
+COPY php-mtt.ini     /usr/local/etc/php/conf.d/
+COPY php-opcache.ini /usr/local/etc/php/conf.d/

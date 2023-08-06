@@ -47,6 +47,7 @@ services:
     # do not use alpine image due to missing locales
     image: postgres:10.0
     container_name: ${PLATFORM_NAME}-db
+    userns_mode: keep-id
     environment:
       POSTGRES_PASSWORD: mtt
       POSTGRES_USER: mtt

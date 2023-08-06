@@ -1,7 +1,8 @@
 FROM php:7.2-fpm-alpine
 
-RUN  apk add --no-cache postgresql-dev && \
+RUN  apk add --update-cache libpq postgresql-dev && \
   docker-php-ext-install pdo_mysql pdo_pgsql && \
+  apk del postgresql-dev && rm -rf /var/cache/apk/* && \
   mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" && \
   mkdir /var/www/phpinfo && \
   echo "<?php phpinfo();" > /var/www/phpinfo/phpinfo.php && \
