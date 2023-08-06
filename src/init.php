@@ -376,10 +376,11 @@ function is_https(): bool
     if (isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) == 'on') {
         return true;
     }
-    /*
-     TODO: Check for X-Forwarded-Proto==https or X-Forwarded-For==https ?
-     */
     if (defined('MTT_USE_HTTPS') && MTT_USE_HTTPS) {
+        return true;
+    }
+    // This HTTP header can be overriden by user agent!
+    if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower($_SERVER['HTTP_X_FORWARDED_PROTO']) == 'https') {
         return true;
     }
     return false;
