@@ -26,7 +26,6 @@ services:
       dockerfile: Dockerfile-fpm
     image: mtt-dev/php:7.2-fpm-alpine
     container_name: ${PLATFORM_NAME}-fpm
-    hostname: php-fpm
     environment:
       - MTT_ENABLE_DEBUG=YES
       - MTT_DB_TYPE=postgres
