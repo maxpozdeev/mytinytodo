@@ -24,22 +24,14 @@ if (!$listData) {
     die("No list found.");
 }
 
-$sqlSort = "ORDER BY compl ASC, ";
-if($listData['sorting'] == 1) $sqlSort .= "prio DESC, ddn ASC, duedate ASC, ow ASC";
-elseif($listData['sorting'] == 2) $sqlSort .= "ddn ASC, duedate ASC, prio DESC, ow ASC";
-else $sqlSort .= "ow ASC";
+$data = DBCore::default()->getTasksByListId($listId, '', (int)$listData['sorting']);
 
-$data = array();
-$q = $db->dq("SELECT *, duedate IS NULL AS ddn FROM {$db->prefix}todolist WHERE list_id=$listId $sqlSort");
-while($r = $q->fetchAssoc())
-{
-    $data[] = $r;
+if (_get('format') == 'ical') {
+    printICal($listData, $data);
 }
-
-$format = _get('format');
-
-if($format == 'ical') printICal($listData, $data);
-else printCSV($listData, $data);
+else {
+    printCSV($listData, $data);
+}
 
 
 function printCSV(array $listData, array $data)

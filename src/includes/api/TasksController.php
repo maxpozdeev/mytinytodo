@@ -22,14 +22,15 @@ class TasksController extends ApiController {
         checkReadAccess($listId);
         $db = DBConnection::instance();
 
-        $sqlWhere = $inner = $sqlWhereListId = $sqlInnerWhereListId = '';
+        $sqlWhere = $sqlWhereListId = $sqlInnerWhereListId = '';
         if ($listId == -1) {
             $userLists = $this->getUserListsSimple();
-            $sqlWhereListId = "{$db->prefix}todolist.list_id IN (". implode(',', array_keys($userLists)). ") ";
-            $sqlInnerWhereListId = "list_id IN (". implode(',', array_keys($userLists)). ") ";
+            $userListsIds = implode(',', array_keys($userLists));
+            $sqlWhereListId = "todo.list_id IN ($userListsIds) ";
+            $sqlInnerWhereListId = "list_id IN ($userListsIds) ";
         }
         else {
-            $sqlWhereListId = "{$db->prefix}todolist.list_id=". $listId;
+            $sqlWhereListId = "todo.list_id=". $listId;
             $sqlInnerWhereListId = "list_id=$listId ";
         }
         if (_get('compl') == 0) {
@@ -52,20 +53,18 @@ class TasksController extends ApiController {
                 }
             }
 
-            // Include tags: All
-            if (sizeof($tagIds) > 1) {
-                $inner .= "INNER JOIN (SELECT task_id, COUNT(tag_id) AS c FROM {$db->prefix}tag2task WHERE $sqlInnerWhereListId AND tag_id IN (".
-                            implode(',',$tagIds). ") GROUP BY task_id) AS t2t ON id=t2t.task_id";
-                $sqlWhere .= " AND c=". sizeof($tagIds);
-            }
-            elseif ($tagIds) {
-                $inner .= "INNER JOIN {$db->prefix}tag2task ON id=task_id";
-                $sqlWhere .= " AND tag_id = {$tagIds[0]}";
+            // Include tags
+            if ($tagIds) {
+                $sqlWhere .= " AND todo.id IN (SELECT task_id FROM {$db->prefix}tag2task WHERE tag_id IN (". implode(',',$tagIds). ")";
+                if (count($tagIds) > 1) {
+                    $sqlWhere .= " GROUP BY task_id HAVING COUNT(tag_id)=". count($tagIds);
+                }
+                $sqlWhere .= ")";
             }
 
             // Exclude tags
-            if (sizeof($tagExIds) > 0) {
-                $sqlWhere .= " AND {$db->prefix}todolist.id NOT IN (SELECT DISTINCT task_id FROM {$db->prefix}tag2task WHERE $sqlInnerWhereListId AND tag_id IN (".
+            if (count($tagExIds) > 0) {
+                $sqlWhere .= " AND todo.id NOT IN (SELECT DISTINCT task_id FROM {$db->prefix}tag2task WHERE $sqlInnerWhereListId AND tag_id IN (".
                             implode(',',$tagExIds). "))";
             }
             //no optimization for single exTag
@@ -74,7 +73,7 @@ class TasksController extends ApiController {
         $s = trim(_get('s'));
         if ($s != '') {
             if (preg_match("|^#(\d+)$|", $s, $m)) {
-                $sqlWhere .= " AND {$db->prefix}todolist.id = ". (int)$m[1];
+                $sqlWhere .= " AND todo.id = ". (int)$m[1];
             }
             else {
                 $sqlWhere .= " AND (". $db->like("title", "%%%s%%", $s). " OR ". $db->like("note", "%%%s%%", $s). ")";
@@ -98,7 +97,24 @@ class TasksController extends ApiController {
         $t = array();
         $t['total'] = 0;
         $t['list'] = array();
-        $q = $db->dq("SELECT *, duedate IS NULL AS ddn FROM {$db->prefix}todolist $inner WHERE $sqlWhereListId $sqlWhere $sqlSort");
+
+        $groupConcat = '';
+        if ($db::DBTYPE == DBConnection::DBTYPE_POSTGRES) {
+            $groupConcat =  "array_to_string(array_agg(tags.id), ',') AS tags_ids, string_agg(tags.name, ',') AS tags";
+        }
+        else {
+            $groupConcat = "GROUP_CONCAT(tags.id) AS tags_ids, GROUP_CONCAT(tags.name) AS tags";
+        }
+        $q = $db->dq("
+            SELECT todo.*, todo.duedate IS NULL AS ddn, $groupConcat
+            FROM {$db->prefix}todolist AS todo
+            LEFT JOIN {$db->prefix}tag2task AS t2t ON todo.id = t2t.task_id
+            LEFT JOIN {$db->prefix}tags AS tags ON t2t.tag_id = tags.id
+            WHERE $sqlWhereListId $sqlWhere
+            GROUP BY todo.id
+            $sqlSort
+        ");
+
         while ($r = $q->fetchAssoc())
         {
             $t['total']++;
@@ -183,6 +199,11 @@ class TasksController extends ApiController {
         checkWriteAccess();
         $id = (int)$id;
 
+        if (!DBCore::default()->taskExists($id)) {
+            $this->response->data = ['total' => 0];
+            return;
+        }
+
         $action = $this->req->jsonBody['action'] ?? '';
         switch ($action) {
             case 'edit':     $this->response->data = $this->editTask($id);     break;
@@ -254,14 +275,12 @@ class TasksController extends ApiController {
             $aTags = $this->prepareTags($tags);
             if ($aTags) {
                 $this->addTaskTags($id, $aTags['ids'], $listId);
-                $db->ex("UPDATE {$db->prefix}todolist SET tags=?,tags_ids=? WHERE id=$id", array(implode(',',$aTags['tags']), implode(',',$aTags['ids'])));
             }
         }
         $db->ex("COMMIT");
-        $r = $db->sqa("SELECT * FROM {$db->prefix}todolist WHERE id=$id");
-        $oo = $this->prepareTaskRow($r);
-        MTTNotificationCenter::postNotification(MTTNotification::didCreateTask, $oo);
-        $t['list'][] = $oo;
+        $task = $this->getTaskRowById($id);
+        MTTNotificationCenter::postNotification(MTTNotification::didCreateTask, $task);
+        $t['list'][] = $task;
         $t['total'] = 1;
         return $t;
     }
@@ -294,14 +313,12 @@ class TasksController extends ApiController {
             $aTags = $this->prepareTags($tags);
             if ($aTags) {
                 $this->addTaskTags($id, $aTags['ids'], $listId);
-                $db->ex("UPDATE {$db->prefix}todolist SET tags=?,tags_ids=? WHERE id=$id", array(implode(',',$aTags['tags']), implode(',',$aTags['ids'])));
             }
         }
         $db->ex("COMMIT");
-        $r = $db->sqa("SELECT * FROM {$db->prefix}todolist WHERE id=$id");
-        $oo = $this->prepareTaskRow($r);
-        MTTNotificationCenter::postNotification(MTTNotification::didCreateTask, $oo);
-        $t['list'][] = $oo;
+        $task = $this->getTaskRowById($id);
+        MTTNotificationCenter::postNotification(MTTNotification::didCreateTask, $task);
+        $t['list'][] = $task;
         $t['total'] = 1;
         return $t;
     }
@@ -325,31 +342,26 @@ class TasksController extends ApiController {
         $db->ex("BEGIN");
         $db->ex("DELETE FROM {$db->prefix}tag2task WHERE task_id=$id");
         $aTags = $this->prepareTags($tags);
-        if($aTags) {
-            $tags = implode(',', $aTags['tags']);
-            $tags_ids = implode(',',$aTags['ids']);
+        if ($aTags) {
             $this->addTaskTags($id, $aTags['ids'], $listId);
         }
-        $db->dq("UPDATE {$db->prefix}todolist SET title=?,note=?,prio=?,tags=?,tags_ids=?,duedate=?,d_edited=? WHERE id=$id",
-                array($title, $note, $prio, $tags, $tags_ids, $duedate, time()) );
+        $db->dq("UPDATE {$db->prefix}todolist SET title=?,note=?,prio=?,duedate=?,d_edited=? WHERE id=$id",
+                array($title, $note, $prio, $duedate, time()) );
         $db->ex("COMMIT");
-        $r = $db->sqa("SELECT * FROM {$db->prefix}todolist WHERE id=$id");
-        if ($r) {
-            $t['list'][] = $this->prepareTaskRow($r);
-            $t['total'] = 1;
-        }
+        $task = $this->getTaskRowById($id);
+        $t['list'][] = $task;
+        $t['total'] = 1;
         return $t;
     }
 
     private function moveTask(int $id): ?array
     {
-        $db = DBConnection::instance();
         $fromId = (int)($this->req->jsonBody['from'] ?? 0);
         $toId = (int)($this->req->jsonBody['to'] ?? 0);
         $result = $this->doMoveTask($id, $toId);
         $t = array('total' => $result ? 1 : 0);
-        if ($fromId == -1 && $result && $r = $db->sqa("SELECT * FROM {$db->prefix}todolist WHERE id=$id")) {
-            $t['list'][] = $this->prepareTaskRow($r);
+        if ($fromId == -1 && $result) {
+            $t['list'][] = $this->getTaskRowById($id);
         }
         return $t;
     }
@@ -388,8 +400,7 @@ class TasksController extends ApiController {
                     array($dateCompleted, $date) );
         $t = array();
         $t['total'] = 1;
-        $r = $db->sqa("SELECT * FROM {$db->prefix}todolist WHERE id=$id");
-        $t['list'][] = $this->prepareTaskRow($r);
+        $t['list'][] = $this->getTaskRowById($id);
         return $t;
     }
 
@@ -456,6 +467,15 @@ class TasksController extends ApiController {
         return $a;
     }
 
+    private function getTaskRowById(int $id): ?array
+    {
+        $r = DBCore::default()->getTaskById($id);
+        if (!$r) {
+            throw new Exception("Failed to fetch task data");
+        }
+        return $this->prepareTaskRow($r);
+    }
+
     private function prepareTaskRow(array $r): array
     {
         $lang = Lang::instance();
@@ -483,7 +503,7 @@ class TasksController extends ApiController {
             'date' => htmlarray($dCreated),
             'dateInt' => (int)$r['d_created'],
             'dateFull' => htmlarray($dCreatedFull),
-            'dateInlineTitle' => htmlarray(sprintf($lang->get('taskdate_inline_created'), $dCreated)),
+            'dateInlineTitle' => htmlarray(sprintf($lang->get('taskdate_inline_created'), $dCreated)), //TODO: move preparing of *inlineTitle to js
             'dateEdited' => htmlarray($dEdited),
             'dateEditedInt' => (int)$r['d_edited'],
             'dateEditedFull' => htmlarray($dEditedFull),
@@ -497,8 +517,8 @@ class TasksController extends ApiController {
             'note' => noteMarkup($r['note']),
             'noteText' => (string)$r['note'],
             'ow' => (int)$r['ow'],
-            'tags' => htmlarray($r['tags']),
-            'tags_ids' => htmlarray($r['tags_ids']),
+            'tags' => htmlarray($r['tags'] ?? ''),
+            'tags_ids' => htmlarray($r['tags_ids'] ?? ''),
             'duedate' => htmlarray($dueA['formatted']),
             'dueClass' => $dueA['class'],
             'dueStr' => htmlarray($dueA['str']),

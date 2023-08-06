@@ -103,12 +103,12 @@ function configureDbConnection()
         }
         DBConnection::init($db);
         try {
-            $db->connect( array(
+            $db->connect([
                 'host' => MTT_DB_HOST,
                 'user' => MTT_DB_USER,
                 'password' => MTT_DB_PASSWORD,
                 'db' => MTT_DB_NAME,
-            ));
+            ]);
         }
         catch(Exception $e) {
             logAndDie("Failed to connect to mysql database: ". $e->getMessage());
@@ -116,12 +116,40 @@ function configureDbConnection()
         $db->dq("SET NAMES utf8mb4");
     }
 
+    # PostgreSQL Database
+    else if (MTT_DB_TYPE == 'postgres')
+    {
+        require_once(MTTINC. 'class.db.postgres.php');
+        $db = DBConnection::init(new Database_Postgres());
+        try {
+            $db->connect([
+                'host' => MTT_DB_HOST,
+                'user' => MTT_DB_USER,
+                'password' => MTT_DB_PASSWORD,
+                'db' => MTT_DB_NAME,
+            ]);
+        }
+        catch(Exception $e) {
+            $errlog = "Failed to connect to PostgreSQL database: ". $e->getMessage();
+            if (MTT_DEBUG) {
+                logAndDie($errlog);
+            }
+            else {
+                logAndDie("Failed to connect to database", $errlog);
+            }
+        }
+        $db->dq("SET NAMES 'utf8'");
+    }
+
     # SQLite3 Database
     elseif (MTT_DB_TYPE == 'sqlite')
     {
+        require_once(MTTINC. 'vendor/autoload.php');
         require_once(MTTINC. 'class.db.sqlite3.php');
-        $db = DBConnection::init(new Database_Sqlite3);
-        $db->connect( array( 'filename' => MTTPATH. 'db/todolist.db' ) );
+        $db = DBConnection::init(new Database_Sqlite3());
+        $db->connect([
+            'filename' => MTTPATH. 'db/todolist.db'
+        ]);
     }
     else {
         die("Incorrect database connection config");
@@ -346,7 +374,12 @@ function get_unsafe_mttinfo($v)
             /* URL for API, like http://localhost/mytinytodo/api/. No need to set by default. */
             $_mttinfo['api_url'] = Config::getUrl('api_url'); // need to have a trailing slash
             if ($_mttinfo['api_url'] == '') {
-                $_mttinfo['api_url'] = get_unsafe_mttinfo('mtt_uri'). 'api.php?_path=/';
+                if (defined('MTT_API_USE_PATH_INFO')) {
+                    $_mttinfo['api_url'] = get_unsafe_mttinfo('mtt_uri'). 'api/';
+                }
+                else {
+                    $_mttinfo['api_url'] = get_unsafe_mttinfo('mtt_uri'). 'api.php?_path=/';
+                }
             }
             return $_mttinfo['api_url'];
         case 'title':

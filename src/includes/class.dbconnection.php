@@ -8,6 +8,10 @@
 
 class DBConnection
 {
+    const DBTYPE_SQLITE = "sqlite";
+    const DBTYPE_MYSQL = "mysql";
+    const DBTYPE_POSTGRES = "postgres";
+
     protected static $instance;
 
     public static function init(Database_Abstract $instance) : Database_Abstract
@@ -33,6 +37,7 @@ class DBConnection
 
 abstract class Database_Abstract
 {
+    const DBTYPE = '';
     protected static $readonlyProps = ['prefix', 'lastQuery'];
 
     /** @var string */
