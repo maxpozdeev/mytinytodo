@@ -56,6 +56,8 @@ class DatabaseResult_Sqlite3 extends DatabaseResult_Abstract
 
 class Database_Sqlite3 extends Database_Abstract
 {
+    const DBTYPE = 'sqlite';
+
     /** @var PDO */
     protected $dbh;
 

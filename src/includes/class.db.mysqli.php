@@ -39,6 +39,8 @@ class DatabaseResult_Mysqli extends DatabaseResult_Abstract
 // ---------------------------------------------------------------------------- //
 class Database_Mysqli extends Database_Abstract
 {
+    const DBTYPE = 'mysql';
+
     /** @var mysqli */
     protected $dbh;
     protected $dbname;

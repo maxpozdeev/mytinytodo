@@ -3,7 +3,7 @@
 /*
   Uncomment the line with MTT_DB_TYPE if you make clean install only.
   Leave it commented (with # at start) if you are upgrading from version before 1.7.
-  Select the database type: sqlite or mysql.
+  Select the database type: sqlite or mysql or postgres.
 */
 
 #define("MTT_DB_TYPE", "sqlite");

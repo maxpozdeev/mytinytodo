@@ -2,7 +2,7 @@
 
 /*
     This file is a part of myTinyTodo.
-    (C) Copyright 2009-2011,2020-2022 Max Pozdeev <maxpozdeev@gmail.com>
+    (C) Copyright 2009-2011,2020-2023 Max Pozdeev <maxpozdeev@gmail.com>
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
@@ -166,11 +166,7 @@ if ($ver == '')
     {
         check_post_stoken();
         # install database
-        try {
-            createAllTables($db, $dbtype);
-        } catch (Exception $e) {
-            exitMessage("<b>Error:</b> ". htmlarray($e->getMessage()));
-        }
+        createAllTables($db, $dbtype);  # throws
 
         # create default list
         $db->ex( "INSERT INTO {$db->prefix}lists (uuid,name,d_created,taskview) VALUES (?,?,?,?)", array(generateUUID(), 'Todo', time(), 1) );
@@ -259,8 +255,10 @@ function createAllTables($db, $dbtype)
 }
 
 /* ===== mysql ========================================================= */
+// TODO: use utf8mb4_unicode_520_ci collation
 function createMysqlTables($db)
 {
+    // Mysql does not support transactions in DDL
     $db->ex(
 "CREATE TABLE {$db->prefix}lists (
     `id` INT UNSIGNED NOT NULL auto_increment,
@@ -297,7 +295,7 @@ function createMysqlTables($db)
     UNIQUE KEY(`uuid`)
 ) CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci ");
 
-
+    // Max length of varchar of utf8mb4 with UNIQUE index is 191 until Mysql 5.7 and MariaDB 10.2
     $db->ex(
 "CREATE TABLE {$db->prefix}tags (
     `id` INT UNSIGNED NOT NULL auto_increment,
@@ -659,27 +657,33 @@ function testConnect(&$error)
     return $db;
 }
 
-function debugExceptionHandler($e)
+function debugExceptionHandler(Throwable $e)
 {
     echo '<br><b>Error ('. htmlspecialchars(get_class($e)) .'):</b> \''. htmlspecialchars($e->getMessage()) .'\' in <i>'. htmlspecialchars($e->getFile() .':'. $e->getLine()). '</i>'.
         "\n<pre>". htmlspecialchars($e->getTraceAsString()) . "</pre>\n";
     exit;
 }
 
-function myExceptionHandler($e)
+function myExceptionHandler(Throwable $e)
 {
-    echo '<br><b>Error:</b> '. htmlspecialchars($e->getMessage()) ;
+    $called = '';
+    foreach ($e->getTrace() as $a) {
+        if ($a['file'] == __FILE__) {
+            $called = " in <i>". htmlspecialchars(basename($a['file']). ':'. $a['line']). "</i>";
+            break;
+        }
+    }
+    echo '<br><b>Error:</b> \''. htmlspecialchars($e->getMessage()). '\''. $called ;
     exit;
 }
 
 function databaseTypeName(Database_Abstract $db)
 {
-    $s = get_class($db);
-    switch ($s) {
-        case "Database_Mysql": return "MySQL";
-        case "Database_Postgres": return "PostgreSQL";
-        case "Database_Sqlite3": return "SQLite";
-        default: return $s;
+    switch ($db::DBTYPE) {
+        case DBConnection::DBTYPE_MYSQL: return "MySQL";
+        case DBConnection::DBTYPE_POSTGRES: return "PostgreSQL";
+        case DBConnection::DBTYPE_SQLITE: return "SQLite";
+        default: throw new Exception("Unsupported database type: ". $db::DBTYPE);
     }
 }
 

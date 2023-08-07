@@ -57,6 +57,8 @@ class DatabaseResult_Mysql extends DatabaseResult_Abstract
 // ---------------------------------------------------------------------------- //
 class Database_Mysql extends Database_Abstract
 {
+    const DBTYPE = 'mysql';
+
     /** @var PDO */
     protected $dbh;
 
