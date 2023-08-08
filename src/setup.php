@@ -255,14 +255,16 @@ function createAllTables($db, $dbtype)
 }
 
 /* ===== mysql ========================================================= */
-// TODO: use utf8mb4_unicode_520_ci collation
-function createMysqlTables($db)
+function createMysqlTables(Database_Abstract $db)
 {
-    // Mysql does not support transactions in DDL
+    //$collation = hasMysqlUnicode520($db) ? 'utf8mb4_unicode_520_ci' : 'utf8mb4_unicode_ci';
+    $collation = 'utf8mb4_unicode_520_ci';
+
+    // Mysql does not support transactions while executing DDL
     $db->ex(
 "CREATE TABLE {$db->prefix}lists (
     `id` INT UNSIGNED NOT NULL auto_increment,
-    `uuid` CHAR(36) NOT NULL default '',
+    `uuid` CHAR(36) CHARACTER SET latin1 NOT NULL default '',
     `ow` INT NOT NULL default 0,
     `name` VARCHAR(250) NOT NULL default '',
     `d_created` INT UNSIGNED NOT NULL default 0,
@@ -273,13 +275,13 @@ function createMysqlTables($db)
     `extra` TEXT,
     PRIMARY KEY(`id`),
     UNIQUE KEY(`uuid`)
-) CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci ");
+) CHARSET=utf8mb4 COLLATE $collation ");
 
 
     $db->ex(
 "CREATE TABLE {$db->prefix}todolist (
     `id` INT UNSIGNED NOT NULL auto_increment,
-    `uuid` CHAR(36) NOT NULL default '',
+    `uuid` CHAR(36) CHARACTER SET latin1 NOT NULL default '',
     `list_id` INT UNSIGNED NOT NULL default 0,
     `d_created` INT UNSIGNED NOT NULL default 0,   /* time() timestamp */
     `d_completed` INT UNSIGNED NOT NULL default 0, /* time() timestamp */
@@ -293,7 +295,7 @@ function createMysqlTables($db)
     PRIMARY KEY(`id`),
     KEY(`list_id`),
     UNIQUE KEY(`uuid`)
-) CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci ");
+) CHARSET=utf8mb4 COLLATE $collation ");
 
     // Max length of varchar of utf8mb4 with UNIQUE index is 191 until Mysql 5.7 and MariaDB 10.2
     $db->ex(
@@ -302,7 +304,7 @@ function createMysqlTables($db)
     `name` VARCHAR(250) NOT NULL default '',
     PRIMARY KEY(`id`),
     UNIQUE KEY `name` (`name`)
-) CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci ");
+) CHARSET=utf8mb4 COLLATE $collation ");
 
 
     $db->ex(
@@ -313,30 +315,30 @@ function createMysqlTables($db)
     KEY(`tag_id`),
     KEY(`task_id`),
     KEY(`list_id`)  /* for tagcloud */
-) CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci ");
+) CHARSET=utf8mb4 COLLATE $collation ");
 
 
     $db->ex(
 "CREATE TABLE {$db->prefix}settings (
-    `param_key`   VARCHAR(100) NOT NULL default '',
+    `param_key`   VARCHAR(250) CHARACTER SET latin1 NOT NULL default '',
     `param_value` TEXT,
     UNIQUE KEY `param_key` (`param_key`)
-) CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ");
+) CHARSET=utf8mb4 COLLATE $collation ");
 
 
     $db->ex(
 "CREATE TABLE {$db->prefix}sessions (
-    `id`          VARCHAR(64) NOT NULL default '',  /* upto 64 bytes for sha256 */
+    `id`          VARCHAR(64) CHARACTER SET latin1 NOT NULL default '',  /* upto 64 bytes for sha256 */
     `data`        TEXT,
     `last_access` INT UNSIGNED NOT NULL default 0,  /* time() timestamp */
     `expires`     INT UNSIGNED NOT NULL default 0,  /* time() timestamp */
     UNIQUE KEY `id` (`id`)
-) CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ");
+) CHARSET=utf8mb4 COLLATE $collation ");
 }
 
 
 /* ===== postgres =============================================== */
-function createPostgresTables($db)
+function createPostgresTables(Database_Abstract $db)
 {
     $db->ex(
 "CREATE TABLE {$db->prefix}lists (
@@ -407,7 +409,7 @@ function createPostgresTables($db)
 
 
 /* ===== sqlite =============================================== */
-function createSqliteTables($db)
+function createSqliteTables(Database_Abstract $db)
 {
     $db->ex(
 "CREATE TABLE {$db->prefix}lists (
@@ -504,6 +506,12 @@ function databaseVersion(Database_Abstract $db): string
     if ( $db->tableFieldExists($db->prefix.'todolist', 'tags') ) return $v;
     $v = '1.8';
     return $v;
+}
+
+function hasMysqlUnicode520(Database_Abstract $db): bool
+{
+    $r = $db->sq("SHOW COLLATION WHERE Charset='utf8mb4' and Collation='utf8mb4_unicode_520_ci'");
+    return $r ? true : false;
 }
 
 function exitMessage($s)
@@ -812,8 +820,24 @@ function update_17_18(Database_Abstract $db, $dbtype)
         $db->ex("ALTER TABLE {$db->prefix}todolist DROP COLUMN tags");
         $db->ex("ALTER TABLE {$db->prefix}todolist DROP COLUMN tags_ids");
 
-        // if mysql db was created in v1.7.x then tags.name field has length of 50 instead of 250
-        $db->ex("ALTER TABLE {$db->prefix}tags CHANGE `name` `name` VARCHAR(250) NOT NULL default '' ");
+        // if mysql db was created in v1.7.x then
+        // tags.name field has length of 50 instead of 250,
+        // settings.param_key field has length of 100 instead of 250
+        $db->ex("ALTER TABLE {$db->prefix}lists MODIFY `uuid` CHAR(36) CHARACTER SET latin1 NOT NULL default '' ");
+        $db->ex("ALTER TABLE {$db->prefix}lists MODIFY `name` VARCHAR(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci NOT NULL default '' ");
+        $db->ex("ALTER TABLE {$db->prefix}lists MODIFY `extra` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci ");
+
+        $db->ex("ALTER TABLE {$db->prefix}todolist MODIFY `uuid` CHAR(36) CHARACTER SET latin1 NOT NULL default '' ");
+        $db->ex("ALTER TABLE {$db->prefix}todolist MODIFY `title` VARCHAR(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci NOT NULL default '' ");
+        $db->ex("ALTER TABLE {$db->prefix}todolist MODIFY `note` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci ");
+
+        $db->ex("ALTER TABLE {$db->prefix}tags MODIFY `name` VARCHAR(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci NOT NULL default '' ");
+
+        $db->ex("ALTER TABLE {$db->prefix}settings MODIFY `param_key` VARCHAR(250) CHARACTER SET latin1 NOT NULL default '' ");
+        $db->ex("ALTER TABLE {$db->prefix}settings MODIFY `param_value` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci ");
+
+        $db->ex("ALTER TABLE {$db->prefix}sessions MODIFY `id` VARCHAR(64) CHARACTER SET latin1 NOT NULL default '' ");
+        $db->ex("ALTER TABLE {$db->prefix}sessions MODIFY `data` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci ");
     }
 
     $db->ex("COMMIT");
