@@ -552,6 +552,8 @@ li.task-row.task-expanded .task-toggle { transform:rotate(90deg); }
 }
 .task-middle {
   flex-grow:1;
+  margin: -0.5rem 0px;
+  padding: 0.5rem 0px;
   margin-left: 5px;
   align-items: baseline;
   line-height: 1.2rem;
@@ -560,7 +562,10 @@ li.task-row.task-expanded .task-toggle { transform:rotate(90deg); }
 .task-middle-top {
   display: flex;
 }
-.task-actions { flex:0 0 1rem; margin-left:5px; }
+.task-actions {
+  flex:0 0 1rem;
+  margin-left:5px;
+}
 
 .task-left label { min-width:18px; text-align:center; } /* Safari has small checkboxes */
 .task-date {
