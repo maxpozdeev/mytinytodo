@@ -194,6 +194,7 @@
     "denied": "Доступ запрещен",
     "listNotFound": "Список не найден",
     "noPublicLists": "Нет опубликованных списков",
+    "noTags": "Нет тегов",
     "invalidpass": "Неверный пароль",
     "addList": "Новый список",
     "addListDefault": "Todo",

@@ -194,6 +194,7 @@
     "denied": "Access denied",
     "listNotFound": "List not found",
     "noPublicLists": "No public tasks",
+    "noTags": "No tags",
     "invalidpass": "Wrong password",
     "addList": "Create new list",
     "addListDefault": "Todo",

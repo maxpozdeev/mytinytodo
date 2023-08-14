@@ -126,6 +126,7 @@ class Lang
             'denied',
             'listNotFound',
             'noPublicLists',
+            'noTags',
             'invalidpass',
             'addList',
             'addListDefault',

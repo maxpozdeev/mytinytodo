@@ -711,7 +711,11 @@ li.task-row.task-completed .task-note-block .task-note { text-decoration:line-th
   padding: 5px;
 }
 #page_taskedit .form-row-short { float:left; margin-right:12px; }
-#alltags .tag { font-weight:bold; color:var(--color-tasklist-tag); }
+#alltags .tag {
+  color:var(--color-tasklist-tag);
+  text-decoration: underline;
+  cursor: pointer;
+}
 #alltags .tag:hover {
   background-color:var(--color-taglist-text-hover-bg);
   color: var(--color-taglist-text-hover);

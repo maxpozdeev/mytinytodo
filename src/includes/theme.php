@@ -163,7 +163,7 @@ $().ready(function(){
     </td>
   </tr></table>
 </div>
-<div class="form-row" id="alltags" style="display:none;"><?php _e('alltags');?> <span class="tags-list"></span></div>
+<div class="form-row" id="alltags" style="display:none;"></div>
 <div class="form-row form-bottom-buttons">
   <button type="submit"><?php _e('save');?></button>
   <button class="mtt-back-button"><?php _e('cancel');?></button>

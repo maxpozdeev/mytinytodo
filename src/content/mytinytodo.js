@@ -1839,11 +1839,12 @@ function toggleEditAllTags(show)
 
 function fillEditAllTags()
 {
-    var a = [];
+    const a = [];
     tagsList.forEach( (item) => {
-        a.push('<a href="#" class="tag" data-tag="' + item.tag +'">' + item.tag + '</a>');
+        a.push('<span class="tag" data-tag="' + item.tag +'">' + item.tag + '</span>');
     });
-    $('#alltags .tags-list').html(a.join(', '));
+    const content = (a.length == 0)  ?  _mtt.lang.get('noTags')  :  a.join(', ');
+    $('#alltags').html(content);
     $('#alltags').show();
 };
 
@@ -1864,11 +1865,14 @@ function loadTags(listId, callback)
     _mtt.db.request('tagCloud', {list:listId}, function(json){
         if (!parseInt(json.total)) tagsList = [];
         else tagsList = json.items;
-        var cloud = '';
+        let cloud = '';
         tagsList.forEach( item => {
             // item.tag is escaped with htmlspecialchars()
             cloud += ' <span class="tag" data-tag="' + item.tag + '" data-tag-id="' + item.id + '">' + item.tag + '</span>';
         });
+        if (cloud == '') {
+            cloud = _mtt.lang.get('noTags');
+        }
         $('#tagcloudcontent').html(cloud)
         flag.tagsChanged = false;
         callback();
