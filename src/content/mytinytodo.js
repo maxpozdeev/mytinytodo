@@ -299,6 +299,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
         });
 
         $('#tagcloudcontent').on('click', '.tag', function(event){
+            //tag is not escaped
             addFilterTag( this.dataset.tag, this.dataset.tagId, (event.metaKey || event.ctrlKey ? true : false) );
             if(_mtt.menus.tagcloud) _mtt.menus.tagcloud.close();
             return false;
@@ -493,6 +494,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
         $('#tasklist').on('click', '.tag', function(event){
             clearTimeout(_mtt.timers.previewtag);
             $('#tasklist li').removeClass('not-in-tagpreview');
+            //tag is not escaped
             addFilterTag($(this).attr('tag'), $(this).attr('tagid'), (event.metaKey || event.ctrlKey ? true : false) );
             return false;
         });
@@ -908,20 +910,22 @@ var mytinytodo = window.mytinytodo = _mtt = {
         },
         addTag: function(tagId, tag, exclude)
         {
-            for(var i in this._filters) {
-                if(this._filters[i].tagId && this._filters[i].tagId == tagId) return false;
+            tagId += 0;
+            for (let i in this._filters) {
+                if (this._filters[i].tagId && this._filters[i].tagId == tagId)
+                    return false;
             }
             this._filters.push({tagId:tagId, tag:tag, exclude:exclude});
-            var tagHtml = this.prepareTagHtml(tagId, tag, ['tag-filter', 'tag-id-'+tagId, exclude ? 'tag-filter-exclude' : '']) ;
+            const tagHtml = this.prepareTagHtml(tagId, tag, ['tag-filter', 'tag-id-'+tagId, exclude ? 'tag-filter-exclude' : '']) ;
             $('#mtt-tag-filters').append(tagHtml);
             $('#mtt-tag-toolbar').show();
             return true;
         },
         cancelTag: function(tagId)
         {
-            for(var i in this._filters) {
-                if(this._filters[i].tagId && this._filters[i].tagId == tagId) {
-                    this._filters.splice(i,1);
+            for (let i in this._filters) {
+                if (this._filters[i].tagId && this._filters[i].tagId == tagId) {
+                    this._filters.splice(i, 1);
                     $('#mtt-tag-filters .tag-filter.tag-id-'+tagId).remove();
                     if (this._filters.length == 0) {
                         $('#mtt-tag-toolbar').hide();
@@ -933,18 +937,21 @@ var mytinytodo = window.mytinytodo = _mtt = {
         },
         getTags: function(withExcluded)
         {
-            var a = [];
-            for(var i in this._filters) {
-                if(this._filters[i].tagId) {
-                    if(this._filters[i].exclude && withExcluded) a.push('^'+ this._filters[i].tag);
-                    else if(!this._filters[i].exclude) a.push(this._filters[i].tag)
+            let a = [];
+            for (let i in this._filters) {
+                if (this._filters[i].tagId) {
+                    if (this._filters[i].exclude && withExcluded)
+                        a.push('^'+ this._filters[i].tag);
+                    else if (!this._filters[i].exclude)
+                        a.push(this._filters[i].tag)
                 }
             }
             return a.join(', ');
         },
         prepareTagHtml: function(tagId, tag, classes)
         {
-            return '<span class="' + classes.join(' ') + ' mtt-filter-close" tagid="' + tagId + '">' + tag + '<span class="tag-filter-btn"></span></span>';
+            // tag is not escaped
+            return '<span class="' + classes.join(' ') + ' mtt-filter-close" tagid="' + tagId + '">' + escapeHtml(tag) + '<span class="tag-filter-btn"></span></span>';
         }
     },
 
@@ -2462,6 +2469,17 @@ function dehtml(str)
 {
     return str.replace(/&quot;/g, '"').replace(/&#039;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
 };
+
+function escapeHtml(str) {
+    const map = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#039;'
+    };
+    return str.replace(/[&<>"']/g, (m) => map[m]);
+}
 
 
 function slmenuOnListsLoaded()
