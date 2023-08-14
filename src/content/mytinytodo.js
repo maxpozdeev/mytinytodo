@@ -463,13 +463,14 @@ var mytinytodo = window.mytinytodo = _mtt = {
         });
 
         $('#tasklist').on('dblclick', '> li.task-row .task-middle, > li.task-row .task-note-block', function(){
-            var id = parseInt(getLiTaskId(this));
+            let id = parseInt(getLiTaskId(this));
             if (id) {
                 //clear selection
-                if (document.selection && document.selection.empty && document.selection.createRange().text) document.selection.empty();
-                else if(window.getSelection) window.getSelection().removeAllRanges();
-
-                editTask(parseInt(id));
+                if (document.selection && document.selection.empty && document.selection.createRange().text)
+                    document.selection.empty();
+                else if (window.getSelection)
+                    window.getSelection().removeAllRanges();
+                editTask(id);
             }
         });
 
@@ -874,6 +875,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
     pageBack: function(clicked)
     {
         hideAlert();
+        $(document).off('keydown.mttback');
         // If clicked on back button in settings we'll use history navigation
         if ( clicked &&
              this.pages.current && this.pages.current.page == 'ajax' && this.pages.current.pageClass == 'settings' &&
@@ -1773,14 +1775,14 @@ function clearEditForm()
 
 function showEditForm(isAdd)
 {
-    var form = document.getElementById('taskedit_form');
-    if(isAdd)
+    let form = document.getElementById('taskedit_form');
+    if (isAdd)
     {
         clearEditForm();
         $('#page_taskedit').removeClass('mtt-inedit').addClass('mtt-inadd');
         form.isadd.value = 1;
-        if(_mtt.options.autotag) form.tags.value = _mtt.filter.getTags();
-        if($('#task').val() != '')
+        if (_mtt.options.autotag) form.tags.value = _mtt.filter.getTags();
+        if ($('#task').val() != '')
         {
             _mtt.db.request('parseTaskStr', { list:curList.id, title:$('#task').val(), tag:_mtt.filter.getTags() }, function(json){
                 if(!json) return;
@@ -1796,6 +1798,11 @@ function showEditForm(isAdd)
         $('#page_taskedit').removeClass('mtt-inadd').addClass('mtt-inedit');
         form.isadd.value = 0;
     }
+    $(document).on('keydown.mttback', function(event) {
+        if (event.keyCode == 27) { //Esc pressed
+            _mtt.pageBack(true);
+        }
+    });
 
     flag.editFormChanged = false;
     _mtt.pageSet('taskedit');
