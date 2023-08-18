@@ -38,11 +38,15 @@ class Updater
         }
         $a = json_decode($json, true) ?? [];
         $ret = [];
-        if ( isset($a['name']) && isset($a['assets']) &&
+        $ver = '';
+        if (isset($a['tag_name'])) {
+            $ver = substr($a['tag_name'], 1); //remove first 'v'
+        }
+        if ($ver != '' && isset($a['assets']) &&
              is_array($a['assets']) && count($a['assets']) > 0 &&
              ($asset = $a['assets'][0]) && isset($asset['browser_download_url']) )
         {
-            $ret['version'] = substr($a['name'], 1); //remove first 'v'
+            $ret['version'] = $ver;
             $ret['download'] = $asset['browser_download_url'];
         }
         else {
