@@ -303,6 +303,7 @@ $().ready(function(){
 <div id="footer">
   <div id="footer_content">
     <span><?php _e('powered_by');?> <a href="http://www.mytinytodo.net/" class="powered-by-link">myTinyTodo</a>&nbsp;<?php mttinfo('version'); ?></span>
+    <?php do_action('theme_footer_content_end'); ?>
   </div>
 </div>
 
