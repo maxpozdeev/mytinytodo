@@ -1010,6 +1010,7 @@ li.mtt-item-hidden { display:none; }
   padding-top: 4px;
 }
 .mtt-settings-table .in350 { min-width:350px; }
+.mtt-settings-table .inmax { width:100%; }
 .mtt-settings-table textarea.in350 { height:400px; }
 .mtt-settings-table textarea.inmax { height:400px; width:100%; }
 .mtt-settings-table input,
@@ -1060,9 +1061,15 @@ li.mtt-item-hidden { display:none; }
 #modal {
   position: fixed;
   z-index: 1000;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#modal .modal-box {
   min-width: 350px;
   max-width: 1000px; /* same as #mtt */
   border: 1px solid var(--color-menu-border);
@@ -1204,11 +1211,6 @@ li.mtt-item-hidden { display:none; }
   .form-bottom-buttons > * {
     padding: 7px;
     border-radius: 14px;
-  }
-
-  #modal {
-    min-width: auto;
-    width: 90%;
   }
 
 } /* end of @media min 600px */
