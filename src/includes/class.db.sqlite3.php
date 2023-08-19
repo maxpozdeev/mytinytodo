@@ -305,6 +305,7 @@ class Database_Sqlite3 extends Database_Abstract
             'æ' => 'ae',  // "U+00e6"
             'Œ' => 'OE',  // "U+0152"
             'œ' => 'oe',  // "U+0153"
+            'Ł' => 'L', 'ł' => 'L'  //U+141 and U+142
         ];
 
         $len = count($chars);
