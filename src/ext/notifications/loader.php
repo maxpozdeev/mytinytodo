@@ -74,7 +74,7 @@ class NotificationsExtension extends MTTExtension implements MTTHttpApiExtender,
         $prefs = self::preferences();
         $emails =  htmlspecialchars( implode(', ', $prefs['emails']) );
         $mailfrom = htmlspecialchars($prefs['mailfrom'] ?? '');
-        $mailfromDefault = htmlspecialchars( ini_get('sendmail_from') ?: '' );
+        $mailfromDefault = htmlspecialchars(Notify\Sender::suggestedMailFrom());
         $numberOfChats = count($prefs['chats']);
 
         $token = $prefs['token'] ?? '';

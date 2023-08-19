@@ -5,6 +5,8 @@
     "notifications.bot_not_configured": "Бот не настроен",
     "notifications.h_email": "E-Mail:",
     "notifications.d_email": "Разделите несколько адресов c помощью запятой.",
+    "notifications.h_mailfrom": "Адрес отправителя:",
+    "notifications.d_mailfrom": "Этот адрес будет указан как адрес отправителя в письмах с уведомлениями.",
     "notifications.h_telegram": "Telegram",
     "notifications.h_token": "Токен для бота:",
     "notifications.d_token": "Токен для телеграм-бота, полученный от @BotFather.",

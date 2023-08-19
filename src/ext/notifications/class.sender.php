@@ -111,14 +111,7 @@ class Sender
             $fromAddr = str_replace( ["\r", "\n", ":", "\"", "'", "?"], '', $this->prefs['mailfrom']);
         }
         else {
-            $host = parse_url(get_unsafe_mttinfo('url'), PHP_URL_HOST);
-            $host = preg_replace('/^(www\.)/', '', $host);
-            if (function_exists('posix_getuid') && false !== ($userinfo = posix_getpwuid(posix_getuid())) ) {
-                $fromAddr = $userinfo['name']. '@'. $host;
-            }
-            else {
-                $fromAddr = "mytinytodo@$host";
-            }
+            $fromAddr = self::suggestedMailFrom();
         }
         $from =  "myTinyTodo <$fromAddr>";
         $mttTitle =  str_replace( ["\r","\n"], '', get_unsafe_mttinfo('title') );
@@ -193,6 +186,17 @@ class Sender
         $fh = popen("php -f $dir/cli-notify.php $outfile", 'w');
         fwrite($fh, $hash."\n".$text);
         fclose($fh);
+    }
+
+    public static function suggestedMailFrom(): string
+    {
+        $host = parse_url(get_unsafe_mttinfo('url'), PHP_URL_HOST);
+        $host = preg_replace('/^(www\.)/', '', $host);
+        //$host = gethostname();
+        if (function_exists('posix_getuid') && false !== ($userinfo = posix_getpwuid(posix_getuid())) ) {
+            return $userinfo['name']. '@'. $host;
+        }
+        return "mytinytodo@$host";
     }
 
 }
