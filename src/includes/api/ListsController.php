@@ -118,6 +118,10 @@ class ListsController extends ApiController {
         $t = array();
         $t['total'] = 0;
         $id = (int)$id;
+        $list = null;
+        if (MTTNotificationCenter::hasObserversForNotification(MTTNotification::didDeleteList)) {
+            $list = $this->getListRowById($id);
+        }
         $db->ex("BEGIN");
         $db->ex("DELETE FROM {$db->prefix}lists WHERE id=$id");
         $t['total'] = $db->affected();
@@ -126,6 +130,9 @@ class ListsController extends ApiController {
             $db->ex("DELETE FROM {$db->prefix}todolist WHERE list_id=$id");
         }
         $db->ex("COMMIT");
+        if ($t['total'] && MTTNotificationCenter::hasObserversForNotification(MTTNotification::didDeleteList)) {
+            MTTNotificationCenter::postNotification(MTTNotification::didDeleteList, $list);
+        }
         $this->response->data = $t;
     }
 
@@ -180,6 +187,15 @@ class ListsController extends ApiController {
             'hidden' => $hidden,
             'feedKey' => '',
         );
+    }
+
+    private function getListRowById(int $id)
+    {
+        $r = DBCore::default()->getListById($id);
+        if (!$r) {
+            throw new Exception("Failed to fetch list data");
+        }
+        return $this->prepareList($r, true);
     }
 
     private function prepareList($row, bool $haveWriteAccess): array
@@ -331,6 +347,13 @@ class ListsController extends ApiController {
         $db->ex("DELETE FROM {$db->prefix}todolist WHERE list_id=$listId and compl=1");
         $t['total'] = $db->affected();
         $db->ex("COMMIT");
+        if (MTTNotificationCenter::hasObserversForNotification(MTTNotification::didDeleteCompletedInList)) {
+            $list = $this->getListRowById($listId);
+            MTTNotificationCenter::postNotification(MTTNotification::didDeleteCompletedInList, [
+                'total' => $t['total'],
+                'list' => $list
+            ]);
+        }
         return $t;
     }
 

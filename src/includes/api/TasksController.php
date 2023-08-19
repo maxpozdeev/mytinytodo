@@ -175,6 +175,10 @@ class TasksController extends ApiController {
     {
         checkWriteAccess();
         $id = (int)$id;
+        $task = null;
+        if (MTTNotificationCenter::hasObserversForNotification(MTTNotification::didDeleteTask)) {
+            $task = $this->getTaskRowById($id);
+        }
         $db = DBConnection::instance();
         $db->ex("BEGIN");
         $db->ex("DELETE FROM {$db->prefix}tag2task WHERE task_id=$id");
@@ -182,6 +186,9 @@ class TasksController extends ApiController {
         $db->dq("DELETE FROM {$db->prefix}todolist WHERE id=$id");
         $deleted = $db->affected();
         $db->ex("COMMIT");
+        if ($deleted && MTTNotificationCenter::hasObserversForNotification(MTTNotification::didDeleteTask)) {
+            MTTNotificationCenter::postNotification(MTTNotification::didDeleteTask, $task);
+        }
         $t = array();
         $t['total'] = $deleted;
         $t['list'][] = array('id' => $id);
@@ -349,6 +356,7 @@ class TasksController extends ApiController {
                 array($title, $note, $prio, $duedate, time()) );
         $db->ex("COMMIT");
         $task = $this->getTaskRowById($id);
+        MTTNotificationCenter::postNotification(MTTNotification::didEditTask, ['task' => $task]);
         $t['list'][] = $task;
         $t['total'] = 1;
         return $t;
@@ -359,6 +367,13 @@ class TasksController extends ApiController {
         $fromId = (int)($this->req->jsonBody['from'] ?? 0);
         $toId = (int)($this->req->jsonBody['to'] ?? 0);
         $result = $this->doMoveTask($id, $toId);
+        if ($result && MTTNotificationCenter::hasObserversForNotification(MTTNotification::didEditTask)) {
+            $task = $this->getTaskRowById($id);
+            MTTNotificationCenter::postNotification(MTTNotification::didEditTask, [
+                'property' => 'list',
+                'task' => $task
+            ]);
+        }
         $t = array('total' => $result ? 1 : 0);
         if ($fromId == -1 && $result) {
             $t['list'][] = $this->getTaskRowById($id);
@@ -398,9 +413,11 @@ class TasksController extends ApiController {
         $dateCompleted = $compl ? $date : 0;
         $db->dq("UPDATE {$db->prefix}todolist SET compl=$compl,ow=$ow,d_completed=?,d_edited=? WHERE id=$id",
                     array($dateCompleted, $date) );
+        $task = $this->getTaskRowById($id);
+        MTTNotificationCenter::postNotification(MTTNotification::didCompleteTask, $task);
         $t = array();
         $t['total'] = 1;
-        $t['list'][] = $this->getTaskRowById($id);
+        $t['list'][] = $task;
         return $t;
     }
 
@@ -410,6 +427,13 @@ class TasksController extends ApiController {
         $note = $this->req->jsonBody['note'] ?? '';
         $note = str_replace("\r\n", "\n", $note);
         $db->dq("UPDATE {$db->prefix}todolist SET note=?,d_edited=? WHERE id=$id", array($note, time()) );
+        if (MTTNotificationCenter::hasObserversForNotification(MTTNotification::didEditTask)) {
+            $task = $this->getTaskRowById($id);
+            MTTNotificationCenter::postNotification(MTTNotification::didEditTask, [
+                'property' => 'note',
+                'task' => $task
+            ]);
+        }
         $t = array();
         $t['total'] = 1;
         $t['list'][] = array('id'=>$id, 'note'=> noteMarkup($note), 'noteText'=>(string)$note);
@@ -423,6 +447,13 @@ class TasksController extends ApiController {
         if ($prio < -1) $prio = -1;
         elseif ($prio > 2) $prio = 2;
         $db->ex("UPDATE {$db->prefix}todolist SET prio=$prio,d_edited=? WHERE id=$id", array(time()) );
+        if (MTTNotificationCenter::hasObserversForNotification(MTTNotification::didEditTask)) {
+            $task = $this->getTaskRowById($id);
+            MTTNotificationCenter::postNotification(MTTNotification::didEditTask, [
+                'property' => 'priority',
+                'task' => $task
+            ]);
+        }
         $t = array();
         $t['total'] = 1;
         $t['list'][] = array('id'=>$id, 'prio'=>$prio);

@@ -55,6 +55,18 @@ class MTTNotificationCenter
         self::$observers[$notification][] = $callback;
     }
 
+    /**
+     *
+     * @param string $notification
+     * @return bool
+     */
+    public static function hasObserversForNotification(string $notification): bool
+    {
+        if (isset(self::$observers[$notification]) && count(self::$observers[$notification]) > 0) {
+            return true;
+        }
+        return false;
+    }
 
     public static function postNotification(string $notification, $object)
     {
@@ -100,7 +112,12 @@ abstract class MTTNotification
 {
     const didFinishRequest = 'didFinishRequest';
     const didCreateTask = 'didCreateTask';
+    const didEditTask = 'didEditTask';
+    const didDeleteTask = 'didDeleteTask';
+    const didCompleteTask = 'didCompleteTask';
     const didCreateList = 'didCreateList';
+    const didDeleteList = 'didDeleteList';
+    const didDeleteCompletedInList = 'didDeleteCompletedInList';
 }
 
 function add_action(string $notification, callable $callback)
