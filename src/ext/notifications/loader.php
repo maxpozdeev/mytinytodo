@@ -117,13 +117,13 @@ $warning
  <div class="th"> {$e('notifications.h_email')}
   <div class="descr">{$e('notifications.d_email')}</div>
  </div>
- <div class="td"> <input name="emails" value="$emails" class="in350" autocomplete="off" /> </div>
+ <div class="td"> <input name="emails" value="$emails" class="in350" autocomplete="off"> </div>
 </div>
 <div class="tr">
  <div class="th"> {$e('notifications.h_mailfrom')}
   <div class="descr">{$e('notifications.d_mailfrom')}</div>
  </div>
- <div class="td"> <input name="mailfrom" value="$mailfrom" class="in350" autocomplete="email" placeholder="$mailfromDefault" /> </div>
+ <div class="td"> <input name="mailfrom" value="$mailfrom" class="in350" autocomplete="email" placeholder="$mailfromDefault"> </div>
 </div>
 <div class="tr">
  <div class="th"> {$e('notifications.h_telegram')} </div>
@@ -132,7 +132,7 @@ $warning
  <div class="th"> {$e('notifications.h_token')}
   <div class="descr">{$e('notifications.d_token')}</div>
  </div>
- <div class="td"> <input name="token" value="$token" class="in350" autocomplete="off" /> </div>
+ <div class="td"> <input name="token" value="$token" class="in350" autocomplete="off"> </div>
 </div>
 <div class="tr">
  <div class="th"> {$e('notifications.h_active_chats')}

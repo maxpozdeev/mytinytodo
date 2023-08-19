@@ -6,18 +6,18 @@
 <html data-appearance="<?php mttinfo('appearance'); ?>">
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title><?php mttinfo('title'); ?></title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="icon" type="image/gif" href="<?php mttinfo('theme_url'); ?>images/logo.gif" />
-  <link rel="stylesheet" type="text/css" href="<?php mttinfo('theme_url'); ?>style.css?v=<?php mttinfo('version'); ?>" media="all" />
-  <link rel="stylesheet" type="text/css" href="<?php mttinfo('theme_url'); ?>markdown.css?v=<?php mttinfo('version'); ?>" media="all" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/gif" href="<?php mttinfo('theme_url'); ?>images/logo.gif">
+  <link rel="stylesheet" type="text/css" href="<?php mttinfo('theme_url'); ?>style.css?v=<?php mttinfo('version'); ?>" media="all">
+  <link rel="stylesheet" type="text/css" href="<?php mttinfo('theme_url'); ?>markdown.css?v=<?php mttinfo('version'); ?>" media="all">
   <?php if (get_mttinfo('appearance') == 'system'): ?>
-  <link rel="stylesheet" type="text/css" href="<?php mttinfo('theme_url'); ?>dark.css?v=<?php mttinfo('version'); ?>" media="screen" />
+  <link rel="stylesheet" type="text/css" href="<?php mttinfo('theme_url'); ?>dark.css?v=<?php mttinfo('version'); ?>" media="screen">
   <?php endif; ?>
-  <link rel="stylesheet" type="text/css" href="<?php mttinfo('theme_url'); ?>print.css?v=<?php mttinfo('version'); ?>" media="print" />
+  <link rel="stylesheet" type="text/css" href="<?php mttinfo('theme_url'); ?>print.css?v=<?php mttinfo('version'); ?>" media="print">
   <?php if(Config::get('rtl')): ?>
-  <link rel="stylesheet" type="text/css" href="<?php mttinfo('theme_url'); ?>style_rtl.css?v=<?php mttinfo('version'); ?>" media="all" />
+  <link rel="stylesheet" type="text/css" href="<?php mttinfo('theme_url'); ?>style_rtl.css?v=<?php mttinfo('version'); ?>" media="all">
   <?php endif; ?>
   <?php do_action('theme_head_end'); ?>
 </head>
@@ -82,7 +82,7 @@ $().ready(function(){
 <div class="taskbox-c">
   <div class="mtt-taskbox">
    <form id="newtask_form" method="post">
-     <input type="text" name="task" value="" maxlength="250" id="task" autocomplete="off" placeholder="<?php _e('htab_newtask');?>"/>
+     <input type="text" name="task" value="" maxlength="250" id="task" autocomplete="off" placeholder="<?php _e('htab_newtask');?>">
      <div id="newtask_submit" class="mtt-taskbox-icon" title="<?php _e('btn_add');?>"></div>
    </form>
   </div>
@@ -90,7 +90,7 @@ $().ready(function(){
 </div>
 <div class="searchbox-c">
   <div class="mtt-searchbox">
-    <input type="text" name="search" value="" maxlength="250" id="search" autocomplete="off" />
+    <input type="text" name="search" value="" maxlength="250" id="search" autocomplete="off">
     <div class="mtt-searchbox-icon mtt-icon-search"></div>
     <div id="search_close" class="mtt-searchbox-icon mtt-icon-cancelsearch"></div>
   </div>
@@ -139,8 +139,8 @@ $().ready(function(){
 </div>
 
 <form id="taskedit_form" name="edittask" method="post">
-<input type="hidden" name="isadd" value="0" />
-<input type="hidden" name="id" value="" />
+<input type="hidden" name="isadd" value="0">
+<input type="hidden" name="id" value="">
 <div class="form-row form-row-short">
   <span class="h"><?php _e('priority');?></span>
   <select name="prio" class="form-input">
@@ -149,14 +149,14 @@ $().ready(function(){
 </div>
 <div class="form-row form-row-short">
   <span class="h"><?php _e('due');?> </span>
-  <input name="duedate" id="duedate" value="" class="in100 form-input" title="Y-M-D, M/D/Y, D.M.Y, M/D, D.M" autocomplete="off" type="text" />
+  <input name="duedate" id="duedate" value="" class="in100 form-input" title="Y-M-D, M/D/Y, D.M.Y, M/D, D.M" autocomplete="off" type="text">
 </div>
 <div class="form-row-short-end"></div>
-<div class="form-row"><div class="h"><?php _e('task');?></div> <input type="text" name="task" value="" class="in500 form-input" maxlength="250" autocomplete="off" /></div>
+<div class="form-row"><div class="h"><?php _e('task');?></div> <input type="text" name="task" value="" class="in500 form-input" maxlength="250" autocomplete="off"></div>
 <div class="form-row"><div class="h"><?php _e('note');?></div> <textarea name="note" class="in500 form-input" spellcheck="false"></textarea></div>
 <div class="form-row"><div class="h"><?php _e('tags');?></div>
   <table cellspacing="0" cellpadding="0" width="100%"><tr>
-    <td><input type="text" name="tags" id="edittags" value="" class="in500 form-input" maxlength="250" autocomplete="off" /></td>
+    <td><input type="text" name="tags" id="edittags" value="" class="in500 form-input" maxlength="250" autocomplete="off"></td>
     <td class="alltags-cell">
       <a href="#" id="alltags_show"><?php _e('alltags_show');?></a>
       <a href="#" id="alltags_hide" style="display:none"><?php _e('alltags_hide');?></a>
@@ -184,7 +184,7 @@ $().ready(function(){
   <form id="login_form">
     <div class="auth-content">
       <div class="h"><?php _e('password');?></div>
-      <div><input type="password" name="password" id="password" class="form-input" /></div>
+      <div><input type="password" name="password" id="password" class="form-input"></div>
     </div>
     <div class="form-bottom-buttons">
         <button type="submit"><?php _e('btn_login'); ?></button>
@@ -214,7 +214,7 @@ $().ready(function(){
 
 <div id="tagcloud" style="display:none">
   <div class="actions">
-    <div><input id="tagcloudAllLists" type="checkbox" /> <label for="tagcloudAllLists"><?php _e('showTagsFromAllLists');?></label></div>
+    <div><input id="tagcloudAllLists" type="checkbox"> <label for="tagcloudAllLists"><?php _e('showTagsFromAllLists');?></label></div>
     <div id="tagcloudcancel" class="mtt-img-button"><span></span></div>
   </div>
   <div class="content">
@@ -291,7 +291,7 @@ $().ready(function(){
   <div class="modal-box">
     <div class="modal-content">
       <div id="modalMessage"></div>
-      <input id="modalTextInput" type="text" />
+      <input id="modalTextInput" type="text">
     </div>
     <div class="modal-bottom form-bottom-buttons">
       <button type="submit" id="btnModalOk"><?php _e('action_ok');?></button>

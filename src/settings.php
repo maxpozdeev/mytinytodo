@@ -11,7 +11,7 @@ require_once('./init.php');
 $lang = Lang::instance();
 
 if ( !is_logged() ) {
-    die("Access denied!<br/> Disable password protection or Log in.");
+    die("Access denied!<br> Disable password protection or Log in.");
 }
 
 if(isset($_POST['save']))

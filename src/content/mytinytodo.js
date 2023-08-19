@@ -1176,7 +1176,7 @@ function prepareTaskBlocks(item)
         '<div class="task-block">' +
             '<div class="task-left">' +
                 '<div class="task-toggle"></div>' +
-                '<label><input type="checkbox" '+(flag.readOnly?'disabled="disabled"':'')+(item.compl?'checked="checked"':'')+'/></label>' +
+                '<label><input type="checkbox" '+(flag.readOnly?'disabled="disabled"':'')+(item.compl?'checked="checked"':'')+'></label>' +
             "</div>\n" +
 
             '<div class="task-middle">' +
