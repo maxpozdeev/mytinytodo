@@ -48,7 +48,7 @@ class NotificationObserver implements \MTTNotificationObserverInterface
 
     private function processDelayed()
     {
-        $db = DBConnection::instance();
+        //$db = DBConnection::instance();
         $useCli = !function_exists('fastcgi_finish_request');
         $sender = new Sender( $this->prefs, $useCli );
         foreach ($this->delayedNotifications as $item) {

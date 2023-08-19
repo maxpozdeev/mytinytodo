@@ -106,9 +106,20 @@ class Sender
 
     private function sendEmails(string $text, string $subject)
     {
-        $host = parse_url(get_unsafe_mttinfo('url'), PHP_URL_HOST);
-        $host = preg_replace('/^(www\.)/', '', $host);
-        $fromAddr = "mytinytodo@$host";
+        $fromAddr = '';
+        if (isset($this->prefs['mailfrom']) && $this->prefs['mailfrom'] != '') {
+            $fromAddr = str_replace( ["\r", "\n", ":", "\"", "'", "?"], '', $this->prefs['mailfrom']);
+        }
+        else {
+            $host = parse_url(get_unsafe_mttinfo('url'), PHP_URL_HOST);
+            $host = preg_replace('/^(www\.)/', '', $host);
+            if (function_exists('posix_getuid') && false !== ($userinfo = posix_getpwuid(posix_getuid())) ) {
+                $fromAddr = $userinfo['name']. '@'. $host;
+            }
+            else {
+                $fromAddr = "mytinytodo@$host";
+            }
+        }
         $from =  "myTinyTodo <$fromAddr>";
         $mttTitle =  str_replace( ["\r","\n"], '', get_unsafe_mttinfo('title') );
         $subject = "[$mttTitle] $subject";
@@ -126,7 +137,7 @@ class Sender
             $headers[] = 'Content-Transfer-Encoding: 8bit';
         }
         foreach ($this->prefs['emails'] as $email) {
-            mail($email, $subject, $text, implode("\r\n", $headers), "-f$fromAddr");
+            mail($email, $subject, $text, implode("\r\n", $headers));
         }
     }
 

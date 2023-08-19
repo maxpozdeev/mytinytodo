@@ -73,6 +73,8 @@ class NotificationsExtension extends MTTExtension implements MTTHttpApiExtender,
         $ext = htmlspecialchars(self::bundleId);
         $prefs = self::preferences();
         $emails =  htmlspecialchars( implode(', ', $prefs['emails']) );
+        $mailfrom = htmlspecialchars($prefs['mailfrom'] ?? '');
+        $mailfromDefault = htmlspecialchars( ini_get('sendmail_from') ?: '' );
         $numberOfChats = count($prefs['chats']);
 
         $token = $prefs['token'] ?? '';
@@ -118,6 +120,12 @@ $warning
  <div class="td"> <input name="emails" value="$emails" class="in350" autocomplete="off" /> </div>
 </div>
 <div class="tr">
+ <div class="th"> {$e('notifications.h_mailfrom')}
+  <div class="descr">{$e('notifications.d_mailfrom')}</div>
+ </div>
+ <div class="td"> <input name="mailfrom" value="$mailfrom" class="in350" autocomplete="email" placeholder="$mailfromDefault" /> </div>
+</div>
+<div class="tr">
  <div class="th"> {$e('notifications.h_telegram')} </div>
 </div>
 <div class="tr">
@@ -154,7 +162,8 @@ EOD;
         }
         $token = $params['token'] ?? '';
         $emails = $params['emails'] ?? '';
-        if (!is_string($token) || !is_string($emails)) {
+        $mailfrom = $params['mailfrom'] ?? '';
+        if (!is_string($token) || !is_string($emails) || !is_string($mailfrom)) {
             throw new Exception("Invalid format");
         }
 
@@ -167,6 +176,7 @@ EOD;
         $prefs['token'] = $token;
         $prefs['code'] = null;
         $prefs['emails'] = [];
+        $prefs['mailfrom'] = str_replace(["\r", "\n", ":", "\"", "'", "?"], '', trim($mailfrom));
 
         // validate emails
         if ($emails != '') {

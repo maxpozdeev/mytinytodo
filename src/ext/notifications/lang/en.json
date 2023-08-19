@@ -5,6 +5,8 @@
     "notifications.bot_not_configured": "Bot is not configured",
     "notifications.h_email": "E-Mail:",
     "notifications.d_email": "Separate multiple addresses with comma.",
+    "notifications.h_mailfrom": "Mail from:",
+    "notifications.d_mailfrom": "Use this e-mail as sender's address.",
     "notifications.h_telegram": "Telegram",
     "notifications.h_token": "Bot token:",
     "notifications.d_token": "Telegram Bot API token from @BotFather.",
