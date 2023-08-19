@@ -288,13 +288,15 @@ $().ready(function(){
 </div>
 
 <div id="modal" style="display:none">
-  <div class="modal-content">
-    <div id="modalMessage"></div>
-    <input id="modalTextInput" type="text" />
-  </div>
-  <div class="modal-bottom form-bottom-buttons">
-    <button type="submit" id="btnModalOk"><?php _e('action_ok');?></button>
-    <button id="btnModalCancel"><?php _e('action_cancel');?></button>
+  <div class="modal-box">
+    <div class="modal-content">
+      <div id="modalMessage"></div>
+      <input id="modalTextInput" type="text" />
+    </div>
+    <div class="modal-bottom form-bottom-buttons">
+      <button type="submit" id="btnModalOk"><?php _e('action_ok');?></button>
+      <button id="btnModalCancel"><?php _e('action_cancel');?></button>
+    </div>
   </div>
 </div>
 
