@@ -197,7 +197,7 @@ a { color: var(--color-link); cursor:pointer; text-decoration:underline; }
   border: 1px solid var(--color-border-default);
   background-color: var(--color-input-bg);
   border-radius: 2px;
-  transition: box-shadow .15s ease-in-out;
+  transition: box-shadow .1s ease-in-out;
 }
 select.form-input {
   appearance: none;
@@ -273,10 +273,13 @@ select.form-input {
 .tabs-n-button { flex-grow:1; display:flex; align-items:flex-start; }
 .tab-height-wrapper { box-sizing:border-box; height:2.2rem; display:flex; align-items:center; }
 .mtt-tabs { list-style:none; padding:0; margin:0; display:flex; justify-content:flex-start; flex-wrap:wrap; }
-.mtt-tab { margin:1px 3px 0 0;
+.mtt-tab {
+  margin:1px 3px 0 0;
   background-color: var(--color-tab);
   border:1px solid var(--color-tab-border);
-  border-bottom:none; border-top-right-radius:8px; transition:background-color 0.1s ease-in;
+  border-bottom:none;
+  border-top-right-radius:8px;
+  transition:background-color 0.1s ease-in;
 }
 .mtt-tab a {
   margin:0; text-decoration:none; white-space:nowrap;
@@ -967,7 +970,7 @@ li.mtt-item-hidden { display:none; }
 #btnRssFeed.mtt-item-disabled .menu-icon { background:url(images/rss-disabled.svg) no-repeat; }
 
 #task, #search {
-  transition: box-shadow .15s ease-in-out;
+  transition: box-shadow .1s ease-in-out;
 }
 #task:focus, #search:focus {
   outline: none;
