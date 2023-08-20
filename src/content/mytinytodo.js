@@ -2908,7 +2908,7 @@ function mttModalDialog(dialogType = 'alert')
         if (!modalOverlay) {
             modalOverlay = document.createElement("div");
             modalOverlay.id = "modal_overlay";
-            modalOverlay.style.cssText = "position: fixed; z-index: 999; left: 0; top: 0; width: 100%; height: 100%; background-color: black; opacity: 0.8; display:none;";
+            modalOverlay.style.cssText = "position: fixed; z-index: 999; left: 0; top: 0; width: 100%; height: 100%; background-color: black; opacity: 0.6; display:none;";
             document.getElementsByTagName('body')[0].appendChild(modalOverlay);
         }
 

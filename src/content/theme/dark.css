@@ -53,7 +53,7 @@
     --color-menu-text: #eaeaea;
     --color-menu-text-hover: #ebf0f8;
     --color-menu-text-disabled: #696969;
-    --color-popup-shadow: 1px 2px 6px 1px rgba(0,0,0,1);
+    --color-popup-shadow: 1px 2px 6px 1px rgba(85,85,85,0.1);
 
     /* Tasklist */
     --color-tasklist-row: var(--color-bg);
