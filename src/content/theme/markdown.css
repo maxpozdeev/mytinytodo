@@ -27,7 +27,7 @@
 .markdown-note dl,
 .markdown-note table,
 .markdown-note pre {
-  margin: 10px 0;
+  margin: 12px 0;
 }
 .markdown-note ul,
 .markdown-note ol {
@@ -80,22 +80,19 @@
 .markdown-note tt {
   font-size: 13px;  /* if main font is 14px */
   font-family: ui-monospace,Consolas,"SF Mono",Menlo,"Liberation Mono",monospace;
-  margin: 0 2px;
   padding: 0px 5px;
-  border: 1px solid var(--color-md-border);
   background-color: var(--color-md-bg-highlighted);
   border-radius: 3px;
 }
 .markdown-note code {
-  white-space: nowrap;
+  white-space: break-spaces;
 }
 .markdown-note pre {
   font-size: 13px;
   font-family: ui-monospace,Consolas,"SF Mono",Menlo,"Liberation Mono",monospace;
   line-height: 1.2rem;
-  padding: 6px 10px;
+  padding: 10px;
   background-color: var(--color-md-bg-highlighted);
-  border: 1px solid var(--color-md-border);
   overflow: auto;
   border-radius: 3px;
 }
