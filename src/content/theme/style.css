@@ -979,9 +979,11 @@ li.mtt-item-hidden { display:none; }
   font-family: ui-monospace,Consolas,"SF Mono",Menlo,"Liberation Mono",monospace;
 }
 
-.mtt-settings-table { width:100%; }
+.mtt-settings-table {
+  width:100%;
+}
 .mtt-settings-table .tr {
-   padding: 10px 0;
+  padding: 10px 0;
   vertical-align:top;
   display: flex;
 }
@@ -1120,7 +1122,16 @@ li.mtt-item-hidden { display:none; }
 
   .mtt-img-button { padding:4px; }
   .mtt-menu-button { padding:4px; }
-  h3.page-title a.mtt-back-button { width:2rem; }
+  h3.page-title a.mtt-back-button {
+    width: 2rem;
+  }
+  #page_ajax.mtt-page-settings h3.page-title {
+    padding-left: 10px;
+    border: none;
+  }
+  #page_ajax.mtt-page-settings h3.page-title a.mtt-back-button {
+    width: 1.5rem;
+  }
 
   .mtt-tabs-new-button { padding-left:0.4rem; padding-right:0.4rem; } /* make thiсker */
 
@@ -1187,10 +1198,9 @@ li.mtt-item-hidden { display:none; }
 
   .mtt-menu-container li { padding-top:0.3rem; padding-bottom:0.3rem; }
 
-  .mtt-settings-table .tr { display: block; }
   .mtt-settings-table .tr:not(.form-bottom-buttons) {
+    display: block;
     background-color:var(--color-settings-row);
-    border:1px solid var(--color-settings-row);
     border-radius: 10px;
     padding:10px 15px;
     margin-bottom: 5px;
