@@ -867,6 +867,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
             $('#mtt').removeClass('page-' + prev.page);
             $('#page_'+ prev.page).removeClass('mtt-page-'+prev.page.pageClass).hide();
         }
+        $(window).scrollTop(0);
         this.pages.current = { page:page, pageClass:pageClass };
         $('#mtt').addClass('page-' + page);
         $('#page_'+ this.pages.current.page).show().addClass('mtt-page-'+ this.pages.current.pageClass);
