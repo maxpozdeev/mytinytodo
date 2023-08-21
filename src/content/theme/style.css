@@ -604,7 +604,6 @@ li.task-row.task-completed .duedate { /*font-size:0.8rem;*/ display:none; }
 #tasklist li.task-row.past  .duedate { color: var(--color-duedate-past); }
 
 #tasklist li.task-row.task-completed  { opacity:0.6; }
-#tasklist li.task-row.task-completed .task-through { text-decoration:line-through; }
 #tasklist li.task-row.task-completed:hover { opacity:1.0; }
 
 #tasklist li.task-row.not-in-tagpreview  {
@@ -668,7 +667,6 @@ li.task-row:hover .taskactionbtn {
   word-wrap:break-word;
 }
 li.task-row.task-expanded .task-note-block { display:block; }
-li.task-row.task-completed .task-note-block .task-note { text-decoration:line-through; }
 .task-note-area { display:none; margin-bottom:5px; }
 .task-note-area textarea { color:var(--color-text-reduced); width:100%; display:block; height:65px; }
 .task-note-actions { font-size:0.8rem; }
