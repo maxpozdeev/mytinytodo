@@ -496,7 +496,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
             clearTimeout(_mtt.timers.previewtag);
             $('#tasklist li').removeClass('not-in-tagpreview');
             //tag is not escaped
-            addFilterTag($(this).attr('tag'), $(this).attr('tagid'), (event.metaKey || event.ctrlKey ? true : false) );
+            addFilterTag(this.dataset.tag, this.dataset.tagId, (event.metaKey || event.ctrlKey ? true : false) );
             return false;
         });
 
@@ -523,10 +523,12 @@ var mytinytodo = window.mytinytodo = _mtt = {
 
         if (this.options.tagPreview && !this.options.touchDevice) {
             $('#tasklist').on('mouseover mouseout', '.tag', function(event){
-                var cl = 'tag-id-' + $(this).attr('tagid');
-                var sel = (event.metaKey || event.ctrlKey) ? 'li.'+cl : 'li:not(.'+cl+')';
-                if(event.type == 'mouseover') {
-                    _mtt.timers.previewtag = setTimeout( function(){$('#tasklist '+sel).addClass('not-in-tagpreview');}, _mtt.options.tagPreviewDelay);
+                const cl = 'tag-id-' + this.dataset.tagId;
+                const sel = (event.metaKey || event.ctrlKey) ? 'li.'+cl : 'li:not(.'+cl+')';
+                if (event.type == 'mouseover') {
+                    _mtt.timers.previewtag = setTimeout( function(){
+                        $('#tasklist '+sel).addClass('not-in-tagpreview');
+                    }, _mtt.options.tagPreviewDelay);
                 }
                 else {
                     clearTimeout(_mtt.timers.previewtag);
@@ -1234,12 +1236,12 @@ _mtt.preparePrio = preparePrio;
 
 function prepareTagsStr(item)
 {
-    if(!item.tags || item.tags == '') return '';
-    var a = item.tags.split(',');
-    if(!a.length) return '';
-    var b = item.tags_ids.split(',')
-    for(var i in a) {
-        a[i] = '<a href="#" class="tag" tag="'+a[i]+'" tagid="'+b[i]+'">'+a[i]+'</a>';
+    if (!item.tags || item.tags == '') return '';
+    let a = item.tags.split(',');
+    if (!a.length) return '';
+    const b = item.tags_ids.split(',')
+    for (let i in a) {
+        a[i] = '<span class="tag" data-tag="'+a[i]+'" data-tag-id="'+b[i]+'">'+a[i]+'</span>';
     }
     return '<span class="task-tags">'+a.join(', ')+'</span>';
 };
@@ -1836,14 +1838,16 @@ function saveTask(form)
 
 function toggleEditAllTags(show)
 {
-    if(show)
+    if (show)
     {
-        if(curList.id == -1) {
-            var taskId = document.getElementById('taskedit_form').id.value;
+        if (curList.id == -1) {
+            const taskId = document.getElementById('taskedit_form').id.value;
             loadTags(taskList[taskId].listId, fillEditAllTags);
         }
-        else if(flag.tagsChanged) loadTags(curList.id, fillEditAllTags);
-        else fillEditAllTags();
+        else if (flag.tagsChanged)
+            loadTags(curList.id, fillEditAllTags);
+        else
+            fillEditAllTags();
         showhide($('#alltags_hide'), $('#alltags_show'));
     }
     else {
@@ -1858,7 +1862,7 @@ function fillEditAllTags()
     tagsList.forEach( (item) => {
         a.push('<span class="tag" data-tag="' + item.tag +'">' + item.tag + '</span>');
     });
-    const content = (a.length == 0)  ?  _mtt.lang.get('noTags')  :  a.join(', ');
+    const content = (a.length == 0)  ?  _mtt.lang.get('noTags')  :  a.join('');
     $('#alltags').html(content);
     $('#alltags').show();
 };

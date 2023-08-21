@@ -47,7 +47,7 @@
     --color-btn-tab-hover-bg: #5a5a5a;
 
     /* Menu */
-    --color-menu: #2b2b2b;
+    --color-menu: #252525;
     --color-menu-border: #555;
     --color-menu-hover: #5a8df0;
     --color-menu-text: #eaeaea;
@@ -63,8 +63,10 @@
     --color-tasklist-tag: var(--color-tab-text);
     --color-tasklist-note-link: #999;
     --color-tasklist-link-hover: var(--color-link);
-    --color-taglist-text-hover: var(--color-bg);
-    --color-taglist-text-hover-bg: var(--color-text-default);
+    --color-taglist-tag: var(--color-text-reduced);
+    --color-taglist-tag-bg: #444;
+    --color-taglist-tag-hover: var(--color-taglist-tag);
+    --color-taglist-tag-hover-bg: var(--color-taglist-tag-bg);
     --color-tasklist-listname: #bbb;
     --color-tasklist-listname-bg: #333;
 
