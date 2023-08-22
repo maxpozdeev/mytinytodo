@@ -173,6 +173,28 @@ $().ready(function(){
 </div>
 <!-- end of page_taskedit -->
 
+<!-- Page: View Task -->
+<div id="page_taskviewer" style="display:none">
+<h3 class="page-title"><a class="mtt-back-button"></a><?php _e('task');?> <span id="taskviewer_id"></span></h3>
+  <div class="title"></div>
+  <div class="container">
+    <div class="left">
+      <div class="note markdown-note"></div>
+    </div>
+    <div class="right">
+      <div class="property prio"><?php _e('priority');?>: <span class="content"></span> </div>
+      <div class="property due"><?php _e('due');?>: <span class="content"></span> </div>
+      <div class="property tags"><?php _e('tags');?>: <span class="content"></span> </div>
+      <div class="property list"><?php _e('list');?>: <span class="content"></span> </div>
+      <div class="form-bottom-buttons">
+        <button id="taskviewer_edit_btn"><?php _e('edit_task');?></button>
+        <button class="mtt-back-button"><?php _e('close');?></button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- end of page_taskviewer -->
+
 
 <div id="page_ajax" style="display:none">
 </div>

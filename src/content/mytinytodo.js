@@ -75,6 +75,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
         calendarIcon: 'calendar.png', // need themeUrl+icon
         history: true,
         markdown: true,
+        viewTaskOnClick: false,
     },
 
     timers: {
@@ -447,6 +448,11 @@ var mytinytodo = window.mytinytodo = _mtt = {
             flag.editFormChanged = true;
         });
 
+        $('#taskviewer_edit_btn').on('click', function() {
+            const id = document.getElementById('page_taskviewer').dataset.id;
+            editTask(id);
+        });
+
         // tasklist handlers
         $("#tasklist").on('click', '> li.task-row .task-middle', function(e) {
             if ( findParentNode(e.target, 'A') ) {
@@ -454,6 +460,10 @@ var mytinytodo = window.mytinytodo = _mtt = {
             }
             var li = findParentNode(this, 'LI');
             if (li && li.id) {
+                if (e.altKey) {
+                    viewTask(li.dataset.id);
+                    return;
+                }
                 if (lastClickedNodeId && li.id != lastClickedNodeId) {
                     $('#'+lastClickedNodeId).removeClass('clicked');
                 }
@@ -473,6 +483,20 @@ var mytinytodo = window.mytinytodo = _mtt = {
                 editTask(id);
             }
         });
+
+        if (this.options.touchDevice) {
+            this.options.viewTaskOnClick = true;
+        }
+
+        if (this.options.viewTaskOnClick) {
+            $('#mtt').addClass('view-task-on-click');
+            $('#tasklist').on('click', '> li.task-row .task-title', function(){
+                let id = parseInt(getLiTaskId(this));
+                if (id) {
+                    viewTask(id);
+                }
+            });
+        }
 
         $('#tasklist').on('click', '.taskactionbtn', function(){
             var id = parseInt(getLiTaskId(this));
@@ -683,6 +707,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
         //History
         if (this.options.history) {
             window.onpopstate = historyOnPopState;
+            window.history.scrollRestoration = 'manual';
         }
 
         // Appearance mode for CSS
@@ -880,9 +905,8 @@ var mytinytodo = window.mytinytodo = _mtt = {
         hideAlert();
         $(document).off('keydown.mttback');
         // If clicked on back button in settings we'll use history navigation
-        if ( clicked &&
-             this.pages.current && this.pages.current.page == 'ajax' && this.pages.current.pageClass == 'settings' &&
-             this.pages.prev.length > 0 ) {
+        if ( clicked && this.pages.current && this.pages.prev.length > 0 &&
+            ((_mtt.pages.current.page == 'ajax' && _mtt.pages.current.pageClass == 'settings') || _mtt.pages.current.page == 'taskviewer') ) {
             window.history.back();
             return;
         }
@@ -1164,7 +1188,7 @@ function prepareListHtml(list)
 
 function prepareTaskStr(item, noteExp)
 {
-    return '<li id="taskrow_'+item.id+'" class="task-row ' + (item.compl?'task-completed ':'') + item.dueClass + (item.note!=''?' task-has-note':'') +
+    return '<li id="taskrow_'+item.id+'" ' + 'data-id="'+item.id + '" class="task-row ' + (item.compl?'task-completed ':'') + item.dueClass + (item.note!=''?' task-has-note':'') +
                 ((curList.showNotes && item.note != '') || noteExp ? ' task-expanded' : '') + prepareDomClassOfTags(item.tags_ids) + '">' +
                     prepareTaskBlocks(item) + "</li>\n";
 };
@@ -1188,7 +1212,7 @@ function prepareTaskBlocks(item)
                         preparePrio(item.prio,id) +
                         '<span class="task-title">' + prepareTaskTitleInlineHtml(item.title) + '</span> ' +
                         (curList.id == -1 ? '<span class="task-listname">'+ tabLists.get(item.listId).name +'</span>' : '') +
-                        prepareTagsStr(item) +
+                        '<span class="task-tags">' + prepareTagsStr(item) + '</span>' +
                     '</div>' +
                     '<div class="task-through-right">' + prepareDueDate(item) + "</div>" +
                 '</div>' +
@@ -1234,7 +1258,7 @@ function preparePrio(prio,id)
 };
 _mtt.preparePrio = preparePrio;
 
-function prepareTagsStr(item)
+function prepareTagsStr(item, delimiter = ', ')
 {
     if (!item.tags || item.tags == '') return '';
     let a = item.tags.split(',');
@@ -1243,7 +1267,7 @@ function prepareTagsStr(item)
     for (let i in a) {
         a[i] = '<span class="tag" data-tag="'+a[i]+'" data-tag-id="'+b[i]+'">'+a[i]+'</span>';
     }
-    return '<span class="task-tags">'+a.join(', ')+'</span>';
+    return a.join(delimiter);
 };
 _mtt.prepareTagsStr = prepareTagsStr;
 
@@ -1731,6 +1755,30 @@ function saveTaskNote(id)
     return false;
 };
 
+function fillTaskViewer(id)
+{
+    const item = taskList[id];
+    if (!item) return false;
+    $('#page_taskviewer').attr('data-id', item.id);
+    $('#taskviewer_id').text('#' + item.id);
+    $('#page_taskviewer .title').html(item.title);
+    $('#page_taskviewer .note').html(item.note);
+    $('#page_taskviewer .prio .content').html(preparePrio(item.prio,item.id));
+    $('#page_taskviewer .due .content').html(item.duedate);
+    $('#page_taskviewer .tags .content').html(prepareTagsStr(item, ''));
+    $('#page_taskviewer .list .content').text(curList.name);
+    return item;
+}
+
+function viewTask(id)
+{
+    const item = fillTaskViewer(id);
+    if (!item) return;
+    _mtt.pageSet('taskviewer');
+    updateHistoryState({ task: item.id, list: item.listId }, '#task/'+item.id, dehtml(item.title) + ' - ' + curList.name + ' - ' + _mtt.options.title);
+}
+
+
 function editTask(id)
 {
     var item = taskList[id];
@@ -1814,23 +1862,32 @@ function showEditForm(isAdd)
 function saveTask(form)
 {
     $("#edittags").autocomplete('close');
-    if(flag.readOnly) return false;
-    if(form.isadd.value != 0)
+    if (flag.readOnly)
+        return false;
+    if (form.isadd.value != 0)
         return submitFullTask(form);
 
     _mtt.db.request('editTask', {id:form.id.value, title: form.task.value, note:form.note.value,
         prio:form.prio.value, tags:form.tags.value, duedate:form.duedate.value},
-        function(json){
-            if(!parseInt(json.total)) return;
-            var item = json.list[0];
+        function(json) {
+            if (!parseInt(json.total))
+                return;
+            const item = json.list[0];
             changeTaskCnt(item, 0, taskList[item.id]);
             taskList[item.id] = item;
-            var noteExpanded = (item.note != '' && $('#taskrow_'+item.id).is('.task-expanded')) ? 1 : 0;
+            const noteExpanded = (item.note != '' && $('#taskrow_'+item.id).is('.task-expanded')) ? 1 : 0;
             $('#taskrow_'+item.id).replaceWith(_mtt.prepareTaskStr(item, noteExpanded));
-            if(curList.sort != 0) changeTaskOrder(item.id);
-            _mtt.pageBack(); //back to list
+            if (curList.sort != 0)
+                changeTaskOrder(item.id);
             refreshTaskCnt();
-            $('#taskrow_'+item.id).effect("highlight", {color:_mtt.theme.editTaskFlashColor}, 'normal', function(){$(this).css('display','')});
+            _mtt.pageBack(); //back to list or viewer
+            if (_mtt.pages.current.page = 'taskviewer') {
+                fillTaskViewer(item.id);
+            }
+            else {
+                $('#taskrow_'+item.id).effect("highlight", {color:_mtt.theme.editTaskFlashColor}, 'normal', function(){$(this).css('display','')});
+            }
+
     });
     flag.tagsChanged = true;
     return false;
@@ -2994,11 +3051,17 @@ function updateHistoryState(state, url, title)
 function historyOnPopState(event)
 {
     if (!event.state) return;
-    if (event.state.list && _mtt.pages.current && _mtt.pages.current.page == 'ajax' && _mtt.pages.current.pageClass == 'settings') {
-        // Here we go back to tasklist from settings, no reload. Just show and hide pages without history actions.
+    if (event.state.list && _mtt.pages.current &&
+        ((_mtt.pages.current.page == 'ajax' && _mtt.pages.current.pageClass == 'settings') || _mtt.pages.current.page == 'taskviewer') ) {
+        // Here we go back to tasklist from settings or view task, no reload.
+        // Just show and hide pages without history actions.
         _mtt.pageBack();
         flag.dontChangeHistoryOnce = true;
         updateHistoryState( { list:event.state.list }, event.state.url, event.state.title );
+    }
+    else if (event.state.task) {
+        flag.dontChangeHistoryOnce = true;
+        viewTask(event.state.task);
     }
     else if (event.state.list) {
         flag.dontChangeHistoryOnce = true;
