@@ -79,7 +79,7 @@
 .markdown-note code, /* inline code */
 .markdown-note tt {
   font-size: 13px;  /* if main font is 14px */
-  font-family: ui-monospace,Consolas,"SF Mono",Menlo,"Liberation Mono",monospace;
+  font-family: ui-monospace,Consolas,"SF Mono",Menlo,"Noto Sans Mono","Liberation Mono",monospace;
   padding: 0px 5px;
   background-color: var(--color-md-bg-highlighted);
   border-radius: 3px;
@@ -89,7 +89,7 @@
 }
 .markdown-note pre {
   font-size: 13px;
-  font-family: ui-monospace,Consolas,"SF Mono",Menlo,"Liberation Mono",monospace;
+  font-family: ui-monospace,Consolas,"SF Mono",Menlo,"Noto Sans Mono","Liberation Mono",monospace;
   line-height: 1.2rem;
   padding: 10px;
   background-color: var(--color-md-bg-highlighted);
