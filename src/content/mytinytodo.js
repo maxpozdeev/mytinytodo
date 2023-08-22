@@ -1,6 +1,6 @@
 /*
     This file is a part of myTinyTodo.
-    (C) Copyright 2009-2010,2020-2022 Max Pozdeev <maxpozdeev@gmail.com>
+    (C) Copyright 2009-2010,2020-2023 Max Pozdeev <maxpozdeev@gmail.com>
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
@@ -313,14 +313,14 @@ var mytinytodo = window.mytinytodo = _mtt = {
             loadTags(curList.id, function(){$('#tagcloudload').hide();});
         });
 
-        $('#mtt-notes-show').click(function(){
-            toggleAllNotes(1);
+        $('#mtt-notes-show').click(function(e){
+            toggleAllNotes(1, e);
             this.blur();
             return false;
         });
 
-        $('#mtt-notes-hide').click(function(){
-            toggleAllNotes(0);
+        $('#mtt-notes-hide').click(function(e){
+            toggleAllNotes(0, e);
             this.blur();
             return false;
         });
@@ -1542,16 +1542,18 @@ function setTaskview(v)
 };
 
 
-function toggleAllNotes(show)
+function toggleAllNotes(show, event)
 {
-    for(var id in taskList)
+    for (let id in taskList)
     {
-        if(taskList[id].note == '') continue;
-        if(show) $('#taskrow_'+id).addClass('task-expanded');
+        if (taskList[id].note == '') continue;
+        if (show) $('#taskrow_'+id).addClass('task-expanded');
         else $('#taskrow_'+id).removeClass('task-expanded');
     }
     curList.showNotes = show;
-    if(_mtt.options.saveShowNotes) _mtt.db.request('setShowNotesInList', {list:curList.id, shownotes:show}, function(json){});
+    if (_mtt.options.saveShowNotes || (event && (event.metaKey || event.ctrlKey)) ) {
+        _mtt.db.request('setShowNotesInList', {list:curList.id, shownotes:show}, function(json){});
+    }
 };
 
 
