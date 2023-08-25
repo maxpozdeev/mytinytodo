@@ -1883,7 +1883,7 @@ function saveTask(form)
                 changeTaskOrder(item.id);
             refreshTaskCnt();
             _mtt.pageBack(); //back to list or viewer
-            if (_mtt.pages.current.page = 'taskviewer') {
+            if (_mtt.pages.current.page == 'taskviewer') {
                 fillTaskViewer(item.id);
             }
             else {
