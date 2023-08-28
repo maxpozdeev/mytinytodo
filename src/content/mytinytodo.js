@@ -2863,38 +2863,56 @@ function saveExtensionSettings(frm)
     });
 }
 
-function extensionSettingsAction(actionString, ext)
+function extensionSettingsAction(actionString, ext, formData)
 {
     if (actionString === undefined || ext === undefined) return false;
-    var a = actionString.split(':', 2);
+    const a = actionString.split(':', 2);
     if (a.length !== 2) return false;
-    var method = a[0],
-        action = a[1];
-    $.ajax({
-        url: _mtt.apiUrl + 'ext/' + ext + '/' + action,
-        method: method.toUpperCase(),
-        contentType : 'application/json',
-        data: '{}',
-        dataType: 'json',
-        success: function(json) {
-            if (json.total && json.total > 0) {
-                const callback = function() {
-                    if (json.msg) flashInfo(json.msg, json.details);
-                    if (json.reload) {
-                        setTimeout( function(){
-                            //window.location.hash = '';
-                            window.location.reload();
-                        }, 1000);
-                    }
+    const method = a[0],
+          action = a[1];
+    const success = function(json) {
+        if (json.total && json.total > 0) {
+            if (json.redirect) {
+                window.location.assign(json.redirect);
+                return;
+            }
+            const callback = function() {
+                if (json.msg) flashInfo(json.msg, json.details);
+                if (json.reload) {
+                    setTimeout( function(){
+                        //window.location.hash = '';
+                        window.location.reload();
+                    }, 1000);
                 }
-                showExtensionSettings(ext, callback);
             }
-            else if (json.msg) {
-                flashInfo(json.msg, json.details);
-            }
+            showExtensionSettings(ext, callback);
         }
-    });
+        else if (json.msg) {
+            flashInfo(json.msg, json.details);
+        }
+    };
+    if (formData === undefined) {
+        $.ajax({
+            url: _mtt.apiUrl + 'ext/' + ext + '/' + action,
+            method: method.toUpperCase(),
+            contentType : 'application/json',
+            data: '{}',
+            dataType: 'json',
+            success: success
+        });
+    }
+    else {
+        $.ajax({
+            url: _mtt.apiUrl + 'ext/' + ext + '/' + action,
+            method: method.toUpperCase(),
+            contentType : false,
+            data: formData,
+            processData: false,
+            success: success
+        });
+    }
 }
+_mtt.extensionSettingsAction = extensionSettingsAction;
 
 /*
  *  Dialogs

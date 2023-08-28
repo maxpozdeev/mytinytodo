@@ -34,8 +34,12 @@ class ExtSettingsController extends ApiController {
         $escapedExt = htmlspecialchars($ext);
         $e = function($s) use($lang) { return htmlspecialchars($lang->get($s)); };
 
+        $formStart = '';
+        $formEnd = '';
         $formButtons = '';
         if ($instance->settingsPageType() == 0) {
+            $formStart = "<form id='ext_settings_form' data-ext='$escapedExt'>";
+            $formEnd = "</form>";
             $formButtons =
 <<<EOD
 <div class="tr form-bottom-buttons">
@@ -48,12 +52,12 @@ EOD;
 <<<EOD
 <h3 class="page-title"><a class="mtt-back-button"></a> $name </h3>
 <div id="settings_msg" style="display:none"></div>
-<form id="ext_settings_form" data-ext="$escapedExt">
+$formStart
   <div class="mtt-settings-table">
     $data
     $formButtons
   </div>
-</form>
+$formEnd
 EOD;
 
         $this->response->htmlContent($data);

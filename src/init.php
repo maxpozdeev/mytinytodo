@@ -1,7 +1,7 @@
 <?php
 /*
     This file is a part of myTinyTodo.
-    (C) Copyright 2009-2011,2019-2022 Max Pozdeev <maxpozdeev@gmail.com>
+    (C) Copyright 2009-2011,2019-2023 Max Pozdeev <maxpozdeev@gmail.com>
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
@@ -211,6 +211,12 @@ function access_token(): string
     }
 }
 
+/**
+ * Check if HTTP request have required MTT-Token header with value
+ * the same as stored in session (if password set) or mtt-token cookie (if no password).
+ * Prohibits further execution if no tokens are found.
+ * @return void
+ */
 function check_token()
 {
     $token = access_token();

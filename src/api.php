@@ -2,7 +2,7 @@
 
 /*
     This file is a part of myTinyTodo.
-    (C) Copyright 2022 Max Pozdeev <maxpozdeev@gmail.com>
+    (C) Copyright 2022-2023 Max Pozdeev <maxpozdeev@gmail.com>
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
@@ -85,17 +85,20 @@ foreach ($endpoints as $search => $methods) {
         $classDescr = $methods[$req->method] ?? null;
         // check if http method is supported for path
         if ( is_null($classDescr) ) {
-            $response->htmlContent("Unknown method for resource", 500)->exit();
+            $response->htmlContent("Unknown method for resource", 500)
+                ->exit();
         }
         if ( !is_array($classDescr) || count($classDescr) < 2) {
-            $response->htmlContent("Incorrect method definition", 500)->exit();
+            $response->htmlContent("Incorrect method definition", 500)
+                ->exit();
         }
         // check if class method exists
         $class = $classDescr[0];
         $classMethod = $classDescr[1];
-        $isExt = $classDescr[3] ?? false;
-        if ($isExt) {
-            if (false == ($classDescr[2] ?? false)) {
+        $isExtMethod = $classDescr[3] ?? false;
+        if ($isExtMethod) {
+            if (false == ($classDescr[2] ?? false)) { //TODO: describe $classDescr[2]
+                // By default all extension methods require write access rights
                 checkWriteAccess();
             }
         }
@@ -106,7 +109,8 @@ foreach ($endpoints as $search => $methods) {
         if (method_exists($class, $classMethod)) { // test for static with ReflectionMethod?
             if ($req->method != 'GET' && $req->contentType == 'application/json') {
                 if ($req->decodeJsonBody() === false) {
-                    $response->htmlContent("Failed to parse JSON body", 500)->exit();
+                    $response->htmlContent("Failed to parse JSON body", 500)
+                        ->exit();
                 }
             }
             $instance = new $class($req, $response);
@@ -116,15 +120,21 @@ foreach ($endpoints as $search => $methods) {
         }
         else {
             if (MTT_DEBUG) {
-                $response->htmlContent("Class method $class:$classMethod() not found", 405)->exit();
+                $response->htmlContent("Class method $class:$classMethod() not found", 405)
+                    ->exit();
             }
-            $response->htmlContent("Class method not found", 405)->exit();
+            $response->htmlContent("Class method not found", 405)
+                ->exit();
         }
     }
 }
 
 if (!$executed) {
-    $response->htmlContent("Unknown command", 404);
+    if (MTT_DEBUG) {
+        $response->htmlContent("Unknown endpoint: {$req->method} {$req->path}", 404)
+            ->exit();
+    }
+    $response->htmlContent("Unknown endpoint", 404);
 }
 $response->exit();
 
