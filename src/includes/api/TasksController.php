@@ -2,7 +2,7 @@
 
 /*
     This file is a part of myTinyTodo.
-    (C) Copyright 2022 Max Pozdeev <maxpozdeev@gmail.com>
+    (C) Copyright 2022-2023 Max Pozdeev <maxpozdeev@gmail.com>
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
@@ -21,6 +21,7 @@ class TasksController extends ApiController {
         $listId = (int)_get('list');
         checkReadAccess($listId);
         $db = DBConnection::instance();
+        $dbcore = DBCore::default();
 
         $sqlWhere = $sqlWhereListId = $sqlInnerWhereListId = '';
         if ($listId == -1) {
@@ -41,33 +42,33 @@ class TasksController extends ApiController {
         if ($tag != '')
         {
             $at = explode(',', $tag);
-            $tagIds = array();
+            $tagIds = array(); # [ [id1,id2], [id3]... ]
             $tagExIds = array();
-            foreach ($at as $i=>$atv) {
+            foreach ($at as $atv) {
                 $atv = trim($atv);
                 if ($atv == '' || $atv == '^') continue;
                 if (substr($atv,0,1) == '^') {
-                    $tagExIds[] = $this->getTagId(substr($atv,1));
+                    array_push($tagExIds, ...$dbcore->getTagIdsByName(substr($atv,1)));
                 } else {
-                    $tagIds[] = $this->getTagId($atv);
+                    $tagIds[] = $dbcore->getTagIdsByName($atv);
                 }
             }
 
             // Include tags
-            if ($tagIds) {
-                $sqlWhere .= " AND todo.id IN (SELECT task_id FROM {$db->prefix}tag2task WHERE tag_id IN (". implode(',',$tagIds). ")";
-                if (count($tagIds) > 1) {
-                    $sqlWhere .= " GROUP BY task_id HAVING COUNT(tag_id)=". count($tagIds);
+            if (count($tagIds) > 0) {
+                $tagAnd = [];
+                foreach ($tagIds as $ids) {
+                    $tagAnd[] = "task_id IN (SELECT task_id FROM {$db->prefix}tag2task WHERE tag_id IN (". implode(',', $ids). "))";
                 }
-                $sqlWhere .= ")";
+                $sqlWhere .= "\n AND todo.id IN (".
+                             "SELECT DISTINCT task_id FROM {$db->prefix}tag2task WHERE ". implode(' AND ', $tagAnd). ")";
             }
 
             // Exclude tags
             if (count($tagExIds) > 0) {
-                $sqlWhere .= " AND todo.id NOT IN (SELECT DISTINCT task_id FROM {$db->prefix}tag2task WHERE $sqlInnerWhereListId AND tag_id IN (".
-                            implode(',',$tagExIds). "))";
+                $sqlWhere .= "\n AND todo.id NOT IN (SELECT DISTINCT task_id FROM {$db->prefix}tag2task ".
+                            "WHERE tag_id IN (". implode(',', $tagExIds). "))";
             }
-            //no optimization for single exTag
         }
 
         $s = trim(_get('s'));
