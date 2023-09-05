@@ -509,9 +509,10 @@ select.form-input {
 .task-toggle {
   visibility: hidden;
   cursor: pointer;
-  width: 1rem; height: 1rem;
+  width: 1rem;
+  height: 1rem;
   display: inline-block;
-  margin-right: 2px;
+  margin-right: 4px;
   mask: url(images/note-toggle.svg) no-repeat; -webkit-mask: url(images/note-toggle.svg) no-repeat;
   background-color: var(--color-btn-reduced);
   transition: transform .1s linear, background-color .1s ease-in;
@@ -763,7 +764,7 @@ li.task-row.task-expanded .task-note-block { display:block; }
   overflow: hidden;
 }
 #page_taskviewer .container .right .property {
-  padding: 1rem 0.5rem;
+  padding: 0.8rem 0.5rem;
 }
 #page_taskviewer .container .right .property:not(:last-child) {
   border-bottom: 1px solid var(--color-tasklist-row-expanded-border);
@@ -1057,7 +1058,7 @@ li.mtt-item-hidden { display:none; }
   box-shadow: 0 0 0 2px var(--color-border-focus-shadow);
 }
 
-.monospace {
+.monospace, pre {
   font-family: ui-monospace,Consolas,"SF Mono",Menlo,"Liberation Mono",monospace;
 }
 
@@ -1112,7 +1113,10 @@ li.mtt-item-hidden { display:none; }
 .mtt-settings-table .in350 { min-width:350px; }
 .mtt-settings-table .inmax { width:100%; }
 .mtt-settings-table textarea.in350 { height:400px; }
-.mtt-settings-table textarea.inmax { height:400px; width:100%; }
+.mtt-settings-table textarea.inmax {
+  height:400px;
+  width:100%;
+}
 .mtt-settings-table input,
 .mtt-settings-table select,
 .mtt-settings-table button,
