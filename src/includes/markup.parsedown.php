@@ -2,7 +2,7 @@
 
 /*
     This file is a part of myTinyTodo.
-    (C) Copyright 2022 Max Pozdeev <maxpozdeev@gmail.com>
+    (C) Copyright 2022-2023 Max Pozdeev <maxpozdeev@gmail.com>
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
@@ -73,4 +73,20 @@ class MTTParsedown extends Parsedown
             );
         }
     }
+
+    protected function inlineLink($Excerpt) {
+        $a = parent::inlineLink($Excerpt);
+        if (is_array($a) && isset($a['element']['attributes']['href'])) {
+            $a['element']['attributes']['target'] = '_blank';
+        }
+        return $a;
+     }
+
+     protected function inlineUrl($Excerpt) {
+        $a = parent::inlineUrl($Excerpt);
+        if (is_array($a) && isset($a['element']['attributes']['href'])) {
+            $a['element']['attributes']['target'] = '_blank';
+        }
+        return $a;
+     }
 }
