@@ -2,7 +2,7 @@
 
 /*
     This file is a part of myTinyTodo.
-    (C) Copyright 2022 Max Pozdeev <maxpozdeev@gmail.com>
+    (C) Copyright 2022-2023 Max Pozdeev <maxpozdeev@gmail.com>
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
@@ -168,6 +168,35 @@ class DBCore
             $data[] = $r;
         }
         return $data;
+    }
+
+    function createListWithName(string $name): int
+    {
+        $db = DBConnection::instance();
+        $name = str_replace( ['"',"'",'<','>','&'], '', trim($name) );
+        $ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->prefix}lists");
+        $time = time();
+        $db->dq("INSERT INTO {$db->prefix}lists (uuid,name,ow,d_created,d_edited,taskview) VALUES (?,?,?,?,?,?)",
+                    array(generateUUID(), $name, $ow, $time, $time, 1) );
+        $id = $db->lastInsertId();
+        return (int)$id;
+    }
+
+    /**
+     * Finds all variations of tag by its "normalized" name. Return array of id.
+     * @param string $name
+     * @return int[]
+     * @throws Exception
+     */
+    function getTagIdsByName(string $name): array
+    {
+        $db = DBConnection::instance();
+        $q = $db->dq("SELECT id FROM {$db->prefix}tags WHERE ". $db->like('name', '%s', $name));
+        $a = [];
+        while ($r = $q->fetchAssoc()) {
+            $a[] = (int) $r['id'];
+        }
+        return $a;
     }
 }
 

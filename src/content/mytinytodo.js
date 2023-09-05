@@ -2876,6 +2876,10 @@ function extensionSettingsAction(actionString, ext, formData)
                 window.location.assign(json.redirect);
                 return;
             }
+            if (json.html) {
+                $('#page_ajax .mtt-settings-table').html(json.html); //FIXME: maybe whole page?
+                return;
+            }
             const callback = function() {
                 if (json.msg) flashInfo(json.msg, json.details);
                 if (json.reload) {

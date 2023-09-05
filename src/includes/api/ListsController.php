@@ -2,7 +2,7 @@
 
 /*
     This file is a part of myTinyTodo.
-    (C) Copyright 2022 Max Pozdeev <maxpozdeev@gmail.com>
+    (C) Copyright 2022-2023 Max Pozdeev <maxpozdeev@gmail.com>
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
@@ -47,19 +47,9 @@ class ListsController extends ApiController {
     function post()
     {
         checkWriteAccess();
+        $id = DBCore::default()->createListWithName($this->req->jsonBody['name'] ?? '');
         $db = DBConnection::instance();
         $t = array();
-        $t['total'] = 0;
-        $name = str_replace(
-            array('"',"'",'<','>','&'),
-            '',
-            trim( $this->req->jsonBody['name'] ?? '' )
-        );
-        $ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->prefix}lists");
-        $time = time();
-        $db->dq("INSERT INTO {$db->prefix}lists (uuid,name,ow,d_created,d_edited,taskview) VALUES (?,?,?,?,?,?)",
-                    array(generateUUID(), $name, $ow, $time, $time, 1) );
-        $id = $db->lastInsertId();
         $t['total'] = 1;
         $r = $db->sqa("SELECT * FROM {$db->prefix}lists WHERE id=$id");
         $oo = $this->prepareList($r, true);

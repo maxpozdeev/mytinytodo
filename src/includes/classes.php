@@ -2,7 +2,7 @@
 
 /*
     This file is a part of myTinyTodo.
-    (C) Copyright 2022 Max Pozdeev <maxpozdeev@gmail.com>
+    (C) Copyright 2022-2023 Max Pozdeev <maxpozdeev@gmail.com>
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
@@ -89,9 +89,10 @@ abstract class ApiController
 
 abstract class MTTExtension
 {
-    const bundleId = '';
+    const bundleId = ''; //abstract
 
-    abstract function init();
+    function init() {
+    }
 
     public static function extMetaInfo(string $ext): ?array
     {
@@ -114,9 +115,18 @@ abstract class MTTExtension
         return null;
     }
 
-    public function httpApiUrlPrefix()
+    public static function extApiActionUrl(string $action, ?string $params = null)
     {
-        return get_unsafe_mttinfo('api_url'). 'ext/'. $this::bundleId;
+        $url = get_unsafe_mttinfo('api_url'). 'ext/'. static::bundleId. "/$action";
+        if (!is_null($params)) {
+            if (false !== strpos($url, '?')) {
+                $url .= '&'. $params;
+            }
+            else {
+                $url .= '?'. $params;
+            }
+        }
+        return $url;
     }
 
 }
