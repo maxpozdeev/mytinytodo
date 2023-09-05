@@ -159,7 +159,11 @@ h3.page-title { margin:0; border-bottom:2px solid var(--color-content-delimiter)
 a { color: var(--color-link); cursor:pointer; text-decoration:underline; }
 
 .topblock { display:flex; align-items:flex-start; margin-bottom:1rem; }
-#footer { flex-shrink:0; width:100%; max-width:1000px; }
+#footer {
+  flex-shrink:0;
+  width:100%;
+  max-width:1100px;
+}
 #footer_content {
   background-color: var(--color-footer);
   border-top: 1px solid var(--color-content-delimiter);
@@ -554,6 +558,7 @@ li.task-row.task-expanded .task-toggle { transform:rotate(90deg); }
   display: flex;
   align-items: center;
   height: 1.2rem; /* same as line-height of task-middle */
+  /* border-radius: 0.01px; overflow: hidden;*/ /* to remove outline glitch in firefox, see https://bugzilla.mozilla.org/show_bug.cgi?id=1671784 */
 }
 .task-middle {
   flex-grow:1;
@@ -1166,7 +1171,7 @@ li.mtt-item-hidden { display:none; }
 }
 #modal .modal-box {
   min-width: 350px;
-  max-width: 1000px; /* same as #mtt */
+  max-width: 1100px; /* same as #mtt */
   border: 1px solid var(--color-menu-border);
   background: var(--color-bg);
   box-shadow: var(--color-popup-shadow);
