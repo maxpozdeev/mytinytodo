@@ -188,6 +188,15 @@ class Database_Sqlite3 extends Database_Abstract
         return 'utf8_lower("'. $column. '") LIKE '. $this->quoteForLike($format, $this->utf8_lower($string));
     }
 
+    function ciEquals(string $column, string $value): string
+    {
+        $column = str_replace('"', '""', $column);
+        if ($this->useNormalizedUtf8) {
+            return 'utf8_normalized_lower("'. $column. '") = '. $this->quote($this->utf8_normalized_lower($value));
+        }
+        return 'utf8_lower("'. $column. '") = '. $this->quote($this->utf8_lower($value));
+    }
+
     function lastInsertId(?string $name = null): ?string
     {
         $ret = $this->dbh->lastInsertId();

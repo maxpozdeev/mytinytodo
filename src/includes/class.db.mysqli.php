@@ -151,6 +151,12 @@ class Database_Mysqli extends Database_Abstract
         return '`'. $column. '` LIKE '. $this->quoteForLike($format, $string);
     }
 
+    function ciEquals(string $column, string $value): string
+    {
+        $column = str_replace('`', '``', $column);
+        return 'LOWER(`'. $column. '`) = LOWER('. $this->quote($value). ')';
+    }
+
     function tableExists(string $table): bool
     {
         $r = $this->sq("SELECT 1 FROM information_schema.tables WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ?",

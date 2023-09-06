@@ -181,6 +181,12 @@ class Database_Postgres extends Database_Abstract
         return '"'. $column. '" ILIKE '. $this->quoteForLike($format, $string);
     }
 
+    function ciEquals(string $column, string $value): string
+    {
+        $column = str_replace('"', '""', $column);
+        return 'LOWER("'. $column. '") = LOWER('. $this->quote($value). ')';
+    }
+
     function lastInsertId(?string $name = null): ?string
     {
         $ret = $this->dbh->lastInsertId();

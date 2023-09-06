@@ -191,7 +191,7 @@ class DBCore
     function getTagIdsByName(string $name): array
     {
         $db = DBConnection::instance();
-        $q = $db->dq("SELECT id FROM {$db->prefix}tags WHERE ". $db->like('name', '%s', $name));
+        $q = $db->dq("SELECT id FROM {$db->prefix}tags WHERE ". $db->ciEquals('name', $name));
         $a = [];
         while ($r = $q->fetchAssoc()) {
             $a[] = (int) $r['id'];

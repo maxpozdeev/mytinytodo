@@ -55,6 +55,7 @@ abstract class Database_Abstract
     abstract function quote($value): string;
     abstract function quoteForLike(string $format, string $string): string;
     abstract function like(string $column, string $format, string $string): string;
+    abstract function ciEquals(string $column, string $value): string;
     abstract function lastInsertId(?string $name = null): ?string;
     abstract function tableExists(string $table): bool;
     abstract function tableFieldExists(string $table, string $field): bool;
