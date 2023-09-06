@@ -15,9 +15,6 @@ class DatabaseResult_Postgres extends DatabaseResult_Abstract
     /** @var int */
     protected $affected;
 
-    /** @var string  const */
-    protected $schema = 'public';
-
     function __construct(PDO $dbh, string $query, bool $resultless = false)
     {
         // use with DELETE, INSERT, UPDATE
@@ -69,6 +66,9 @@ class Database_Postgres extends Database_Abstract
     protected $affected = 0;
 
     protected $dbname;
+
+    /** @var string  const */
+    protected $schema = 'public';
 
     function __construct()
     {
