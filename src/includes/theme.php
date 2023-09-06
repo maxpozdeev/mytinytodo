@@ -175,10 +175,13 @@ $().ready(function(){
 
 <!-- Page: View Task -->
 <div id="page_taskviewer" style="display:none">
-<h3 class="page-title"><a class="mtt-back-button"></a><?php _e('task');?> <span id="taskviewer_id"></span></h3>
-  <div class="title"></div>
+<h3 class="page-title">
+  <a class="mtt-back-button"></a>
+  <div><span class="title"></span> <span id="taskviewer_id"></span></div>
+</h3>
   <div class="container">
     <div class="left">
+      <div class="no-note"><?php _e('no_note'); ?></div>
       <div class="note markdown-note"></div>
     </div>
     <div class="right">
