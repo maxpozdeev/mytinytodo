@@ -16,7 +16,7 @@ https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 myTinyTodo
 --------------
 Url:        https://www.mytinytodo.net/
-Copyright:  2009-2011,2019-2022 Max Pozdeev <maxpozdeev@gmail.com>
+Copyright:  2009-2011,2019-2023 Max Pozdeev <maxpozdeev@gmail.com>
 License:    GPL version 2 or any later (see LICENSE file)
 
 
@@ -34,9 +34,11 @@ Url:        http://jqueryui.com/
 Copyright:  Copyright jQuery Foundation and other contributors
 License:    MIT license. Compatible with GNU GPL.
 
-jQuery UI Touch Punch
------------------------
-Url:        https://github.com/furf/jquery-ui-touch-punch
+jQuery UI Touch Punch (fork by RWAP Software)
+---------------------------------------------
+Url:        https://github.com/RWAP/jquery-ui-touch-punch
+based on original touchpunch
+Original:   https://github.com/furf/jquery-ui-touch-punch
 Copyright:  Copyright 2011–2014, Dave Furfero
 License:    Dual licensed under the MIT or GPL Version 2 licenses.
 
@@ -49,4 +51,4 @@ License:    MIT license. Compatible with GNU GPL.
 Images
 ------
 This software contains images by 3d-parties.
-See files content/themes/default/images/COPYRIGHT for details.
+See files content/themes/images/COPYRIGHT for details.
