@@ -86,7 +86,7 @@ class Config
         'markup' => array('default'=>'markdown', 'type'=>'s'),
 
         # Appearance: system default or always light
-        'appearance' => array('default'=>'system', 'type'=>'s', 'options'=>array('system','light')),
+        'appearance' => array('default'=>'system', 'type'=>'s', 'options'=>array('system','light','dark')),
 
         # Array of activated extensions
         'extensions' => array('default'=>[], 'type'=>'a')

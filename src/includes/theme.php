@@ -12,7 +12,7 @@
   <link rel="icon" type="image/gif" href="<?php mttinfo('theme_url'); ?>images/logo.gif">
   <link rel="stylesheet" type="text/css" href="<?php mttinfo('theme_url'); ?>style.css?v=<?php mttinfo('version'); ?>" media="all">
   <link rel="stylesheet" type="text/css" href="<?php mttinfo('theme_url'); ?>markdown.css?v=<?php mttinfo('version'); ?>" media="all">
-  <?php if (get_mttinfo('appearance') == 'system'): ?>
+  <?php if (in_array(get_mttinfo('appearance'), ['system','dark'])): ?>
   <link rel="stylesheet" type="text/css" href="<?php mttinfo('theme_url'); ?>dark.css?v=<?php mttinfo('version'); ?>" media="screen">
   <?php endif; ?>
   <link rel="stylesheet" type="text/css" href="<?php mttinfo('theme_url'); ?>print.css?v=<?php mttinfo('version'); ?>" media="print">

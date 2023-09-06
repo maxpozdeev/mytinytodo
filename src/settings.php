@@ -368,8 +368,9 @@ header('Content-type:text/html; charset=utf-8');
 <div class="tr">
 <div class="th"><?php _e('set_appearance');?>:</div>
 <div class="td">
- <label><input type="radio" name="appearance" value="system" <?php if(_c('appearance') == 'system') echo 'checked="checked"'; ?> /> <?php _e('set_appearance_system');?></label> <br/>
- <label><input type="radio" name="appearance" value="light"  <?php if(_c('appearance') == 'light')  echo 'checked="checked"'; ?> /> <?php _e('set_appearance_light');?></label>
+ <label><input type="radio" name="appearance" value="system" <?php if(_c('appearance') == 'system') echo 'checked="checked"'; ?> /> <?php _e('set_appearance_system');?></label> <br>
+ <label><input type="radio" name="appearance" value="light"  <?php if(_c('appearance') == 'light')  echo 'checked="checked"'; ?> /> <?php _e('set_appearance_light');?></label> <br>
+ <label><input type="radio" name="appearance" value="dark"  <?php if(_c('appearance') == 'dark')  echo 'checked="checked"'; ?> /> <?php _e('set_appearance_dark');?></label>
 </div>
 </div>
 
