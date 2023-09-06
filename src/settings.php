@@ -2,7 +2,7 @@
 
 /*
     This file is a part of myTinyTodo.
-    (C) Copyright 2009-2011,2020-2022 Max Pozdeev <maxpozdeev@gmail.com>
+    (C) Copyright 2009-2011,2020-2023 Max Pozdeev <maxpozdeev@gmail.com>
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
@@ -306,8 +306,16 @@ header('Content-type:text/html; charset=utf-8');
 <div class="td">
  <input name="dateformat" size="8" value="<?php echo htmlspecialchars(_c('dateformat'));?>" />
  <select onchange="if(this.value!=0) this.form.dateformat.value=this.value;">
- <?php echo selectOptions(array('F j, Y'=>formatTime('F j, Y'), 'M d, Y'=>formatTime('M d, Y'), 'j M Y'=>formatTime('j M Y'), 'd F Y'=>formatTime('d F Y'),
-    'n/j/Y'=>formatTime('n/j/Y'), 'd.m.Y'=>formatTime('d.m.Y'), 'j. F Y'=>formatTime('j. F Y'), 0=>__('set_custom')), _c('dateformat'), 0); ?>
+ <?php $ts = strtotime('2023-09-05 09:15:25');
+ echo selectOptions(array(
+    'F j, Y' => formatTime('F j, Y', $ts),
+    'M j, Y' => formatTime('M j, Y', $ts),
+    'j M Y'  => formatTime('j M Y', $ts),
+    'j F Y'  => formatTime('j F Y', $ts),
+    'n/j/Y'  => formatTime('n/j/Y', $ts),
+    'd.m.Y'  => formatTime('d.m.Y', $ts),
+    'j. F Y' => formatTime('j. F Y', $ts),
+    0 => __('set_custom')), _c('dateformat'), 0); ?>
  </select>
 </div></div>
 
@@ -317,11 +325,11 @@ header('Content-type:text/html; charset=utf-8');
  <input name="dateformat2" size="8" value="<?php echo htmlspecialchars(_c('dateformat2'));?>" />
  <select onchange="if(this.value!=0) this.form.dateformat2.value=this.value;">
  <?php echo selectOptions(array(
-       'Y-m-d'=>'yyyy-mm-dd ('.date('Y-m-d').')',
-       'n/j/y'=>'m/d/yy ('.date('n/j/y').')',
-       'd.m.y'=>'dd.mm.yy ('.date('d.m.y').')',
-       'd/m/y'=>'dd/mm/yy ('.date('d/m/y').')',
-       0=>__('set_custom')), _c('dateformat2'), 0);  ?>
+       'Y-m-d' => 'yyyy-mm-dd ('. date('Y-m-d', $ts). ')',
+       'n/j/y' => 'm/d/yy ('. date('n/j/y', $ts). ')',
+       'd.m.y' => 'dd.mm.yy ('. date('d.m.y', $ts). ')',
+       'd/m/y' => 'dd/mm/yy ('. date('d/m/y', $ts). ')',
+       0 => __('set_custom')), _c('dateformat2'), 0);  ?>
  </select>
 </div></div>
 
@@ -330,14 +338,22 @@ header('Content-type:text/html; charset=utf-8');
 <div class="td">
  <input name="dateformatshort" size="8" value="<?php echo htmlspecialchars(_c('dateformatshort'));?>" />
  <select onchange="if(this.value!=0) this.form.dateformatshort.value=this.value;">
- <?php echo selectOptions(array('M d'=>formatTime('M d'), 'j M'=>formatTime('j M'), 'n/j'=>formatTime('n/j'), 'd.m'=>formatTime('d.m'), 0=>__('set_custom')), _c('dateformatshort'), 0); ?>
+ <?php echo selectOptions(array(
+    'M d' => formatTime('M d', $ts),
+    'j M' => formatTime('j M', $ts),
+    'n/j' => formatTime('n/j', $ts),
+    'd.m' => formatTime('d.m', $ts),
+    0 => __('set_custom')), _c('dateformatshort'), 0); ?>
  </select>
 </div></div>
 
 <div class="tr">
 <div class="th"><?php _e('set_clock');?>:</div>
 <div class="td">
- <select name="clock"><?php echo selectOptions(array(12=>__('set_12hour').' ('.date('g:i A').')', 24=>__('set_24hour').' ('.date('H:i').')'), _c('clock')); ?></select>
+ <select name="clock"><?php echo selectOptions(array(
+    12 => __('set_12hour'). ' ('. date('g:i A', $ts). ')',
+    24 => __('set_24hour'). ' ('. date('H:i', $ts). ')'), _c('clock')); ?>
+ </select>
 </div></div>
 
 <div class="tr">
