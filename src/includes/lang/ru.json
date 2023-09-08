@@ -1,11 +1,11 @@
 {
     "_header": {
-        "ver": "v1.7",
-        "date": "2022-10-20",
+        "ver": "v1.8",
+        "date": "2023-09-08",
         "language": "Russian",
         "original_name": "Русский",
         "author": "Max Pozdeev",
-        "author_url": "http://www.mytinytodo.net"
+        "author_url": "https://www.mytinytodo.net"
     },
     "My Tiny Todolist": "My Tiny Todolist",
 	"powered_by": "Работает на",
