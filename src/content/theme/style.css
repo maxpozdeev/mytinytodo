@@ -288,7 +288,6 @@ select.form-input {
   border-top-right-radius:8px;
   transition:background-color 0.1s ease-in;
   max-width:230px;
-  min-width:95px;
 }
 .mtt-tab a {
   margin:0; text-decoration:none; white-space:nowrap;
@@ -300,8 +299,16 @@ select.form-input {
   display:flex;
   align-items:center;
 }
-.mtt-tab a:active { outline:0; text-decoration:none; }
-.mtt-tab a > .title {
+.mtt-tab a:active {
+  outline:0;
+  text-decoration:none;
+}
+.mtt-tab .title-block {
+  display: flex;
+  align-items: baseline;
+  min-width: 75px;
+}
+.mtt-tab .title {
   display:inline-block;
   text-align:center;
   cursor:pointer;

@@ -1196,8 +1196,8 @@ function prepareListHtml(list, isSelected)
     }
     return opentag +
            '<a href="' + _mtt.urlForList(list) + '" title="' + list.name + '">'+
-             '<span class="counter hidden"></span>'+
-             '<span class="title">' + list.name + '</span>' +
+             '<div class="title-block"><span class="counter hidden"></span>'+
+             '<span class="title">' + list.name + '</span></div>' +
              '<div class="list-action mtt-img-button"><span></span></div>'+
            '</a></li>';
 }
