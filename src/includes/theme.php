@@ -10,14 +10,14 @@
   <title><?php mttinfo('title'); ?></title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/gif" href="<?php mttinfo('theme_url'); ?>images/logo.gif">
-  <link rel="stylesheet" type="text/css" href="<?php mttinfo('theme_url'); ?>style.css?v=<?php mttinfo('version'); ?>" media="all">
-  <link rel="stylesheet" type="text/css" href="<?php mttinfo('theme_url'); ?>markdown.css?v=<?php mttinfo('version'); ?>" media="all">
+  <link rel="stylesheet" type="text/css" href="<?php mttinfo('theme_url'); ?>style.css?v=<?php filever('theme', 'style.css'); ?>" media="all">
+  <link rel="stylesheet" type="text/css" href="<?php mttinfo('theme_url'); ?>markdown.css?v=<?php filever('theme', 'markdown.css'); ?>" media="all">
   <?php if (in_array(get_mttinfo('appearance'), ['system','dark'])): ?>
-  <link rel="stylesheet" type="text/css" href="<?php mttinfo('theme_url'); ?>dark.css?v=<?php mttinfo('version'); ?>" media="screen">
+  <link rel="stylesheet" type="text/css" href="<?php mttinfo('theme_url'); ?>dark.css?v=<?php filever('theme', 'dark.css'); ?>" media="screen">
   <?php endif; ?>
-  <link rel="stylesheet" type="text/css" href="<?php mttinfo('theme_url'); ?>print.css?v=<?php mttinfo('version'); ?>" media="print">
+  <link rel="stylesheet" type="text/css" href="<?php mttinfo('theme_url'); ?>print.css?v=<?php filever('theme', 'print.css'); ?>" media="print">
   <?php if(Config::get('rtl')): ?>
-  <link rel="stylesheet" type="text/css" href="<?php mttinfo('theme_url'); ?>style_rtl.css?v=<?php mttinfo('version'); ?>" media="all">
+  <link rel="stylesheet" type="text/css" href="<?php mttinfo('theme_url'); ?>style_rtl.css?v=<?php filever('theme', 'style_rtl.css'); ?>" media="all">
   <?php endif; ?>
   <?php do_action('theme_head_end'); ?>
 </head>
@@ -27,8 +27,8 @@
 <script type="text/javascript" src="<?php mttinfo('content_url'); ?>js/jquery.min.js?v=3.6.4"></script>
 <script type="text/javascript" src="<?php mttinfo('content_url'); ?>js/jquery-ui.min.js?v=1.13.2"></script>
 <script type="text/javascript" src="<?php mttinfo('content_url'); ?>js/jquery.ui.touch-punch.js?v=1.0.8-2"></script>
-<script type="text/javascript" src="<?php mttinfo('content_url'); ?>mytinytodo.js?v=<?php mttinfo('version'); ?>"></script>
-<script type="text/javascript" src="<?php mttinfo('content_url'); ?>mytinytodo_api.js?v=<?php mttinfo('version'); ?>"></script>
+<script type="text/javascript" src="<?php mttinfo('content_url'); ?>mytinytodo.js?v=<?php filever('content', 'mytinytodo.js'); ?>"></script>
+<script type="text/javascript" src="<?php mttinfo('content_url'); ?>mytinytodo_api.js?v=<?php filever('content', 'mytinytodo_api.js'); ?>"></script>
 
 <script type="text/javascript">
 $().ready(function(){

@@ -392,11 +392,7 @@ function get_unsafe_mttinfo($v)
             $_mttinfo['title'] = (Config::get('title') != '') ? Config::get('title') : __('My Tiny Todolist');
             return $_mttinfo['title'];
         case 'version':
-            if (MTT_DEBUG) {
-                $_mttinfo['version'] = mytinytodo\Version::VERSION . '-' . time();
-            } else {
-                $_mttinfo['version'] = mytinytodo\Version::VERSION;
-            }
+            $_mttinfo['version'] = mytinytodo\Version::VERSION;
             return $_mttinfo['version'];
         case 'appearance':
             $_mttinfo['appearance'] = Config::get('appearance');
@@ -470,4 +466,31 @@ function loadExtensions()
 
         }
     }
+}
+
+function filever(string $dir, string $filename)
+{
+    if (!MTT_DEBUG) {
+        return mttinfo('version');
+    }
+    $prefix = get_mttinfo('version'). '-'. time();
+    $path = null;
+    if ($dir == 'content') {
+        $path = MTTPATH. 'content/';
+    }
+    else if ($dir == 'theme') {
+        $path = MTTPATH. 'content/'. MTT_THEME. '/';
+    }
+    else {
+        return print($prefix. '-unknown');
+    }
+    $fullPath = $path. $filename;
+    if (!file_exists($fullPath)) {
+        return print($prefix. '-not-found');
+    }
+    $mtime = filemtime($fullPath);
+    if ($mtime === false) {
+        return print($prefix. '-no-access');
+    }
+    return print($mtime);
 }
