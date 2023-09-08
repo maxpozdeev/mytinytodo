@@ -1186,15 +1186,10 @@ function loadTasks(opts)
 
 function prepareListHtml(list, isSelected)
 {
-    const selected = isSelected ? ' mtt-tab-selected' : '';
-    let opentag = '';
-    if (list.id == -1) {
-        opentag = '<li id="list_all" class="mtt-tab' + selected + (list.hidden ? ' mtt-tab-hidden' : '') + '">';
-    }
-    else {
-        opentag = '<li id="list_' + list.id + '" class="mtt-tab' + selected + (list.hidden ? ' mtt-tab-hidden' : '') + '">';
-    }
-    return opentag +
+    const classSelected = isSelected ? 'mtt-tab-selected' : '';
+    const classHidden = list.hidden ? 'mtt-tab-hidden' : '';
+    const liId = list.id == -1 ? 'list_all' : 'list_' + list.id;
+    return `<li id="${liId}" class="mtt-tab ${classSelected} ${classHidden}" data-id="${list.id}">` +
            '<a href="' + _mtt.urlForList(list) + '" title="' + list.name + '">'+
              '<div class="title-block"><span class="counter hidden"></span>'+
              '<span class="title">' + list.name + '</span></div>' +
@@ -1575,12 +1570,12 @@ function toggleAllNotes(show, event)
 
 function tabSelect(elementOrId)
 {
-    var id;
+    let id;
     if (typeof elementOrId == 'number') id = elementOrId;
     else if(typeof elementOrId == 'string') id = parseInt(elementOrId);
     else {
         id = $(elementOrId).attr('id');
-        if (!id ) return;
+        if (!id) return;
         id = id.split('_', 2)[1];
         if (id === 'all') id = -1;
     }
@@ -1602,7 +1597,7 @@ function tabSelect(elementOrId)
 
     $('#lists .mtt-tab-selected').removeClass('mtt-tab-selected');
 
-    if(id == -1) {
+    if (id == -1) {
         $('#list_all').addClass('mtt-tab-selected').removeClass('mtt-tab-hidden');
         $('#listmenucontainer .mtt-need-real-list').addClass('mtt-item-hidden');
     }
@@ -1617,9 +1612,9 @@ function tabSelect(elementOrId)
         if (filter.search != '') liveSearchToggle(0, 1);
         mytinytodo.doAction('listSelected', tabLists.get(id));
     }
-    var newTitle = curList.name + ' - ' + _mtt.options.title;
-    var isFirstLoad = flag.firstLoad;
-    updateHistoryState( { list:id }, _mtt.urlForList(curList), newTitle );
+    const newTitle = curList.name + ' - ' + _mtt.options.title;
+    const isFirstLoad = flag.firstLoad;
+    replaceHistoryState( { list:id }, _mtt.urlForList(curList), newTitle );
     if (!flag.readOnly) {
         setLocalStorageItem('lastList', ''+id);
     }
@@ -3150,6 +3145,20 @@ function updateHistoryState(state, url, title)
     document.title = title;
 }
 
+function replaceHistoryState(_state, url, title)
+{
+    if (!_mtt.options.history) {
+        document.title = title;
+        return;
+    }
+    const state = window.history.state;
+    if (state && state.list) {
+        window.history.replaceState(_state, title, url);
+    }
+    else {
+        updateHistoryState(_state, url, title);
+    }
+}
 
 function historyOnPopState(event)
 {
