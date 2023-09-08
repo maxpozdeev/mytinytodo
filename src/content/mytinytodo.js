@@ -30,6 +30,7 @@ var tabLists = {
     _length: 0,
     _order: [],
     _alltasks: {},
+    lastTime: 0,
     clear: function(){
         this._lists = {}; this._length = 0; this._order = [];
         this._alltasks = { id:-1, showCompl:0, sort:3, name:_mtt.lang.get('alltasks') };
@@ -76,11 +77,13 @@ var mytinytodo = window.mytinytodo = _mtt = {
         history: true,
         markdown: true,
         viewTaskOnClick: false,
+        newTaskCounter: true,
     },
 
     timers: {
         previewtag: 0,
         ajaxAnimation: 0,
+        newTaskCounter: 0,
     },
 
     lang: {
@@ -719,6 +722,11 @@ var mytinytodo = window.mytinytodo = _mtt = {
             });
           }
 
+        // Counter
+        if (this.options.newTaskCounter) {
+            this.addAction('listsLoaded', newTaskCounterStart);
+        }
+
         this.doAction( 'init' );
 
         return this;
@@ -804,8 +812,10 @@ var mytinytodo = window.mytinytodo = _mtt = {
                 if (list) {
                     openListId = list.id;
                 }
+                tabLists.lastTime = res.time;
 
                 res.list.forEach( (item) => {
+                    item.lastTime = res.time;
                     if ( item.id == -1 ) {
                         tabLists._alltasks = item;
                         ti += prepareListHtml(item);
@@ -1070,7 +1080,7 @@ function renameCurList()
             var item = json.list[0];
             curList = item;
             tabLists.replace(item);
-            $('#lists ul>.mtt-tab-selected>a').attr('title', item.name).find('span').html(item.name); //FIXME: wft?
+            $('#list_'+curList.id).replaceWith(prepareListHtml(curList, true));
             mytinytodo.doAction('listRenamed', item);
         });
     });
@@ -1164,6 +1174,8 @@ function loadTasks(opts)
             taskOrder.push(parseInt(item.id));
             changeTaskCnt(item, 1);
         });
+        curList.lastTime = json.time;
+        $('#list_'+curList.id).find('.counter').text('').addClass('hidden');
         if(opts.beforeShow && opts.beforeShow.call) {
             opts.beforeShow();
         }
@@ -1172,18 +1184,22 @@ function loadTasks(opts)
     });
 };
 
-function prepareListHtml(list)
+function prepareListHtml(list, isSelected)
 {
-    var opentag = '';
+    const selected = isSelected ? ' mtt-tab-selected' : '';
+    let opentag = '';
     if (list.id == -1) {
-        opentag = '<li id="list_all" class="mtt-tab' + (list.hidden ? ' mtt-tab-hidden' : '') + '">';
+        opentag = '<li id="list_all" class="mtt-tab' + selected + (list.hidden ? ' mtt-tab-hidden' : '') + '">';
     }
     else {
-        opentag = '<li id="list_' + list.id + '" class="mtt-tab' + (list.hidden ? ' mtt-tab-hidden' : '') + '">';
+        opentag = '<li id="list_' + list.id + '" class="mtt-tab' + selected + (list.hidden ? ' mtt-tab-hidden' : '') + '">';
     }
     return opentag +
-           '<a href="' + _mtt.urlForList(list) + '" title="' + list.name + '"><span>' + list.name + '</span>' +
-           '<div class="list-action mtt-img-button"><span></span></div></a></li>';
+           '<a href="' + _mtt.urlForList(list) + '" title="' + list.name + '">'+
+             '<span class="counter hidden"></span>'+
+             '<span class="title">' + list.name + '</span>' +
+             '<div class="list-action mtt-img-button"><span></span></div>'+
+           '</a></li>';
 }
 
 function prepareTaskStr(item, noteExp)
@@ -2678,6 +2694,63 @@ function setLocalStorageItem(key, value)
     catch (e) {
         console.log(e);
     }
+}
+
+function newTaskCounterStart()
+{
+    clearInterval(_mtt.timers.newTaskCounter);
+    _mtt.timers.newTaskCounter = setInterval(newTaskCounter, 60*1000); //every 60 sec
+}
+
+function newTaskCounter()
+{
+    const params = {
+        list: curList.id,
+        later: curList.lastTime,
+        lists: [],
+    };
+    tabLists.getAll().forEach( (list) => {
+        if (list.hidden || list.id == -1 || list.id == curList.id) {
+            return;
+        }
+        params.lists.push({
+            listId: list.id,
+            later: list.lastTime
+        });
+    });
+
+    fetch(_mtt.apiUrl + 'tasks/newCounter', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'MTT-Token': _mtt.options.token,
+        },
+        body: JSON.stringify(params)
+    })
+    .then(response => response.json())
+    .then(json => {
+        if (json && json.total) {
+            if (Array.isArray(json.tasks)) {
+                let curCounter = 0;
+                json.tasks.forEach((id) => {
+                    if (taskList[id]) {
+                        console.log('skip existing id ', id);
+                    }
+                    else {
+                        curCounter++;
+                    }
+                });
+                if (curCounter > 0) {
+                    $('#list_'+curList.id).find('.counter').text(curCounter).removeClass('hidden');
+                }
+            }
+            if (Array.isArray(json.lists)) {
+                json.lists.forEach((item) => {
+                    $('#list_'+item.listId).find('.counter').text(item.counter).removeClass('hidden');
+                });
+            }
+        }
+    });
 }
 
 /*

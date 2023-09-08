@@ -286,25 +286,30 @@ select.form-input {
   border-bottom:none;
   border-top-right-radius:8px;
   transition:background-color 0.1s ease-in;
+  max-width:230px;
+  min-width:95px;
 }
 .mtt-tab a {
   margin:0; text-decoration:none; white-space:nowrap;
   color: var(--color-tab-text);
   display:inline-block; outline:none;
-  box-sizing:border-box; height:2.2rem; padding:1px 0.3rem 0 0.3rem; display:flex; align-items:center;
+  box-sizing:border-box;
+  height:2.2rem;
+  padding:1px 0.3rem 0 0.3rem;
+  display:flex;
+  align-items:center;
 }
 .mtt-tab a:active { outline:0; text-decoration:none; }
-.mtt-tab a>span {
+.mtt-tab a > .title {
   display:inline-block;
   text-align:center;
-  min-width:75px;
-  max-width:195px;
   cursor:pointer;
   padding:0;
   overflow:hidden;
   text-overflow: ellipsis;
   margin-left:0.3rem;
   margin-right:0.3rem;
+  flex-grow:1;
 }
 .mtt-tab .list-action { display:none; }
 .mtt-tab .mtt-img-button:hover,
@@ -330,6 +335,19 @@ select.form-input {
 .mtt-tab-sort-placeholder {
   background-color: var(--color-placeholder);
   border-color: var(--color-placeholder-border);
+}
+.mtt-tab .counter {
+  display: inline-block;
+  min-width: 1.2rem;
+  height: 1rem;
+  border-radius: 1rem;
+  font-size: 0.8rem;
+  text-align: center;
+  background-color: #686868; /* #de5141 */
+  color: white;
+}
+.mtt-tab .counter.hidden {
+  display: none;
 }
 
 #tabs_buttons {

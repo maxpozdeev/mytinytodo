@@ -98,6 +98,7 @@ class TasksController extends ApiController {
         $t = array();
         $t['total'] = 0;
         $t['list'] = array();
+        $t['time'] = time();
 
         $groupConcat = '';
         if ($db::DBTYPE == DBConnection::DBTYPE_POSTGRES) {
@@ -106,6 +107,7 @@ class TasksController extends ApiController {
         else {
             $groupConcat = "GROUP_CONCAT(tags.id) AS tags_ids, GROUP_CONCAT(tags.name) AS tags";
         }
+
         $q = $db->dq("
             SELECT todo.*, todo.duedate IS NULL AS ddn, $groupConcat
             FROM {$db->prefix}todolist AS todo
@@ -244,6 +246,65 @@ class TasksController extends ApiController {
             $t['tags'] = $a['tags'];
         }
         $this->response->data = $t;
+    }
+
+
+    function postNewCounter()
+    {
+        checkReadAccess();
+        $lists = $this->req->jsonBody['lists'] ?? false;
+        if (!is_array($lists)) {
+            $this->response->data = [ 'total' => 0 ];
+            return;
+        }
+        $userLists = [];
+        if (!haveWriteAccess()) {
+            $userLists = $this->getUserListsSimple(true);
+            if ($userLists) {
+                $sqlWhereList = "AND list_id IN (". implode(',', $userLists). ")";
+                // remove lists without access granted
+                $lists = array_filter($lists, function($item) use ($userLists) {
+                    return in_array( (string)($item['listId'] ?? ''), $userLists );
+                });
+            }
+        }
+        $sqlWhereList = [];
+        foreach ($lists as $item) {
+            if (!isset($item['later'])) continue;
+            $later = (int)$item['later'];
+            if ($later <= 0) continue;
+            $sqlWhereList[] = "(list_id = ". (int)$item['listId']. " AND d_created > $later)";
+        }
+        $sqlWhere = implode(' OR ', $sqlWhereList);
+
+
+        $db = DBConnection::instance();
+        $a = [];
+        $q = $db->dq("SELECT list_id, COUNT(id) c FROM {$db->prefix}todolist
+                      WHERE $sqlWhere GROUP BY list_id");
+        while ($r = $q->fetchAssoc()) {
+            $a[] = [
+                'listId' => (int)$r['list_id'],
+                'counter' => (int)$r['c'],
+            ];
+        }
+
+        $b = [];
+        $list = (int) ($this->req->jsonBody['list'] ?? 0);
+        $later = (int) ($this->req->jsonBody['later'] ?? 0);
+        if ($list > 0 && $later > 0 && (!$userLists || in_array((string)$list, $userLists))) {
+            $q = $db->dq("SELECT id FROM {$db->prefix}todolist
+                          WHERE list_id = $list AND d_created > $later");
+            while ($r = $q->fetchAssoc()) {
+                $b[] = (int)$r['id'];
+            }
+        }
+
+        $this->response->data = [
+            'total' => count($b) + count($a),
+            'tasks' => $b,
+            'lists' => $a
+        ];
     }
 
     /* Private Functions */
@@ -488,13 +549,17 @@ class TasksController extends ApiController {
         return $t;
     }
 
-    private function getUserListsSimple(): array
+    private function getUserListsSimple(bool $readOnly = false): array
     {
         $db = DBConnection::instance();
+        $sqlWhere = '';
+        if ($readOnly) {
+            $sqlWhere = "WHERE published=1";
+        }
         $a = array();
-        $q = $db->dq("SELECT id,name FROM {$db->prefix}lists ORDER BY id ASC");
+        $q = $db->dq("SELECT id,name FROM {$db->prefix}lists $sqlWhere ORDER BY id ASC");
         while($r = $q->fetchRow()) {
-            $a[$r[0]] = $r[1];
+            $a[ (string)$r[0] ] = (string)$r[1];
         }
         return $a;
     }

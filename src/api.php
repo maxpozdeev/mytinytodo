@@ -45,6 +45,9 @@ $endpoints = array(
     '/tasks/parseTitle' => [
         'POST' => [ TasksController::class , 'postTitleParse' ],
     ],
+    '/tasks/newCounter' => [
+        'POST' => [ TasksController::class , 'postNewCounter' ],
+    ],
     '/tagCloud/(-?\d+)' => [
         'GET'  => [ TagsController::class , 'getCloud' ],
     ],

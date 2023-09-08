@@ -28,6 +28,7 @@ class ListsController extends ApiController {
             $t['list'][] = $this->prepareAllTasksList(); // show alltasks lists only for authorized user
             $t['total'] = 1;
         }
+        $t['time'] = time();
         $q = $db->dq("SELECT * FROM {$db->prefix}lists $sqlWhere ORDER BY ow ASC, id ASC");
         while ($r = $q->fetchAssoc())
         {
