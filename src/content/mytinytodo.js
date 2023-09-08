@@ -2728,10 +2728,7 @@ function newTaskCounter()
             if (Array.isArray(json.tasks)) {
                 let curCounter = 0;
                 json.tasks.forEach((id) => {
-                    if (taskList[id]) {
-                        console.log('skip existing id ', id);
-                    }
-                    else {
+                    if (!taskList[id]) {
                         curCounter++;
                     }
                 });
