@@ -67,6 +67,7 @@
   --color-tasklist-tag: var(--color-tab-text);
   --color-tasklist-note-link: #777;
   --color-tasklist-link-hover: var(--color-link); /* #af0000 */
+  --color-tasklisk-hover-shadow: rgba(0,0,0,0.3);
   --color-taglist-tag: var(--color-text-reduced);
   --color-taglist-tag-bg: #e0e0e0;
   --color-taglist-tag-hover: var(--color-taglist-tag);
@@ -572,9 +573,11 @@ li.task-row.task-expanded .task-toggle { transform:rotate(90deg); }
   background-color: var(--color-tasklist-row); /* ?? */
   position:relative; /* for z-index */
 }
-#tasklist li.task-row:hover,
-#tasklist li.task-row.menu-active {
+#mtt:not(.touch-device) #tasklist li.task-row:hover,
+#mtt:not(.touch-device) #tasklist li.task-row.menu-active {
   z-index: 1;
+  box-shadow: 0 0 2px var(--color-tasklisk-hover-shadow);
+  border-radius: 5px;
 }
 #tasklist .task-block {
    display: flex;

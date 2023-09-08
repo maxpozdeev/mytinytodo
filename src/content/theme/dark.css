@@ -64,6 +64,7 @@ html[data-appearance=system][data-system-appearance=dark] {
     --color-tasklist-tag: var(--color-tab-text);
     --color-tasklist-note-link: #999;
     --color-tasklist-link-hover: var(--color-link);
+    --color-tasklisk-hover-shadow: rgba(255,255,255,0.4);
     --color-taglist-tag: var(--color-text-reduced);
     --color-taglist-tag-bg: #444;
     --color-taglist-tag-hover: var(--color-taglist-tag);
