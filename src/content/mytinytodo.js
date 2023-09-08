@@ -914,9 +914,10 @@ var mytinytodo = window.mytinytodo = _mtt = {
     {
         hideAlert();
         $(document).off('keydown.mttback');
-        // If clicked on back button in settings we'll use history navigation
+        // If clicked on back button in settings or taskviewer we'll use history navigation
         if ( clicked && this.pages.current && this.pages.prev.length > 0 &&
-            ((_mtt.pages.current.page == 'ajax' && _mtt.pages.current.pageClass == 'settings') || _mtt.pages.current.page == 'taskviewer') ) {
+            ((_mtt.pages.current.page == 'ajax' && _mtt.pages.current.pageClass == 'settings')
+              || _mtt.pages.current.page == 'taskviewer') ) {
             window.history.back();
             return;
         }
@@ -926,7 +927,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
         if (this.pages.current) {
             var prev = this.pages.current;
             $('#mtt').removeClass('page-' + prev.page);
-            $('#page_'+ prev.page).removeClass('mtt-page-'+prev.page.pageClass);
+            $('#page_'+ prev.page).removeClass('mtt-page-'+prev.pageClass);
             $('#page_'+ prev.page).hide();
         }
         var cur = this.pages.prev.pop();
@@ -1046,6 +1047,11 @@ var mytinytodo = window.mytinytodo = _mtt = {
     {
         if (json == 1) return '#settings.json';
         return '#settings';
+    },
+
+    urlForExtSettings: function(ext)
+    {
+        return '#settings/ext/' + ext;
     }
 
 }; // End of mytinytodo object
@@ -1614,7 +1620,7 @@ function tabSelect(elementOrId)
     }
     const newTitle = curList.name + ' - ' + _mtt.options.title;
     const isFirstLoad = flag.firstLoad;
-    replaceHistoryState( { list:id }, _mtt.urlForList(curList), newTitle );
+    replaceHistoryState( 'list', { list:id }, _mtt.urlForList(curList), newTitle );
     if (!flag.readOnly) {
         setLocalStorageItem('lastList', ''+id);
     }
@@ -2853,15 +2859,15 @@ function logout()
 
 function showSettings(json = 0)
 {
-    var reload = false;
+    let reload = false;
     if (_mtt.pages.current && _mtt.pages.current.page == 'ajax' && _mtt.pages.current.pageClass == 'settings') {
         reload = true;
     }
-    var jsonParam = (json == 1) ? '&json=1' : '';
+    const jsonParam = (json == 1) ? '&json=1' : '';
     $('#page_ajax').load(_mtt.mttUrl + 'settings.php?ajax=yes' + jsonParam, null, function(){
         if (!reload) {
             _mtt.pageSet('ajax','settings');
-            var newTitle = _mtt.lang.get('set_header') + ' - ' + _mtt.options.title;
+            const newTitle = _mtt.lang.get('set_header') + ' - ' + _mtt.options.title;
             updateHistoryState( { settings:1, settingsJson:json }, _mtt.urlForSettings(json), newTitle );
             _mtt.doAction('settingsLoaded');
         }
@@ -2898,14 +2904,18 @@ function activateExtension(activate, ext)
     }, 'json');
 }
 
-function showExtensionSettings(ext, callback)
+function showExtensionSettings(ext, callback, reload)
 {
     if (_mtt.pages.current && _mtt.pages.current.page == 'ajax' && _mtt.pages.current.pageClass == 'settings') {
         $('#page_ajax').load(_mtt.apiUrl + 'ext-settings/' + ext, null, function() {
             if (callback) callback();
+            if (!reload) {
+                _mtt.pageSet('ajax','settings');
+                const newTitle = `${ext} - ${_mtt.lang.get('set_header')} - ${_mtt.options.title}`;
+                replaceHistoryState('extSettings', { extSettings:true, ext:ext }, _mtt.urlForExtSettings(ext), newTitle );
+            }
         });
     }
-
 }
 
 function saveExtensionSettings(frm)
@@ -2922,10 +2932,8 @@ function saveExtensionSettings(frm)
         dataType: 'json',
         success: function(json) {
             if (json.saved) {
-                if (json.msg) showExtensionSettings(ext, function(){
-                    flashInfo(json.msg);
-                });
-                else showExtensionSettings(ext);
+                if (json.msg) showExtensionSettings(ext, function(){ flashInfo(json.msg); }, true);
+                else showExtensionSettings(ext, null, true);
             }
             else if (json.msg) {
                 flashError(json.msg);
@@ -2960,7 +2968,7 @@ function extensionSettingsAction(actionString, ext, formData)
                     }, 1000);
                 }
             }
-            showExtensionSettings(ext, callback);
+            showExtensionSettings(ext, callback, true);
         }
         else if (json.msg) {
             flashInfo(json.msg, json.details);
@@ -3142,15 +3150,19 @@ function updateHistoryState(state, url, title)
     document.title = title;
 }
 
-function replaceHistoryState(_state, url, title)
+function replaceHistoryState(param, _state, url, title)
 {
     if (!_mtt.options.history) {
         document.title = title;
         return;
     }
-    const state = window.history.state;
-    if (state && state.list) {
-        window.history.replaceState(_state, title, url);
+    if (flag.dontChangeHistoryOnce) {
+        flag.dontChangeHistoryOnce = false;
+    }
+    const state = history.state;
+    if (state && state[param]) {
+        history.replaceState(_state, title, url);
+        _mtt.lastHistoryState = history.state;
     }
     else {
         updateHistoryState(_state, url, title);
@@ -3177,8 +3189,16 @@ function historyOnPopState(event)
         tabSelect(event.state.list);
     }
     else if (event.state.settings) {
+        _mtt.pageBack(); // will do nothing if back from tasks
         flag.dontChangeHistoryOnce = true;
+        _mtt.lastHistoryState = event.state;
+        // will pageSet() if back from tasks
+        // will not pageSet() if back from extSettings
         showSettings(event.state.settingsJson);
+    }
+    else if (event.state.extSettings) {
+        flag.dontChangeHistoryOnce = true;
+        showExtensionSettings(event.state.ext);
     }
     else {
         console.log("unexpected: nothing to pop");
