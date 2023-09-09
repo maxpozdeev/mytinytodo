@@ -14,5 +14,6 @@ services:
       - MTT_DB_TYPE=sqlite
     volumes:
       - ../../../src:/var/www/html
+      - ../../../tests:/var/www/tests
       - ./php-mtt.ini:/usr/local/etc/php/conf.d/php-mtt.ini
       - ./php-opcache.ini:/usr/local/etc/php/conf.d/php-opcache.ini

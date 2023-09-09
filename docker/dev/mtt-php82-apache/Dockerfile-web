@@ -1,6 +1,8 @@
-FROM php:8.2-apache
+FROM php:8.2-apache-buster
 
-RUN docker-php-ext-install mysqli && \
+RUN apt-get update && apt-get install -y libicu-dev && \
+  docker-php-ext-install mysqli intl && \
+  apt-get -y autoremove && \
   mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" && \
   mkdir /var/www/phpinfo && \
   a2enmod rewrite && \

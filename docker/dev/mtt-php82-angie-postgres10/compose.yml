@@ -22,19 +22,37 @@ services:
 
   fpm:
     build:
-      context: .
+      context: ../mtt-php82-angie
       dockerfile: Dockerfile-fpm
     image: mtt-dev/php:8.2-fpm-alpine
     container_name: ${PLATFORM_NAME}-fpm
     environment:
       - MTT_ENABLE_DEBUG=YES
-      - MTT_DB_TYPE=sqlite
+      - MTT_DB_TYPE=postgres
       - MTT_API_USE_PATH_INFO=YES
+      - MTT_DB_HOST=db
+      - MTT_DB_NAME=mtt
+      - MTT_DB_USER=mtt
+      - MTT_DB_PASSWORD=mtt
+      - MTT_DB_PREFIX=mtt_
     volumes:
       - ../../../src:/var/www/html
       - ../../../tests:/var/www/tests
-      - ./php-mtt.ini:/usr/local/etc/php/conf.d/php-mtt.ini
-      - ./php-opcache.ini:/usr/local/etc/php/conf.d/php-opcache.ini
+      - ../mtt-php82-angie/php-mtt.ini:/usr/local/etc/php/conf.d/php-mtt.ini
+      - ../mtt-php82-angie/php-opcache.ini:/usr/local/etc/php/conf.d/php-opcache.ini
+    networks:
+      - network
 
+  db:
+    # do not use alpine image due to missing locales
+    image: postgres:10.0
+    container_name: ${PLATFORM_NAME}-db
+    userns_mode: keep-id
+    environment:
+      POSTGRES_PASSWORD: mtt
+      POSTGRES_USER: mtt
+      POSTGRES_DB: mtt
+    volumes:
+      - ../_postgres10/db_data:/var/lib/postgresql/data
     networks:
       - network
