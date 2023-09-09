@@ -76,7 +76,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
         calendarIcon: 'calendar.png', // need themeUrl+icon
         history: true,
         markdown: true,
-        viewTaskOnClick: false,
+        viewTaskOnClick: true,
         newTaskCounter: true,
     },
 
@@ -1620,7 +1620,8 @@ function tabSelect(elementOrId)
     }
     const newTitle = curList.name + ' - ' + _mtt.options.title;
     const isFirstLoad = flag.firstLoad;
-    replaceHistoryState( 'list', { list:id }, _mtt.urlForList(curList), newTitle );
+    //replaceHistoryState( 'list', { list:id }, _mtt.urlForList(curList), newTitle );
+    updateHistoryState( { list:id }, _mtt.urlForList(curList), newTitle );
     if (!flag.readOnly) {
         setLocalStorageItem('lastList', ''+id);
     }
@@ -3161,7 +3162,10 @@ function replaceHistoryState(param, _state, url, title)
     }
     const state = history.state;
     if (state && state[param]) {
-        history.replaceState(_state, title, url);
+        _state.url = url;
+        _state.title = title;
+        history.replaceState(_state, '', url);
+        document.title = title;
         _mtt.lastHistoryState = history.state;
     }
     else {
