@@ -40,6 +40,7 @@ require_once(MTTINC. 'class.dbconnection.php');
 require_once(MTTINC. 'class.dbcore.php');
 require_once(MTTINC. 'class.config.php');
 require_once(MTTINC. 'notifications.php');
+require_once(MTTINC. 'filters.php');
 
 configureDbConnection();
 

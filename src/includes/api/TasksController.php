@@ -241,9 +241,9 @@ class TasksController extends ApiController {
         );
         if (Config::get('smartsyntax') != 0 && (false !== $a = $this->parseSmartSyntax($t['title'])))
         {
-            $t['title'] = $a['title'];
-            $t['prio'] = $a['prio'];
-            $t['tags'] = $a['tags'];
+            $t['title'] = (string) $a['title'];
+            $t['prio'] = (int) $a['prio'];
+            $t['tags'] = (string) $a['tags'];
         }
         $this->response->data = $t;
     }
@@ -803,6 +803,9 @@ class TasksController extends ApiController {
         if (count($tags) > 0) {
             $a['tags'] = implode( ',' , $tags );
         }
+
+        do_filter('parseSmartSyntax', $title, $a);
+
         return $a;
     }
 
