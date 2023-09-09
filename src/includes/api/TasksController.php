@@ -237,13 +237,18 @@ class TasksController extends ApiController {
         $t = array(
             'title' => trim( $this->req->jsonBody['title'] ?? '' ),
             'prio' => 0,
-            'tags' => ''
+            'tags' => '',
+            'duedate' => '',
         );
         if (Config::get('smartsyntax') != 0 && (false !== $a = $this->parseSmartSyntax($t['title'])))
         {
-            $t['title'] = (string) $a['title'];
-            $t['prio'] = (int) $a['prio'];
-            $t['tags'] = (string) $a['tags'];
+            $t['title'] = (string) ($a['title'] ?? '');
+            $t['prio'] = (int) ($a['prio'] ?? 0);
+            $t['tags'] = (string) ($a['tags'] ?? '');
+            if (isset($a['duedate']) && $a['duedate'] != '') {
+                $dueA = $this->prepareDuedate($a['duedate']);
+                $t['duedate'] = $dueA['formatted'];
+            }
         }
         $this->response->data = $t;
     }
@@ -317,15 +322,19 @@ class TasksController extends ApiController {
         $title = trim($this->req->jsonBody['title'] ?? '');
         $prio = 0;
         $tags = '';
+        $duedate = null;
         if (Config::get('smartsyntax') != 0)
         {
             $a = $this->parseSmartSyntax($title);
             if ($a === false) {
                 return $t;
             }
-            $title = $a['title'];
-            $prio = $a['prio'];
-            $tags = $a['tags'];
+            $title = (string)$a['title'];
+            $prio = (int)$a['prio'];
+            $tags = (string)$a['tags'];
+            if (isset($a['duedate']) && preg_match("|^\d+-\d+-\d+$|", $a['duedate'])) {
+                $duedate = $a['duedate'];
+            }
         }
         if ($title == '') {
             return $t;
@@ -336,8 +345,8 @@ class TasksController extends ApiController {
         $ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->prefix}todolist WHERE list_id=$listId AND compl=0");
         $date = time();
         $db->ex("BEGIN");
-        $db->dq("INSERT INTO {$db->prefix}todolist (uuid,list_id,title,d_created,d_edited,ow,prio) VALUES (?,?,?,?,?,?,?)",
-                    array(generateUUID(), $listId, $title, $date, $date, $ow, $prio) );
+        $db->dq("INSERT INTO {$db->prefix}todolist (uuid,list_id,title,d_created,d_edited,ow,prio,duedate) VALUES (?,?,?,?,?,?,?,?)",
+                    array(generateUUID(), $listId, $title, $date, $date, $ow, $prio, $duedate) );
         $id = (int) $db->lastInsertId();
         if ($tags != '')
         {
@@ -783,14 +792,27 @@ class TasksController extends ApiController {
         $a = [
             'prio' => 0,
             'title' => $title,
-            'tags' => ''
+            'tags' => '',
+            'duedate' => null,
         ];
+        // priority
         if ( preg_match("|^([-+]{1}\d+)(.+)|", $a['title'], $m) ) {
             $a['prio'] = (int) $m[1];
             if ( $a['prio'] < -1 ) $a['prio'] = -1;
             elseif ( $a['prio'] > 2 ) $a['prio'] = 2;
             $a['title'] = trim($m[2]);
         }
+        // duedate
+        if ( preg_match("|(.+)@(\S+)$|", $a['title'], $m) ) {
+            $rest = $m[1];
+            $duepre = $m[2];
+            $duedate = $this->findDuedate($duepre);
+            if ($duedate) {
+                $a['duedate'] = $duedate;
+                $a['title'] = $rest;
+            }
+        }
+        // tags
         $tags = [];
         $a['title'] = trim( preg_replace_callback(
             "/(?:^|\s+)#([^#\s]+)/",
@@ -807,6 +829,37 @@ class TasksController extends ApiController {
         do_filter('parseSmartSyntax', $title, $a);
 
         return $a;
+    }
+
+    private function findDuedate(string $s): ?string
+    {
+        $duedate = null;
+        if (preg_match("|(\d+)([dwmy]{1})|",$s, $m)) { // 5d,2w...
+            $count = (int)$m[1];
+            $period = $m[2];
+            if ($period == 'd' || $period == 'w') { // days, weeks
+                if ($period == 'w') $count *= 7;
+                $duedate = date("Y-m-d", time() + 86400*$count);
+            }
+            else if ($period == 'm' || $period == 'y') { //months,years
+                if ($period == 'y') $count *= 12;
+                $a = explode(',', date('Y,m,d'));
+                $y = (int)$a[0];
+                $m = (int)$a[1] + $count;
+                $d = (int)$a[2];
+                if ($m > 12) {
+                    $yy = (int)floor($m/12);
+                    $y += $yy;
+                    $m = $m - $yy*12;
+                }
+                $d = min($d, $this->daysInMonth($m, $y));
+                $duedate = "$y-$m-$d";
+            }
+        }
+        else {
+            $duedate = $this->parseDuedate($s);
+        }
+        return $duedate;
     }
 
 }

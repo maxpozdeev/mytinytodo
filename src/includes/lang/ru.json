@@ -165,7 +165,7 @@
     "set_newpass": "Новый пароль",
     "set_newpass_descr": "Не заполняйте поле если не хотите менять текущий пароль.",
     "set_smartsyntax": "Smart syntax",
-    "set_smartsyntax2_descr": "Пример синтаксиса: +1 Задача #Тэг1 #Тэг2",
+    "set_smartsyntax3_descr": "Пример синтаксиса: +1 Задача #Тэг1 #Тэг2 @Срок",
     "set_timezone": "Часовой пояс",
     "set_autotag": "Автотеги",
     "set_autotag_descr": "Автодобавление текущего тега из фильтра в новую задачу.",

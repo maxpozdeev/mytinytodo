@@ -1866,6 +1866,7 @@ function showEditForm(isAdd)
                 form.task.value = json.title
                 form.tags.value = (form.tags.value != '') ? form.tags.value +', '+ json.tags : json.tags;
                 form.prio.value = json.prio;
+                form.duedate.value = json.duedate;
                 $('#task').val('');
 
             });
