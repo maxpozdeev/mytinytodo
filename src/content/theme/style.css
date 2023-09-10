@@ -1157,12 +1157,22 @@ li.mtt-item-hidden { display:none; }
 .mtt-settings-table input,
 .mtt-settings-table select,
 .mtt-settings-table button,
-.mtt-settings-table textarea  {
+.mtt-settings-table textarea,
+.mtt-settings-upload-button {
   padding: 3px;
   border: 1px solid var(--color-border-default);
   border-radius: 2px;
   background-color: var(--color-input-bg);
   color: var(--color-text-default);
+}
+.mtt-settings-table button:disabled {
+  background-color: var(--color-btn-hover);
+  color: var(--color-text-reduced2);
+}
+.mtt-settings-upload-button input[type=file] {
+  visibility:hidden;
+  position:absolute;
+  z-index:-2;
 }
 .mtt-settings-table select {
   appearance: none;
@@ -1180,11 +1190,13 @@ li.mtt-item-hidden { display:none; }
 .mtt-settings-table a {
   color: var(--color-text-default);
 }
-.mtt-settings-table button {
+.mtt-settings-table button,
+.mtt-settings-upload-button {
   padding: 3px 6px;
   border-radius: 3px;
 }
-.mtt-settings-table button:hover {
+.mtt-settings-table button:hover,
+.mtt-settings-upload-button:hover {
   background-color: var(--color-btn-hover);
 }
 .mtt-settings-table .form-bottom-buttons button {
