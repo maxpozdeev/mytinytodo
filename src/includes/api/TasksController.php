@@ -7,6 +7,7 @@
 */
 
 require_once(MTTINC. 'markup.php');
+require_once(MTTINC. 'smartsyntax.php');
 
 class TasksController extends ApiController {
 
@@ -240,7 +241,7 @@ class TasksController extends ApiController {
             'tags' => '',
             'duedate' => '',
         );
-        if (Config::get('smartsyntax') != 0 && (false !== $a = $this->parseSmartSyntax($t['title'])))
+        if (Config::get('smartsyntax') != 0 && (false !== $a = parseSmartSyntax($t['title'])))
         {
             $t['title'] = (string) ($a['title'] ?? '');
             $t['prio'] = (int) ($a['prio'] ?? 0);
@@ -325,7 +326,7 @@ class TasksController extends ApiController {
         $duedate = null;
         if (Config::get('smartsyntax') != 0)
         {
-            $a = $this->parseSmartSyntax($title);
+            $a = parseSmartSyntax($title);
             if ($a === false) {
                 return $t;
             }
@@ -371,7 +372,7 @@ class TasksController extends ApiController {
         $prio = (int)($this->req->jsonBody['prio'] ?? 0);
         if ($prio < -1) $prio = -1;
         elseif ($prio > 2) $prio = 2;
-        $duedate = $this->parseDuedate(trim( $this->req->jsonBody['duedate'] ?? '' ));
+        $duedate = MTTSmartSyntax::parseDuedate(trim( $this->req->jsonBody['duedate'] ?? '' ));
         $t = array();
         $t['total'] = 0;
         if ($title == '') {
@@ -409,7 +410,7 @@ class TasksController extends ApiController {
         $prio = (int)($this->req->jsonBody['prio'] ?? 0);
         if ($prio < -1) $prio = -1;
         elseif ($prio > 2) $prio = 2;
-        $duedate = $this->parseDuedate(trim( $this->req->jsonBody['duedate'] ?? '' ));
+        $duedate = MTTSmartSyntax::parseDuedate(trim( $this->req->jsonBody['duedate'] ?? '' ));
         $t = array();
         $t['total'] = 0;
         if ($title == '') {
@@ -633,56 +634,6 @@ class TasksController extends ApiController {
         );
     }
 
-
-    private function parseDuedate($s): ?string
-    {
-        $df2 = Config::get('dateformat2');
-        if (max((int)strpos($df2,'n'), (int)strpos($df2,'m')) > max((int)strpos($df2,'d'), (int)strpos($df2,'j'))) $formatDayFirst = true;
-        else $formatDayFirst = false;
-
-        $y = $m = $d = 0;
-        if (preg_match("|^(\d+)-(\d+)-(\d+)\b|", $s, $ma)) {
-            $y = (int)$ma[1]; $m = (int)$ma[2]; $d = (int)$ma[3];
-        }
-        elseif (preg_match("|^(\d+)\/(\d+)\/(\d+)\b|", $s, $ma))
-        {
-            if($formatDayFirst) {
-                $d = (int)$ma[1]; $m = (int)$ma[2]; $y = (int)$ma[3];
-            } else {
-                $m = (int)$ma[1]; $d = (int)$ma[2]; $y = (int)$ma[3];
-            }
-        }
-        elseif (preg_match("|^(\d+)\.(\d+)\.(\d+)\b|", $s, $ma)) {
-            $d = (int)$ma[1]; $m = (int)$ma[2]; $y = (int)$ma[3];
-        }
-        elseif (preg_match("|^(\d+)\.(\d+)\b|", $s, $ma)) {
-            $d = (int)$ma[1]; $m = (int)$ma[2];
-            $a = explode(',', date('Y,m,d'));
-            if( $m<(int)$a[1] || ($m==(int)$a[1] && $d<(int)$a[2]) ) $y = (int)$a[0]+1;
-            else $y = (int)$a[0];
-        }
-        elseif (preg_match("|^(\d+)\/(\d+)\b|", $s, $ma))
-        {
-            if($formatDayFirst) {
-                $d = (int)$ma[1]; $m = (int)$ma[2];
-            } else {
-                $m = (int)$ma[1]; $d = (int)$ma[2];
-            }
-            $a = explode(',', date('Y,m,d'));
-            if( $m<(int)$a[1] || ($m==(int)$a[1] && $d<(int)$a[2]) ) $y = (int)$a[0]+1;
-            else $y = (int)$a[0];
-        }
-        else return null;
-        if ($y < 100) $y = 2000 + $y;
-        elseif ($y < 1000 || $y > 2099) $y = 2000 + (int)substr((string)$y, -2);
-        if ($m > 12) $m = 12;
-        $maxdays = $this->daysInMonth($m,$y);
-        if ($m < 10) $m = '0'.$m;
-        if ($d > $maxdays) $d = $maxdays;
-        elseif ($d < 10) $d = '0'.$d;
-        return "$y-$m-$d";
-    }
-
     private function prepareDuedate($duedate): array
     {
         $lang = Lang::instance();
@@ -692,19 +643,30 @@ class TasksController extends ApiController {
             return $a;
         }
         $ad = explode('-', $duedate);
-        $at = explode('-', date('Y-m-d'));
-        $a['timestamp'] = mktime(0,0,0, (int)$ad[1], (int)$ad[2], (int)$ad[0]);
-        $diff = mktime(0,0,0, (int)$ad[1], (int)$ad[2], (int)$ad[0]) - mktime(0,0,0, (int)$at[1], (int)$at[2], (int)$at[0]);
+        $y = (int)$ad[0];
+        $m = (int)$ad[1];
+        $d = (int)$ad[2];
+        $a['timestamp'] = mktime(0, 0, 0, $m, $d, $y);
 
-        if ($diff < -604800 && $ad[0] == $at[0]) { $a['class'] = 'past'; $a['str'] = formatDate3(Config::get('dateformatshort'), (int)$ad[0], (int)$ad[1], (int)$ad[2], $lang); }
-        elseif ($diff < -604800)    { $a['class'] = 'past'; $a['str'] = formatDate3(Config::get('dateformat2'), (int)$ad[0], (int)$ad[1], (int)$ad[2], $lang); }
-        elseif ($diff < -86400)     { $a['class'] = 'past'; $a['str'] = sprintf($lang->get('daysago'),ceil(abs($diff)/86400)); }
-        elseif ($diff < 0)          { $a['class'] = 'past'; $a['str'] = $lang->get('yesterday'); }
-        elseif ($diff < 86400)      { $a['class'] = 'today'; $a['str'] = $lang->get('today'); }
-        elseif ($diff < 172800)     { $a['class'] = 'today'; $a['str'] = $lang->get('tomorrow'); }
-        elseif ($diff < 691200)     { $a['class'] = 'soon'; $a['str'] = sprintf($lang->get('indays'),ceil($diff/86400)); }
-        elseif ($ad[0] == $at[0])   { $a['class'] = 'future'; $a['str'] = formatDate3(Config::get('dateformatshort'), (int)$ad[0], (int)$ad[1], (int)$ad[2], $lang); }
-        else                        { $a['class'] = 'future'; $a['str'] = formatDate3(Config::get('dateformat2'), (int)$ad[0], (int)$ad[1], (int)$ad[2], $lang); }
+        $oToday = new DateTimeImmutable(date("Y-m-d"));
+        $oDue = new DateTimeImmutable($duedate);
+        $oDiff = $oToday->diff($oDue);
+        if ($oDiff === false) {
+            return $a;
+        }
+        $thisYear = ((int)$oToday->format('Y') == $y);
+        $days = $oDiff->days;
+        if ($oDiff->invert) $days *= -1;
+
+        if ($days < -7 && !$thisYear) { $a['class'] = 'past'; $a['str'] = formatDate3(Config::get('dateformat2'), $y, $m, $d, $lang); }
+        elseif ($days < -7)   { $a['class'] = 'past'; $a['str'] = formatDate3(Config::get('dateformatshort'), $y, $m, $d, $lang); }
+        elseif ($days < -1)   { $a['class'] = 'past'; $a['str'] = sprintf($lang->get('daysago'), abs($days)); }
+        elseif ($days == -1)  { $a['class'] = 'past'; $a['str'] = $lang->get('yesterday'); }
+        elseif ($days == 0)   { $a['class'] = 'today'; $a['str'] = $lang->get('today'); }
+        elseif ($days == 1)   { $a['class'] = 'today'; $a['str'] = $lang->get('tomorrow'); }
+        elseif ($days <= 7)   { $a['class'] = 'soon'; $a['str'] = sprintf($lang->get('indays'), $days); }
+        elseif ($thisYear)    { $a['class'] = 'future'; $a['str'] = formatDate3(Config::get('dateformatshort'), $y, $m, $d, $lang); }
+        else                  { $a['class'] = 'future'; $a['str'] = formatDate3(Config::get('dateformat2'), $y, $m, $d, $lang); }
 
         #avoid short year
         $fmt = str_replace('y', 'Y', Config::get('dateformat2'));
@@ -724,14 +686,6 @@ class TasksController extends ApiController {
         if (strlen($ad[1]) < 2) $s .= "0$ad[1]"; else $s .= $ad[1];
         if (strlen($ad[2]) < 2) $s .= "0$ad[2]"; else $s .= $ad[2];
         return (int)$s;
-    }
-
-    private function daysInMonth(int $m, int $y = 0): int
-    {
-        if ($y == 0)  $y = (int)date('Y');
-        $a = array(1=>31,(($y-2000)%4?28:29),31,30,31,30,31,31,30,31,30,31);
-        if (isset($a[$m])) return $a[$m];
-        else return 0;
     }
 
     private function getTagId($tag)
@@ -787,79 +741,6 @@ class TasksController extends ApiController {
         }
     }
 
-    private function parseSmartSyntax($title): array
-    {
-        $a = [
-            'prio' => 0,
-            'title' => $title,
-            'tags' => '',
-            'duedate' => null,
-        ];
-        // priority
-        if ( preg_match("|^([-+]{1}\d+)(.+)|", $a['title'], $m) ) {
-            $a['prio'] = (int) $m[1];
-            if ( $a['prio'] < -1 ) $a['prio'] = -1;
-            elseif ( $a['prio'] > 2 ) $a['prio'] = 2;
-            $a['title'] = trim($m[2]);
-        }
-        // duedate
-        if ( preg_match("|(.+)@(\S+)$|", $a['title'], $m) ) {
-            $rest = $m[1];
-            $duepre = $m[2];
-            $duedate = $this->findDuedate($duepre);
-            if ($duedate) {
-                $a['duedate'] = $duedate;
-                $a['title'] = $rest;
-            }
-        }
-        // tags
-        $tags = [];
-        $a['title'] = trim( preg_replace_callback(
-            "/(?:^|\s+)#([^#\s]+)/",
-            function ($matches) use (&$tags) {
-                $tags[] = $matches[1];
-                return '';
-            },
-            $a['title']
-        ) );
-        if (count($tags) > 0) {
-            $a['tags'] = implode( ',' , $tags );
-        }
 
-        do_filter('parseSmartSyntax', $title, $a);
-
-        return $a;
-    }
-
-    private function findDuedate(string $s): ?string
-    {
-        $duedate = null;
-        if (preg_match("|(\d+)([dwmy]{1})|",$s, $m)) { // 5d,2w...
-            $count = (int)$m[1];
-            $period = $m[2];
-            if ($period == 'd' || $period == 'w') { // days, weeks
-                if ($period == 'w') $count *= 7;
-                $duedate = date("Y-m-d", time() + 86400*$count);
-            }
-            else if ($period == 'm' || $period == 'y') { //months,years
-                if ($period == 'y') $count *= 12;
-                $a = explode(',', date('Y,m,d'));
-                $y = (int)$a[0];
-                $m = (int)$a[1] + $count;
-                $d = (int)$a[2];
-                if ($m > 12) {
-                    $yy = (int)floor($m/12);
-                    $y += $yy;
-                    $m = $m - $yy*12;
-                }
-                $d = min($d, $this->daysInMonth($m, $y));
-                $duedate = "$y-$m-$d";
-            }
-        }
-        else {
-            $duedate = $this->parseDuedate($s);
-        }
-        return $duedate;
-    }
 
 }

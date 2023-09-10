@@ -80,6 +80,16 @@ function formatDate3($format, $ay, $am, $ad, $lang)
     return strtr($format, array('Y'=>$Y, 'y'=>$y, 'F'=>$F, 'M'=>$M, 'n'=>$n, 'm'=>$m, 'd'=>$d, 'j'=>$j));
 }
 
+function daysInMonth(int $m, int $y = 0): int
+{
+    if ($y == 0) $y = (int)date('Y');
+    $isLeap = (0 == $y % 4) && ((0 != $y % 100) || (0 == $y % 400));
+    $a = array(1=>31, ($isLeap ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
+    if (isset($a[$m])) return $a[$m];
+    else return 0;
+}
+
+
 function getRequestUri()
 {
     // Do not use HTTP_X_REWRITE_URL due to CVE-2018-14773
