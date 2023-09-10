@@ -279,7 +279,7 @@ class TasksController extends ApiController {
             if (!isset($item['later'])) continue;
             $later = (int)$item['later'];
             if ($later <= 0) continue;
-            $sqlWhereList[] = "(list_id = ". (int)$item['listId']. " AND d_created > $later)";
+            $sqlWhereList[] = "(list_id = ". (int)$item['listId']. " AND compl=0 AND d_created > $later)";
         }
         $sqlWhere = implode(' OR ', $sqlWhereList);
 
@@ -300,7 +300,7 @@ class TasksController extends ApiController {
         $later = (int) ($this->req->jsonBody['later'] ?? 0);
         if ($list > 0 && $later > 0 && (!$userLists || in_array((string)$list, $userLists))) {
             $q = $db->dq("SELECT id FROM {$db->prefix}todolist
-                          WHERE list_id = $list AND d_created > $later");
+                          WHERE list_id = $list AND compl=0 AND d_created > $later");
             while ($r = $q->fetchAssoc()) {
                 $b[] = (int)$r['id'];
             }

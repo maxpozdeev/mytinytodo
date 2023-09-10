@@ -2710,6 +2710,7 @@ function newTaskCounter()
     const params = {
         list: curList.id,
         later: curList.lastTime,
+        showCompl: curList.showCompl,
         lists: [],
     };
     tabLists.getAll().forEach( (list) => {
