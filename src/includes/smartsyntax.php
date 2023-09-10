@@ -10,6 +10,7 @@ class MTTSmartSyntax implements MTTSmartSyntaxInterface
 {
     protected $tagPrefix = '#';
     protected $duedatePrefix = '@!';
+    protected $weekdays = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat']; //3-letter not present in lang
 
     /** @var MTTSmartSyntaxInterface */
     protected static $instance;
@@ -100,6 +101,14 @@ class MTTSmartSyntax implements MTTSmartSyntaxInterface
             if ($needle === mb_strtolower($weekday)) {
                 $wd = $idx;
                 break;
+            }
+        }
+        if (null === $wd) {
+            foreach ($this->weekdays as $idx => $weekday) {
+                if ($needle === $weekday) {
+                    $wd = $idx;
+                    break;
+                }
             }
         }
         if (null === $wd) {
