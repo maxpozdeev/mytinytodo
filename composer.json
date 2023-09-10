@@ -4,9 +4,9 @@
     },
     "require": {
         "erusev/parsedown": "^1.7",
-        "symfony/polyfill-intl-normalizer": "^1.27"
+        "symfony/polyfill-intl-normalizer": "^1.28"
     },
     "require-dev": {
-        "league/commonmark": "^2.3"
+        "league/commonmark": "^2.4"
     }
 }

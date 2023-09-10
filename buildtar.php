@@ -58,6 +58,7 @@ if (false === system( "./composer.sh install --no-dev --no-interaction --optimiz
 if (is_dir('src/ext')) {
     mkdir('src/ext2');
     chdir('src/ext');
+    deleteTreeIfDir('_examples');
     $extCount = 0;
     $exts = array_diff(scandir('.') ?? [], ['.', '..']);
     foreach ($exts as $ext) {
