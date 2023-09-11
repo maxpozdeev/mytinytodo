@@ -941,7 +941,7 @@ li.task-row.task-expanded .task-note-block { display:block; }
 #alltags .tag,
 #page_taskviewer .property.tags .tag {
   display: inline-block;
-  padding: 0 0.5em;
+  padding: 2px 0.5em;
   border-radius: 1em;
   color:var(--color-taglist-tag);
   background-color:var(--color-taglist-tag-bg);
