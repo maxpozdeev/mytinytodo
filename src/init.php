@@ -280,9 +280,12 @@ function _e(string $s)
     echo __($s, true);
 }
 
-function __(string $s, bool $escape = false)
+function __(string $s, bool $escape = false, ?string $arg = null)
 {
     $v = Lang::instance()->get($s);
+    if (null !== $arg) {
+        $v = sprintf($v, $arg);
+    }
     return $escape ? htmlspecialchars($v) : $v;
 }
 
