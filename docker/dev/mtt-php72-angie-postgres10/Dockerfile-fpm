@@ -10,8 +10,8 @@ RUN  apk add --update-cache libpq postgresql-dev && \
   chmod +x /usr/local/bin/phpunit && \
   ln -s html /var/www/src
 
-#COPY php-mtt.ini      /usr/local/etc/php/conf.d/
-#COPY php-opcache.ini  /usr/local/etc/php/conf.d/
+COPY php-mtt.ini      /usr/local/etc/php/conf.d/
+COPY php-opcache.ini  /usr/local/etc/php/conf.d/
 COPY php-fpm-www.conf /usr/local/etc/php-fpm.d/www.conf
 
 VOLUME /var/www/html

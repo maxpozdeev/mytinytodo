@@ -10,14 +10,6 @@ RUN  apk add --update-cache libpq postgresql-dev icu icu-dev && \
   chmod +x /usr/local/bin/phpunit && \
   ln -s html /var/www/src
 
-# RUN docker-php-ext-install pdo_mysql && \
-#   mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" && \
-#   mkdir /var/www/phpinfo && \
-#   echo "<?php phpinfo();" > /var/www/phpinfo/phpinfo.php && \
-#   curl -o /usr/local/bin/phpunit -fL "https://phar.phpunit.de/phpunit-10.phar" && \
-#   chmod +x /usr/local/bin/phpunit && \
-#   ln -s html /var/www/src
-
 COPY php-mtt.ini      /usr/local/etc/php/conf.d/
 COPY php-opcache.ini  /usr/local/etc/php/conf.d/
 COPY php-fpm-www.conf /usr/local/etc/php-fpm.d/www.conf
