@@ -658,15 +658,44 @@ class TasksController extends ApiController {
         $days = $oDiff->days;
         if ($oDiff->invert) $days *= -1;
 
-        if ($days < -7 && !$thisYear) { $a['class'] = 'past'; $a['str'] = formatDate3(Config::get('dateformat2'), $y, $m, $d, $lang); }
-        elseif ($days < -7)   { $a['class'] = 'past'; $a['str'] = formatDate3(Config::get('dateformatshort'), $y, $m, $d, $lang); }
-        elseif ($days < -1)   { $a['class'] = 'past'; $a['str'] = sprintf($lang->get('daysago'), abs($days)); }
-        elseif ($days == -1)  { $a['class'] = 'past'; $a['str'] = $lang->get('yesterday'); }
-        elseif ($days == 0)   { $a['class'] = 'today'; $a['str'] = $lang->get('today'); }
-        elseif ($days == 1)   { $a['class'] = 'today'; $a['str'] = $lang->get('tomorrow'); }
-        elseif ($days <= 7)   { $a['class'] = 'soon'; $a['str'] = sprintf($lang->get('indays'), $days); }
-        elseif ($thisYear)    { $a['class'] = 'future'; $a['str'] = formatDate3(Config::get('dateformatshort'), $y, $m, $d, $lang); }
-        else                  { $a['class'] = 'future'; $a['str'] = formatDate3(Config::get('dateformat2'), $y, $m, $d, $lang); }
+        $exact = Config::get('exactduedate') ? true : false;
+
+        if ($days < -7 && !$thisYear) {
+            $a['class'] = 'past';
+            $a['str'] = formatDate3(Config::get('dateformat2'), $y, $m, $d, $lang);
+        }
+        elseif ($days < -7) {
+            $a['class'] = 'past';
+            $a['str'] = formatDate3(Config::get('dateformatshort'), $y, $m, $d, $lang);
+        }
+        elseif ($days < -1) {
+             $a['class'] = 'past';
+             $a['str'] = !$exact ? sprintf($lang->get('daysago'), abs($days)) : formatDate3(Config::get('dateformatshort'), $y, $m, $d, $lang);
+        }
+        elseif ($days == -1)  {
+             $a['class'] = 'past';
+             $a['str'] = !$exact ? $lang->get('yesterday') : formatDate3(Config::get('dateformatshort'), $y, $m, $d, $lang);
+        }
+        elseif ($days == 0) {
+            $a['class'] = 'today';
+            $a['str'] = !$exact ? $lang->get('today') : formatDate3(Config::get('dateformatshort'), $y, $m, $d, $lang);
+        }
+        elseif ($days == 1) {
+            $a['class'] = 'today';
+            $a['str'] = !$exact ? $lang->get('tomorrow') : formatDate3(Config::get('dateformatshort'), $y, $m, $d, $lang);
+        }
+        elseif ($days <= 7) {
+            $a['class'] = 'soon';
+            $a['str'] = !$exact ? sprintf($lang->get('indays'), $days) : formatDate3(Config::get('dateformatshort'), $y, $m, $d, $lang);
+        }
+        elseif ($thisYear) {
+            $a['class'] = 'future';
+            $a['str'] = formatDate3(Config::get('dateformatshort'), $y, $m, $d, $lang);
+        }
+        else {
+            $a['class'] = 'future';
+            $a['str'] = formatDate3(Config::get('dateformat2'), $y, $m, $d, $lang);
+        }
 
         #avoid short year
         $fmt = str_replace('y', 'Y', Config::get('dateformat2'));

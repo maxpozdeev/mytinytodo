@@ -183,6 +183,7 @@
     "set_cancel": "Cancel",
     "set_showdate": "Show task date in list",
     "set_showtime": "Show time",
+    "set_exactduedate": "Always show due date as a date",
     "set_appearance": "Appearance",
     "set_appearance_system": "Same as system",
     "set_appearance_light": "Light",

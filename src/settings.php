@@ -52,6 +52,7 @@ if(isset($_POST['save']))
     Config::set('title', removeNewLines(trim(_post('title'))) );
     Config::set('showdate', (int)_post('showdate'));
     Config::set('showtime', (int)_post('showtime'));
+    Config::set('exactduedate', (int)_post('exactduedate'));
     Config::set('appearance', removeNewLines(trim(_post('appearance'))) );
     Config::save();
     $t['saved'] = 1;
@@ -364,6 +365,13 @@ header('Content-type:text/html; charset=utf-8');
  <label><input type="checkbox" name="showtime" value="1" <?php if(_c('showtime')) echo 'checked="checked"'; ?> /> <?php _e('set_showtime');?></label>
 </div>
 </div>
+
+<div class="tr">
+<div class="th"><?php _e('set_exactduedate');?>:</div>
+<div class="td">
+ <label><input type="radio" name="exactduedate" value="1" <?php if(_c('exactduedate')) echo 'checked="checked"'; ?> /> <?php _e('set_enabled');?></label> <br/>
+ <label><input type="radio" name="exactduedate" value="0" <?php if(!_c('exactduedate')) echo 'checked="checked"'; ?> /> <?php _e('set_disabled');?></label>
+</div></div>
 
 <div class="tr">
 <div class="th"><?php _e('set_appearance');?>:</div>
