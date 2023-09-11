@@ -44,6 +44,7 @@ print "> Version is $ver\n";
 unlink('./docker-config.php');
 unlink('./includes/lang/en-rtl.json');
 unlink('./mtt-edit-settings.php');
+unlink('./content/theme/images/svg2base64.php');
 
 chdir('..'); # to the root of repo
 

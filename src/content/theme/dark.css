@@ -95,7 +95,6 @@ html[data-appearance=system][data-system-appearance=dark] {
     --color-placeholder: #444;
     --color-placeholder-border: #555;
 
-    /*--svg-select: url(images/select-dark.svg);*/
-    --svg-select: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNCAxNCI+PHBvbHlsaW5lIHBvaW50cz0iMiA2LCA3IDExLCAxMiA2IiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZT0iI2FhYSIgZmlsbD0ibm9uZSIvPjwvc3ZnPg==");
+    --svg-select: var(--svg-select-dark);
 
 }
