@@ -13,7 +13,6 @@ var filter = { compl:0, search:'', due:'' };
 var sortOrder; //save task order before dragging
 var searchTimer;
 var objPrio = {};
-var lastClickedNodeId = 0;
 var flag = {
     needAuth: false,
     isLogged: false,
@@ -456,22 +455,28 @@ var mytinytodo = window.mytinytodo = _mtt = {
             editTask(id);
         });
 
+        if (this.options.touchDevice) {
+            this.options.viewTaskOnClick = true;
+        }
+
+        if (this.options.viewTaskOnClick) {
+            $('#mtt').addClass('view-task-on-click');
+        }
+
         // tasklist handlers
-        $("#tasklist").on('click', '> li.task-row .task-middle', function(e) {
+        $("#tasklist").on('click', '> li.task-row .task-title', function(e) {
             if ( findParentNode(e.target, 'A') ) {
                 return; //ignore clicks on links
             }
-            var li = findParentNode(this, 'LI');
+            const li = findParentNode(this, 'LI');
             if (li && li.id) {
                 if (e.altKey) {
                     viewTask(li.dataset.id);
                     return;
                 }
-                if (lastClickedNodeId && li.id != lastClickedNodeId) {
-                    $('#'+lastClickedNodeId).removeClass('clicked');
+                if (_mtt.options.viewTaskOnClick) {
+                    viewTask(li.dataset.id);
                 }
-                lastClickedNodeId = li.id;
-                $(li).toggleClass('clicked');
             }
         });
 
@@ -486,20 +491,6 @@ var mytinytodo = window.mytinytodo = _mtt = {
                 editTask(id);
             }
         });
-
-        if (this.options.touchDevice) {
-            this.options.viewTaskOnClick = true;
-        }
-
-        if (this.options.viewTaskOnClick) {
-            $('#mtt').addClass('view-task-on-click');
-            $('#tasklist').on('click', '> li.task-row .task-title', function(){
-                let id = parseInt(getLiTaskId(this));
-                if (id) {
-                    viewTask(id);
-                }
-            });
-        }
 
         $('#tasklist').on('click', '.taskactionbtn', function(){
             var id = parseInt(getLiTaskId(this));

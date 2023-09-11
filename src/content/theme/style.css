@@ -1343,18 +1343,7 @@ li.mtt-item-hidden { display:none; }
 
   #tasklist li.task-row .task-through { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   #tasklist li.task-row.task-expanded .task-note-block { display:none; }
-/*
-  #tasklist li.task-row.clicked {
-    border:1px solid var(--color-tasklist-row-expanded-border);
-    border-radius: 3px;
-  }
-  #tasklist li.task-row.task-has-note.clicked .task-block {
-    border-bottom: 1px solid var(--color-tasklist-row-inter-border);
-  }
-  #tasklist li.task-row.clicked .task-actions { display:block; }
-  #tasklist li.task-row.clicked .task-through { white-space:normal; display:inline; }
-  #tasklist li.task-row.clicked.task-has-note .task-note-block { display:block; }
-*/
+
   .task-toggle { display:none; }
   #tasklist .mtt-task-placeholder { line-height:1rem; padding-top:0.6rem; padding-bottom:0.6rem; }
   #tasklist .ui-sortable-helper { box-shadow:0px 0px 3px #555; }
