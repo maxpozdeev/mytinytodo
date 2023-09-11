@@ -76,7 +76,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
         calendarIcon: 'calendar.png', // need themeUrl+icon
         history: true,
         markdown: true,
-        viewTaskOnClick: true,
+        viewTaskOnClick: false,
         newTaskCounter: true,
     },
 
