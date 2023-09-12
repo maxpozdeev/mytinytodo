@@ -4,6 +4,6 @@ namespace mytinytodo;
 
 class Version
 {
-    const VERSION = '1.7.4';
+    const VERSION = '1.7.5';
     const DB_VERSION = '1.7';
 }
