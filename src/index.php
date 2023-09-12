@@ -89,6 +89,7 @@ function js_options()
         "isLogged" => is_logged() ? true : false,
         "showdate" => Config::get('showdate') ? true : false,
         "showtime" => Config::get('showtime') ? true : false,
+        "showdateInline" => Config::get('showdateInline') ? true : false,
         "duedatepickerformat" => htmlspecialchars(Config::get('dateformat2')),
         "firstdayofweek" => (int) Config::get('firstdayofweek'),
         "calendarIcon" => get_mttinfo('theme_url'). 'images/calendar.svg',

@@ -652,7 +652,13 @@ li.task-row.task-expanded .task-toggle { transform:rotate(90deg); }
 .task-id {
   /*display: none;*/
 }
-#mtt.show-inline-date .task-date { display: block; }
+#mtt.show-date .task-date {
+  display: block;
+}
+#mtt.show-date.date-inline .task-date {
+  display: inline;
+  margin-left:3px;
+}
 .task-through { overflow:hidden; flex-grow:1; }
 #mtt.view-task-on-click .task-title {
   cursor: pointer;
@@ -670,7 +676,10 @@ li.task-row.task-expanded .task-toggle { transform:rotate(90deg); }
   padding: 0px 3px;
   margin: 0px 2px;
 }
-.task-tags { padding:0px 2px; }
+.task-tags {
+  margin:0px 3px;
+  display: inline-block; /* for RTL */
+}
 .task-tags .tag {
   font-size:0.9rem;
   font-weight:bold;

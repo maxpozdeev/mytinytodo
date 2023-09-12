@@ -70,6 +70,8 @@ var mytinytodo = window.mytinytodo = _mtt = {
         tagPreviewDelay: 700, //milliseconds
         ajaxAnimationDelay: 200,
         saveShowNotes: false,
+        showdate: false,
+        showdateInline: false,
         firstdayofweek: 1,
         touchDevice: false,
         calendarIcon: 'calendar.png', // need themeUrl+icon
@@ -180,7 +182,10 @@ var mytinytodo = window.mytinytodo = _mtt = {
         flag.isLogged = options.isLogged ? true : false;
 
         if (this.options.showdate) {
-            $('#mtt').addClass('show-inline-date');
+            $('#mtt').addClass('show-date');
+        }
+        if (this.options.showdateInline) {
+            $('#mtt').addClass('date-inline');
         }
 
         // handlers
@@ -1204,8 +1209,8 @@ _mtt.prepareTaskStr = prepareTaskStr;
 
 function prepareTaskBlocks(item)
 {
-    var id = item.id;
-    var markdown = '';
+    const id = item.id;
+    let markdown = '';
     if (_mtt.options.markdown == true) markdown = 'markdown-note';
     return '' +
         '<div class="task-block">' +
@@ -1221,11 +1226,9 @@ function prepareTaskBlocks(item)
                         '<span class="task-title">' + prepareTaskTitleInlineHtml(item.title) + '</span> ' +
                         (curList.id == -1 ? '<span class="task-listname">'+ tabLists.get(item.listId).name +'</span>' : '') +
                         '<span class="task-tags">' + prepareTagsStr(item) + '</span>' +
+                        '<span class="task-date">' + prepareInlineDate(item) + '</span>' +
                     '</div>' +
                     '<div class="task-through-right">' + prepareDueDate(item) + "</div>" +
-                '</div>' +
-                '<div class="task-date">' +
-                    prepareInlineDate(item) +
                 '</div>' +
             "</div>" +
 
@@ -1273,6 +1276,7 @@ function prepareTagsStr(item, delimiter = ', ')
     if (!a.length) return '';
     const b = item.tags_ids.split(',')
     for (let i in a) {
+        // tag is escaped
         a[i] = '<span class="tag" data-tag="'+a[i]+'" data-tag-id="'+b[i]+'">'+a[i]+'</span>';
     }
     return a.join(delimiter);
