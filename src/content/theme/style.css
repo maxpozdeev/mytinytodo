@@ -680,6 +680,9 @@ li.task-row.task-expanded .task-toggle { transform:rotate(90deg); }
   margin:0px 3px;
   display: inline-block; /* for RTL */
 }
+.task-tags:empty {
+  margin:0;
+}
 .task-tags .tag {
   font-size:0.9rem;
   font-weight:bold;
@@ -1164,7 +1167,7 @@ li.mtt-item-hidden { display:none; }
 }
 .mtt-settings-table .td {
   flex-grow: 1;
-  line-height: 1.5em;
+  line-height: 1.6em;
 }
 .mtt-settings-table .td.extensions {
   line-height: 1.7em;
