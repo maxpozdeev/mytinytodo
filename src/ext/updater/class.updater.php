@@ -26,17 +26,37 @@ class Updater
         $json = null;
         $this->lastErrorString = null;
         try {
-            $json = @file_get_contents("https://api.github.com/repos/maxpozdeev/mytinytodo/releases/latest", false, $context);
+            $json = @file_get_contents("https://api.github.com/repos/maxpozdeev/mytinytodo/releases", false, $context);
         }
         catch (\Exception $e) {
             $this->lastErrorString = boolval(ini_get('html_errors')) ?  htmlspecialchars_decode($e->getMessage()) : $e->getMessage();
         }
         restore_error_handler();
         if ($json === false || $json == '') {
-            error_log("Failed to get last version info: ".$this->lastErrorString);
+            error_log("Failed to get releases info: ".$this->lastErrorString);
             return null;
         }
-        $a = json_decode($json, true) ?? [];
+        $releases = json_decode($json, true) ?? [];
+
+        $a = null;
+        foreach ($releases as $rel) {
+            // find only stable
+            if ($rel['prerelease'] ?? false) {
+                continue;
+            }
+            $ver = substr($rel['tag_name'] ?? 'v', 1);
+            if ($ver == '') continue;
+            if ($a && version_compare($a['__ver'], $ver)) {
+                continue; // skip lower version
+            }
+            $rel['__ver'] = $ver;
+            $a = $rel;
+        }
+        if (null === $a) {
+            $this->lastErrorString = "No release to update to";
+            return null;
+        }
+
         $ret = [];
         $ver = '';
         if (isset($a['tag_name'])) {
