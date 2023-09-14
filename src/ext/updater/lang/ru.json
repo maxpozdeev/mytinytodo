@@ -8,7 +8,7 @@
     "updater.last_version": "Актуальная версия: %s",
     "updater.current_version": "Текущая версия",
     "updater.last_checked": "Последняя проверка",
-    "updater.updated_version_available": "Доступно обновление",
+    "updater.new_version_available": "Доступно обновление",
     "updater.update": "Обновить",
     "updater.updated": "Обновление завершено",
     "updater.download_error": "Ошибка при загрузке",
