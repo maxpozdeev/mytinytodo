@@ -72,7 +72,7 @@ class UpdaterExtension extends MTTExtension implements MTTExtensionSettingsInter
         $warning = '';
         if ($version != '') {
             if ( version_compare($version, mytinytodo\Version::VERSION) > 0 ) {
-                $updateStr = "<br> {$e('updater.updated_version_available')}: ". htmlspecialchars($version);
+                $updateStr = "<br> {$e('updater.new_version_available')}: ". htmlspecialchars($version);
                 # allow update to v1.7.x and 1.8.x only
                 if ( in_array(substr($version, 0, 4), ["1.7.", "1.8."]) ) {
                     $updateStr .= "<br><br>\n <a href=\"#\" data-ext-settings-action=\"post:update\" data-ext=\"$ext\">{$e('updater.update')}</a> ";
