@@ -48,7 +48,7 @@ class UpdaterExtension extends MTTExtension implements MTTExtensionSettingsInter
 
     function settingsPage(): string
     {
-        $e = function($s) { return __($s, true); };
+        $e = function($s, $arg=null) { return __($s, true, $arg); };
         $ext = htmlspecialchars(self::bundleId);
         $prefs = self::preferences();
         $lastCheck = $prefs['lastCheck'] ?? 0;
@@ -72,9 +72,9 @@ class UpdaterExtension extends MTTExtension implements MTTExtensionSettingsInter
         $warning = '';
         if ($version != '') {
             if ( version_compare($version, mytinytodo\Version::VERSION) > 0 ) {
-                $updateStr = "<br> {$e('updater.updatet_version_avaialable')}: ". htmlspecialchars($version);
-                # allow update to v1.7.x only
-                if ("1.7." == substr($version, 0, 4)) {
+                $updateStr = "<br> {$e('updater.updated_version_available')}: ". htmlspecialchars($version);
+                # allow update to v1.7.x and 1.8.x only
+                if ( in_array(substr($version, 0, 4), ["1.7.", "1.8."]) ) {
                     $updateStr .= "<br><br>\n <a href=\"#\" data-ext-settings-action=\"post:update\" data-ext=\"$ext\">{$e('updater.update')}</a> ";
                 }
                 $retval = 0;
@@ -86,7 +86,7 @@ class UpdaterExtension extends MTTExtension implements MTTExtensionSettingsInter
                 }
             }
             else {
-                $updateStr = "<br>{$e('updater.no_updates')}";
+                $updateStr = "<br>{$e('updater.no_updates')}<br>{$e('updater.last_version', $version)}";
             }
         }
         $lastCheckStr = $err ? $e('updater.download_error') : ($lastCheck ? timestampToDatetime($lastCheck, true) : "");
