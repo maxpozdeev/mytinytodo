@@ -258,11 +258,8 @@ class TasksController extends ApiController {
     function postNewCounter()
     {
         checkReadAccess();
-        $lists = $this->req->jsonBody['lists'] ?? false;
-        if (!is_array($lists)) {
-            $this->response->data = [ 'total' => 0 ];
-            return;
-        }
+        $lists = $this->req->jsonBody['lists'] ?? [];
+        if (!is_array($lists)) $lists = [];
         $userLists = [];
         if (!haveWriteAccess()) {
             $userLists = $this->getUserListsSimple(true);
@@ -281,18 +278,20 @@ class TasksController extends ApiController {
             if ($later <= 0) continue;
             $sqlWhereList[] = "(list_id = ". (int)$item['listId']. " AND compl=0 AND d_created > $later)";
         }
-        $sqlWhere = implode(' OR ', $sqlWhereList);
-
 
         $db = DBConnection::instance();
         $a = [];
-        $q = $db->dq("SELECT list_id, COUNT(id) c FROM {$db->prefix}todolist
-                      WHERE $sqlWhere GROUP BY list_id");
-        while ($r = $q->fetchAssoc()) {
-            $a[] = [
-                'listId' => (int)$r['list_id'],
-                'counter' => (int)$r['c'],
-            ];
+
+        if ($sqlWhereList) {
+            $sqlWhere = implode(' OR ', $sqlWhereList);
+            $q = $db->dq("SELECT list_id, COUNT(id) c FROM {$db->prefix}todolist
+                          WHERE $sqlWhere GROUP BY list_id");
+            while ($r = $q->fetchAssoc()) {
+                $a[] = [
+                    'listId' => (int)$r['list_id'],
+                    'counter' => (int)$r['c'],
+                ];
+            }
         }
 
         $b = [];
