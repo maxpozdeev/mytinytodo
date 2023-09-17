@@ -70,7 +70,7 @@ if (is_dir('src/ext')) {
     }
     chdir('../ext2');
     if ($extCount > 0) {
-        `tar -czf ../ext/extensions.tar.gz *`;  #OS dep.!!!
+        `tar --no-xattrs -czf ../ext/extensions.tar.gz *`;  #OS dep.!!!
     }
     chdir('../..');
     deleteTreeIfDir('src/ext2');
@@ -80,7 +80,7 @@ if (is_dir('src/ext')) {
 
 rename('src', 'mytinytodo') or die("Cant rename 'src'\n");
 
-`tar -czf mytinytodo.tar.gz mytinytodo`;  #OS dep.!!!
+`tar --no-xattrs -czf mytinytodo.tar.gz mytinytodo`;  #OS dep.!!!
 if (!file_exists('mytinytodo.tar.gz')) {
     die("Failed to pack files (no output tar.gz file)\n");
 }
