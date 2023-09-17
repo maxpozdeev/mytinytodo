@@ -260,7 +260,7 @@ class TasksController extends ApiController {
         checkReadAccess();
         $lists = $this->req->jsonBody['lists'] ?? [];
         if (!is_array($lists)) $lists = [];
-        $userLists = [];
+        $userLists = []; // [string]
         if (!haveWriteAccess()) {
             $userLists = $this->getUserListsSimple(true);
             if ($userLists) {
@@ -273,9 +273,7 @@ class TasksController extends ApiController {
         }
         $sqlWhereList = [];
         foreach ($lists as $item) {
-            if (!isset($item['later'])) continue;
-            $later = (int)$item['later'];
-            if ($later <= 0) continue;
+            $later = (int) ($item['later'] ?? 0);
             $sqlWhereList[] = "(list_id = ". (int)$item['listId']. " AND compl=0 AND d_created > $later)";
         }
 
