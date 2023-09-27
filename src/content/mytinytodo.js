@@ -1177,7 +1177,7 @@ function loadTasks(opts)
             changeTaskCnt(item, 1);
         });
         curList.lastTime = json.time;
-        $('#list_'+curList.id).find('.counter').text('').addClass('hidden');
+        setNewTaskCounterForList(curList.id, 0);
         if(opts.beforeShow && opts.beforeShow.call) {
             opts.beforeShow();
         }
@@ -2728,25 +2728,42 @@ function newTaskCounter()
     })
     .then(response => response.json())
     .then(json => {
-        if (json && json.total) {
+        if (json && json.ok) {
+            let counters = {};
+            let curCounter = 0;
             if (Array.isArray(json.tasks)) {
-                let curCounter = 0;
                 json.tasks.forEach((id) => {
                     if (!taskList[id]) {
                         curCounter++;
                     }
                 });
-                if (curCounter > 0) {
-                    $('#list_'+curList.id).find('.counter').text(curCounter).removeClass('hidden');
-                }
             }
+            counters[curList.id] = curCounter;
+
             if (Array.isArray(json.lists)) {
                 json.lists.forEach((item) => {
-                    $('#list_'+item.listId).find('.counter').text(item.counter).removeClass('hidden');
+                    counters[0 + item.listId] = 0 + item.counter;
                 });
             }
+
+            tabLists.getAll().forEach( (list) => {
+                if (!list.hidden || list.id !== -1) {
+                    setNewTaskCounterForList(list.id, counters[list.id]);
+                }
+            });
         }
     });
+}
+
+function setNewTaskCounterForList(listId, counter)
+{
+    listId = 0 + listId;
+    counter = 0 + counter;
+    if (counter > 0) {
+        $('#list_' + listId).find('.counter').text(counter).removeClass('hidden');
+    } else {
+        $('#list_' + listId).find('.counter').text('').addClass('hidden');
+    }
 }
 
 /*

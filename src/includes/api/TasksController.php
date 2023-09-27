@@ -304,6 +304,7 @@ class TasksController extends ApiController {
         }
 
         $this->response->data = [
+            'ok' => true,
             'total' => count($b) + count($a),
             'tasks' => $b,
             'lists' => $a
