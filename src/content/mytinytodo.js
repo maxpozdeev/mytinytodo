@@ -66,7 +66,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
         openList: 0,
         autotag: false,
         instantSearch: true,
-        tagPreview: true,
+        tagPreview: false,
         tagPreviewDelay: 700, //milliseconds
         ajaxAnimationDelay: 200,
         saveShowNotes: false,
