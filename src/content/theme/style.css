@@ -1032,7 +1032,23 @@ li.task-row.task-expanded .task-note-block { display:block; }
   mask: var(--svg-arr-right) no-repeat; -webkit-mask: var(--svg-arr-right) no-repeat;
   background-color: var(--color-btn-default);
 }
-
+.ui-datepicker select {
+  appearance: none;
+  -webkit-appearance: none; -moz-appearance: none;
+  background: transparent var(--svg-select) no-repeat top 2px right 4px;
+  background-size: 1rem 1rem;
+  padding: 1px 3px;
+  padding-right: calc(1rem + 7px);
+  border: 1px solid var(--color-border-default);
+  border-radius: 2px;
+  color: var(--color-text-default);
+  margin: 0 2px;
+}
+.ui-datepicker select:focus {
+  outline:none;
+  /*border-color: var(--color-border-focus);
+  box-shadow:0 0 0 2px var(--color-border-focus-shadow);*/
+}
 
 .mtt-menu-button {
   user-select: none;

@@ -105,7 +105,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
             this.__lang = lang;
             this.daysMin = this.__lang.daysMin;
             this.daysLong = this.__lang.daysLong;
-            this.monthsShort = this.__lang.monthsShort;
+            this.monthsShort =this.__lang.monthsLong; //this.__lang.monthsShort;
             this.monthsLong = this.__lang.monthsLong;
         },
 
@@ -412,6 +412,8 @@ var mytinytodo = window.mytinytodo = _mtt = {
             dayNames:_mtt.lang.daysLong,
             monthNamesShort:_mtt.lang.monthsShort,
             monthNames:_mtt.lang.monthsLong,
+            changeMonth: true,
+            changeYear: true,
             isRTL: _mtt.lang.isRTL()
         });
 
