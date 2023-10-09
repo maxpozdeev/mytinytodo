@@ -718,7 +718,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
             window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
               document.documentElement.setAttribute('data-system-appearance', e.matches ? 'dark' : 'light');
             });
-          }
+        }
 
         // Counter
         if (this.options.newTaskCounter) {

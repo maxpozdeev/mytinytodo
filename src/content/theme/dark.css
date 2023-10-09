@@ -5,9 +5,8 @@
 
 /* Dark mode */
 
-/* prefers-color-scheme media query value detected in js part */
-html[data-appearance=dark],
-html[data-appearance=system][data-system-appearance=dark] {
+/* prefers-color-scheme media query is used in html link tag */
+:root {
 
     color-scheme: dark;
 
