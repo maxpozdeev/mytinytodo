@@ -656,7 +656,8 @@ li.task-row.task-expanded .task-toggle { transform:rotate(90deg); }
   display: block;
 }
 #mtt.show-date.date-inline .task-date {
-  display: inline;
+  display: inline-block; /* for RTL */
+  margin:0;
   margin-left:3px;
 }
 .task-through { overflow:hidden; flex-grow:1; }
@@ -678,7 +679,7 @@ li.task-row.task-expanded .task-toggle { transform:rotate(90deg); }
 }
 .task-tags {
   margin:0px 3px;
-  display: inline-block; /* for RTL */
+  display: inline;
 }
 .task-tags:empty {
   margin:0;
