@@ -2722,6 +2722,7 @@ function newTaskCounter()
 
     fetch(_mtt.apiUrl + 'tasks/newCounter', {
         method: 'POST',
+        credentials: 'same-origin', // old browsers
         headers: {
             'Content-Type': 'application/json',
             'MTT-Token': _mtt.options.token,
