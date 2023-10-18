@@ -1,13 +1,23 @@
 body { direction:rtl; }
-h2 { padding-left:10px; padding-right:0px; }
+.topblock h2 {
+  background-position: right;
+  padding-left: 10px;
+  padding-right: 30px;
+}
 #loading { margin-left:6px; margin-right:0px; }
+.bar-menu { text-align: left; }
+.bar-menu > * {
+  margin-right: 10px;
+  margin-left: unset;
+}
+
 .mtt-tab { margin-left:3px; margin-right:0px; border-top-right-radius:0px; border-top-left-radius:8px; }
 .mtt-tabs-new-button { border-top-right-radius:0px; border-top-left-radius:8px; }
 .mtt-tabs-select-button>span { transform:rotateY(180deg); }
 
 #task { padding-left:20px; padding-right:4px; }
 .mtt-taskbox-icon { left:2px; right:auto; transform:rotateY(180deg); }
-#newtask_adv { margin-left:0; margin-right:0.5rem; }
+#newtask_adv { margin-left:0; margin-right:0.5rem; transform:rotateY(180deg); }
 .mtt-searchbox-icon.mtt-icon-search  { right:4px; left:auto; }
 .mtt-searchbox-icon.mtt-icon-cancelsearch { left:4px; right:auto; }
 
@@ -29,6 +39,7 @@ h2 { padding-left:10px; padding-right:0px; }
 #tagcloud { box-shadow:-1px 2px 5px rgba(0,0,0,0.5); }
 #tagcloudcancel { float:left; }
 
+h3.page-title a.mtt-back-button { transform:rotate(180deg); }
 #taskedit-date { float:left; }
 #page_taskedit .form-row-short { float:right; margin-left:12px; margin-right:0; }
 .alltags-cell { padding-left:0; padding-right:5px; }
