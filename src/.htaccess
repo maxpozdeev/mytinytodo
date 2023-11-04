@@ -1,12 +1,16 @@
-# For Apache
+# For REST API in Apache
 #<IfModule mod_rewrite.c>
 #    RewriteEngine On
 #    RewriteCond %{REQUEST_FILENAME} !-f
 #    RewriteCond %{REQUEST_FILENAME} !-d
 #    RewriteRule ^api/(.*)$ api.php/$1 [L,QSA]
 #</IfModule>
+#<Limit GET POST PUT DELETE>
+#  Allow from all
+#</Limit>
 
-# For Nginx set something like this:
+
+# In Nginx set something like this:
 # location /api/ {
 #    rewrite ^/api/(.*) /api.php/$1 last;
 # }

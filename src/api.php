@@ -32,6 +32,7 @@ $endpoints = array(
         'GET'     => [ ListsController::class , 'getId' ],
         'PUT'     => [ ListsController::class , 'putId' ],
         'DELETE'  => [ ListsController::class , 'deleteId' ],
+        'POST'    => [ ListsController::class , 'putId' ], //compatibility
     ],
     '/tasks' => [
         'GET'  => [ TasksController::class , 'get' ],
@@ -41,6 +42,7 @@ $endpoints = array(
     '/tasks/(-?\d+)' => [
         'PUT'     => [ TasksController::class , 'putId' ],
         'DELETE'  => [ TasksController::class , 'deleteId' ],
+        'POST'    => [ TasksController::class , 'putId' ], //compatibility
     ],
     '/tasks/parseTitle' => [
         'POST' => [ TasksController::class , 'postTitleParse' ],
@@ -60,6 +62,7 @@ $endpoints = array(
     '/ext-settings/(.+)' => [
         'GET'     => [ ExtSettingsController::class , 'get' ],
         'PUT'     => [ ExtSettingsController::class , 'put' ],
+        'POST'    => [ ExtSettingsController::class , 'put' ], //compatibility
     ]
 );
 

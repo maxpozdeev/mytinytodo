@@ -135,22 +135,27 @@ class TasksController extends ApiController {
 
     /**
      * Create new task
-     * action: simple or full
+     * action: newSimple or newFull
      * @return void
      * @throws Exception
      */
     function post()
     {
-        $listId = (int)($this->req->jsonBody['list'] ?? 0);
-        checkWriteAccess($listId);
         $action = $this->req->jsonBody['action'] ?? '';
-        if ($action == 'full') {
-            $this->response->data = $this->fullNewTaskInList($listId);
+        if ($action == 'order') { //compatibility
+            checkWriteAccess();
+            $this->response->data = $this->changeTaskOrder();
         }
         else {
-            $this->response->data = $this->newTaskInList($listId);
+            $listId = (int)($this->req->jsonBody['list'] ?? 0);
+            checkWriteAccess($listId);
+            if ($action == 'newFull') {
+                $this->response->data = $this->fullNewTaskInList($listId);
+            }
+            else {
+                $this->response->data = $this->newTaskInList($listId);
+            }
         }
-
     }
 
     /**
@@ -178,25 +183,7 @@ class TasksController extends ApiController {
     function deleteId($id)
     {
         checkWriteAccess();
-        $id = (int)$id;
-        $task = null;
-        if (MTTNotificationCenter::hasObserversForNotification(MTTNotification::didDeleteTask)) {
-            $task = $this->getTaskRowById($id);
-        }
-        $db = DBConnection::instance();
-        $db->ex("BEGIN");
-        $db->ex("DELETE FROM {$db->prefix}tag2task WHERE task_id=$id");
-        //TODO: delete unused tags?
-        $db->dq("DELETE FROM {$db->prefix}todolist WHERE id=$id");
-        $deleted = $db->affected();
-        $db->ex("COMMIT");
-        if ($deleted && MTTNotificationCenter::hasObserversForNotification(MTTNotification::didDeleteTask)) {
-            MTTNotificationCenter::postNotification(MTTNotification::didDeleteTask, $task);
-        }
-        $t = array();
-        $t['total'] = $deleted;
-        $t['list'][] = array('id' => $id);
-        $this->response->data = $t;
+        $this->response->data = $this->deleteTask((int)$id);
     }
 
     /**
@@ -222,6 +209,7 @@ class TasksController extends ApiController {
             case 'note':     $this->response->data = $this->editNote($id);     break;
             case 'move':     $this->response->data = $this->moveTask($id);     break;
             case 'priority': $this->response->data = $this->priorityTask($id); break;
+            case 'delete':   $this->response->data = $this->deleteTask($id);   break; //compatibility
             default:         $this->response->data = ['total' => 0];
         }
     }
@@ -554,6 +542,29 @@ class TasksController extends ApiController {
             $db->ex("COMMIT");
             $t['total'] = 1;
         }
+        return $t;
+    }
+
+    private function deleteTask(int $id)
+    {
+        $id = (int)$id;
+        $task = null;
+        if (MTTNotificationCenter::hasObserversForNotification(MTTNotification::didDeleteTask)) {
+            $task = $this->getTaskRowById($id);
+        }
+        $db = DBConnection::instance();
+        $db->ex("BEGIN");
+        $db->ex("DELETE FROM {$db->prefix}tag2task WHERE task_id=$id");
+        //TODO: delete unused tags?
+        $db->dq("DELETE FROM {$db->prefix}todolist WHERE id=$id");
+        $deleted = $db->affected();
+        $db->ex("COMMIT");
+        if ($deleted && MTTNotificationCenter::hasObserversForNotification(MTTNotification::didDeleteTask)) {
+            MTTNotificationCenter::postNotification(MTTNotification::didDeleteTask, $task);
+        }
+        $t = array();
+        $t['total'] = $deleted;
+        $t['list'][] = array('id' => $id);
         return $t;
     }
 

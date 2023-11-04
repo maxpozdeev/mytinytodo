@@ -40,7 +40,7 @@ class ListsController extends ApiController {
 
 
     /**
-     * Create new list
+     * Create new list and Actions with all lists
      * Code 201 on success
      * @return void
      * @throws Exception
@@ -48,15 +48,12 @@ class ListsController extends ApiController {
     function post()
     {
         checkWriteAccess();
-        $id = DBCore::default()->createListWithName($this->req->jsonBody['name'] ?? '');
-        $db = DBConnection::instance();
-        $t = array();
-        $t['total'] = 1;
-        $r = $db->sqa("SELECT * FROM {$db->prefix}lists WHERE id=$id");
-        $oo = $this->prepareList($r, true);
-        MTTNotificationCenter::postNotification(MTTNotification::didCreateList, $oo);
-        $t['list'][] = $oo;
-        $this->response->data = $t;
+        $action = $this->req->jsonBody['action'] ?? '';
+        switch ($action) {
+            case 'order': $this->response->data = $this->changeListOrder(); break; //compatibility
+            case 'new':
+            default:      $this->response->data = $this->createList();
+        }
     }
 
     /**
@@ -105,32 +102,13 @@ class ListsController extends ApiController {
     function deleteId($id)
     {
         checkWriteAccess();
-        $db = DBConnection::instance();
-        $t = array();
-        $t['total'] = 0;
-        $id = (int)$id;
-        $list = null;
-        if (MTTNotificationCenter::hasObserversForNotification(MTTNotification::didDeleteList)) {
-            $list = $this->getListRowById($id);
-        }
-        $db->ex("BEGIN");
-        $db->ex("DELETE FROM {$db->prefix}lists WHERE id=$id");
-        $t['total'] = $db->affected();
-        if ($t['total']) {
-            $db->ex("DELETE FROM {$db->prefix}tag2task WHERE list_id=$id");
-            $db->ex("DELETE FROM {$db->prefix}todolist WHERE list_id=$id");
-        }
-        $db->ex("COMMIT");
-        if ($t['total'] && MTTNotificationCenter::hasObserversForNotification(MTTNotification::didDeleteList)) {
-            MTTNotificationCenter::postNotification(MTTNotification::didDeleteList, $list);
-        }
-        $this->response->data = $t;
+        $this->response->data = $this->deleteList($id);
     }
 
 
     /**
      * Edit some properties of List
-     * Actions: rename
+     * Actions: rename, ...
      * @param mixed $id
      * @return void
      * @throws Exception
@@ -149,6 +127,7 @@ class ListsController extends ApiController {
             case 'showNotes':      $this->response->data = $this->showNotes($id);      break;
             case 'hide':           $this->response->data = $this->hideList($id);       break;
             case 'clearCompleted': $this->response->data = $this->clearCompleted($id); break;
+            case 'delete':         $this->response->data = $this->deleteList($id);     break; //compatibility
             default:               $this->response->data = ['total' => 0];
         }
     }
@@ -212,6 +191,23 @@ class ListsController extends ApiController {
             'hidden' => $taskview & 4 ? 1 : 0,
             'feedKey' => $feedKey,
         );
+    }
+
+    private function createList(): ?array
+    {
+        $t = array();
+        $t['total'] = 0;
+        $id = DBCore::default()->createListWithName($this->req->jsonBody['name'] ?? '');
+        if (!$id) {
+            return $t;
+        }
+        $db = DBConnection::instance();
+        $t['total'] = 1;
+        $r = $db->sqa("SELECT * FROM {$db->prefix}lists WHERE id=$id");
+        $oo = $this->prepareList($r, true);
+        MTTNotificationCenter::postNotification(MTTNotification::didCreateList, $oo);
+        $t['list'][] = $oo;
+        return $t;
     }
 
     private function renameList(int $id): ?array
@@ -371,4 +367,27 @@ class ListsController extends ApiController {
         return $t;
     }
 
+    private function deleteList(int $id)
+    {
+        $db = DBConnection::instance();
+        $t = array();
+        $t['total'] = 0;
+        $id = (int)$id;
+        $list = null;
+        if (MTTNotificationCenter::hasObserversForNotification(MTTNotification::didDeleteList)) {
+            $list = $this->getListRowById($id);
+        }
+        $db->ex("BEGIN");
+        $db->ex("DELETE FROM {$db->prefix}lists WHERE id=$id");
+        $t['total'] = $db->affected();
+        if ($t['total']) {
+            $db->ex("DELETE FROM {$db->prefix}tag2task WHERE list_id=$id");
+            $db->ex("DELETE FROM {$db->prefix}todolist WHERE list_id=$id");
+        }
+        $db->ex("COMMIT");
+        if ($t['total'] && MTTNotificationCenter::hasObserversForNotification(MTTNotification::didDeleteList)) {
+            MTTNotificationCenter::postNotification(MTTNotification::didDeleteList, $list);
+        }
+        return $t;
+    }
 }
