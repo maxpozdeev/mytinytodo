@@ -143,32 +143,44 @@ $().ready(function(){
 <form id="taskedit_form" name="edittask" method="post">
 <input type="hidden" name="isadd" value="0">
 <input type="hidden" name="id" value="">
+
+<div class="form-container">
 <div class="form-row form-row-short">
   <span class="h"><?php _e('priority');?></span>
   <select name="prio" class="form-input">
-    <option value="2">+2</option><option value="1">+1</option><option value="0" selected="selected">&plusmn;0</option><option value="-1">&minus;1</option>
+    <option value="2">+2</option>
+    <option value="1">+1</option>
+    <option value="0" selected="selected">&plusmn;0</option>
+    <option value="-1">&minus;1</option>
   </select>
 </div>
 <div class="form-row form-row-short">
   <span class="h"><?php _e('due');?> </span>
   <input name="duedate" id="duedate" value="" class="in100 form-input" title="Y-M-D, M/D/Y, D.M.Y, M/D, D.M" autocomplete="off" type="text">
 </div>
-<div class="form-row-short-end"></div>
-<div class="form-row"><div class="h"><?php _e('task');?></div> <input type="text" name="task" value="" class="in500 form-input" maxlength="250" autocomplete="off"></div>
-<div class="form-row"><div class="h"><?php _e('note');?></div> <textarea name="note" class="in500 form-input" spellcheck="false"></textarea></div>
-<div class="form-row"><div class="h"><?php _e('tags');?></div>
+<div class="form-row">
+  <div class="h"><?php _e('task');?></div>
+  <input type="text" name="task" value="" class="inmax form-input" maxlength="250" autocomplete="off">
+</div>
+<div class="form-row">
+  <div class="h"><?php _e('note');?></div>
+  <textarea name="note" class="inmax form-input" spellcheck="false"></textarea>
+</div>
+<div class="form-row">
+  <div class="h"><?php _e('tags');?></div>
   <table cellspacing="0" cellpadding="0" width="100%"><tr>
-    <td><input type="text" name="tags" id="edittags" value="" class="in500 form-input" maxlength="250" autocomplete="off"></td>
+    <td><input type="text" name="tags" id="edittags" value="" class="inmax form-input" maxlength="250" autocomplete="off"></td>
     <td class="alltags-cell">
       <a href="#" id="alltags_show"><?php _e('alltags_show');?></a>
       <a href="#" id="alltags_hide" style="display:none"><?php _e('alltags_hide');?></a>
-    </td>
-  </tr></table>
+    </td></tr>
+  </table>
 </div>
 <div class="form-row" id="alltags" style="display:none;"></div>
 <div class="form-row form-bottom-buttons">
   <button type="submit"><?php _e('save');?></button>
   <button class="mtt-back-button"><?php _e('cancel');?></button>
+</div>
 </div>
 </form>
 

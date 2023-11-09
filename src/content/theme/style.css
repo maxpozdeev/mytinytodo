@@ -770,8 +770,6 @@ li.task-row.task-expanded .task-note-block { display:block; }
 .task-note-actions { font-size:0.8rem; }
 .hidden { display:none; }
 .invisible { visibility:hidden; }
-.in500 { width:500px; color: var(--color-text-reduced); }
-.in100 { width:100px; color: var(--color-text-reduced); }
 .task-note a { color: var(--color-tasklist-note-link); }
 .task-note a:hover { color: var(--color-tasklist-link-hover) }
 
@@ -798,23 +796,43 @@ li.task-row.task-expanded .task-note-block { display:block; }
   text-align: center;
 }
 
-
-.form-row { margin-top:0.6rem; }
+.form-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+.form-row {
+  margin-top:0.6rem;
+}
+.form-row-short {
+  margin-right:12px;
+}
+.form-row:not(.form-row-short) {
+  width:100%;
+}
 .form-row .h {
   font-weight:bold;
   color: var(--color-text-reduced);
 }
-.form-row div.h { margin-bottom:3px; }
-.form-row-short-end { clear:both; }
-#page_taskedit .form-row .in500 { width:100%; box-sizing:border-box; }
-#page_taskedit .form-row textarea.in500 {
-  height:300px;
+.form-row div.h {
+  margin-bottom:3px;
+}
+.form-input {
+  color: var(--color-text-reduced);
+}
+.form-input.in100 {
+  width:100px;
+}
+.form-input.inmax {
+  width:100%;
+  box-sizing:border-box;
+}
+textarea.form-input.inmax {
+  height:280px;
   font-size:13px;
   font-family: ui-monospace,Consolas,"SF Mono",Menlo,"Liberation Mono",monospace;
   white-space: pre;
   padding: 5px;
 }
-#page_taskedit .form-row-short { float:left; margin-right:12px; }
 .alltags-cell { width:1%; white-space:nowrap; padding-left:5px; }
 #page_taskedit.mtt-inadd .mtt-inedit { display:none; }
 #page_taskedit.mtt-inedit .mtt-inadd { display:none; }
@@ -1303,7 +1321,7 @@ li.mtt-item-hidden { display:none; }
     font-size: 16px;
     -webkit-text-size-adjust: 100%; /* Dont increase font-size in horizontal orientation on ios */
   }
-  #page_taskedit .form-row textarea.in500 { font-size: 14px; }
+  textarea.form-input.inmax { font-size: 14px; }
 }
 
 /* narrow screens */
@@ -1379,7 +1397,7 @@ li.mtt-item-hidden { display:none; }
 
   #page_taskedit { max-width:100%; border:none; position:static; padding:0; }
   #page_taskedit .form-table { width:100%; }
-  #page_taskedit .form-row textarea { height: 70px; }
+  #page_taskedit .form-row textarea { height: 150px; }
 
   #loading {  padding:0px; padding-top:1px; padding-right:1px; height:16px; overflow:hidden; }
 
