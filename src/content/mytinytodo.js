@@ -1230,7 +1230,7 @@ function prepareTaskBlocks(item)
                         '<span class="task-title">' + prepareTaskTitleInlineHtml(item.title) + '</span> ' +
                         (curList.id == -1 ? '<span class="task-listname">'+ tabLists.get(item.listId).name +'</span>' : '') +
                         '<span class="task-tags">' + prepareTagsStr(item) + '</span>' +
-                        '<span class="task-date">' + prepareInlineDate(item) + '</span>' +
+                        '<div class="task-date">' + prepareInlineDate(item) + '</div>' +
                     '</div>' +
                     '<div class="task-through-right">' + prepareDueDate(item) + "</div>" +
                 '</div>' +
