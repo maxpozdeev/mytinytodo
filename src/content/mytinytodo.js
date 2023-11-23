@@ -136,7 +136,9 @@ var mytinytodo = window.mytinytodo = _mtt = {
     // procs
     setApiDriver: function(driver)
     {
-        this.db = new driver(_mtt);
+        this.db = new driver({
+            useREST: false
+        });
         return this;
     },
 

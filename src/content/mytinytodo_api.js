@@ -4,53 +4,65 @@
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
-(function(){
-
 "use strict";
 
-var mtt;
-var useREST = true;
-
-function MytinytodoAjaxApi(amtt)
+/**
+ * @class
+ */
+function MytinytodoAjaxApi(props)
 {
-    mtt = amtt;
-    useREST = false;
+    if (typeof mytinytodo !== 'object') {
+        throw "mytinytodo global object is not found!";
+    }
+    this.useREST = true;
+
+    if (props.hasOwnProperty('useREST')) {
+        this.useREST = !!props.useREST;
+    }
 }
 
-window.MytinytodoAjaxApi = MytinytodoAjaxApi;
+MytinytodoAjaxApi.prototype = {
 
-MytinytodoAjaxApi.prototype =
-{
-    /* required method */
-    request: function(action, params, callback)
-    {
-        if (!this[action] || typeof this[action] !== 'function') {
+    /**
+     * required method
+     * @param {string} action
+     * @param {Object.<string, any>} [params]
+     * @param {ApiDriverCallback} [callback]
+     *
+     * @callback ApiDriverCallback
+     * @param {object} json
+     */
+    request(action, params, callback) {
+        if (typeof this[action] !== 'function') {
             throw "Unknown ApiDriver action: " + action;
         }
-
-        this[action] (params, function(json){
-            if (json.denied) mtt.errorDenied();
-            if (callback) callback.call(mtt, json)
+        this[action](params, function(json){
+            if (json.denied) {
+                mytinytodo.errorDenied();
+            }
+            if (callback) {
+                callback.call(mytinytodo, json)
+            }
         });
     },
 
 
-    loadTasks: function(params, callback)
-    {
-        var q = '';
+    loadTasks(params, callback) {
+        let q = '';
         if (params.search && params.search != '') q += '&s=' + encodeURIComponent(params.search);
         if (params.tag && params.tag != '') q += '&t=' + encodeURIComponent(params.tag);
         if (params.setCompl && params.setCompl != 0) q += '&setCompl=1';
         if (params.saveSort && params.saveSort != 0) q += '&saveSort=1';
 
-        $.getJSON(mtt.apiUrl + 'tasks' + (mtt.apiUrl.indexOf('?') > -1 ? '&' : '?') + 'list='+params.list+'&compl='+params.compl+'&sort='+params.sort+q, callback);
+        $.getJSON(mytinytodo.apiUrl + 'tasks' + (mytinytodo.apiUrl.indexOf('?') > -1 ? '&' : '?') +
+            'list='+params.list+'&compl='+params.compl+'&sort='+params.sort+q,
+            callback);
     },
 
 
-    newTask: function(params, callback)
-    {
+    newTask(params, callback) {
         $.ajax({
-            url: mtt.apiUrl + 'tasks',
+            url: mytinytodo.apiUrl + 'tasks',
             method: 'POST',
             contentType : 'application/json',
             data: JSON.stringify({
@@ -65,10 +77,9 @@ MytinytodoAjaxApi.prototype =
     },
 
 
-    fullNewTask: function(params, callback)
-    {
+    fullNewTask(params, callback) {
         $.ajax({
-            url: mtt.apiUrl + 'tasks',
+            url: mytinytodo.apiUrl + 'tasks',
             method: 'POST',
             contentType : 'application/json',
             data: JSON.stringify({
@@ -87,11 +98,10 @@ MytinytodoAjaxApi.prototype =
     },
 
 
-    editTask: function(params, callback)
-    {
+    editTask(params, callback) {
         $.ajax({
-            url: mtt.apiUrl + 'tasks/' + encodeURIComponent(params.id),
-            method: useREST ? 'PUT' : 'POST',
+            url: mytinytodo.apiUrl + 'tasks/' + encodeURIComponent(params.id),
+            method: this.useREST ? 'PUT' : 'POST',
             contentType : 'application/json',
             data: JSON.stringify({
                 action: 'edit',
@@ -107,11 +117,10 @@ MytinytodoAjaxApi.prototype =
     },
 
 
-    editNote: function(params, callback)
-    {
+    editNote(params, callback) {
         $.ajax({
-            url: mtt.apiUrl + 'tasks/' + encodeURIComponent(params.id),
-            method: useREST ? 'PUT' : 'POST',
+            url: mytinytodo.apiUrl + 'tasks/' + encodeURIComponent(params.id),
+            method: this.useREST ? 'PUT' : 'POST',
             contentType : 'application/json',
             data: JSON.stringify({
                 action: 'note',
@@ -123,11 +132,10 @@ MytinytodoAjaxApi.prototype =
     },
 
 
-    completeTask: function(params, callback)
-    {
+    completeTask(params, callback) {
         $.ajax({
-            url: mtt.apiUrl + 'tasks/' + encodeURIComponent(params.id),
-            method: useREST ? 'PUT' : 'POST',
+            url: mytinytodo.apiUrl + 'tasks/' + encodeURIComponent(params.id),
+            method: this.useREST ? 'PUT' : 'POST',
             contentType : 'application/json',
             data: JSON.stringify({
                 action: 'complete',
@@ -139,11 +147,10 @@ MytinytodoAjaxApi.prototype =
     },
 
 
-    deleteTask: function(params, callback)
-    {
+    deleteTask(params, callback) {
         $.ajax({
-            url: mtt.apiUrl + 'tasks/' + encodeURIComponent(params.id),
-            method: useREST ? 'DELETE' : 'POST',
+            url: mytinytodo.apiUrl + 'tasks/' + encodeURIComponent(params.id),
+            method: this.useREST ? 'DELETE' : 'POST',
             contentType : 'application/json', // contentType and data are required if method is POST
             data: JSON.stringify({
                 action: 'delete',
@@ -154,11 +161,10 @@ MytinytodoAjaxApi.prototype =
     },
 
 
-    setTaskPriority: function(params, callback)
-    {
+    setTaskPriority(params, callback) {
         $.ajax({
-            url: mtt.apiUrl + 'tasks/' + encodeURIComponent(params.id),
-            method: useREST ? 'PUT' : 'POST',
+            url: mytinytodo.apiUrl + 'tasks/' + encodeURIComponent(params.id),
+            method: this.useREST ? 'PUT' : 'POST',
             contentType : 'application/json',
             data: JSON.stringify({
                 action: 'priority',
@@ -169,11 +175,10 @@ MytinytodoAjaxApi.prototype =
         });
     },
 
-    changeOrder: function(params, callback)
-    {
+    changeOrder(params, callback) {
         $.ajax({
-            url: mtt.apiUrl + 'tasks',
-            method: useREST ? 'PUT' : 'POST',
+            url: mytinytodo.apiUrl + 'tasks',
+            method: this.useREST ? 'PUT' : 'POST',
             contentType : 'application/json',
             data: JSON.stringify({
                 action: 'order',
@@ -184,21 +189,18 @@ MytinytodoAjaxApi.prototype =
         });
     },
 
-    suggestTags: function(params, callback)
-    {
-        $.getJSON(mtt.apiUrl + 'suggestTags', {list:params.list, q:params.q}, callback);
+    suggestTags(params, callback) {
+        $.getJSON(mytinytodo.apiUrl + 'suggestTags', {list:params.list, q:params.q}, callback);
     },
 
-    tagCloud: function(params, callback)
-    {
-        $.getJSON(mtt.apiUrl + 'tagCloud/' + encodeURIComponent(params.list), callback);
+    tagCloud(params, callback) {
+        $.getJSON(mytinytodo.apiUrl + 'tagCloud/' + encodeURIComponent(params.list), callback);
     },
 
-    moveTask: function(params, callback)
-    {
+    moveTask(params, callback) {
         $.ajax({
-            url: mtt.apiUrl + 'tasks/' + encodeURIComponent(params.id),
-            method: useREST ? 'PUT' : 'POST',
+            url: mytinytodo.apiUrl + 'tasks/' + encodeURIComponent(params.id),
+            method: this.useREST ? 'PUT' : 'POST',
             contentType : 'application/json',
             data: JSON.stringify({
                 action: 'move',
@@ -210,10 +212,9 @@ MytinytodoAjaxApi.prototype =
         });
     },
 
-    parseTaskStr: function(params, callback)
-    {
+    parseTaskStr(params, callback) {
         $.ajax({
-            url: mtt.apiUrl + 'tasks/parseTitle',
+            url: mytinytodo.apiUrl + 'tasks/parseTitle',
             method: 'POST',
             contentType : 'application/json',
             data: JSON.stringify({
@@ -228,15 +229,13 @@ MytinytodoAjaxApi.prototype =
 
 
     // Lists
-    loadLists: function(params, callback)
-    {
-        $.getJSON(mtt.apiUrl + 'lists', callback);
+    loadLists(params, callback) {
+        $.getJSON(mytinytodo.apiUrl + 'lists', callback);
     },
 
-    addList: function(params, callback)
-    {
+    addList(params, callback) {
         $.ajax({
-            url: mtt.apiUrl + 'lists',
+            url: mytinytodo.apiUrl + 'lists',
             method: 'POST',
             contentType : 'application/json',
             data: JSON.stringify({
@@ -249,11 +248,10 @@ MytinytodoAjaxApi.prototype =
 
     },
 
-    deleteList: function(params, callback)
-    {
+    deleteList(params, callback) {
         $.ajax({
-            url: mtt.apiUrl + 'lists/' + encodeURIComponent(params.list),
-            method: useREST ? 'DELETE' : 'POST',
+            url: mytinytodo.apiUrl + 'lists/' + encodeURIComponent(params.list),
+            method: this.useREST ? 'DELETE' : 'POST',
             contentType : 'application/json', // contentType and data are required if method is POST
             data: JSON.stringify({
                 action: 'delete',
@@ -263,11 +261,10 @@ MytinytodoAjaxApi.prototype =
         });
     },
 
-    renameList:  function(params, callback)
-    {
+    renameList(params, callback) {
         $.ajax({
-            url: mtt.apiUrl + 'lists/' + encodeURIComponent(params.list),
-            method: useREST ? 'PUT' : 'POST',
+            url: mytinytodo.apiUrl + 'lists/' + encodeURIComponent(params.list),
+            method: this.useREST ? 'PUT' : 'POST',
             contentType : 'application/json',
             data: JSON.stringify({
                 action: 'rename',
@@ -278,11 +275,10 @@ MytinytodoAjaxApi.prototype =
         });
     },
 
-    setSort: function(params, callback)
-    {
+    setSort(params, callback) {
         $.ajax({
-            url: mtt.apiUrl + 'lists/' + encodeURIComponent(params.list),
-            method: useREST ? 'PUT' : 'POST',
+            url: mytinytodo.apiUrl + 'lists/' + encodeURIComponent(params.list),
+            method: this.useREST ? 'PUT' : 'POST',
             contentType : 'application/json',
             data: JSON.stringify({
                 action: 'sort',
@@ -294,11 +290,10 @@ MytinytodoAjaxApi.prototype =
         });
     },
 
-    publishList: function(params, callback)
-    {
+    publishList(params, callback) {
         $.ajax({
-            url: mtt.apiUrl + 'lists/' + encodeURIComponent(params.list),
-            method: useREST ? 'PUT' : 'POST',
+            url: mytinytodo.apiUrl + 'lists/' + encodeURIComponent(params.list),
+            method: this.useREST ? 'PUT' : 'POST',
             contentType : 'application/json',
             data: JSON.stringify({
                 action: 'publish',
@@ -309,11 +304,10 @@ MytinytodoAjaxApi.prototype =
         });
     },
 
-    enableFeedKey: function(params, callback)
-    {
+    enableFeedKey(params, callback) {
         $.ajax({
-            url: mtt.apiUrl + 'lists/' + encodeURIComponent(params.list),
-            method: useREST ? 'PUT' : 'POST',
+            url: mytinytodo.apiUrl + 'lists/' + encodeURIComponent(params.list),
+            method: this.useREST ? 'PUT' : 'POST',
             contentType : 'application/json',
             data: JSON.stringify({
                 action: 'enableFeedKey',
@@ -324,11 +318,10 @@ MytinytodoAjaxApi.prototype =
         });
     },
 
-    setShowNotesInList: function(params, callback)
-    {
+    setShowNotesInList(params, callback) {
         $.ajax({
-            url: mtt.apiUrl + 'lists/' + encodeURIComponent(params.list),
-            method: useREST ? 'PUT' : 'POST',
+            url: mytinytodo.apiUrl + 'lists/' + encodeURIComponent(params.list),
+            method: this.useREST ? 'PUT' : 'POST',
             contentType : 'application/json',
             data: JSON.stringify({
                 action: 'showNotes',
@@ -339,11 +332,10 @@ MytinytodoAjaxApi.prototype =
         });
     },
 
-    setHideList: function(params, callback)
-    {
+    setHideList(params, callback) {
         $.ajax({
-            url: mtt.apiUrl + 'lists/' + encodeURIComponent(params.list),
-            method: useREST ? 'PUT' : 'POST',
+            url: mytinytodo.apiUrl + 'lists/' + encodeURIComponent(params.list),
+            method: this.useREST ? 'PUT' : 'POST',
             contentType : 'application/json',
             data: JSON.stringify({
                 action: 'hide',
@@ -354,11 +346,10 @@ MytinytodoAjaxApi.prototype =
         });
     },
 
-    changeListOrder: function(params, callback)
-    {
+    changeListOrder(params, callback) {
         $.ajax({
-            url: mtt.apiUrl + 'lists',
-            method: useREST ? 'PUT' : 'POST',
+            url: mytinytodo.apiUrl + 'lists',
+            method: this.useREST ? 'PUT' : 'POST',
             contentType : 'application/json',
             data: JSON.stringify({
                 action: 'order',
@@ -369,11 +360,10 @@ MytinytodoAjaxApi.prototype =
         });
     },
 
-    clearCompletedInList: function(params, callback)
-    {
+    clearCompletedInList(params, callback) {
         $.ajax({
-            url: mtt.apiUrl + 'lists/' + encodeURIComponent(params.list),
-            method: useREST ? 'PUT' : 'POST',
+            url: mytinytodo.apiUrl + 'lists/' + encodeURIComponent(params.list),
+            method: this.useREST ? 'PUT' : 'POST',
             contentType : 'application/json',
             data: JSON.stringify({
                 action: 'clearCompleted',
@@ -385,10 +375,9 @@ MytinytodoAjaxApi.prototype =
 
     /* Auth */
 
-    login: function(params, callback)
-    {
+    login(params, callback) {
         $.ajax({
-            url: mtt.apiUrl + 'login',
+            url: mytinytodo.apiUrl + 'login',
             method: 'POST',
             contentType : 'application/json',
             data: JSON.stringify({
@@ -399,10 +388,9 @@ MytinytodoAjaxApi.prototype =
         });
     },
 
-    logout: function(params, callback)
-    {
+    logout(params, callback) {
         $.ajax({
-            url: mtt.apiUrl + 'logout',
+            url: mytinytodo.apiUrl + 'logout',
             method: 'POST',
             success: callback,
             dataType: 'json'
@@ -410,5 +398,3 @@ MytinytodoAjaxApi.prototype =
     }
 
 };
-
-})();
