@@ -84,7 +84,10 @@ class TasksController extends ApiController {
 
         $sort = (int)_get('sort');
         $sqlSort = "ORDER BY compl ASC, ";
-        if ($sort == 1) $sqlSort .= "prio DESC, ddn ASC, duedate ASC, ow ASC";          // byPrio
+        // sortings are same as in DBCore::getTasksByListId
+        if ($sort == 0) $sqlSort .= "ow ASC";                                           // byHand
+        elseif ($sort == 100) $sqlSort .= "ow DESC";                                    // byHand (reverse)
+        elseif ($sort == 1) $sqlSort .= "prio DESC, ddn ASC, duedate ASC, ow ASC";      // byPrio
         elseif ($sort == 101) $sqlSort .= "prio ASC, ddn DESC, duedate DESC, ow DESC";  // byPrio (reverse)
         elseif ($sort == 2) $sqlSort .= "ddn ASC, duedate ASC, prio DESC, ow ASC";      // byDueDate
         elseif ($sort == 102) $sqlSort .= "ddn DESC, duedate DESC, prio ASC, ow DESC";  // byDueDate (reverse)

@@ -1363,9 +1363,9 @@ function changeTaskOrder(id)
         return 0;
     }
     // sortByHand
-    if (curList.sort == 0) {
+    if (curList.sort == 0 || curList.sort == 100) {
         taskOrder.sort( (a, b) => firstNonZero(
-            0,
+            curList.sort,
             taskList[a].compl - taskList[b].compl,
             taskList[a].ow - taskList[b].ow
         ))
@@ -1472,13 +1472,13 @@ function setTaskPrio(id, prio)
     taskList[id].prio = prio;
     var $t = $('#taskrow_'+id);
     $t.find('.task-prio').replaceWith(preparePrio(prio, id));
-    if(curList.sort != 0) changeTaskOrder(id);
+    if (curList.sort != 0 && curList.sort != 100) changeTaskOrder(id);
     $t.effect("highlight", {color:_mtt.theme.editTaskFlashColor}, 'normal');
 };
 
 function setSort(v, init)
 {
-    if (v < 0 || (v > 5 && v < 101) || v > 105) {
+    if (v < 0 || (v > 5 && v < 100) || v > 105) {
         return;
     }
     curList.sort = v;
@@ -1489,7 +1489,7 @@ function setSort(v, init)
 function updateSortUI(v)
 {
     $('#listmenucontainer .sort-item').removeClass('mtt-item-checked').children('.mtt-sort-direction').text('');
-    if (v == 0) $('#sortByHand').addClass('mtt-item-checked');
+    if (v == 0 || v == 100) $('#sortByHand').addClass('mtt-item-checked').children('.mtt-sort-direction').text(v==0 ? '↓' : '↑');
     else if(v==1 || v==101) $('#sortByPrio').addClass('mtt-item-checked').children('.mtt-sort-direction').text(v==1 ? '↑' : '↓');
     else if(v==2 || v==102) $('#sortByDueDate').addClass('mtt-item-checked').children('.mtt-sort-direction').text(v==2 ? '↑' : '↓');
     else if(v==3 || v==103) $('#sortByDateCreated').addClass('mtt-item-checked').children('.mtt-sort-direction').text(v==3 ? '↓' : '↑');
@@ -1498,7 +1498,7 @@ function updateSortUI(v)
     else return;
 
     curList.sort = v;
-    if (v == 0 && !flag.readOnly) $("#tasklist").sortable('enable');
+    if ( (v == 0 || v == 100) && !flag.readOnly) $("#tasklist").sortable('enable');
     else $("#tasklist").sortable('disable');
 };
 
@@ -1668,7 +1668,7 @@ function listMenuClick(el, menu)
         case 'btnRssFeed': return true;
         case 'btnShowCompleted': showCompletedToggle(); break;
         case 'btnClearCompleted': clearCompleted(); break;
-        case 'sortByHand': setSort(0); break;
+        case 'sortByHand': setSort(curList.sort==0 ? 100 : 0); break;
         case 'sortByPrio': setSort(curList.sort==1 ? 101 : 1); break;
         case 'sortByDueDate': setSort(curList.sort==2 ? 102 : 2); break;
         case 'sortByDateCreated': setSort(curList.sort==3 ? 103 : 3); break;
@@ -1903,8 +1903,9 @@ function saveTask(form)
             taskList[item.id] = item;
             const noteExpanded = (item.note != '' && $('#taskrow_'+item.id).is('.task-expanded')) ? 1 : 0;
             $('#taskrow_'+item.id).replaceWith(_mtt.prepareTaskStr(item, noteExpanded));
-            if (curList.sort != 0)
+            if (curList.sort != 0 && curList.sort != 100) {
                 changeTaskOrder(item.id);
+            }
             refreshTaskCnt();
             _mtt.pageBack(); //back to list or viewer
             if (_mtt.pages.current.page == 'taskviewer') {
@@ -2072,39 +2073,50 @@ function tasklistSortStart(event, ui)
 
 function tasklistSortUpdated(event, ui)
 {
-    if(!ui.item[0]) return;
-    var itemId = ui.item[0].id;
-    var n = $(this).sortable('toArray');
+    if (!ui.item[0]) {
+        return;
+    }
+    const itemId = ui.item[0].id;
+    const n = $(this).sortable('toArray');
 
     // remove possible empty id's
-    for(var i=0; i<sortOrder.length; i++) {
-        if(sortOrder[i] == '') { sortOrder.splice(i,1); i--; }
+    for (let i = 0; i < sortOrder.length; i++) {
+        if (sortOrder[i] == '') {
+            sortOrder.splice(i,1); i--;
+        }
     }
-    if(n.toString() == sortOrder.toString()) return;
+    if (n.toString() == sortOrder.toString()) {
+        return;
+    }
 
     // make index: id=>position
-    var h0 = {}; //before
-    for(var j=0; j<sortOrder.length; j++) {
-        h0[sortOrder[j]] = j;
+    const posBefore = {};
+    for (let j = 0; j < sortOrder.length; j++) {
+        posBefore[sortOrder[j]] = j;
     }
-    var h1 = {}; //after
-    for(var j=0; j<n.length; j++) {
-        h1[n[j]] = j;
+    const posAfter = {};
+    for (let j = 0; j < n.length; j++) {
+        posAfter[n[j]] = j;
         taskOrder[j] = parseInt(n[j].split('_')[1]);
     }
 
-    // prepare param
-    var o = [];
-    var diff;
-    var replaceOW = taskList[sortOrder[h1[itemId]].split('_')[1]].ow;
-    for(var j in h0)
+    // prepare params
+    const o = [];
+    const newWeight = taskList[sortOrder[posAfter[itemId]].split('_')[1]].ow;
+    let diff;
+    for (const j in posBefore)
     {
-        diff = h1[j] - h0[j];
-        if(diff != 0) {
-            var a = j.split('_');
-            if(j == itemId) diff = replaceOW - taskList[a[1]].ow;
-            o.push({id:a[1], diff:diff});
-            taskList[a[1]].ow += diff;
+        diff = posAfter[j] - posBefore[j]; // depends on position
+        if (curList.sort == 100) {
+            diff *= -1;
+        }
+        if (diff != 0) {
+            const taskId = j.split('_')[1];
+            if (j == itemId) {
+                diff = newWeight - taskList[taskId].ow; // just for new weight
+            }
+            o.push({id:taskId, diff:diff});
+            taskList[taskId].ow += diff;
         }
     }
 
@@ -2407,7 +2419,9 @@ function moveTaskToList(taskId, listId)
             taskList[item.id] = item;
             var noteExpanded = (item.note != '' && $('#taskrow_'+item.id).is('.task-expanded')) ? 1 : 0;
             $('#taskrow_'+item.id).replaceWith(_mtt.prepareTaskStr(item, noteExpanded));
-            if(curList.sort != 0) changeTaskOrder(item.id);
+            if (curList.sort != 0 && curList.sort != 100) {
+                changeTaskOrder(item.id);
+            }
             refreshTaskCnt();
             $('#taskrow_'+item.id).effect("highlight", {color:_mtt.theme.editTaskFlashColor}, 'normal', function(){$(this).css('display','')});
         }

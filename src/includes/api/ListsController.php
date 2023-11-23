@@ -237,7 +237,7 @@ class ListsController extends ApiController {
     static function setListSortingById(int $listId, int $sort)
     {
         $db = DBConnection::instance();
-        if ($sort < 0 || ($sort > 5 && $sort < 101) || $sort > 105) {
+        if ($sort < 0 || ($sort > 5 && $sort < 100) || $sort > 105) {
             $sort = 0;
         }
         if ($listId == -1) {
