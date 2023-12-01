@@ -2761,12 +2761,12 @@ function newTaskCounter()
 
             if (Array.isArray(json.lists)) {
                 json.lists.forEach((item) => {
-                    counters[0 + item.listId] = 0 + item.counter;
+                    counters["" + item.listId] = +item.counter;
                 });
             }
 
             tabLists.getAll().forEach( (list) => {
-                if (!list.hidden || list.id !== -1) {
+                if (!list.hidden || list.id != -1) {
                     setNewTaskCounterForList(list.id, counters[list.id]);
                 }
             });
@@ -2776,8 +2776,6 @@ function newTaskCounter()
 
 function setNewTaskCounterForList(listId, counter)
 {
-    listId = 0 + listId;
-    counter = 0 + counter;
     if (counter > 0) {
         $('#list_' + listId).find('.counter').text(counter).removeClass('hidden');
     } else {
