@@ -1228,7 +1228,7 @@ function prepareTaskBlocks(item)
                     '<div class="task-through">' +
                         preparePrio(item.prio,id) +
                         '<span class="task-title">' + prepareTaskTitleInlineHtml(item.title) + '</span> ' +
-                        (curList.id == -1 ? '<span class="task-listname">'+ tabLists.get(item.listId).name +'</span>' : '') +
+                        (curList.id == -1 ? prepareListNameInline(item) : '') +
                         '<span class="task-tags">' + prepareTagsStr(item) + '</span>' +
                         '<div class="task-date">' + prepareInlineDate(item) + '</div>' +
                     '</div>' +
@@ -1251,14 +1251,22 @@ _mtt.prepareTaskBlocks = prepareTaskBlocks;
 
 function prepareTaskTitleInlineHtml(s)
 {
-    // Task title is already escaped on php back-end
+    // Task title is already escaped on back-end
     return s;
 }
 _mtt.prepareTaskTitleInlineHtml = prepareTaskTitleInlineHtml;
 
+function prepareListNameInline(item)
+{
+    // Used in AllTasks list
+    // List name is already escaped on back-end
+    return '<span class="task-listname">'+ item.listName +'</span>';
+}
+_mtt.prepareListNameInline = prepareListNameInline;
+
 function prepareTaskNoteInlineHtml(s, rawText)
 {
-    // Task note is already escaped on php back-end
+    // Task note is already escaped on back-end
     return s;
 };
 _mtt.prepareTaskNoteInlineHtml = prepareTaskNoteInlineHtml;

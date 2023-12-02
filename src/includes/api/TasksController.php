@@ -24,16 +24,15 @@ class TasksController extends ApiController {
         $db = DBConnection::instance();
         $dbcore = DBCore::default();
 
-        $sqlWhere = $sqlWhereListId = $sqlInnerWhereListId = '';
+        $sqlWhere = $sqlWhereListId = '';
+        $userLists = [];
         if ($listId == -1) {
             $userLists = $this->getUserListsSimple();
             $userListsIds = implode(',', array_keys($userLists));
             $sqlWhereListId = "todo.list_id IN ($userListsIds) ";
-            $sqlInnerWhereListId = "list_id IN ($userListsIds) ";
         }
         else {
             $sqlWhereListId = "todo.list_id=". $listId;
-            $sqlInnerWhereListId = "list_id=$listId ";
         }
         if (_get('compl') == 0) {
             $sqlWhere .= ' AND compl=0';
@@ -125,6 +124,9 @@ class TasksController extends ApiController {
         while ($r = $q->fetchAssoc())
         {
             $t['total']++;
+            if ($listId == -1 && $r['list_id']) {
+                $r['list_name'] = $userLists[ (string)$r['list_id'] ] ?? '((undefined))';
+            }
             $t['list'][] = $this->prepareTaskRow($r);
         }
         if (_get('setCompl') && haveWriteAccess($listId)) {
@@ -619,6 +621,7 @@ class TasksController extends ApiController {
             'title' => titleMarkup( $r['title'] ),
             'titleText' => (string)$r['title'],
             'listId' => $r['list_id'],
+            'listName' => htmlarray($r['list_name'] ?? ''),
             'date' => htmlarray($dCreated),
             'dateInt' => (int)$r['d_created'],
             'dateFull' => htmlarray($dCreatedFull),
