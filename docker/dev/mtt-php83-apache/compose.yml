@@ -7,6 +7,7 @@ services:
       dockerfile: Dockerfile-web
     image: mtt-dev/php:8.3-apache
     container_name: ${PLATFORM_NAME}-web
+    hostname: web.local
     ports:
       - "8080:80"
     environment:
