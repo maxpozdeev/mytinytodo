@@ -20,7 +20,7 @@ class Sender
     function __construct(array $prefs, bool $useCli = false)
     {
         $this->prefs = $prefs;
-        if ($useCli && function_exists('pcntl_fork')) {
+        if ($useCli && function_exists('pcntl_fork') && function_exists('posix_setsid')) {
             $this->cli = true;
         }
     }
@@ -193,7 +193,7 @@ class Sender
         $host = parse_url(get_unsafe_mttinfo('url'), PHP_URL_HOST);
         $host = preg_replace('/^(www\.)/', '', $host);
         //$host = gethostname();
-        if (function_exists('posix_getuid') && false !== ($userinfo = posix_getpwuid(posix_getuid())) ) {
+        if (function_exists('posix_getpwuid') && false !== ($userinfo = posix_getpwuid(posix_getuid())) ) {
             return $userinfo['name']. '@'. $host;
         }
         return "mytinytodo@$host";

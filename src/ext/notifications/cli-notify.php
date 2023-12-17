@@ -2,7 +2,7 @@
 
 /*
     This file is a part of myTinyTodo.
-    (C) Copyright 2022 Max Pozdeev <maxpozdeev@gmail.com>
+    (C) Copyright 2022-2023 Max Pozdeev <maxpozdeev@gmail.com>
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
@@ -14,6 +14,10 @@ if (php_sapi_name() != 'cli') {
 }
 if (!function_exists('pcntl_fork')) {
     error_log("Required PHP module is not found: pcntl");
+    exit(-2);
+}
+if (!function_exists('posix_setsid')) {
+    error_log("Required PHP module is not found: posix");
     exit(-2);
 }
 $dontStartSession = 1;
