@@ -3,7 +3,7 @@
         "language": "German",
         "original_name": "Deutsch",
         "author": "Franky, Tobias Quathamer",
-        "date": "2023-08-24",
+        "date": "2023-12-17",
         "ver": "v1.7"
     },
     "My Tiny Todolist": "Meine winzige Todoliste",
@@ -39,6 +39,7 @@
     "tagfilter_cancel": "Filter aufheben",
     "showTagsFromAllLists": "Anzeige der Schlagwörter aller Listen",
     "sortByHand": "Manuell sortieren",
+    "sortByTitle": "Nach Titel sortieren",
     "sortByPriority": "Nach Priorität sortieren",
     "sortByDueDate": "Nach Fälligkeitsdatum sortieren",
     "sortByDateCreated": "Nach Erstelldatum sortieren",
