@@ -118,12 +118,17 @@ class Controller extends \ApiController
             ];
             return;
         }
-        $html = "<pre>". htmlspecialchars($check->report). "</pre>";
         $this->response->data = [
             'total' => 1,
+            'ok' => true,
             'msg' => __("backup.done"),
-            'html' => $html,
         ];
+        if ($check->report == 'OK') {
+            $this->response->data['alertText'] = "OK";
+        }
+        else {
+            $this->response->data['html'] = "<pre>". htmlspecialchars($check->report). "</pre>";
+        }
     }
 
     function postRepairInconsistency()
@@ -141,7 +146,9 @@ class Controller extends \ApiController
         }
         $this->response->data = [
             'total' => 1,
+            'ok' => true,
             'msg' => __("backup.done"),
+            'alertText' => __("backup.done"),
         ];
     }
 

@@ -95,7 +95,7 @@ function onBackupFileChange(el) {
         <div class="descr">{$e('backup.d_inconsistency')}</div>
     </div>
     <div class="td">
-        <button type=button data-ext-settings-action="post:checkInconsistency:file" data-ext="$ext"> {$e('backup.check')} </button> &nbsp;
+        <button type=button data-ext-settings-action="post:checkInconsistency" data-ext="$ext"> {$e('backup.check')} </button> &nbsp;
         <button type=button data-ext-settings-action="post:repairInconsistency" data-ext="$ext"> {$e('backup.repair')} </button> <br>
     </div>
 </div>
