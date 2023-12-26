@@ -3004,7 +3004,12 @@ function extensionSettingsAction(actionString, ext, formData)
                 return;
             }
             const callback = function() {
-                if (json.msg) flashInfo(json.msg, json.details);
+                if (json.alertTextOnLoad) {
+                    mttAlert(json.alertTextOnLoad);
+                }
+                else if (json.msg) {
+                    flashInfo(json.msg, json.details);
+                }
                 if (json.reload) {
                     setTimeout( function(){
                         //window.location.hash = '';

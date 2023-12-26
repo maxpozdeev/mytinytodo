@@ -31,8 +31,9 @@ class Controller extends \ApiController
 
         $this->response->data = [
             'total' => 1,
+            'ok' => true,
             'msg' => __("backup.done"),
-            'details' => ''
+            'alertTextOnLoad' => __("backup.done"),
         ];
     }
 
