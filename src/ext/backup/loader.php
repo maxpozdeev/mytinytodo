@@ -65,7 +65,7 @@ class BackupExtension extends MTTExtension implements MTTExtensionSettingsInterf
         $filename = MTTPATH. 'db/backup.xml';
         if (file_exists($filename)) {
             $time = filemtime($filename);
-            $lastBackup = htmlspecialchars( sprintf($e('backup.last_backup'), formatTime(Config::get('dateformat'). " H:m:s", $time)) );
+            $lastBackup = htmlspecialchars( sprintf($e('backup.last_backup'), formatTime(Config::get('dateformat'). " H:i:s", $time)) );
         }
         else {
             $downloadDisabled = 'disabled';
