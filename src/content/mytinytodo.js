@@ -2999,6 +2999,10 @@ function extensionSettingsAction(actionString, ext, formData)
                 $('#page_ajax .mtt-settings-table').html(json.html); //FIXME: maybe whole page?
                 return;
             }
+            if (json.alertText) {
+                mttAlert(json.alertText);
+                return;
+            }
             const callback = function() {
                 if (json.msg) flashInfo(json.msg, json.details);
                 if (json.reload) {
