@@ -21,13 +21,13 @@ if (!defined('MTT_THEME')) {
 define('MTT_THEME_PATH', MTT_CONTENT_PATH. MTT_THEME. '/');
 
 
-if (getenv('MTT_ENABLE_DEBUG') == 'YES') {
+if (getenv('MTT_ENABLE_DEBUG') == 'YES' && !defined('MTT_DEBUG')) {
     define('MTT_DEBUG', true);
     error_reporting(E_ALL);
     ini_set('display_errors', '1');
     ini_set('log_errors', '1');
 }
-else {
+else if (!defined('MTT_DEBUG')) {
     //ini_set('display_errors', '0');
     //ini_set('log_errors', '1');
     define('MTT_DEBUG', false);
@@ -271,6 +271,7 @@ function setup_and_start_session()
         # this is a known samesite flag workaround, was fixed in 7.3
         session_set_cookie_params($lifetime, $path. '; samesite=lax', null, null, true);
     } else {
+        /** @disregard P1006 available in php 7.3 */
         session_set_cookie_params([
             'lifetime' => $lifetime,
             'path' => $path,

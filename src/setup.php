@@ -15,9 +15,11 @@ if (version_compare(PHP_VERSION, '7.2.0') < 0) {
 
 if (getenv('MTT_ENABLE_DEBUG') == 'YES') {
     set_exception_handler('debugExceptionHandler');
+    define('MTT_DEBUG', true);
 }
 else {
     set_exception_handler('myExceptionHandler');
+    define('MTT_DEBUG', false);
 }
 
 if (!defined('MTTPATH')) define('MTTPATH', dirname(__FILE__) .'/');
@@ -76,10 +78,13 @@ if ($configExists)
 
     // Determine current installed db version
     $ver = databaseVersion($db);
+    if (MTT_DEBUG) {
+        error_log("Database version detected: $ver");
+    }
 
     if ($ver == '') {
-        // clean install
-        // will not load settings from database in init.php
+        // Clean install
+        // Don't load settings from database in init.php
         Config::$noDatabase = true;
     }
     else if (version_compare($ver, '1.4') < 0) {
