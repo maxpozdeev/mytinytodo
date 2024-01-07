@@ -88,6 +88,7 @@ if ($configExists)
     }
     else if ($ver == '1.4') {
         // Need to upgrade. Do not ask for old password
+        Config::$noDatabase = true; //don't load settings from db
         require_once(MTTPATH. 'db/config.php');
         Config::loadConfigV14($config);
         unset($config);
