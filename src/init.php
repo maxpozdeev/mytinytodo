@@ -21,16 +21,16 @@ if (!defined('MTT_THEME')) {
 define('MTT_THEME_PATH', MTT_CONTENT_PATH. MTT_THEME. '/');
 
 
-if (getenv('MTT_ENABLE_DEBUG') == 'YES' && !defined('MTT_DEBUG')) {
-    define('MTT_DEBUG', true);
+if (getenv('MTT_ENABLE_DEBUG') == 'YES' || (defined('MTT_DEBUG') && MTT_DEBUG) ) {
+    if (!defined('MTT_DEBUG')) define('MTT_DEBUG', true);
     error_reporting(E_ALL);
     ini_set('display_errors', '1');
     ini_set('log_errors', '1');
 }
-else if (!defined('MTT_DEBUG')) {
+else {
     //ini_set('display_errors', '0');
     //ini_set('log_errors', '1');
-    define('MTT_DEBUG', false);
+    if (!defined('MTT_DEBUG')) define('MTT_DEBUG', false);
 }
 
 require_once(MTTINC. 'common.php');
