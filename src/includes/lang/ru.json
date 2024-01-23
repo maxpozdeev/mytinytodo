@@ -1,7 +1,7 @@
 {
     "_header": {
-        "ver": "v1.8",
-        "date": "2023-09-08",
+        "ver": "v1.8.1",
+        "date": "2024-01-23",
         "language": "Russian",
         "original_name": "Русский",
         "author": "Max Pozdeev",
@@ -189,6 +189,8 @@
     "set_appearance_system": "Как в системе",
     "set_appearance_light": "Светлая",
     "set_appearance_dark": "Тёмная",
+    "set_newtaskcounter_h": "Счетчик новых задач",
+    "set_newtaskcounter": "Проверять наличие новых задач",
     "set_extensions": "Дополнения",
     "set_activate": "Активировать",
     "set_deactivate": "Деактивировать",

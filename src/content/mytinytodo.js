@@ -78,7 +78,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
         history: true,
         markdown: true,
         viewTaskOnClick: false,
-        newTaskCounter: true,
+        newTaskCounter: false,
     },
 
     timers: {

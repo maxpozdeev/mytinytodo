@@ -94,7 +94,8 @@ function js_options()
         "firstdayofweek" => (int) Config::get('firstdayofweek'),
         "calendarIcon" => get_mttinfo('theme_url'). 'images/calendar.svg',
         "autotag" => Config::get('autotag') ? true : false,
-        "markdown" => Config::get('markup') == 'v1' ? false : true
+        "markdown" => Config::get('markup') == 'v1' ? false : true,
+        "newTaskCounter" => Config::get('newTaskCounter') ? true : false,
     );
     $json = json_encode($a, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_INVALID_UTF8_SUBSTITUTE);
     if ($json === false) {

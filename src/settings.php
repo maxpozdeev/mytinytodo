@@ -55,6 +55,7 @@ if(isset($_POST['save']))
     Config::set('showdateInline', (int)_post('showdateInline'));
     Config::set('exactduedate', (int)_post('exactduedate'));
     Config::set('appearance', removeNewLines(trim(_post('appearance'))) );
+    Config::set('newTaskCounter', (int)_post('newTaskCounter'));
     Config::save();
     $t['saved'] = 1;
     jsonExit($t);
@@ -382,6 +383,11 @@ header('Content-type:text/html; charset=utf-8');
  <label><input type="radio" name="appearance" value="light"  <?php if(_c('appearance') == 'light')  echo 'checked="checked"'; ?> /> <?php _e('set_appearance_light');?></label> <br>
  <label><input type="radio" name="appearance" value="dark"  <?php if(_c('appearance') == 'dark')  echo 'checked="checked"'; ?> /> <?php _e('set_appearance_dark');?></label>
 </div>
+</div>
+
+<div class="tr">
+  <div class="th"><?php _e('set_newtaskcounter_h');?>:</div>
+  <div class="td"><label><input type="checkbox" name="newTaskCounter" value="1" <?php if(_c('newTaskCounter')) echo 'checked="checked"'; ?> /> <?php _e('set_newtaskcounter');?></label></div>
 </div>
 
 <?php

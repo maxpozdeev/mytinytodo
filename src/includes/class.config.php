@@ -90,6 +90,9 @@ class Config
         # Appearance: system default or always light
         'appearance' => array('default'=>'system', 'type'=>'s', 'options'=>array('system','light','dark')),
 
+        # New tasks counter
+        'newTaskCounter' => array('default' => 0, 'type'=>'i'),
+
         # Array of activated extensions
         'extensions' => array('default'=>[], 'type'=>'a')
     );

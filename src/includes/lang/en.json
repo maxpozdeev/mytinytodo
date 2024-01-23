@@ -1,7 +1,7 @@
 {
     "_header": {
-        "ver": "v1.8",
-        "date": "2023-09-08",
+        "ver": "v1.8.1",
+        "date": "2024-01-23",
         "language": "English",
         "original_name": "English",
         "author": "Max Pozdeev",
@@ -189,6 +189,8 @@
     "set_appearance_system": "Same as system",
     "set_appearance_light": "Light",
     "set_appearance_dark": "Dark",
+    "set_newtaskcounter_h": "New tasks counter",
+    "set_newtaskcounter": "Check for new tasks",
     "set_extensions": "Extensions",
     "set_activate": "Activate",
     "set_deactivate": "Deactivate",
