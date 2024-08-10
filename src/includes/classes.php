@@ -148,27 +148,32 @@ class MTTExtensionLoader
 {
     private static $exts = [];
 
-    public static function loadExtension(string $ext)
+    /**
+     *
+     * @throws Exception
+     */
+    public static function loadExtension(string $ext): bool
     {
         if (isset(self::$exts[$ext])) {
             error_log("Extension '$ext' is already registered");
-            return;
+            return false;
         }
 
         $loader = MTT_EXT. $ext. '/loader.php';
         if (!file_exists($loader)) {
             error_log("Failed to init extension '$ext': no loader.php");
-            return;
+            return false;
         }
 
         require_once(MTT_EXT. $ext. '/loader.php');
-        $getInstance = 'mtt_ext_'. $ext. '_instance';
+        $extNormalized = str_replace('-', '_', $ext);
+        $instanceFunc = 'mtt_ext_'. $extNormalized. '_instance';
 
-        if (!function_exists($getInstance)) {
-            throw new Exception("Failed to init extension '$ext': no '$getInstance' function");
+        if (!function_exists($instanceFunc)) {
+            throw new Exception("Failed to init extension '$ext': no '$instanceFunc' function");
         }
 
-        $instance = $getInstance();
+        $instance = $instanceFunc();
         if ( ! ($instance instanceof MTTExtension) ) {
             throw new Exception("Failed to init extension '$ext': incompatible instance");
         }
@@ -185,6 +190,8 @@ class MTTExtensionLoader
 
         $instance->init();
         self::$exts[$ext] = $instance;
+
+        return true;
     }
 
     /**
