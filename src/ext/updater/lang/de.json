@@ -1,0 +1,16 @@
+{
+    "ext.updater.name": "Updates",
+    "updater.urlconfigwarning": "Aktivieren Sie die PHP-Anweisung 'allow_url_fopen', um Updates herunterladen zu können.",
+    "updater.tarwarning": "Update nicht möglich, 'tar' Erweiterung nicht gefunden.",
+    "updater.h_check_updates": "Checke Updates",
+    "updater.check": "Check",
+    "updater.no_updates": "Keine Updates",
+    "updater.last_version": "Letzte verfügbare Version: %s",
+    "updater.current_version": "Aktuelle Version",
+    "updater.last_checked": "Letzter Check",
+    "updater.new_version_available": "Neue Version verfügbar",
+    "updater.update": "Update",
+    "updater.updated": "Update komplett",
+    "updater.download_error": "Download fehlgeschlagen",
+    "updater.update_error": "Updatefehler"
+}
