@@ -67,7 +67,7 @@ class Database_Sqlite3 extends Database_Abstract
     /** @var bool */
     protected $useNormalizedUtf8 = true;
 
-    function __construct(array $params = null)
+    function __construct(?array $params = null)
     {
         if (is_array($params)) {
             if (isset($params['useNormalizedUtf8'])) {
