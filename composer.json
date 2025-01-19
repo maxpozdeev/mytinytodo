@@ -1,12 +1,24 @@
 {
+    "name": "maxpozdeev/mytinytodo",
+    "type": "project",
+    "license": "GPL-2.0-or-later",
+    "homepage": "https://mytinytodo.net",
+    "authors": [
+        {
+            "name": "Max Pozdeev",
+            "role": "Developer"
+        }
+    ],
     "config": {
         "vendor-dir": "src/includes/vendor"
     },
     "require": {
+        "php": ">=7.2",
+        "ext-mbstring": "*",
         "erusev/parsedown": "^1.7",
-        "symfony/polyfill-intl-normalizer": "^1.28"
+        "symfony/polyfill-intl-normalizer": "^1.31"
     },
     "require-dev": {
-        "league/commonmark": "^2.4"
+        "league/commonmark": "^2.6"
     }
 }
