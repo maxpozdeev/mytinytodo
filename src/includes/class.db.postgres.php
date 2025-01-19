@@ -150,7 +150,7 @@ class Database_Postgres extends Database_Abstract
             }
             $query .= $m[$i];
         }
-        $this->lastQuery = $query;
+        $this->setLastQuery($query);
         $dbr = new DatabaseResult_Postgres($this->dbh, $query, $resultless);
         $this->affected = $dbr->rowsAffected();
         return $dbr;

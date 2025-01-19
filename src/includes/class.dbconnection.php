@@ -46,6 +46,9 @@ abstract class Database_Abstract
     /** @var string */
     protected $lastQuery = '';
 
+    /** @var null|string  */
+    protected $logQueryToFile = null;
+
     abstract function connect(array $params): void;
     abstract function sq(string $query, ?array $values = null);
     abstract function sqa(string $query, ?array $values = null): ?array;
@@ -72,6 +75,22 @@ abstract class Database_Abstract
             throw new Exception("Incorrect table prefix");
         }
         $this->prefix = $prefix;
+    }
+
+    function setLogQueryToFile(?string $path) {
+        //any checks?
+        $this->logQueryToFile = $path;
+    }
+
+    function setLastQuery(string $lastQuery) {
+        $this->lastQuery = $lastQuery;
+        if (MTT_DEBUG && $this->logQueryToFile !== null) {
+            $f = fopen($this->logQueryToFile, "a");
+            if ($f) {
+                fwrite($f, $this->lastQuery . "\n");
+                fclose($f);
+            }
+        }
     }
 }
 

@@ -122,7 +122,7 @@ class Database_Mysqli extends Database_Abstract
             }
             $query .= $m[$i];
         }
-        $this->lastQuery = $query;
+        $this->setLastQuery($query);
         return new DatabaseResult_Mysqli($this->dbh, $query, $resultless);
     }
 
