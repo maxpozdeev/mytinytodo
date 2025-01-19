@@ -51,10 +51,10 @@ date_default_timezone_set(Config::get('timezone'));
 
 //User can override language setting by cookies or query
 $forceLang = '';
-if( isset($_COOKIE['lang']) ) $forceLang = $_COOKIE['lang'];
-//else if ( isset($_GET['lang']) ) $forceLang = $_GET['lang'];
+if (isset($_COOKIE['lang'])) $forceLang = (string) $_COOKIE['lang'];
+//else if (isset($_GET['lang'])) $forceLang = (string) $_GET['lang'];
 
-if ( $forceLang != '' && preg_match("/^[a-z-]+$/i", $forceLang) ) {
+if ( $forceLang !== '' && preg_match("/^[a-z-]+$/i", $forceLang) ) {
     Config::set('lang', $forceLang); //TODO: special for demo, do not change config
 }
 

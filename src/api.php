@@ -200,6 +200,7 @@ function checkReadAccess(?int $listId = null)
         $id = $db->sq("SELECT id FROM {$db->prefix}lists WHERE id=? AND published=1", array($listId));
         if ($id) return;
     }
+    http_response_code(403);
     jsonExit( array('total'=>0, 'list'=>array(), 'denied'=>1) );
 }
 
