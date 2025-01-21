@@ -108,18 +108,19 @@ function getRequestUri()
     }
 }
 
-function url_dir($url, $onlyPath = 1)
+function url_dir(string $url, bool $onlyPath = true)
 {
     if (false !== $p = strpos($url, '?')) {
         $url = substr($url, 0, $p); # to avoid parse errors on strange query strings
     }
+    $path = parse_url($url, PHP_URL_PATH) ?? '';
     if ($onlyPath) {
-        $url = parse_url($url, PHP_URL_PATH);
+        $url = $path;
     }
-    if ($url == '') {
-        return '/';
+    if ($path === '') {
+        return $url . '/';
     }
-    if (substr($url, -1) == '/') {
+    if (substr($url, -1) === '/') {
         return $url;
     }
     if (false !== $p = strrpos($url, '/')) {
