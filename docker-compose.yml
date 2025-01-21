@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mytinytodo_app
+    ports:
+      - "8080:80"
+    volumes:
+      - ./db:/var/www/html/db
+
+volumes:
+  db_data:
+
