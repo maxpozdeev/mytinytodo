@@ -10,8 +10,9 @@
   .mtt-tab { display:none; }
   .mtt-tab.mtt-tab-selected { display:block; border:none; background:none; margin:0; }
   .mtt-tab.mtt-tab-selected a { padding:0; display:inline-block; height:auto; }
+  .mtt-tab.mtt-tab-selected .title-block { display:inline-block; }
   .mtt-tab.mtt-tab-selected .list-action { display:none; }
-  .mtt-tab a span { text-align:left; padding:0; max-width:none; font-size:1.3rem; color:#000; }
+  .mtt-tab.mtt-tab-selected .title { text-align:left; padding:0; margin:0; max-width:none; font-size:1.3rem; color:#000; }
 
   .mtt-tabs-new-button { display:none; }
   #tabs_buttons { display:none; }
