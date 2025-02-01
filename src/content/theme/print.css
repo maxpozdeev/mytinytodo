@@ -1,7 +1,6 @@
 @media print {
 
-  html { height:0; }
-  body { height:0; min-height:0; margin:0; }
+  html,body { height:auto; }
   h2 { display: none; }
   h3 { border-bottom:2px solid #777777; }
   #toolbar { display: none; }
