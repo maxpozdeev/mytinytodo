@@ -2,7 +2,7 @@
 
 /*
     This file is a part of myTinyTodo.
-    (C) Copyright 2023 Max Pozdeev <maxpozdeev@gmail.com>
+    (C) Copyright 2023-2025 Max Pozdeev <maxpozdeev@gmail.com>
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
@@ -12,7 +12,7 @@ class Updater
 {
     public $lastErrorString = null;
 
-    public function lastVersionInfo(): ?array
+    public function requestJson(string $url): ?string
     {
         $options = array(
             'http' => array(
@@ -26,14 +26,23 @@ class Updater
         $json = null;
         $this->lastErrorString = null;
         try {
-            $json = @file_get_contents("https://api.github.com/repos/maxpozdeev/mytinytodo/releases", false, $context);
+            $json = @file_get_contents($url, false, $context);
         }
         catch (\Exception $e) {
             $this->lastErrorString = boolval(ini_get('html_errors')) ?  htmlspecialchars_decode($e->getMessage()) : $e->getMessage();
         }
         restore_error_handler();
-        if ($json === false || $json == '') {
-            error_log("Failed to get releases info: ".$this->lastErrorString);
+        if ($json === false) {
+            return null;
+        }
+        return $json;
+    }
+
+    public function lastVersionInfo(): ?array
+    {
+        $json = $this->requestJson("https://api.github.com/repos/maxpozdeev/mytinytodo/releases");
+        if ($json === null || $json == '') {
+            error_log("Failed to request releases info: ".$this->lastErrorString);
             return null;
         }
         $releases = json_decode($json, true) ?? [];
