@@ -1,6 +1,6 @@
 /*
     This file is a part of myTinyTodo.
-    (C) Copyright 2010,2020-2023 Max Pozdeev <maxpozdeev@gmail.com>
+    (C) Copyright 2010,2020-2025 Max Pozdeev <maxpozdeev@gmail.com>
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
@@ -224,6 +224,29 @@ MytinytodoAjaxApi.prototype = {
             }),
             success: callback,
             dataType: 'json'
+        });
+    },
+
+    newTaskCounter(params, callback) {
+        fetch(mytinytodo.apiUrl + 'tasks/newCounter', {
+            method: 'POST',
+            credentials: 'same-origin', // old browsers
+            headers: {
+                'Content-Type': 'application/json',
+                'MTT-Token': mytinytodo.options.token,
+            },
+            body: JSON.stringify(params)
+        })
+        .then((response) => {
+            if (!response.ok) throw response;
+            return response.json();
+        })
+        .catch((e) => {
+            if (e instanceof Error) console.log("newTaskCounter fetch error: ", e);
+            else console.log("newTaskCounter fetch error, HTTP status code: " + e.status);
+        })
+        .then(json => {
+            callback(json)
         });
     },
 

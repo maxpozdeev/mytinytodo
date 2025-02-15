@@ -1,6 +1,6 @@
 /*
     This file is a part of myTinyTodo.
-    (C) Copyright 2009-2010,2020-2023 Max Pozdeev <maxpozdeev@gmail.com>
+    (C) Copyright 2009-2010,2020-2025 Max Pozdeev <maxpozdeev@gmail.com>
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
@@ -2744,17 +2744,7 @@ function newTaskCounter()
         });
     });
 
-    fetch(_mtt.apiUrl + 'tasks/newCounter', {
-        method: 'POST',
-        credentials: 'same-origin', // old browsers
-        headers: {
-            'Content-Type': 'application/json',
-            'MTT-Token': _mtt.options.token,
-        },
-        body: JSON.stringify(params)
-    })
-    .then(response => response.json())
-    .then(json => {
+    _mtt.db.request("newTaskCounter", params, json => {
         if (json && json.ok) {
             let counters = {};
             let curCounter = 0;
