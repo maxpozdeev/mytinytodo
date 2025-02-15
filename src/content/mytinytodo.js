@@ -724,7 +724,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
         }
 
         // Counter
-        if (this.options.newTaskCounter) {
+        if (this.options.newTaskCounter /* TODO: && !flag.readOnly */) {
             this.addAction('listsLoaded', newTaskCounterStart);
             this.addAction('listSelected', newTaskCounterOnListSelected)
             if (this.options.newTaskCounterIcon) {
@@ -2613,16 +2613,18 @@ function escapeHtml(str) {
 
 function slmenuOnListsLoaded()
 {
-    if(_mtt.menus.selectlist) {
+    if (_mtt.menus.selectlist) {
         _mtt.menus.selectlist.destroy();
         _mtt.menus.selectlist = null;
     }
 
-    var s = '';
-    var all = tabLists.getAll();
-    for(var i in all) {
-        s += '<li id="slmenu_list:'+all[i].id+'" class="'+(all[i].id==curList.id?'mtt-item-checked':'')+' list-id-'+all[i].id+(all[i].hidden?' mtt-list-hidden':'')+'"><div class="menu-icon"></div><a href="'+ _mtt.urlForList(all[i])+ '">'+all[i].name+'</a></li>';
-    }
+    let s = '';
+    tabLists.getAll().forEach( (list) => {
+        const classChecked = (list.id == curList.id) ? 'mtt-item-checked' : '';
+        const classHidden = list.hidden ? 'mtt-list-hidden' : '';   
+        s += `<li id="slmenu_list:${list.id}" class="list-id-${list.id} ${classChecked} ${classHidden}">
+            <div class="menu-icon"></div><a href="${_mtt.urlForList(list)}">${list.name}</a><div class="counter hidden"></div></li>`;
+    })
     $('#slmenucontainer ul>.slmenu-lists-begin').nextAll().remove();
     $('#slmenucontainer ul>.slmenu-lists-begin').after(s);
 };
@@ -2638,7 +2640,8 @@ function slmenuOnListAdded(list)
         _mtt.menus.selectlist.destroy();
         _mtt.menus.selectlist = null;
     }
-    $('#slmenucontainer ul').append('<li id="slmenu_list:'+list.id+'" class="list-id-'+list.id+'"><div class="menu-icon"></div><a href="'+ _mtt.urlForList(list)+ '">'+list.name+'</a></li>');
+    $('#slmenucontainer ul').append(`<li id="slmenu_list:${list.id}" class="list-id-${list.id}">
+        <div class="menu-icon"></div><a href="${_mtt.urlForList(list)}">${list.name}</a><div class="counter hidden"></div></li>`);
 };
 
 function slmenuOnListSelected(a)
@@ -2795,9 +2798,11 @@ function setNewTaskCounterForList(listId, counter)
     }
     if (counter > 0) {
         $('#list_' + listId).find('.counter').text(counter).removeClass('hidden');
+        $('#slmenucontainer li.list-id-' + listId).find('.counter').text(counter).removeClass('hidden');
         list.newTaskCounter = counter;
     } else {
         $('#list_' + listId).find('.counter').text('').addClass('hidden');
+        $('#slmenucontainer li.list-id-' + listId).find('.counter').text('').addClass('hidden');
         list.newTaskCounter = 0;
     }
 }

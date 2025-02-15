@@ -1143,6 +1143,15 @@ li.mtt-menu-indicator .submenu-icon {
   mask: var(--svg-arr-right) no-repeat; -webkit-mask: var(--svg-arr-right) no-repeat;
   background-color: var(--color-btn-default);
 }
+.mtt-menu-container .counter {
+  position:absolute; right:6px; top:50%; margin-top:-8px;
+  height: 16px; min-width:16px; 
+  border-radius: 1rem;
+  font-size: 0.8rem;
+  text-align: center;
+  background-color: #686868; /* #de5141 */
+  color: white;
+}
 li.mtt-item-hidden { display:none; }
 
 #slmenucontainer li.mtt-list-hidden a { font-style:italic; }
