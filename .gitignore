@@ -1,6 +1,8 @@
+.DS_Store
 src/db/todolist.db*
 src/db/config.php
 src/db/config-*
+src/db/backup.xml*
 src/config.php
 src/includes/vendor/
 src/content/theme/custom.css
