@@ -56,6 +56,7 @@ if(isset($_POST['save']))
     Config::set('exactduedate', (int)_post('exactduedate'));
     Config::set('appearance', removeNewLines(trim(_post('appearance'))) );
     Config::set('newTaskCounter', (int)_post('newTaskCounter'));
+    Config::set('newTaskCounterIcon', (int)_post('newTaskCounterIcon'));
     Config::save();
     $t['saved'] = 1;
     jsonExit($t);
@@ -387,7 +388,10 @@ header('Content-type:text/html; charset=utf-8');
 
 <div class="tr">
   <div class="th"><?php _e('set_newtaskcounter_h');?>:</div>
-  <div class="td"><label><input type="checkbox" name="newTaskCounter" value="1" <?php if(_c('newTaskCounter')) echo 'checked="checked"'; ?> /> <?php _e('set_newtaskcounter');?></label></div>
+  <div class="td">
+    <label><input type="checkbox" name="newTaskCounter" value="1" <?php if(_c('newTaskCounter')) echo 'checked="checked"'; ?> /> <?php _e('set_newtaskcounter');?></label> <br>
+    <label><input type="checkbox" name="newTaskCounterIcon" value="1" <?php if(_c('newTaskCounterIcon')) echo 'checked="checked"'; ?> /> <?php _e('set_newtaskcountericon');?></label>
+  </div>
 </div>
 
 <?php

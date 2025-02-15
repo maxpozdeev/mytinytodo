@@ -96,8 +96,13 @@ function js_options()
         "autotag" => Config::get('autotag') ? true : false,
         "markdown" => Config::get('markup') == 'v1' ? false : true,
         "newTaskCounter" => Config::get('newTaskCounter') ? true : false,
+        "newTaskCounterIcon" => Config::get('newTaskCounterIcon') ? true : false,
     );
-    $json = json_encode($a, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_INVALID_UTF8_SUBSTITUTE);
+    $flags = JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_INVALID_UTF8_SUBSTITUTE;
+    if (MTT_DEBUG) {
+        $flags |= JSON_PRETTY_PRINT;
+    }
+    $json = json_encode($a, $flags);
     if ($json === false) {
         error_log("MTT Error: Failed to encode array of options to JSON. Code: ". (int)json_last_error());
         echo "{}";

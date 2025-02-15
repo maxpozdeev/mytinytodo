@@ -191,6 +191,7 @@
     "set_appearance_dark": "Тёмная",
     "set_newtaskcounter_h": "Счетчик новых задач",
     "set_newtaskcounter": "Проверять наличие новых задач",
+    "set_newtaskcountericon": "Показывать счетчик в favicon",
     "set_extensions": "Дополнения",
     "set_activate": "Активировать",
     "set_deactivate": "Деактивировать",

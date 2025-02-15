@@ -272,6 +272,7 @@ class TasksController extends ApiController {
 
         $db = DBConnection::instance();
         $a = [];
+        $time = time();
 
         if ($sqlWhereList) {
             $sqlWhere = implode(' OR ', $sqlWhereList);
@@ -300,7 +301,8 @@ class TasksController extends ApiController {
             'ok' => true,
             'total' => count($b) + count($a),
             'tasks' => $b,
-            'lists' => $a
+            'lists' => $a,
+            'time' => $time
         ];
     }
 

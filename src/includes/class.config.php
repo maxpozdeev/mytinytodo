@@ -91,7 +91,8 @@ class Config
         'appearance' => array('default'=>'system', 'type'=>'s', 'options'=>array('system','light','dark')),
 
         # New tasks counter
-        'newTaskCounter' => array('default' => 0, 'type'=>'i'),
+        'newTaskCounter'     => array('default' => 0, 'type'=>'i'),
+        'newTaskCounterIcon' => array('default' => 0, 'type'=>'i'),
 
         # Array of activated extensions
         'extensions' => array('default'=>[], 'type'=>'a')

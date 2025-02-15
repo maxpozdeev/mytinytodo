@@ -79,6 +79,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
         markdown: true,
         viewTaskOnClick: false,
         newTaskCounter: false,
+        newTaskCounterIcon: false,
     },
 
     timers: {
@@ -725,6 +726,10 @@ var mytinytodo = window.mytinytodo = _mtt = {
         // Counter
         if (this.options.newTaskCounter) {
             this.addAction('listsLoaded', newTaskCounterStart);
+            this.addAction('listSelected', newTaskCounterOnListSelected)
+            if (this.options.newTaskCounterIcon) {
+                this.addAction('newTaskCounterUpdated', newTaskCounterUpdated);
+            }
         }
 
         this.doAction( 'init' );
@@ -1182,6 +1187,7 @@ function loadTasks(opts)
         });
         curList.lastTime = json.time;
         setNewTaskCounterForList(curList.id, 0);
+        _mtt.doAction("newTaskCounterUpdated", curList.id);
         if(opts.beforeShow && opts.beforeShow.call) {
             opts.beforeShow();
         }
@@ -1623,7 +1629,10 @@ function tabSelect(elementOrId)
         if (id == -1) $('#mtt').addClass('show-all-tasks');
         else $('#mtt').removeClass('show-all-tasks');
         if (filter.search != '') liveSearchToggle(0, 1);
-        mytinytodo.doAction('listSelected', tabLists.get(id));
+        mytinytodo.doAction('listSelected', {
+            'list': curList,
+            'prevList':prevList
+        });
     }
     const newTitle = curList.name + ' - ' + _mtt.options.title;
     const isFirstLoad = flag.firstLoad;
@@ -2059,6 +2068,7 @@ function submitFullTask(form)
             var item = json.list[0];
             taskList[item.id] = item;
             taskOrder.push(parseInt(item.id));
+            curList.lastTaskCreatedTime = item.dateInt;
             $('#tasklist').append(_mtt.prepareTaskStr(item));
             changeTaskOrder(item.id);
             _mtt.pageBack();
@@ -2471,8 +2481,9 @@ function cmenuOnListRenamed(list)
     $('#cmenu_list\\:'+list.id).text(list.name);
 };
 
-function cmenuOnListSelected(list)
+function cmenuOnListSelected(a)
 {
+    const list = a.list;
     $('#cmenulistscontainer li').removeClass('mtt-item-disabled');
     $('#cmenu_list\\:'+list.id).addClass('mtt-item-disabled').removeClass('mtt-list-hidden');
 };
@@ -2490,8 +2501,9 @@ function cmenuOnListHidden(list)
 };
 
 
-function tabmenuOnListSelected(list)
+function tabmenuOnListSelected(a)
 {
+    const list = a.list;
     if (list.published) {
         $('#btnPublish').addClass('mtt-item-checked');
         $('#btnRssFeed').removeClass('mtt-item-disabled');
@@ -2629,8 +2641,9 @@ function slmenuOnListAdded(list)
     $('#slmenucontainer ul').append('<li id="slmenu_list:'+list.id+'" class="list-id-'+list.id+'"><div class="menu-icon"></div><a href="'+ _mtt.urlForList(list)+ '">'+list.name+'</a></li>');
 };
 
-function slmenuOnListSelected(list)
+function slmenuOnListSelected(a)
 {
+    const list = a.list;
     $('#slmenucontainer li').removeClass('mtt-item-checked');
     $('#slmenucontainer li.list-id-'+list.id).addClass('mtt-item-checked').removeClass('mtt-list-hidden');
 
@@ -2768,17 +2781,106 @@ function newTaskCounter()
                     setNewTaskCounterForList(list.id, counters[list.id]);
                 }
             });
+            _mtt.doAction("newTaskCounterUpdated");
         }
     });
 }
 
 function setNewTaskCounterForList(listId, counter)
 {
+    const list = tabLists.get(listId);
+    if (!list) return;
+    if (list.newTaskCounterOld) {
+        counter += list.newTaskCounterOld;
+    }
     if (counter > 0) {
         $('#list_' + listId).find('.counter').text(counter).removeClass('hidden');
+        list.newTaskCounter = counter;
     } else {
         $('#list_' + listId).find('.counter').text('').addClass('hidden');
+        list.newTaskCounter = 0;
     }
+}
+
+function newTaskCounterOnListSelected(a)
+{
+    if (a.prevList && a.prevList.newTaskCounter) {
+        a.prevList.newTaskCounterOld = a.prevList.newTaskCounter;
+    }
+}
+
+/**
+ * Set favicon with number of new tasks
+ */
+function newTaskCounterUpdated()
+{
+    // Calc a total number of new tasks in visible tabs
+    let total = 0;
+    tabLists.getAll().forEach( (list) => {
+        if (list.newTaskCounter && (!list.hidden || list.id != -1)) {
+            total += list.newTaskCounter;
+        }
+    });
+
+    // Restore original icon
+    if (total <= 0) {
+        const o = document.querySelectorAll('link[rel="icon"]');
+        let oType, oHref;
+        for (let i = 0; i < o.length; i++) {
+            if (o[i].dataset.ohref) {
+                oHref = o[i].dataset.ohref;
+                oType = o[i].dataset.otype;
+                o[i].parentNode.removeChild(o[i]);
+            }
+        }
+        if (oHref) {
+            const n = document.createElement('link');
+            n.setAttribute('rel', 'icon');
+            n.setAttribute('href', oHref);
+            n.setAttribute('type', oType);
+            document.querySelector('head').appendChild(n);
+        }
+        return;
+    }
+
+    // Draw new icon
+    const c = document.createElement('canvas');
+    c.height = c.width = 64;
+    const ctx = c.getContext('2d');
+    //filled circle in center
+    ctx.lineWidth = 4;
+    ctx.fillStyle = '#ff0000';
+    ctx.beginPath();
+    ctx.arc(c.width / 2, c.height / 2, c.width / 2 - 2, 0, 2 * Math.PI, false);
+    ctx.fill();
+    //number in center
+    ctx.font = '48px Helvetica';
+    ctx.fillStyle = '#ffffff';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText( total > 9 ? '9+' : total, 32, 32, 50);
+
+    // Save params of original icon
+    const o = document.querySelectorAll('link[rel="icon"]');
+    let oType, oHref;
+    for (let i = 0; i < o.length; i++) {
+        oHref = o[i].dataset.ohref;
+        oType = o[i].dataset.otype;
+        if (!oHref) {
+            oHref = o[i].getAttribute('href');
+            oType = o[i].getAttribute('type') || '';
+        }
+        o[i].parentNode.removeChild(o[i]);
+    }
+    // Set new icon
+    const n = document.createElement('link');
+    n.setAttribute('rel', 'icon');
+    n.setAttribute('href', c.toDataURL()); //"data:image/png;base64,......"
+    if (oHref) {
+        n.dataset.ohref = oHref;
+        n.dataset.otype = oType;
+    }
+    document.querySelector('head').appendChild(n);
 }
 
 /*
