@@ -4,8 +4,12 @@
         "date": "2024-01-02",
         "language": "Chinese Simplified",
         "original_name": "中文 (简体)",
-        "author": "wangyouworld",
-        "author_url": "https://blog.3vshej.cn"
+        "authors": [
+            "v1.3 - heraldboy <heraldboy@gmail.com>",
+            "v1.6 - wangyouworld : http://ramble.3vshej.cn",
+            "v1.7 - xhemj <xhemj2680@163.com> : @xhemj",
+            "wangyouworld : https://blog.3vshej.cn : @wangyouworld"
+        ]
     },
     "My Tiny Todolist": "我的待办事项列表",
     "powered_by": "由",
