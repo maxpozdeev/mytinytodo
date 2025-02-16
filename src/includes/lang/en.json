@@ -1,11 +1,12 @@
 {
     "_header": {
-        "ver": "v1.8.1",
+        "ver": "v1.8.2",
         "date": "2025-02-15",
         "language": "English",
         "original_name": "English",
-        "author": "Max Pozdeev",
-        "author_url": "https://www.mytinytodo.net"
+        "authors": [
+            "Max Pozdeev <maxpozdeev@gmail.com> (https://www.mytinytodo.net)"
+        ]
     },
     "My Tiny Todolist": "My Tiny Todolist",
     "powered_by": "Powered by",

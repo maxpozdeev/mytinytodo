@@ -62,7 +62,7 @@ foreach ($rows as $i => $row) {
         print("| ". str_pad($row[0], $width[0], " ", STR_PAD_BOTH). " | ".
             str_pad($row[1], $width[1], " ", STR_PAD_BOTH). " | ".
             str_pad($row[2], $width[2], " ", STR_PAD_BOTH). " |\n");
-        print("|:". str_repeat("-", $width[0]+1). "|". str_repeat("-", $width[1]+1). ":|". str_repeat("-", $width[2]+1). ":|\n");
+        print("|:". str_repeat("-", $width[0]). "-|-". str_repeat("-", $width[1]). ":|-". str_repeat("-", $width[2]). ":|\n");
     }
     else {
         print("| ". str_pad($row[0], $width[0], " ", STR_PAD_RIGHT). " | ".
@@ -97,6 +97,9 @@ function checkArray(string $file, array $src, ?array $a) : int
         else if (is_array($a[$k])) {
             ++$translated;
             $translated += checkArray($file, $v, $a[$k]);
+        }
+        else if (defined('P_VERBOSE')) {
+            fwrite(STDERR, "$file: key `$k` is not array\n");
         }
     }
     return $translated;
