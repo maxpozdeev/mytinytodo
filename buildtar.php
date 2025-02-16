@@ -43,6 +43,7 @@ print "> Version is $ver\n";
 
 unlink('./docker-config.php');
 unlink('./includes/lang/en-rtl.json');
+unlink('./includes/lang/_percent.php');
 unlink('./mtt-edit-settings.php');
 unlink('./content/theme/images/svg2base64.php');
 
