@@ -24,7 +24,7 @@ class TasksController extends ApiController {
         $db = DBConnection::instance();
         $dbcore = DBCore::default();
 
-        $sqlWhere = $sqlWhereListId = '';
+        $sqlWhere = $sqlWhereListId = $sqlHaving = '';
         $userLists = [];
         if ($listId == -1) {
             $userLists = $this->getUserListsSimple();
@@ -46,8 +46,26 @@ class TasksController extends ApiController {
             $tagExIds = array();
             foreach ($at as $atv) {
                 $atv = trim($atv);
-                if ($atv == '' || $atv == '^') continue;
-                if (substr($atv,0,1) == '^') {
+                if ($atv == '')
+                    continue;
+                // tasks without tags (ignore other tags included or excluded)
+                if ($atv == '^') {
+                    $tagIds = [];
+                    $tagExIds = [];
+                    if ($db::DBTYPE == DBConnection::DBTYPE_MYSQL)
+                        $sqlHaving = "tags_ids = ''";
+                    else
+                        $sqlHaving = "string_agg(tags.name, ',') IS NULL"; // catches if tag name is ''
+                    break;
+                }
+                // tasks with any tag
+                else if ($atv == '^^') {
+                    if ($db::DBTYPE == DBConnection::DBTYPE_MYSQL)
+                        $sqlHaving = "tags_ids != ''";
+                    else
+                        $sqlHaving = "string_agg(tags.name, ',') != ''";
+                }
+                else if (substr($atv,0,1) == '^') {
                     array_push($tagExIds, ...$dbcore->getTagIdsByName(substr($atv,1)));
                 } else {
                     $tagIds[] = $dbcore->getTagIdsByName($atv);
@@ -110,6 +128,8 @@ class TasksController extends ApiController {
         else {
             $groupConcat = "GROUP_CONCAT(tags.id) AS tags_ids, GROUP_CONCAT(tags.name) AS tags";
         }
+        if ($sqlHaving != '')
+            $sqlHaving = "HAVING $sqlHaving";
 
         $q = $db->dq("
             SELECT todo.*, todo.duedate IS NULL AS ddn, $groupConcat
@@ -117,7 +137,7 @@ class TasksController extends ApiController {
             LEFT JOIN {$db->prefix}tag2task AS t2t ON todo.id = t2t.task_id
             LEFT JOIN {$db->prefix}tags AS tags ON t2t.tag_id = tags.id
             WHERE $sqlWhereListId $sqlWhere
-            GROUP BY todo.id
+            GROUP BY todo.id   $sqlHaving
             $sqlSort
         ");
 

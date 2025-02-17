@@ -127,6 +127,8 @@ class Lang
             'listNotFound',
             'noPublicLists',
             'noTags',
+            'withoutTags',
+            'withAnyTag',
             'invalidpass',
             'addList',
             'addListDefault',

@@ -312,7 +312,8 @@ var mytinytodo = window.mytinytodo = _mtt = {
         $('#tagcloudcontent').on('click', '.tag', function(event){
             //tag is not escaped
             addFilterTag( this.dataset.tag, this.dataset.tagId, (event.metaKey || event.ctrlKey ? true : false) );
-            if(_mtt.menus.tagcloud) _mtt.menus.tagcloud.close();
+            if (_mtt.menus.tagcloud)
+                _mtt.menus.tagcloud.close();
             return false;
         });
 
@@ -948,25 +949,32 @@ var mytinytodo = window.mytinytodo = _mtt = {
 
     filter: {
         _filters: [],
-        clear: function() {
+
+        clear() {
             this._filters = [];
             $('#mtt-tag-toolbar').hide();
             $('#mtt-tag-filters').html('');
         },
-        addTag: function(tagId, tag, exclude)
+
+        addTag(tagId, tag, exclude)
         {
-            tagId += 0;
-            for (let i in this._filters) {
-                if (this._filters[i].tagId && this._filters[i].tagId == tagId)
+            for (const filter of this._filters) {
+                if (filter.tagId && filter.tagId == tagId)
                     return false;
             }
             this._filters.push({tagId:tagId, tag:tag, exclude:exclude});
+            if (tagId == -1) {
+                // for display purposes only
+                tag = exclude ? _mtt.lang.get('withAnyTag') : _mtt.lang.get('withoutTags');
+                exclude = false;
+            }
             const tagHtml = this.prepareTagHtml(tagId, tag, ['tag-filter', 'tag-id-'+tagId, exclude ? 'tag-filter-exclude' : '']) ;
             $('#mtt-tag-filters').append(tagHtml);
             $('#mtt-tag-toolbar').show();
             return true;
         },
-        cancelTag: function(tagId)
+
+        cancelTag(tagId)
         {
             for (let i in this._filters) {
                 if (this._filters[i].tagId && this._filters[i].tagId == tagId) {
@@ -980,23 +988,25 @@ var mytinytodo = window.mytinytodo = _mtt = {
             }
             return false;
         },
-        getTags: function(withExcluded)
+
+        getTags(withExcluded)
         {
             let a = [];
-            for (let i in this._filters) {
-                if (this._filters[i].tagId) {
-                    if (this._filters[i].exclude && withExcluded)
-                        a.push('^'+ this._filters[i].tag);
-                    else if (!this._filters[i].exclude)
-                        a.push(this._filters[i].tag)
+            for (const filter of this._filters) {
+                if (filter.tagId) {
+                    if (filter.exclude && withExcluded)
+                        a.push('^'+ filter.tag);
+                    else if (!filter.exclude)
+                        a.push(filter.tag)
                 }
             }
             return a.join(', ');
         },
-        prepareTagHtml: function(tagId, tag, classes)
+
+        prepareTagHtml(tagId, tag, classes)
         {
             // tag is not escaped
-            return '<span class="' + classes.join(' ') + ' mtt-filter-close" tagid="' + tagId + '">' + escapeHtml(tag) + '<span class="tag-filter-btn"></span></span>';
+            return `<span class="${classes.join(' ')} mtt-filter-close" tagid="${tagId}">${escapeHtml(tag)}<span class="tag-filter-btn"></span></span>`;
         }
     },
 
@@ -1988,10 +1998,13 @@ function loadTags(listId, callback)
         let cloud = '';
         tagsList.forEach( item => {
             // item.tag is escaped with htmlspecialchars()
-            cloud += ' <span class="tag" data-tag="' + item.tag + '" data-tag-id="' + item.id + '">' + item.tag + '</span>';
+            cloud += ` <span class="tag" data-tag="${item.tag}" data-tag-id="${item.id}">${item.tag}</span>`;
         });
         if (cloud == '') {
             cloud = _mtt.lang.get('noTags');
+        }
+        else {
+            cloud = `<span class="tag" data-tag="^" data-tag-id="-1">${_mtt.lang.get('withoutTags')}</span>` + cloud;
         }
         $('#tagcloudcontent').html(cloud)
         flag.tagsChanged = false;
@@ -2008,7 +2021,8 @@ function cancelTagFilter(tagId, dontLoadTasks)
 
 function addFilterTag(tag, tagId, exclude)
 {
-    if(!_mtt.filter.addTag(tagId, tag, exclude)) return false;
+    if (!_mtt.filter.addTag(tagId, tag, exclude))
+        return false;
     loadTasks();
 };
 
@@ -2621,7 +2635,7 @@ function slmenuOnListsLoaded()
     let s = '';
     tabLists.getAll().forEach( (list) => {
         const classChecked = (list.id == curList.id) ? 'mtt-item-checked' : '';
-        const classHidden = list.hidden ? 'mtt-list-hidden' : '';   
+        const classHidden = list.hidden ? 'mtt-list-hidden' : '';
         s += `<li id="slmenu_list:${list.id}" class="list-id-${list.id} ${classChecked} ${classHidden}">
             <div class="menu-icon"></div><a href="${_mtt.urlForList(list)}">${list.name}</a><div class="counter hidden"></div></li>`;
     })

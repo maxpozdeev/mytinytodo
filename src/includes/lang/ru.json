@@ -1,7 +1,7 @@
 {
     "_header": {
         "ver": "v1.8.2",
-        "date": "2025-02-15",
+        "date": "2025-02-16",
         "language": "Russian",
         "original_name": "Русский",
         "authors": [
@@ -205,6 +205,8 @@
     "listNotFound": "Список не найден",
     "noPublicLists": "Нет опубликованных списков",
     "noTags": "Нет тегов",
+    "withoutTags": "Без тегов",
+    "withAnyTag": "Любой тег",
     "invalidpass": "Неверный пароль",
     "addList": "Новый список",
     "addListDefault": "Todo",
