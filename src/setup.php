@@ -229,6 +229,7 @@ function update_stoken()
         setcookie('mtt-s-token', $token, 0, url_dir(getRequestUri()). '; samesite=lax', '', false, true ) ;
     }
     else {
+        /** @disregard P1006 available in php 7.3 */
         setcookie('mtt-s-token', $token, [
             'path' => url_dir(getRequestUri()),
             'httponly' => true,

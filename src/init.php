@@ -238,6 +238,7 @@ function update_token(): string
             setcookie('mtt-token', $token, 0, url_dir(get_unsafe_mttinfo('mtt_url')). '; samesite=lax', '', false, true );
         }
         else {
+            /** @disregard P1006 available in php 7.3 */
             setcookie('mtt-token', $token, [
                 'path' => url_dir(get_unsafe_mttinfo('mtt_url')),
                 'httponly' => true,
