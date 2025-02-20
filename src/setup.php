@@ -20,6 +20,7 @@ if (getenv('MTT_ENABLE_DEBUG') == 'YES') {
 else {
     set_exception_handler('myExceptionHandler');
     define('MTT_DEBUG', false);
+    #ini_set('zend.exception_ignore_args', 1); // php 7.4+
 }
 
 if (!defined('MTTPATH')) define('MTTPATH', dirname(__FILE__) .'/');
@@ -32,6 +33,7 @@ require_once(MTTINC. 'version.php');
 $db = null;
 $ver = '';
 $error = '';
+$passwordAskedV14 = false;
 
 $setupToken = stoken();
 if ($setupToken == '' || strlen($setupToken) != 36) {
@@ -49,16 +51,10 @@ echo "<big><b>myTinyTodo $mttVersion Setup</b></big><br><br>";
 
 if (!$configExists && $oldConfigExists)
 {
-    // First we need to migrate database config
+    // First we need to migrate database config of db v1.4
     require_once(MTTPATH. 'db/config.php');
-    if (isset($config['password']) && $config['password'] != '') {
-        if (isset($_POST['configpassword'])) {
-            check_post_stoken();
-        }
-        if ( !isset($_POST['configpassword']) || $_POST['configpassword'] != $config['password'] ) {
-            exitMessage("Enter current password to continue. <form method=post><input type=hidden name=stoken value='$setupToken'><input type=password name=configpassword> <input type=submit value=' Continue '></form>");
-        }
-    }
+    askPasswordV14($config, $setupToken);
+    $passwordAskedV14 = true;
     Config::loadConfigV14($config);
     tryToSaveDBConfig();
     $configExists = true;
@@ -95,13 +91,17 @@ if ($configExists)
         // Need to upgrade. Do not ask for old password
         Config::$noDatabase = true; //don't load settings from db
         require_once(MTTPATH. 'db/config.php');
+        if ( !$passwordAskedV14 ) {
+            askPasswordV14($config, $setupToken);
+            $passwordAskedV14 = true;
+        }
         Config::loadConfigV14($config);
         unset($config);
         DBConnection::init($db);
     }
 
     require_once('./init.php');
-    if ( !is_logged() ) {
+    if ( !Config::$noDatabase && !is_logged() ) {
         die("Access denied!<br> Disable password protection or Log in.");
     }
 
@@ -239,12 +239,88 @@ function update_stoken()
     $_COOKIE['mtt-s-token'] = $token;
     return $token;
 }
+
 function check_post_stoken()
 {
     $token = $_POST['stoken'] ?? '';
     if ( $token == '' || $token != stoken() ) {
         die("Access denied! No token provided.");
     }
+}
+
+function askPasswordV14(
+    #[\SensitiveParameter]
+    array $config,
+    string $setupToken)
+{
+    if (!isset($config['password']) || $config['password'] == '') {
+        return;
+    }
+    if (isset($_POST['configpassword'])) {
+        check_post_stoken();
+    }
+    if (isset($_COOKIE['mtt-v14token'])) {
+        if (validateTokenV14($config, $_COOKIE['mtt-v14token'])) {
+            return; //authorized
+        }
+        if (MTT_DEBUG) error_log("Failed validation of v14token");
+    }
+    if ( !isset($_POST['configpassword']) || $_POST['configpassword'] != $config['password'] ) {
+        exitMessage("Enter current password to continue.
+            <form method=post><input type=hidden name=stoken value='$setupToken'>
+            <input type=password name=configpassword> <input type=submit value=' Continue '></form>");
+    }
+    $token = generateTokenV14($config);
+    if (PHP_VERSION_ID < 70300) {
+        setcookie('mtt-v14token', $token, 0, url_dir(getRequestUri()). '; samesite=lax', '', false, true ) ;
+    }
+    else {
+        /** @disregard P1006 available in php 7.3 */
+        setcookie('mtt-v14token', $token, [
+            'path' => url_dir(getRequestUri()),
+            'httponly' => true,
+            'samesite' => 'lax'
+        ]);
+    }
+}
+
+function generateTokenV14(
+    #[\SensitiveParameter]
+    array $config) : ?string
+{
+    if (!isset($config['password']) || $config['password'] == '') {
+        return null;
+    }
+    $payload = base64_encode(json_encode([
+        'exp' => time() + 300   # 5 min lifetime
+    ]));
+    return $payload. '.'. base64_encode(hash_hmac('sha256', $payload, $config['password'], true));
+}
+
+function validateTokenV14(
+    #[\SensitiveParameter]
+    array $config,
+    string $token) : bool
+{
+    if (!isset($config['password']) || $config['password'] == '') {
+        return true;
+    }
+    $parts = explode('.', $token);
+    if (count($parts) != 2) {
+        return false;
+    }
+    $signature = base64_decode($parts[1]); //binary
+    if ($signature === false) {
+        return false;
+    }
+    if ( !hash_equals($signature, hash_hmac('sha256', $parts[0], $config['password'], true)) ) {
+        return false;
+    }
+    $payload = json_decode(base64_decode($parts[0]), true);
+    if (!isset($payload['exp']) || time() > $payload['exp']) {
+        return false;
+    }
+    return true;
 }
 
 

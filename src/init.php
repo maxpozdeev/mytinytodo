@@ -63,7 +63,7 @@ Lang::loadLang( Config::get('lang') );
 
 $_mttinfo = array();
 
-if (need_auth() && !isset($dontStartSession)) {
+if (need_auth() && !isset($dontStartSession) && !Config::$noDatabase) {
     setup_and_start_session();
 }
 set_nocache_headers();
