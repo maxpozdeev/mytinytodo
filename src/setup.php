@@ -2,7 +2,7 @@
 
 /*
     This file is a part of myTinyTodo.
-    (C) Copyright 2009-2011,2020-2023 Max Pozdeev <maxpozdeev@gmail.com>
+    (C) Copyright 2009-2011,2020-2025 Max Pozdeev <maxpozdeev@gmail.com>
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
@@ -35,11 +35,11 @@ $ver = '';
 $error = '';
 $passwordAskedV14 = false;
 
-$setupToken = stoken();
-if ($setupToken == '' || strlen($setupToken) != 36) {
-    $setupToken = update_stoken();
+$csrfToken = setupToken();
+if ($csrfToken == '' || strlen($csrfToken) != 36) {
+    $csrfToken = setSetupToken();
 }
-$setupToken = htmlspecialchars($setupToken);
+$csrfToken = htmlspecialchars($csrfToken);
 
 $configExists = file_exists(MTTPATH. 'config.php');
 $oldConfigExists = file_exists(MTTPATH. 'db/config.php');
@@ -53,7 +53,7 @@ if (!$configExists && $oldConfigExists)
 {
     // First we need to migrate database config of db v1.4
     require_once(MTTPATH. 'db/config.php');
-    askPasswordV14($config, $setupToken);
+    askPasswordV14($config, $csrfToken);
     $passwordAskedV14 = true;
     Config::loadConfigV14($config);
     tryToSaveDBConfig();
@@ -92,7 +92,7 @@ if ($configExists)
         Config::$noDatabase = true; //don't load settings from db
         require_once(MTTPATH. 'db/config.php');
         if ( !$passwordAskedV14 ) {
-            askPasswordV14($config, $setupToken);
+            askPasswordV14($config, $csrfToken);
             $passwordAskedV14 = true;
         }
         Config::loadConfigV14($config);
@@ -115,7 +115,7 @@ if ($ver == '')
     {
         # We already have settings file and need to create tables.
         exitMessage("<form method=post>Click next to create tables in ". htmlspecialchars(databaseTypeName($db)). " database.<br><br>
-                    <input type=hidden name=stoken value='$setupToken'>
+                    <input type=hidden name=stoken value='$csrfToken'>
                     <input type=hidden name=install value=create>
                     <input type=submit value=' Next '></form>");
     }
@@ -125,7 +125,7 @@ if ($ver == '')
         exitMessage("
             <form method=post>Select database type to use:<br><br>
             <input type=hidden name=install value=config>
-            <input type=hidden name=stoken value='$setupToken'>
+            <input type=hidden name=stoken value='$csrfToken'>
             <label><input type=radio name=db_type value=sqlite checked=checked onclick=\"document.getElementById('dbsettings').style.display='none'\"> SQLite</label><br><br>
             <label><input type=radio name=db_type value=mysql onclick=\"document.getElementById('dbsettings').style.display=''\"> MySQL</label><br><br>
             <label><input type=radio name=db_type value=postgres onclick=\"document.getElementById('dbsettings').style.display=''\"> PostgreSQL (beta)</label><br>
@@ -140,7 +140,7 @@ if ($ver == '')
     }
     elseif ($install == 'config')
     {
-        check_post_stoken();
+        checkSetupToken();
         # Save configuration
         $dbtype = $_POST['db_type'] ?? '';
         if ($dbtype != 'mysql' && $dbtype != 'postgres' && $dbtype != 'sqlite') {
@@ -165,12 +165,12 @@ if ($ver == '')
         tryToSaveDBConfig();
         exitMessage("<form method=post> This will create myTinyTodo database <br><br>
                 <input type=hidden name=install value=create>
-                <input type=hidden name=stoken value='$setupToken'>
+                <input type=hidden name=stoken value='$csrfToken'>
                 <input type=submit value=' Install '></form>");
     }
     elseif ($install == 'create')
     {
-        check_post_stoken();
+        checkSetupToken();
         # install database
         createAllTables($db, $dbtype);  # throws
 
@@ -197,13 +197,13 @@ else
         exitMessage(htmlspecialchars("Update database v$ver to v$lastVer"). "<br><br>
             <form name=frm method=post>
             <input type=hidden name=update value=1>
-            <input type=hidden name=stoken value='$setupToken'>
+            <input type=hidden name=stoken value='$csrfToken'>
             <input type=submit value=' Update '>
             </form>");
     }
 
     # update process
-    check_post_stoken();
+    checkSetupToken();
     if ($ver == '1.4') {
         update_14_17($db, $dbtype);
         update_17_18($db, $dbtype);
@@ -217,14 +217,14 @@ echo "Done<br><br> <b>Attention!</b> Delete this file for security reasons. <br>
 printFooter();
 
 
-function stoken()
+function setupToken()
 {
     return $_COOKIE['mtt-s-token'] ?? '';
 }
 
-function update_stoken()
+function setSetupToken() : string
 {
-    $token = generateUUID();
+    $token = randomString(36);
     if (PHP_VERSION_ID < 70300) {
         setcookie('mtt-s-token', $token, 0, url_dir(getRequestUri()). '; samesite=lax', '', false, true ) ;
     }
@@ -240,10 +240,10 @@ function update_stoken()
     return $token;
 }
 
-function check_post_stoken()
+function checkSetupToken()
 {
     $token = $_POST['stoken'] ?? '';
-    if ( $token == '' || $token != stoken() ) {
+    if ( $token == '' || $token != setupToken() ) {
         die("Access denied! No token provided.");
     }
 }
@@ -251,13 +251,13 @@ function check_post_stoken()
 function askPasswordV14(
     #[\SensitiveParameter]
     array $config,
-    string $setupToken)
+    string $csrfToken)
 {
     if (!isset($config['password']) || $config['password'] == '') {
         return;
     }
     if (isset($_POST['configpassword'])) {
-        check_post_stoken();
+        checkSetupToken();
     }
     if (isset($_COOKIE['mtt-v14token'])) {
         if (validateTokenV14($config, $_COOKIE['mtt-v14token'])) {
@@ -267,7 +267,7 @@ function askPasswordV14(
     }
     if ( !isset($_POST['configpassword']) || $_POST['configpassword'] != $config['password'] ) {
         exitMessage("Enter current password to continue.
-            <form method=post><input type=hidden name=stoken value='$setupToken'>
+            <form method=post><input type=hidden name=stoken value='$csrfToken'>
             <input type=password name=configpassword> <input type=submit value=' Continue '></form>");
     }
     $token = generateTokenV14($config);
