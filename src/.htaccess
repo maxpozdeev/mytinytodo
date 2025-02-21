@@ -11,6 +11,19 @@
 
 
 # In Nginx set something like this:
+
+# Deny access to some files and folders
+#location ~ ^/(db|includes)/ {
+#    deny all;
+#}
+#location ~ /\.ht {
+#    deny all;
+#}
+#location ~* ^/ext/.*\.(json|md)$ {
+#    deny all;
+#}
+
+# Optional
 # location /api/ {
 #    rewrite ^/api/(.*) /api.php/$1 last;
 # }
