@@ -52,6 +52,7 @@ class TagsController extends ApiController {
         {
             $t['items'][] = array(
                 'tag' => htmlspecialchars($tag['name']),
+                'tagText' => (string)$tag['name'],
                 'id' => (int)$tag['id'],
                 'count' => $ac[$i],
                 'w' => $this->tagWeight($qmin, $ac[$i], $step)

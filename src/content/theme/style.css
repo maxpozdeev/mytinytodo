@@ -975,6 +975,9 @@ textarea.form-input.inmax {
 #tagcloudAllLists:disabled + label {
   opacity: 0.6;
 }
+#tagcloudSearch {
+  margin-left: 0.5rem;
+}
 #tagcloudcancel span {
   mask: var(--svg-closetag) no-repeat; -webkit-mask: var(--svg-closetag) no-repeat;
   background-color: var(--color-btn-reduced);
@@ -1358,7 +1361,9 @@ li.mtt-item-hidden { display:none; }
   textarea.form-input.inmax { font-size: 14px; }
 }
 
-/* narrow screens */
+
+
+/* ========== narrow screens =========*/
 @media only screen and (max-width: 600px) {
 
   #mtt { padding: 15px 8px 0px; }
@@ -1399,6 +1404,10 @@ li.mtt-item-hidden { display:none; }
   #toolbar.mtt-insearch .taskbox-c { display:none; }
   #toolbar.mtt-insearch .searchbox-c { width:100%; max-width:100%; }
   #search { padding:5px 20px; border-radius:15px; }
+
+  #tagcloudSearch {
+    margin-top: 0.5rem;
+  }
 
   .task-date {
     white-space: nowrap;

@@ -86,6 +86,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
         previewtag: 0,
         ajaxAnimation: 0,
         newTaskCounter: 0,
+        searchTags: 0,
     },
 
     lang: {
@@ -292,18 +293,41 @@ var mytinytodo = window.mytinytodo = _mtt = {
             else {
                 $('#tagcloudAllLists').prop('checked', flag.showTagsFromAllLists).prop('disabled', false);
             }
-            if(!_mtt.menus.tagcloud) _mtt.menus.tagcloud = new mttMenu('tagcloud', {
+            if (!_mtt.menus.tagcloud) _mtt.menus.tagcloud = new mttMenu('tagcloud', {
                 beforeShow: function(){
-                    if(flag.tagsChanged) {
+                    if (flag.tagsChanged) {
                         $('#tagcloudcontent').html('');
                         $('#tagcloudload').show();
-                        loadTags(curList.id, function(){$('#tagcloudload').hide();});
+                        loadTags(curList.id, function() {
+                            $('#tagcloudload').hide();
+                            document.getElementById('tagcloudSearch').value = '';
+                        });
                     }
                 },
-                alignRight:true
+                alignRight: true,
+                onClose: function(){
+                    document.getElementById('tagcloudSearch').value = '';
+                    searchTags();
+                }
             });
             _mtt.menus.tagcloud.show(this);
         });
+
+        $('#tagcloudSearch').keyup(function(event) {
+            if (event.keyCode == 27) return;
+            clearTimeout(_mtt.timers.searchTags);
+            _mtt.timers.searchTags = setTimeout(function(){searchTags()}, 400);
+
+        })
+        .keydown(function(event){
+            if (event.keyCode == 27) { // Cancel on Esc
+                if (this.value === '') return; //allow to close the popup
+                this.value = '';
+                clearTimeout(_mtt.timers.searchTags);
+                searchTags();
+                return false;
+            }
+        })
 
         $('#tagcloudcancel').click(function(){
             if(_mtt.menus.tagcloud) _mtt.menus.tagcloud.close();
@@ -321,7 +345,10 @@ var mytinytodo = window.mytinytodo = _mtt = {
             flag.showTagsFromAllLists = this.checked;
             $('#tagcloudcontent').html('');
             $('#tagcloudload').show();
-            loadTags(curList.id, function(){$('#tagcloudload').hide();});
+            loadTags(curList.id, function(){
+                $('#tagcloudload').hide();
+                $('#tagcloudSearch').val('');
+            });
         });
 
         $('#mtt-notes-show').click(function(e){
@@ -1995,22 +2022,27 @@ function loadTags(listId, callback)
     _mtt.db.request('tagCloud', {list:listId}, function(json){
         if (!parseInt(json.total)) tagsList = [];
         else tagsList = json.items;
-        let cloud = '';
-        tagsList.forEach( item => {
-            // item.tag is escaped with htmlspecialchars()
-            cloud += ` <span class="tag" data-tag="${item.tag}" data-tag-id="${item.id}">${item.tag}</span>`;
-        });
-        if (cloud == '') {
-            cloud = _mtt.lang.get('noTags');
-        }
-        else {
-            cloud = `<span class="tag" data-tag="^" data-tag-id="-1">${_mtt.lang.get('withoutTags')}</span>` + cloud;
-        }
-        $('#tagcloudcontent').html(cloud)
         flag.tagsChanged = false;
+        setTagcloudContent(tagsList);
         callback();
     });
 };
+
+function setTagcloudContent(tags, isFiltered = false)
+{
+    let cloud = '';
+    tags.forEach( item => {
+        // item.tag is escaped with htmlspecialchars()
+        cloud += ` <span class="tag" data-tag="${item.tag}" data-tag-id="${item.id}">${item.tag}</span>`;
+    });
+    if (cloud == '') {
+        cloud = _mtt.lang.get('noTags');
+    }
+    else if (!isFiltered) {
+        cloud = `<span class="tag" data-tag="^" data-tag-id="-1">${_mtt.lang.get('withoutTags')}</span>` + cloud;
+    }
+    $('#tagcloudcontent').html(cloud)
+}
 
 function cancelTagFilter(tagId, dontLoadTasks)
 {
@@ -2025,6 +2057,22 @@ function addFilterTag(tag, tagId, exclude)
         return false;
     loadTasks();
 };
+
+function searchTags()
+{
+    const filter = document.getElementById('tagcloudSearch').value.toLocaleLowerCase();
+    if (filter === '') {
+        setTagcloudContent(tagsList);
+        return;
+    }
+    const filtered = [];
+    tagsList.forEach( item => {
+        if (item.tagText.toLocaleLowerCase().search(filter) === -1)
+            return;
+        filtered.push(item);
+    });
+    setTagcloudContent(filtered, true);
+}
 
 function liveSearchToggle(toSearch, dontLoad)
 {

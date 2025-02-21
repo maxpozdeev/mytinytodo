@@ -253,7 +253,10 @@ $().ready(function(){
 
 <div id="tagcloud" style="display:none">
   <div class="actions">
-    <div><input id="tagcloudAllLists" type="checkbox"> <label for="tagcloudAllLists"><?php _e('showTagsFromAllLists');?></label></div>
+    <div class="filterbar">
+      <input id="tagcloudAllLists" type="checkbox"> <label for="tagcloudAllLists"><?php _e('showTagsFromAllLists');?></label>
+      <input type="text" class="form-input" id="tagcloudSearch" autocomplete="off" placeholder="<?php _e('filterTags');?>">
+    </div>
     <div id="tagcloudcancel" class="mtt-img-button"><span></span></div>
   </div>
   <div class="content">
