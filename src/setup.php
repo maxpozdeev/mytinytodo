@@ -6,7 +6,7 @@
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
-// Can be used to upgrade database from myTinyTodo v1.4 or later
+// Can be used to upgrade database from myTinyTodo v1.7 or later
 $lastVer = '1.8';
 
 if (version_compare(PHP_VERSION, '7.2.0') < 0) {
@@ -33,7 +33,6 @@ require_once(MTTINC. 'version.php');
 $db = null;
 $ver = '';
 $error = '';
-$passwordAskedV14 = false;
 
 $csrfToken = setupToken();
 if ($csrfToken == '' || strlen($csrfToken) != 36) {
@@ -41,28 +40,22 @@ if ($csrfToken == '' || strlen($csrfToken) != 36) {
 }
 $csrfToken = htmlspecialchars($csrfToken);
 
-$configExists = file_exists(MTTPATH. 'config.php');
-$oldConfigExists = file_exists(MTTPATH. 'db/config.php');
-
-
 $mttVersion = htmlspecialchars(mytinytodo\Version::VERSION);
-echo "<html><head><meta name='robots' content='noindex,nofollow'><title>myTinyTodo $mttVersion Setup</title></head><body>";
-echo "<big><b>myTinyTodo $mttVersion Setup</b></big><br><br>";
 
-if (!$configExists && $oldConfigExists)
-{
-    // First we need to migrate database config of db v1.4
-    require_once(MTTPATH. 'db/config.php');
-    askPasswordV14($config, $csrfToken);
-    $passwordAskedV14 = true;
-    Config::loadConfigV14($config);
-    tryToSaveDBConfig();
-    $configExists = true;
-}
+echo <<<EOD
+<html>
+<head>
+  <meta name='robots' content='noindex,nofollow'>
+  <title>myTinyTodo Setup (v$mttVersion )</title>
+</head>
+<body>
+<h1>myTinyTodo Setup <span class=version>v$mttVersion</span></h1>
+EOD;
 
+
+$configExists = file_exists(MTTPATH. 'config.php');
 if ($configExists)
 {
-    // No need to migrate database config
     require_once(MTTPATH. 'config.php');
     $db = testConnect($error);
     if (!$db) {
@@ -83,21 +76,9 @@ if ($configExists)
         // Don't load settings from database in init.php
         Config::$noDatabase = true;
     }
-    else if (version_compare($ver, '1.4') < 0) {
-        // Very old or previously failed while install
+    else if (version_compare($ver, '1.7') < 0) {
+        // Old or previously failed while install
         exitMessage(htmlspecialchars("Can not update. Unsupported database version ($ver)."));
-    }
-    else if ($ver == '1.4') {
-        // Need to upgrade. Do not ask for old password
-        Config::$noDatabase = true; //don't load settings from db
-        require_once(MTTPATH. 'db/config.php');
-        if ( !$passwordAskedV14 ) {
-            askPasswordV14($config, $csrfToken);
-            $passwordAskedV14 = true;
-        }
-        Config::loadConfigV14($config);
-        unset($config);
-        DBConnection::init($db);
     }
 
     require_once('./init.php');
@@ -128,7 +109,7 @@ if ($ver == '')
             <input type=hidden name=stoken value='$csrfToken'>
             <label><input type=radio name=db_type value=sqlite checked=checked onclick=\"document.getElementById('dbsettings').style.display='none'\"> SQLite</label><br><br>
             <label><input type=radio name=db_type value=mysql onclick=\"document.getElementById('dbsettings').style.display=''\"> MySQL</label><br><br>
-            <label><input type=radio name=db_type value=postgres onclick=\"document.getElementById('dbsettings').style.display=''\"> PostgreSQL (beta)</label><br>
+            <label><input type=radio name=db_type value=postgres onclick=\"document.getElementById('dbsettings').style.display=''\"> PostgreSQL</label><br>
             <div id='dbsettings' style='display:none; margin-left:30px;'><br><table>
             <tr><td>Host:</td><td><input name=db_host value=localhost></td></tr>
             <tr><td>Database:</td><td><input name=db_name value=mytinytodo></td></tr>
@@ -143,7 +124,7 @@ if ($ver == '')
         checkSetupToken();
         # Save configuration
         $dbtype = $_POST['db_type'] ?? '';
-        if ($dbtype != 'mysql' && $dbtype != 'postgres' && $dbtype != 'sqlite') {
+        if (!in_array($dbtype, ['sqlite', 'mysql', 'postgres'])) {
             exitMessage("Unknown database type $dbtype");
         }
         Config::set('db.type', $dbtype);
@@ -189,7 +170,7 @@ elseif ($ver == $lastVer)
 }
 else
 {
-    if (!in_array($ver, array('1.4','1.7'))) {
+    if (!in_array($ver, array('1.7'))) {
         exitMessage(htmlspecialchars("Can not update. Unsupported database version ($ver)."));
     }
 
@@ -204,11 +185,7 @@ else
 
     # update process
     checkSetupToken();
-    if ($ver == '1.4') {
-        update_14_17($db, $dbtype);
-        update_17_18($db, $dbtype);
-    }
-    elseif ($ver == '1.7') {
+    if ($ver == '1.7') {
         update_17_18($db, $dbtype);
     }
 }
@@ -247,82 +224,6 @@ function checkSetupToken()
         die("Access denied! No token provided.");
     }
 }
-
-function askPasswordV14(
-    #[\SensitiveParameter]
-    array $config,
-    string $csrfToken)
-{
-    if (!isset($config['password']) || $config['password'] == '') {
-        return;
-    }
-    if (isset($_POST['configpassword'])) {
-        checkSetupToken();
-    }
-    if (isset($_COOKIE['mtt-v14token'])) {
-        if (validateTokenV14($config, $_COOKIE['mtt-v14token'])) {
-            return; //authorized
-        }
-        if (MTT_DEBUG) error_log("Failed validation of v14token");
-    }
-    if ( !isset($_POST['configpassword']) || $_POST['configpassword'] != $config['password'] ) {
-        exitMessage("Enter current password to continue.
-            <form method=post><input type=hidden name=stoken value='$csrfToken'>
-            <input type=password name=configpassword> <input type=submit value=' Continue '></form>");
-    }
-    $token = generateTokenV14($config);
-    if (PHP_VERSION_ID < 70300) {
-        setcookie('mtt-v14token', $token, 0, url_dir(getRequestUri()). '; samesite=lax', '', false, true ) ;
-    }
-    else {
-        /** @disregard P1006 available in php 7.3 */
-        setcookie('mtt-v14token', $token, [
-            'path' => url_dir(getRequestUri()),
-            'httponly' => true,
-            'samesite' => 'lax'
-        ]);
-    }
-}
-
-function generateTokenV14(
-    #[\SensitiveParameter]
-    array $config) : ?string
-{
-    if (!isset($config['password']) || $config['password'] == '') {
-        return null;
-    }
-    $payload = base64_encode(json_encode([
-        'exp' => time() + 300   # 5 min lifetime
-    ]));
-    return $payload. '.'. base64_encode(hash_hmac('sha256', $payload, $config['password'], true));
-}
-
-function validateTokenV14(
-    #[\SensitiveParameter]
-    array $config,
-    string $token) : bool
-{
-    if (!isset($config['password']) || $config['password'] == '') {
-        return true;
-    }
-    $parts = explode('.', $token);
-    if (count($parts) != 2) {
-        return false;
-    }
-    $signature = base64_decode($parts[1]); //binary
-    if ($signature === false) {
-        return false;
-    }
-    if ( !hash_equals($signature, hash_hmac('sha256', $parts[0], $config['password'], true)) ) {
-        return false;
-    }
-    $payload = json_decode(base64_decode($parts[0]), true);
-    if (!isset($payload['exp']) || time() > $payload['exp']) {
-        return false;
-    }
-    return true;
-}
-
 
 function createAllTables($db, $dbtype)
 {
@@ -783,82 +684,6 @@ function databaseTypeName(Database_Abstract $db)
 }
 
 
-### update v1.4 to v1.7 ##########
-function update_14_17(Database_Abstract $db, $dbtype)
-{
-    $db->ex("BEGIN");
-
-    if($dbtype=='mysql')
-    {
-        $db->ex("ALTER TABLE {$db->prefix}lists ADD `extra` TEXT");
-
-        # increase the length of list and tag name
-        # (not applicable to sqlite because it uses VARCHAR fields of any length as TEXT)
-        $db->ex("ALTER TABLE {$db->prefix}todolist CHANGE `tags` `tags` VARCHAR(2000) NOT NULL default '' ");
-        $db->ex("ALTER TABLE {$db->prefix}tags CHANGE `name` `name` VARCHAR(250) NOT NULL default '' ");
-        $db->ex("ALTER TABLE {$db->prefix}lists CHANGE `name` `name` VARCHAR(250) NOT NULL default '' ");
-
-        # convert charset to utf8mb4
-
-        $db->ex("ALTER TABLE {$db->prefix}lists    CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
-        $db->ex("ALTER TABLE {$db->prefix}todolist CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
-        $db->ex("ALTER TABLE {$db->prefix}tags     CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
-        $db->ex("ALTER TABLE {$db->prefix}tag2task CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
-
-        # create settings table
-
-        $db->ex(
-"CREATE TABLE {$db->prefix}settings (
- `param_key`   VARCHAR(250) NOT NULL default '',
- `param_value` TEXT,
-UNIQUE KEY `param_key` (`param_key`)
-) CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ");
-
-        # create sessions table
-
-        $db->ex(
-"CREATE TABLE {$db->prefix}sessions (
- `id`          VARCHAR(64) NOT NULL default '',
- `data`        TEXT,
- `last_access` INT UNSIGNED NOT NULL default 0,
- `expires`     INT UNSIGNED NOT NULL default 0,
-UNIQUE KEY `id` (`id`)
-) CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ");
-
-    }
-
-    else #sqlite
-    {
-        $db->ex("ALTER TABLE {$db->prefix}lists ADD extra TEXT");
-
-        # settings
-
-        $db->ex(
-"CREATE TABLE {$db->prefix}settings (
- param_key   VARCHAR(100) NOT NULL default '',
- param_value TEXT
-) ");
-        $db->ex("CREATE UNIQUE INDEX settings_key ON {$db->prefix}settings (param_key COLLATE NOCASE)");
-
-        # sessions
-
-        $db->ex(
-"CREATE TABLE {$db->prefix}sessions (
- id          VARCHAR(250) NOT NULL default '',
- data        TEXT,
- last_access INTEGER UNSIGNED NOT NULL default 0,
- expires     INTEGER UNSIGNED NOT NULL default 0
-) ");
-
-        $db->ex("CREATE UNIQUE INDEX sessions_id ON {$db->prefix}sessions (id COLLATE NOCASE)");
-    }
-
-    $db->ex("COMMIT");
-
-    Config::save();
-    Config::saveDbConfig();
-}
-### end of 1.7 #####
 
 ### update v1.7 to v1.8 ##########
 function update_17_18(Database_Abstract $db, $dbtype)
