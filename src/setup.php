@@ -7,7 +7,7 @@
 */
 
 // Can be used to upgrade database from myTinyTodo v1.7 or later
-$lastVer = '1.8';
+$lastVer = '2.0';
 
 if (version_compare(PHP_VERSION, '7.2.0') < 0) {
     die("PHP 7.2 or above is required");
@@ -170,7 +170,7 @@ elseif ($ver == $lastVer)
 }
 else
 {
-    if (!in_array($ver, array('1.7'))) {
+    if (!in_array($ver, array('1.8', '1.7'))) {
         exitMessage(htmlspecialchars("Can not update. Unsupported database version ($ver)."));
     }
 
@@ -187,6 +187,10 @@ else
     checkSetupToken();
     if ($ver == '1.7') {
         update_17_18($db, $dbtype);
+        update_18_20($db, $dbtype);
+    }
+    else if ($ver == '1.8') {
+        update_18_20($db, $dbtype);
     }
 }
 
@@ -278,6 +282,7 @@ function createMysqlTables(Database_Abstract $db)
     `prio` TINYINT NOT NULL default 0,          /* priority -,0,+ */
     `ow` INT NOT NULL default 0,                /* order weight */
     `duedate` DATE default NULL,
+    `extra` TEXT,
     PRIMARY KEY(`id`),
     KEY(`list_id`),
     UNIQUE KEY(`uuid`)
@@ -356,7 +361,8 @@ function createPostgresTables(Database_Abstract $db)
     note TEXT default NULL,
     prio SMALLINT NOT NULL default 0,
     ow INTEGER NOT NULL default 0,
-    duedate DATE default NULL
+    duedate DATE default NULL,
+    extra TEXT
 ) ");
     $db->ex("CREATE INDEX {$db->prefix}todo_list_id ON {$db->prefix}todolist (list_id)");
     $db->ex("CREATE UNIQUE INDEX {$db->prefix}todo_uuid ON {$db->prefix}todolist (uuid)");
@@ -428,7 +434,8 @@ function createSqliteTables(Database_Abstract $db)
     note TEXT COLLATE UTF8CI default NULL,
     prio TINYINT NOT NULL default 0,
     ow INTEGER NOT NULL default 0,
-    duedate DATE default NULL
+    duedate DATE default NULL,
+    extra TEXT
 ) ");
     $db->ex("CREATE INDEX todo_list_id ON {$db->prefix}todolist (list_id)");
     $db->ex("CREATE UNIQUE INDEX todo_uuid ON {$db->prefix}todolist (uuid)");
@@ -491,8 +498,10 @@ function databaseVersion(Database_Abstract $db): string
     $v = '1.4';
     if ( !$db->tableExists($db->prefix.'settings') ) return $v;
     $v = '1.7';
-    if ( $db->tableFieldExists($db->prefix.'todolist', 'tags') ) return $v;
+    if ( $db->tableFieldExists($db->prefix.'todolist', 'tags') ) return $v; # field was removed in v1.8
     $v = '1.8';
+    if ( !$db->tableFieldExists($db->prefix.'todolist', 'extra') ) return $v;
+    $v = '2.0';
     return $v;
 }
 
@@ -761,3 +770,44 @@ function update_17_18(Database_Abstract $db, $dbtype)
 
 }
 ### end of 1.8 #####
+
+
+
+function update_18_20(Database_Abstract $db, $dbtype)
+{
+    $db->ex("BEGIN");
+
+    if ($dbtype == 'mysql')
+    {
+        $db->ex("ALTER TABLE {$db->prefix}lists MODIFY `d_created` BIGINT UNSIGNED NOT NULL default 0");
+        $db->ex("ALTER TABLE {$db->prefix}lists MODIFY `d_edited` BIGINT UNSIGNED NOT NULL default 0");
+        $db->ex("ALTER TABLE {$db->prefix}todolist MODIFY `d_created` BIGINT UNSIGNED NOT NULL default 0");
+        $db->ex("ALTER TABLE {$db->prefix}todolist MODIFY `d_completed` BIGINT UNSIGNED NOT NULL default 0");
+        $db->ex("ALTER TABLE {$db->prefix}todolist MODIFY `d_edited` BIGINT UNSIGNED NOT NULL default 0");
+        $db->ex("ALTER TABLE {$db->prefix}sessions MODIFY `last_access` BIGINT UNSIGNED NOT NULL default 0");
+        $db->ex("ALTER TABLE {$db->prefix}sessions MODIFY `expires` BIGINT UNSIGNED NOT NULL default 0");
+
+        $db->ex("ALTER TABLE {$db->prefix}todolist ADD `extra` TEXT");
+
+    }
+    else if ($dbtype == 'postgres')
+    {
+        $db->ex("ALTER TABLE {$db->prefix}lists ALTER d_created TYPE BIGINT");
+        $db->ex("ALTER TABLE {$db->prefix}lists ALTER d_edited TYPE BIGINT");
+        $db->ex("ALTER TABLE {$db->prefix}todolist ALTER d_created TYPE BIGINT");
+        $db->ex("ALTER TABLE {$db->prefix}todolist ALTER d_completed TYPE BIGINT");
+        $db->ex("ALTER TABLE {$db->prefix}todolist ALTER d_edited TYPE BIGINT");
+        $db->ex("ALTER TABLE {$db->prefix}sessions ALTER last_access TYPE BIGINT");
+        $db->ex("ALTER TABLE {$db->prefix}sessions ALTER expires TYPE BIGINT");
+
+        $db->ex("ALTER TABLE {$db->prefix}todolist ADD extra TEXT");
+    }
+    else if ($dbtype == 'sqlite')
+    {
+        $db->ex("ALTER TABLE {$db->prefix}todolist ADD extra TEXT");
+    }
+
+    $db->ex("COMMIT");
+}
+### end of 2.0 #####
+
