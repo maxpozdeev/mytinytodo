@@ -911,6 +911,9 @@ textarea.form-input.inmax {
   flex-wrap: wrap;
   max-width: 100%;
 }
+#mtt.readonly #taskviewer_edit_btn {
+  display: none;
+}
 
 /* autocomplete */
 .ui-helper-hidden-accessible { border: 0; clip: rect(0 0 0 0); height: 1px; margin: -1px; overflow: hidden; padding: 0; position: absolute; width: 1px; }
