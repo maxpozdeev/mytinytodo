@@ -2,7 +2,7 @@
 
 /*
     This file is a part of myTinyTodo.
-    (C) Copyright 2023 Max Pozdeev <maxpozdeev@gmail.com>
+    (C) Copyright 2023-2025 Max Pozdeev <maxpozdeev@gmail.com>
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
@@ -86,11 +86,9 @@ class Backup
         }
         $db = \DBConnection::instance();
         $props = null;
-        if ($db::DBTYPE == \DBConnection::DBTYPE_MYSQL) {
-            $autoinc = $this->getMysqlTableAutoIncrement($table);
-            if ($autoinc != '') {
-                $props = ['auto_increment' => $autoinc];
-            }
+        $autoinc = $this->getTableAutoIncrement($table);
+        if ($autoinc != '') {
+            $props = ['auto_increment' => $autoinc];
         }
         $this->writeOpeningTag($group, $props);
         $q = $db->dq("SELECT * FROM $table");
@@ -120,11 +118,26 @@ class Backup
         $this->writeClosingTag($entity);
     }
 
-    function getMysqlTableAutoIncrement(string $table): string
+    function getTableAutoIncrement($table): string
     {
         $db = \DBConnection::instance();
-        $r = $db->sqa("SHOW TABLE STATUS WHERE Name=?", [$table]);
-        return (string)$r['Auto_increment'] ?? '';
+        if ($db::DBTYPE == \DBConnection::DBTYPE_MYSQL) {
+            $r = $db->sqa("SHOW TABLE STATUS WHERE Name=?", [$table]);
+            return (string)$r['Auto_increment'] ?? '';
+        }
+        else if ($db::DBTYPE == \DBConnection::DBTYPE_SQLITE) {
+            $seq = (int)$db->sq("SELECT seq FROM sqlite_sequence WHERE name=?", [$table]);
+            if ($seq > 0)
+                return (string)$seq;
+        }
+        else if ($db::DBTYPE == \DBConnection::DBTYPE_POSTGRES) {
+            if ($db->tableFieldExists($table, 'id')) {
+                $v = (int)$db->sq("SELECT last_value FROM ". $table. '_id_seq');
+                if ($v > 0)
+                    return (string)$v;
+            }
+        }
+        return '';
     }
 
 

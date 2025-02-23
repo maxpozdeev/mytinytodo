@@ -2,7 +2,7 @@
 
 /*
     This file is a part of myTinyTodo.
-    (C) Copyright 2023 Max Pozdeev <maxpozdeev@gmail.com>
+    (C) Copyright 2023-2025 Max Pozdeev <maxpozdeev@gmail.com>
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
@@ -217,6 +217,9 @@ class Restore
             case DBConnection::DBTYPE_POSTGRES:
                 $db->ex("ALTER TABLE {$db->prefix}$table ALTER COLUMN id RESTART WITH ". (int)$autoinc);
                 break;
+            case DBConnection::DBTYPE_SQLITE:
+                $db->ex("UPDATE sqlite_sequence SET seq=? WHERE name=?", [$autoinc, $db->prefix. $table]);
+                break;
             default:
                 break;
         }
@@ -232,8 +235,9 @@ class Restore
                 $db->ex("TRUNCATE TABLE $table RESTART IDENTITY");
             }
             else {
-                // we do not use TRUNCATE on mysql due to autocommit
-                // sqlite has truncate optimizer
+                # - we do not use TRUNCATE on mysql due to autocommit
+                # - sqlite has truncate optimizer while delete all to make it faster
+                # - no need to reset auto_increment sequence before inserting lower ids
                 $db->ex("DELETE FROM $table");
             }
         }
