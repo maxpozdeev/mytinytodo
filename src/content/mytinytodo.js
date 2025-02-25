@@ -1839,7 +1839,7 @@ function fillTaskViewer(id)
     $('#page_taskviewer .prio .content').html(preparePrio(item.prio,item.id));
     $('#page_taskviewer .due .content').html(item.duedate);
     $('#page_taskviewer .tags .content').html(prepareTagsStr(item, ''));
-    $('#page_taskviewer .list .content').text(curList.name);
+    $('#page_taskviewer .list .content').text(curList.id == -1 ? item.listName : curList.name);
     if (item.note == '') {
         $('#page_taskviewer').addClass('no-note');
     }
