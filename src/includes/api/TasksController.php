@@ -451,7 +451,9 @@ class TasksController extends ApiController {
     {
         $fromId = (int)($this->req->jsonBody['from'] ?? 0);
         $toId = (int)($this->req->jsonBody['to'] ?? 0);
-        $result = $this->doMoveTask($id, $toId);
+        $listName = '';
+        $result = $this->doMoveTask($id, $toId, $listName);
+        $task = null;
         if ($result && MTTNotificationCenter::hasObserversForNotification(MTTNotification::didEditTask)) {
             $task = $this->getTaskRowById($id);
             MTTNotificationCenter::postNotification(MTTNotification::didEditTask, [
@@ -461,22 +463,30 @@ class TasksController extends ApiController {
         }
         $t = array('total' => $result ? 1 : 0);
         if ($fromId == -1 && $result) {
-            $t['list'][] = $this->getTaskRowById($id);
+            if (!$task) {
+                $r = DBCore::default()->getTaskById($id);
+                $r['list_name'] = $listName;
+                $task = $this->prepareTaskRow($r);
+            }
+            $t['list'][] = $task;
         }
         return $t;
     }
 
-    private function doMoveTask(int $id, int $listId): bool
+    private function doMoveTask(int $id, int $listId, &$listName): bool
     {
         $db = DBConnection::instance();
 
         // Check task exists and not in target list
         $r = $db->sqa("SELECT * FROM {$db->prefix}todolist WHERE id=?", array($id));
-        if (!$r || $listId == $r['list_id']) return false;
+        if (!$r || $listId == $r['list_id'])
+            return false;
 
         // Check target list exists
-        if (!$db->sq("SELECT COUNT(*) FROM {$db->prefix}lists WHERE id=?", [$listId]))
+        $l = $db->sqa("SELECT id,name FROM {$db->prefix}lists WHERE id=?", [$listId]);
+        if (!$l)
             return false;
+        $listName = $l['name'];
 
         $ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->prefix}todolist WHERE list_id=? AND compl=?", array($listId, $r['compl']?1:0));
 
