@@ -2,7 +2,7 @@
 
 /*
     This file is a part of myTinyTodo.
-    (C) Copyright 2022 Max Pozdeev <maxpozdeev@gmail.com>
+    (C) Copyright 2022-2025 Max Pozdeev <maxpozdeev@gmail.com>
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
@@ -26,9 +26,16 @@ class AuthController extends ApiController {
             $t['disabled'] = 1;
             return $t;
         }
+        $username = $this->req->jsonBody['username'] ?? '';
         $password = $this->req->jsonBody['password'] ?? '';
-        if ( isPasswordEqualsToHash($password, Config::get('password')) ) {
-            updateSessionLogged(true);
+
+        $db = DBConnection::instance();
+        $u = $db->sqa("SELECT id,username,pwhash FROM {$db->prefix}users WHERE username=?", [$username]);
+        if (!$u)
+            return $t;
+
+        if ( isPasswordEqualsToHash($password, $u['pwhash'] ) ) {
+            updateSessionLogged(true, $u);
             $t['token'] = update_token();
             $t['logged'] = 1;
         }

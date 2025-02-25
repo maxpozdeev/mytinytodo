@@ -222,6 +222,8 @@ $().ready(function(){
   <div id="authform">
   <form id="login_form">
     <div class="auth-content">
+      <div class="h"><?php _e('username');?></div>
+      <div><input name="username" id="username" class="form-input"></div>
       <div class="h"><?php _e('password');?></div>
       <div><input type="password" name="password" id="password" class="form-input"></div>
     </div>

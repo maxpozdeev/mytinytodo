@@ -155,8 +155,13 @@ if ($ver == '')
         # install database
         createAllTables($db, $dbtype);  # throws
 
+        # create user without a password
+        $db->ex( "INSERT INTO {$db->prefix}users (id,username,name)) VALUES (?,?,?)",
+            array(1, "admin", "admin") );
+
         # create default list
-        $db->ex( "INSERT INTO {$db->prefix}lists (uuid,name,d_created,taskview) VALUES (?,?,?,?)", array(generateUUID(), 'Todo', time(), 1) );
+        $db->ex( "INSERT INTO {$db->prefix}lists (user_id,uuid,name,d_created,taskview) VALUES (?,?,?,?,?)",
+            array(1, generateUUID(), 'Todo', time(), 1) );
 
         Config::save();
     }
@@ -629,6 +634,7 @@ function createSqliteTables(Database_Abstract $db)
     uuid CHAR(36) NOT NULL,
     ow INTEGER NOT NULL default 0,
     name VARCHAR(250) NOT NULL,
+    user_id INTEGER UNSIGNED NOT NULL default 0,
     d_created INTEGER UNSIGNED NOT NULL default 0,
     d_edited INTEGER UNSIGNED NOT NULL default 0,
     sorting TINYINT UNSIGNED NOT NULL default 0,
@@ -638,6 +644,7 @@ function createSqliteTables(Database_Abstract $db)
 ) ");
 
     $db->ex("CREATE UNIQUE INDEX lists_uuid ON {$db->prefix}lists (uuid)");
+    $db->ex("CREATE INDEX lists_user_id ON {$db->prefix}lists (user_id)");
 
     $db->ex(
 "CREATE TABLE {$db->prefix}todolist (
@@ -663,9 +670,11 @@ function createSqliteTables(Database_Abstract $db)
     $db->ex(
 "CREATE TABLE {$db->prefix}tags (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER UNSIGNED NOT NULL default 0,
     name VARCHAR(250) NOT NULL DEFAULT '' COLLATE UTF8CI
 ) ");
     $db->ex("CREATE INDEX tags_name ON {$db->prefix}tags (name)"); //NB: unique in mysql
+    $db->ex("CREATE INDEX tags_user_id ON {$db->prefix}tags (user_id)");
 
 
     $db->ex(
@@ -677,6 +686,21 @@ function createSqliteTables(Database_Abstract $db)
     $db->ex("CREATE INDEX tag2task_tag_id ON {$db->prefix}tag2task (tag_id)");
     $db->ex("CREATE INDEX tag2task_task_id ON {$db->prefix}tag2task (task_id)");
     $db->ex("CREATE INDEX tag2task_list_id ON {$db->prefix}tag2task (list_id)");    /* for tagcloud */
+
+
+    $db->ex(
+        "CREATE TABLE {$db->prefix}users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username VARCHAR(250) NOT NULL DEFAULT '',
+        email VARCHAR(250) NOT NULL DEFAULT '',
+        name  VARCHAR(250) NOT NULL DEFAULT '',
+        pwhash VARCHAR(250) NOT NULL DEFAULT '',
+        last_visit DATE default NULL,
+        settings TEXT NOT NULL DEFAULT '',
+        extra TEXT default NULL
+    ) ");
+    $db->ex("CREATE UNIQUE INDEX users_username ON {$db->prefix}users (username COLLATE NOCASE)");
+    $db->ex("CREATE UNIQUE INDEX users_email ON {$db->prefix}users (email COLLATE NOCASE)");
 
 
     $db->ex(
@@ -814,7 +838,36 @@ function update_18_20(Database_Abstract $db, $dbtype)
     {
         $db->ex("ALTER TABLE {$db->prefix}todolist ADD parent_id INTEGER UNSIGNED NOT NULL default 0");
         $db->ex("ALTER TABLE {$db->prefix}todolist ADD extra TEXT");
+
+        $db->ex("ALTER TABLE {$db->prefix}lists ADD user_id INTEGER UNSIGNED NOT NULL default 0");
+        $db->ex("CREATE INDEX lists_user_id ON {$db->prefix}lists (user_id)");
+
+        $db->ex("ALTER TABLE {$db->prefix}tags ADD user_id INTEGER UNSIGNED NOT NULL default 0");
+        $db->ex("CREATE INDEX tags_user_id ON {$db->prefix}tags (user_id)");
+
+        $db->ex(
+            "CREATE TABLE {$db->prefix}users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username VARCHAR(250) NOT NULL DEFAULT '',
+            email VARCHAR(250) NOT NULL DEFAULT '',
+            name  VARCHAR(250) NOT NULL DEFAULT '',
+            pwhash VARCHAR(250) NOT NULL DEFAULT '',
+            last_visit DATE default NULL,
+            settings TEXT NOT NULL DEFAULT '',
+            extra TEXT default NULL
+        ) ");
+        $db->ex("CREATE UNIQUE INDEX users_username ON {$db->prefix}users (username COLLATE NOCASE)");
+        $db->ex("CREATE UNIQUE INDEX users_email ON {$db->prefix}users (email COLLATE NOCASE)");
     }
+
+    $pwhash = (string)Config::get('password');
+    $db->ex("INSERT INTO {$db->prefix}users (id,username,email,name,pwhash) VALUES (1,?,?,?,?)", [
+        "admin", "admin", "admin", $pwhash
+    ]);
+
+    $db->ex("UPDATE {$db->prefix}lists SET user_id = 1");
+    $db->ex("UPDATE {$db->prefix}tags SET user_id = 1");
+
 
     $db->ex("COMMIT");
 }

@@ -2,7 +2,7 @@
 
 /*
     This file is a part of myTinyTodo.
-    (C) Copyright 2022-2023 Max Pozdeev <maxpozdeev@gmail.com>
+    (C) Copyright 2022-2025 Max Pozdeev <maxpozdeev@gmail.com>
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
@@ -80,7 +80,10 @@ foreach (MTTExtensionLoader::loadedExtensions() as $instance) {
     }
 }
 
-$req = new ApiRequest();
+$req = ApiRequest::instance();
+$req->username = ''; //FIXME: !!!
+$req->setUserId( userId() ?: 1 );
+
 $response = new ApiResponse();
 $executed = false;
 $data = null;
@@ -214,14 +217,20 @@ function checkWriteAccess(?int $listId = null)
 
 function haveWriteAccess(?int $listId = null) : bool
 {
-    if (is_readonly()) {
+    if (!is_logged()) {
         return false;
     }
+    $req = ApiRequest::instance();
+    $reqUserId = $req->userId();
+    if (!$reqUserId || userId() != $reqUserId)
+        return false;
+
     // check list exist
     if ($listId !== null && $listId != -1)
     {
         $db = DBConnection::instance();
-        $count = $db->sq("SELECT COUNT(*) FROM {$db->prefix}lists WHERE id=?", array($listId));
+        $count = $db->sq("SELECT COUNT(*) FROM {$db->prefix}lists WHERE id=? AND user_id=?",
+            array($listId, $reqUserId));
         if (!$count) return false;
     }
     return true;

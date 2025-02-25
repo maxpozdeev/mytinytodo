@@ -404,6 +404,7 @@ MytinytodoAjaxApi.prototype = {
             method: 'POST',
             contentType : 'application/json',
             data: JSON.stringify({
+                username: params.username,
                 password: params.password,
             }),
             success: callback,

@@ -2,7 +2,7 @@
 
 /*
     This file is a part of myTinyTodo.
-    (C) Copyright 2009-2010,2020-2022 Max Pozdeev <maxpozdeev@gmail.com>
+    (C) Copyright 2009-2010,2020-2025 Max Pozdeev <maxpozdeev@gmail.com>
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
@@ -159,18 +159,26 @@ function passwordHash(string $p): string
 
 /**
  * Compares raw (not hashed) password with password hash. Return true if equals.
- * @param string $p Raw password
+ * @param string $password Raw password
  * @param string $hash Password hash
  * @return bool
  */
-function isPasswordEqualsToHash(string $p, string $hash): bool
+function isPasswordEqualsToHash(
+    #[\SensitiveParameter]
+    string $password,
+    #[\SensitiveParameter]
+    string $hash): bool
 {
-    if ($hash == '' && $p == '') return true;
-    if ($hash == '' || $p == '') return false;
+    if ($hash == '' && $password == '')
+        return true;
+    if ($hash == '' || $password == '')
+        return false;
     if ( false !== $pos = strpos($hash, ':') ) {
         $algo = substr($hash, 0, $pos);
-        if ($algo != 'sha256') throw new Exception("Unsupported algo of password hash");
-        if ( hash_equals($hash, passwordHash($p)) ) return true;
+        if ($algo != 'sha256')
+            throw new Exception("Unsupported algo of password hash");
+        if ( hash_equals($hash, passwordHash($password)) )
+            return true;
     }
     return false;
 }

@@ -2,7 +2,7 @@
 
 /*
     This file is a part of myTinyTodo.
-    (C) Copyright 2022-2023 Max Pozdeev <maxpozdeev@gmail.com>
+    (C) Copyright 2022-2025 Max Pozdeev <maxpozdeev@gmail.com>
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
@@ -598,9 +598,9 @@ class TasksController extends ApiController {
     private function getUserListsSimple(bool $readOnly = false): array
     {
         $db = DBConnection::instance();
-        $sqlWhere = '';
+        $sqlWhere = 'WHERE user_id='. $this->req->userId();
         if ($readOnly) {
-            $sqlWhere = "WHERE published=1";
+            $sqlWhere .= " AND published=1";
         }
         $a = array();
         $q = $db->dq("SELECT id,name FROM {$db->prefix}lists $sqlWhere ORDER BY id ASC");

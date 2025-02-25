@@ -8,10 +8,22 @@
 
 class ApiRequest
 {
+    protected static $instance;
+
     public $path;
     public $method;
     public $contentType;
     public $jsonBody;
+    public $username;         # not a session owner
+    protected $userId = null; # not a session owner
+
+    public static function instance() : ApiRequest
+    {
+        if (!isset(self::$instance)) {
+            self::$instance = new ApiRequest();
+        }
+        return self::$instance;
+    }
 
     function __construct() {
         if (defined('MTT_API_USE_PATH_INFO')) {
@@ -27,6 +39,16 @@ class ApiRequest
     function decodeJsonBody() {
         $this->jsonBody = json_decode( file_get_contents('php://input'), true, 10, JSON_INVALID_UTF8_SUBSTITUTE );
         return $this->jsonBody;
+    }
+
+    function userId(): int
+    {
+        return (int)$this->userId;
+    }
+
+    function setUserId(int $id)
+    {
+        $this->userId = $id;
     }
 }
 

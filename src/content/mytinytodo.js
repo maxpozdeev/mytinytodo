@@ -3021,14 +3021,17 @@ function showLogin()
         return false;
     }
     _mtt.pageSet('login', '');
-    $('#password').val('').focus();
+    $('#username').val('').focus();
 }
 
 function doAuth(form)
 {
-    _mtt.db.request( 'login', { password: form.password.value }, function(json) {
+    _mtt.db.request( 'login', {
+        username: form.username.value,
+        password: form.password.value
+    }, function(json) {
         form.password.value = '';
-        if(json.logged)
+        if (json.logged)
         {
             flag.isLogged = true;
             window.location.hash = '';

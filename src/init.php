@@ -1,7 +1,7 @@
 <?php
 /*
     This file is a part of myTinyTodo.
-    (C) Copyright 2009-2011,2019-2023 Max Pozdeev <maxpozdeev@gmail.com>
+    (C) Copyright 2009-2011,2019-2025 Max Pozdeev <maxpozdeev@gmail.com>
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
@@ -171,31 +171,59 @@ function configureDbConnection()
 
 function need_auth(): bool
 {
-    return (Config::get('password') != '') ? true : false;
+    // TODO: not needed
+    //return (Config::get('password') != '') ? true : false;
+    return true;
 }
 
 function is_logged(): bool
 {
-    if ( !need_auth() ) return true;
-    if ( !isset($_SESSION['logged']) || !isset($_SESSION['sign']) ) return false;
-    if ( !(int)$_SESSION['logged'] ) return false;
+    if ( !need_auth() )
+        return true;
+    if ( !isset($_SESSION['logged'])   || !isset($_SESSION['sign'])
+        || !isset($_SESSION['userId']) || !isset($_SESSION['username']) )
+            return false;
+
+    if ( !(int)$_SESSION['logged'] )
+        return false;
     return isValidSignature($_SESSION['sign'], session_id(), Config::get('password'), defined('MTT_SALT') ? MTT_SALT : '');
 }
 
-function is_readonly(): bool
+/**
+ * Get id of authenticated user in current session
+ * Returns null if not authenticated
+ * Does not return 0
+ * @return null|int
+ */
+function userId(): ?int
 {
-    if ( !is_logged() ) return true;
-    return false;
+    if (!need_auth())
+        return 1;
+    if (!is_logged())
+        return null;
+    $userId = (int)$_SESSION['userId'];
+    if ($userId <= 0)
+        throw new Exception("Unexpected user id (0)");
+    return $userId;
 }
 
-function updateSessionLogged(bool $logged)
+function updateSessionLogged( bool $logged,
+    #[\SensitiveParameter]
+    ?array $user = null )
 {
     if ($logged) {
+        if (is_null($user) || !isset($user['id']) || $user['id'] == 0 || !isset($user['username'])) {
+            throw new Exception("Unexpected user data");
+        }
         $_SESSION['logged'] = 1;
+        $_SESSION['userId'] = (int)$user['id'];
+        $_SESSION['username'] = $user['username'];
         $_SESSION['sign'] = idSignature(session_id(), Config::get('password'), defined('MTT_SALT') ? MTT_SALT : '');
     }
     else {
         unset($_SESSION['logged']);
+        unset($_SESSION['userId']);
+        unset($_SESSION['username']);
         unset($_SESSION['sign']);
     }
 }

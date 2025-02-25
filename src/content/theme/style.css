@@ -275,6 +275,9 @@ select.form-input {
 #authform .auth-content {
   padding: 1.5rem;
 }
+#authform .auth-content div {
+  padding: 3px 0;
+}
 #authform div { padding:2px 0px; }
 #authform .form-bottom-buttons {
   border-top: 1px solid var(--color-border-default);
@@ -282,7 +285,10 @@ select.form-input {
 }
 
 #authform div.h { font-weight:bold; }
-#authform input[type=password] { width: 100%; box-sizing: border-box; }
+#authform input {
+  width: 100%;
+  box-sizing: border-box;
+}
 
 #msg .msg-text {  font-weight:bold; cursor:pointer; padding:0 1px; }
 #msg .msg-details {

@@ -2,7 +2,7 @@
 
 /*
     This file is a part of myTinyTodo.
-    (C) Copyright 2022-2023 Max Pozdeev <maxpozdeev@gmail.com>
+    (C) Copyright 2022-2025 Max Pozdeev <maxpozdeev@gmail.com>
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
@@ -19,12 +19,13 @@ class ListsController extends ApiController {
         check_token();
         $t = array();
         $t['total'] = 0;
+
+        $sqlWhere = 'WHERE user_id='. (int)$this->req->userId();
         $haveWriteAccess = haveWriteAccess();
         if (!$haveWriteAccess) {
-            $sqlWhere = 'WHERE published=1';
+            $sqlWhere .= ' AND published=1';
         }
         else {
-            $sqlWhere = '';
             $t['list'][] = $this->prepareAllTasksList(); // show alltasks lists only for authorized user
             $t['total'] = 1;
         }
@@ -197,7 +198,7 @@ class ListsController extends ApiController {
     {
         $t = array();
         $t['total'] = 0;
-        $id = DBCore::default()->createListWithName($this->req->jsonBody['name'] ?? '');
+        $id = DBCore::default()->createListWithName($this->req->userId(), $this->req->jsonBody['name'] ?? '');
         if (!$id) {
             return $t;
         }
