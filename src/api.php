@@ -220,7 +220,7 @@ function checkReadAccess(?int $listId = null)
             return;
     }
     http_response_code(403);
-    jsonExit( array('total'=>0, 'list'=>array(), 'denied'=>1) );
+    jsonExit( array('ok'=>false, 'total'=>0, 'list'=>array(), 'denied'=>1) );
 }
 
 function checkWriteAccess(?int $listId = null)
@@ -228,7 +228,7 @@ function checkWriteAccess(?int $listId = null)
     if (haveWriteAccess($listId))
         return;
     http_response_code(403);
-    jsonExit( array('total'=>0, 'list'=>array(), 'denied'=>1) );
+    jsonExit( array('ok'=>false, 'total'=>0, 'list'=>array(), 'denied'=>1) );
 }
 
 function haveWriteAccess(?int $listId = null) : bool

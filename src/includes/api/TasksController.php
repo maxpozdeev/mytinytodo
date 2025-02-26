@@ -207,8 +207,10 @@ class TasksController extends ApiController {
      */
     function deleteId($id)
     {
-        checkWriteAccess();
-        $this->response->data = $this->deleteTask((int)$id);
+        $id = (int)$id;
+        $listId = DBCore::default()->getListIdByTaskId($id);
+        checkWriteAccess($listId);
+        $this->response->data = $this->deleteTask($id);
     }
 
     /**
@@ -219,13 +221,9 @@ class TasksController extends ApiController {
      */
     function putId($id)
     {
-        checkWriteAccess();
         $id = (int)$id;
-
-        if (!DBCore::default()->taskExists($id)) {
-            $this->response->data = ['total' => 0];
-            return;
-        }
+        $listId = DBCore::default()->getListIdByTaskId($id);
+        checkWriteAccess($listId);
 
         $action = $this->req->jsonBody['action'] ?? '';
         switch ($action) {
@@ -364,7 +362,7 @@ class TasksController extends ApiController {
         $id = (int) $db->lastInsertId();
         if ($tags != '')
         {
-            $aTags = $this->prepareTags($tags);
+            $aTags = $this->prepareTags($this->req->userId(), $tags);
             if ($aTags) {
                 $this->addTaskTags($id, $aTags['ids'], $listId);
             }
@@ -402,7 +400,7 @@ class TasksController extends ApiController {
         $id = (int) $db->lastInsertId();
         if ($tags != '')
         {
-            $aTags = $this->prepareTags($tags);
+            $aTags = $this->prepareTags($this->req->userId(), $tags);
             if ($aTags) {
                 $this->addTaskTags($id, $aTags['ids'], $listId);
             }
@@ -433,7 +431,7 @@ class TasksController extends ApiController {
         $tags = trim( $this->req->jsonBody['tags'] ?? '' );
         $db->ex("BEGIN");
         $db->ex("DELETE FROM {$db->prefix}tag2task WHERE task_id=$id");
-        $aTags = $this->prepareTags($tags);
+        $aTags = $this->prepareTags($this->req->userId(), $tags);
         if ($aTags) {
             $this->addTaskTags($id, $aTags['ids'], $listId);
         }
@@ -771,21 +769,21 @@ class TasksController extends ApiController {
         return $id ? $id : 0;
     }
 
-    private function getOrCreateTag($name): array
+    private function getOrCreateTag(int $userId, $name): array
     {
         $db = DBConnection::instance();
-        $tagId = $db->sq("SELECT id FROM {$db->prefix}tags WHERE name=?", array($name));
+        $tagId = $db->sq("SELECT id FROM {$db->prefix}tags WHERE user_id=? AND name=?", array($userId, $name));
         if ($tagId)
             return array('id'=>$tagId, 'name'=>$name);
 
-        $db->ex("INSERT INTO {$db->prefix}tags (name) VALUES (?)", array($name));
+        $db->ex("INSERT INTO {$db->prefix}tags (user_id,name) VALUES (?,?)", array($userId, $name));
         return array(
             'id' => $db->lastInsertId(),
             'name' => $name
         );
     }
 
-    private function prepareTags(string $tagsStr): ?array
+    private function prepareTags(int $userId, string $tagsStr): ?array
     {
         $tags = explode(',', $tagsStr);
         if (!$tags) return null;
@@ -796,7 +794,7 @@ class TasksController extends ApiController {
             $tag = str_replace(array('^','#'),'',trim($tag));
             if ($tag == '') continue;
 
-            $aTag = $this->getOrCreateTag($tag);
+            $aTag = $this->getOrCreateTag($userId, $tag);
             if ($aTag && !in_array($aTag['id'], $aTags['ids'])) {
                 $aTags['tags'][] = $aTag['name'];
                 $aTags['ids'][] = $aTag['id'];

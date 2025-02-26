@@ -2,7 +2,7 @@
 
 /*
     This file is a part of myTinyTodo.
-    (C) Copyright 2022 Max Pozdeev <maxpozdeev@gmail.com>
+    (C) Copyright 2022-2025 Max Pozdeev <maxpozdeev@gmail.com>
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
@@ -19,9 +19,12 @@ class TagsController extends ApiController {
         checkReadAccess($listId);
         $db = DBConnection::instance();
 
-        $sqlWhere = ($listId == -1) ? "" : "WHERE list_id = $listId";
+        $sqlWhere = 'WHERE tags.user_id='. (int)$this->req->userId();
+        if ($listId != -1)
+            $sqlWhere .= " AND t2t.list_id = $listId";
+
         $q = $db->dq("SELECT name, tag_id, COUNT(tag_id) AS tags_count
-                      FROM {$db->prefix}tag2task INNER JOIN {$db->prefix}tags ON tag_id = id
+                      FROM {$db->prefix}tag2task AS t2t INNER JOIN {$db->prefix}tags AS tags ON tag_id = id
                       $sqlWhere
                       GROUP BY tag_id, name
                       ORDER BY tags_count DESC");

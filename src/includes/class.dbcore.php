@@ -63,15 +63,19 @@ class DBCore
     }
 
     /**
-     *
+     * Get Id of list where task is located by id of this task.
+     * Return null if task is not found.
+     * Can return 0, but this is unexpected behaviour (task is lost).
      * @param int $id
-     * @return int
+     * @return null|int
      */
-    public function getListIdByTaskId(int $id): int
+    public function getListIdByTaskId(int $id): ?int
     {
         $db = $this->db;
-        $listId = (int)$db->sq("SELECT list_id FROM {$db->prefix}todolist WHERE id=". (int)$id);
-        return $listId;
+        $r = $db->sqa("SELECT list_id FROM {$db->prefix}todolist WHERE id = ". (int)$id);
+        if (!$r)
+            return null;
+        return (int)$r['list_id'];
     }
 
 
