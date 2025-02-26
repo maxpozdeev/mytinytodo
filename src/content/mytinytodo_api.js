@@ -253,7 +253,8 @@ MytinytodoAjaxApi.prototype = {
 
     // Lists
     loadLists(params, callback) {
-        $.getJSON(mytinytodo.apiUrl + 'lists', callback);
+        const ep = params.username ? `user/${params.username}/lists` : 'lists';
+        $.getJSON(mytinytodo.apiUrl + ep, callback);
     },
 
     addList(params, callback) {

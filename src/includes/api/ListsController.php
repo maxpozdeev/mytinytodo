@@ -13,11 +13,18 @@ class ListsController extends ApiController {
      * @return void
      * @throws Exception
      */
-    function get()
+    function get($username = null)
     {
         $db = DBConnection::instance();
         $t = array();
         $t['total'] = 0;
+
+        if (!is_null($username) && $username != '') {
+            $userId = DBCore::default()->getUserIdByUsername($username);
+            if (!$userId)
+                return;
+            $this->req->setUserId($userId); //set before haveWriteAccess
+        }
 
         $sqlWhere = 'WHERE user_id='. (int)$this->req->userId();
         $haveWriteAccess = haveWriteAccess();

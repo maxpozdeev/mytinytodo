@@ -43,18 +43,38 @@ MTTNotificationCenter::postDidFinishRequestNotification();
 function parseRoute($queryString)
 {
     parse_str($queryString, $q);
+
+    if (isset($q['user'])) {
+        $q['user'] = trim($q['user']);
+        $userId = (int) DBCore::default()->getUserIdByUsername($q['user']);
+        if (!$userId) {
+            htmlExit(404, "User not found");
+        }
+    }
+    else {
+        # No user specified
+        if (is_logged()) {
+            // User dashboard
+        }
+        else {
+            // Guest main page
+            // Request for login?
+        }
+    }
+
     if (isset($q['list'])) {
         $hash = ($q['list'] == 'alltasks') ? ['alltasks'] : ['list', (int)$q['list']];
         unset($q['list']);
         redirectWithHashRoute($hash, $q);
     }
     else if (isset($q['task'])) {
+        // TODO: check access
         $listId = (int)DBCore::default()->getListIdByTaskId((int)$q['task']);
         if ($listId > 0) {
             $h = [ 'list', $listId, 'search', '#'. (int)$q['task']];
             redirectWithHashRoute($h);
         }
-        // TODO: not found
+        htmlExit(404, "Task not found");
     }
 }
 
@@ -98,6 +118,10 @@ function js_options()
         "newTaskCounter" => Config::get('newTaskCounter') ? true : false,
         "newTaskCounterIcon" => Config::get('newTaskCounterIcon') ? true : false,
     );
+    $username = trim(_get('user'));
+    if ($username != '') {
+        $a['username'] = $username;
+    }
     $flags = JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_INVALID_UTF8_SUBSTITUTE;
     if (MTT_DEBUG) {
         $flags |= JSON_PRETTY_PRINT;
@@ -110,4 +134,16 @@ function js_options()
     else {
         echo $json;
     }
+}
+
+function htmlExit(int $code = 200, string $msg = '')
+{
+    if ($msg != '') {
+        print($msg);
+    }
+    else {
+        print "Status $code\n";
+    }
+    http_response_code($code);
+    exit;
 }

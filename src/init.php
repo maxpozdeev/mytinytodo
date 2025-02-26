@@ -207,6 +207,13 @@ function userId(): ?int
     return $userId;
 }
 
+function username(): ?string
+{
+     if (!is_logged())
+        return null;
+    return (string)$_SESSION['username'];
+}
+
 function updateSessionLogged( bool $logged,
     #[\SensitiveParameter]
     ?array $user = null )
@@ -217,7 +224,7 @@ function updateSessionLogged( bool $logged,
         }
         $_SESSION['logged'] = 1;
         $_SESSION['userId'] = (int)$user['id'];
-        $_SESSION['username'] = $user['username'];
+        $_SESSION['username'] = $user['username']; # TODO: handle username changes
         $_SESSION['sign'] = idSignature(session_id(), Config::get('password'), defined('MTT_SALT') ? MTT_SALT : '');
     }
     else {
@@ -431,6 +438,9 @@ function get_unsafe_mttinfo($v)
         case 'appearance':
             $_mttinfo['appearance'] = Config::get('appearance');
             return $_mttinfo['appearance'];
+        case 'username':
+            $_mttinfo['username'] = username() ?? '';
+            return $_mttinfo['username'];
     }
 }
 

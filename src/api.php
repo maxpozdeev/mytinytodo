@@ -34,6 +34,9 @@ $endpoints = array(
         'DELETE'  => [ ListsController::class , 'deleteId' ],
         'POST'    => [ ListsController::class , 'putId' ], //compatibility
     ],
+    '/user/([^/]+)/lists' => [
+        'GET'  => [ ListsController::class , 'get' ]    # lists of specific user
+    ],
     '/tasks' => [
         'GET'  => [ TasksController::class , 'get' ],
         'POST' => [ TasksController::class , 'post' ],

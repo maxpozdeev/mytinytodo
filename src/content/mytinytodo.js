@@ -821,7 +821,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 
         tabLists.clear();
 
-        this.db.loadLists(null, function(res)
+        this.db.loadLists({username: this.options.username}, function(res)
         {
             var ti = '';
             var openListId = 0;
@@ -1049,6 +1049,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
         {
             s = a[i];
             switch(s) {
+                case "u": p.username = a[++i]; break;
                 case "list": if(a[++i].match(/^-?\d+$/)) { p[s] = a[i]; } break;
                 case "alltasks": p.list = '-1'; break;
                 case "settings": p.settings = true; break;
