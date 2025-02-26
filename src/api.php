@@ -81,6 +81,12 @@ foreach (MTTExtensionLoader::loadedExtensions() as $instance) {
 }
 
 $req = ApiRequest::instance();
+
+# All API requests have to check a CSRF token, except only this. //TODO: re-make
+if ($req->path !== '/session') {
+    check_token();
+}
+
 $req->username = ''; //FIXME: !!!
 $req->setUserId( userId() ?: 1 );
 
@@ -90,52 +96,60 @@ $data = null;
 
 foreach ($endpoints as $search => $methods) {
     $m = array();
-    if (preg_match("#^$search$#", $req->path, $m)) {
-        $classDescr = $methods[$req->method] ?? null;
-        // check if http method is supported for path
-        if ( is_null($classDescr) ) {
-            $response->htmlContent("Unknown method for resource", 500)
-                ->exit();
-        }
-        if ( !is_array($classDescr) || count($classDescr) < 2) {
-            $response->htmlContent("Incorrect method definition", 500)
-                ->exit();
-        }
-        // check if class method exists
-        $class = $classDescr[0];
-        $classMethod = $classDescr[1];
-        $isExtMethod = $classDescr[3] ?? false;
-        if ($isExtMethod) {
-            if (false == ($classDescr[2] ?? false)) { //TODO: describe $classDescr[2]
-                // By default all extension methods require write access rights
-                checkWriteAccess();
-            }
-        }
-        $param = null;
-        if (count($m) >= 2) {
-            $param = $m[1];
-        }
-        if (method_exists($class, $classMethod)) { // test for static with ReflectionMethod?
-            if ($req->method != 'GET' && $req->contentType == 'application/json') {
-                if ($req->decodeJsonBody() === false) {
-                    $response->htmlContent("Failed to parse JSON body", 500)
-                        ->exit();
-                }
-            }
-            $instance = new $class($req, $response);
-            $instance->$classMethod($param);
-            $executed = true;
-            break;
-        }
-        else {
-            if (MTT_DEBUG) {
-                $response->htmlContent("Class method $class:$classMethod() not found", 405)
-                    ->exit();
-            }
-            $response->htmlContent("Class method not found", 405)
-                ->exit();
+    if (!preg_match("#^$search$#", $req->path, $m)) {
+        continue;
+    }
+
+    $classDescr = $methods[$req->method] ?? null;
+    // check if http method is supported for path
+    if ( is_null($classDescr) ) {
+        $response->htmlContent("Unknown method for resource", 500)
+            ->exit();
+    }
+    if ( !is_array($classDescr) || count($classDescr) < 2) {
+        $response->htmlContent("Incorrect method definition", 500)
+            ->exit();
+    }
+
+    // check if class method exists
+    $class = $classDescr[0];
+    $classMethod = $classDescr[1];
+    $isExtMethod = $classDescr[3] ?? false;
+    if ($isExtMethod) {
+        if (false == ($classDescr[2] ?? false)) { //TODO: describe $classDescr[2]
+            // By default all extension methods require write access rights
+            checkWriteAccess();
         }
     }
+
+    // method can get one argument //TODO: pass args via ApiRequest
+    $param = null;
+    if (count($m) >= 2) {
+        $param = $m[1];
+    }
+
+    // call it
+    if (method_exists($class, $classMethod)) { // test for static with ReflectionMethod?
+        if ($req->method != 'GET' && $req->contentType == 'application/json') {
+            if ($req->decodeJsonBody() === false) {
+                $response->htmlContent("Failed to parse JSON body", 500)
+                    ->exit();
+            }
+        }
+        $instance = new $class($req, $response);
+        $instance->$classMethod($param);
+        $executed = true;
+        break;
+    }
+    else {
+        if (MTT_DEBUG) {
+            $response->htmlContent("Class method $class:$classMethod() not found", 405)
+                ->exit();
+        }
+        $response->htmlContent("Class method not found", 405)
+            ->exit();
+    }
+
 }
 
 if (!$executed) {
@@ -195,13 +209,15 @@ function myExceptionHandler(Throwable $e)
 
 function checkReadAccess(?int $listId = null)
 {
-    check_token();
+    $req = ApiRequest::instance();
+    if (is_logged() && $req->userId() == userId())
+        return true;
     $db = DBConnection::instance();
-    if (is_logged()) return true;
     if ($listId !== null)
     {
         $id = $db->sq("SELECT id FROM {$db->prefix}lists WHERE id=? AND published=1", array($listId));
-        if ($id) return;
+        if ($id)
+            return;
     }
     http_response_code(403);
     jsonExit( array('total'=>0, 'list'=>array(), 'denied'=>1) );
@@ -209,17 +225,16 @@ function checkReadAccess(?int $listId = null)
 
 function checkWriteAccess(?int $listId = null)
 {
-    check_token();
-    if (haveWriteAccess($listId)) return;
+    if (haveWriteAccess($listId))
+        return;
     http_response_code(403);
     jsonExit( array('total'=>0, 'list'=>array(), 'denied'=>1) );
 }
 
 function haveWriteAccess(?int $listId = null) : bool
 {
-    if (!is_logged()) {
+    if (!is_logged())
         return false;
-    }
     $req = ApiRequest::instance();
     $reqUserId = $req->userId();
     if (!$reqUserId || userId() != $reqUserId)
@@ -231,7 +246,8 @@ function haveWriteAccess(?int $listId = null) : bool
         $db = DBConnection::instance();
         $count = $db->sq("SELECT COUNT(*) FROM {$db->prefix}lists WHERE id=? AND user_id=?",
             array($listId, $reqUserId));
-        if (!$count) return false;
+        if (!$count)
+            return false;
     }
     return true;
 }

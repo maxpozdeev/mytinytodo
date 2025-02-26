@@ -16,7 +16,6 @@ class ListsController extends ApiController {
     function get()
     {
         $db = DBConnection::instance();
-        check_token();
         $t = array();
         $t['total'] = 0;
 
