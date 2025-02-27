@@ -292,6 +292,8 @@ function setup_and_start_session()
 
     ini_set('session.use_cookies', true);
     ini_set('session.use_only_cookies', true);
+    ini_set('session.use_strict_mode', false);
+    ini_set('session.lazy_write', true);
 
     /*
         After any request we may have 14 days of inactivity (i.e. not requesting session data),
