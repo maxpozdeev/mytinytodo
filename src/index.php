@@ -1,7 +1,7 @@
 <?php
 /*
     This file is a part of myTinyTodo.
-    (C) Copyright 2009-2010,2020-2022 Max Pozdeev <maxpozdeev@gmail.com>
+    (C) Copyright 2009-2010,2020-2025 Max Pozdeev <maxpozdeev@gmail.com>
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
@@ -20,9 +20,6 @@ if ($lang->rtl()) {
     Config::set('rtl', 1);
 }
 
-if (!is_int(Config::get('firstdayofweek')) || Config::get('firstdayofweek')<0 || Config::get('firstdayofweek')>6) {
-    Config::set('firstdayofweek', 1);
-}
 
 if ( access_token() == '' ) {
     update_token();

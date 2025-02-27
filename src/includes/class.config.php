@@ -2,7 +2,7 @@
 
 /*
     This file is a part of myTinyTodo.
-    (C) Copyright 2021-2022 Max Pozdeev <maxpozdeev@gmail.com>
+    (C) Copyright 2021-2025 Max Pozdeev <maxpozdeev@gmail.com>
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
@@ -13,13 +13,13 @@ class Config
 
     /** @var array[] */
     private static $dbparams = array(
-        # Database type: sqlite or mysql
+        # Database type: sqlite or mysql or postgres
         'db.type'      => array('default'=>'sqlite', 'type'=>'s'),
 
         # Specific database api
         'db.driver'    => array('default'=>'', 'type'=>'s'),
 
-        # Mysql connection settings
+        # Mysql/Postgres connection settings
         'db.host'     => array('default'=>'localhost',  'type'=>'s'),
         'db.user'     => array('default'=>'mtt',        'type'=>'s'),
         'db.password' => array('default'=>'mtt',        'type'=>'s'),
@@ -27,16 +27,6 @@ class Config
 
         # Prefix for table names
         'db.prefix'   => array('default'=>'', 'type'=>'s')
-    );
-
-    /** @var array[] */
-    private static $convert = array(
-        'mysql.host' => 'db.host',
-        'mysql.user' => 'db.user',
-        'mysql.password' => 'db.password',
-        'mysql.db' => 'db.name',
-        'db' => 'db.type',
-        'prefix' => 'db.prefix'
     );
 
     /** @var array[] */
@@ -102,30 +92,6 @@ class Config
     private static $config = array();
 
 
-    /**
-     *
-     * @param mixed[] $config
-     * @return void
-     */
-    public static function loadConfigV14(array $config)
-    {
-        foreach ($config as $key => $val) {
-            if (isset(self::$convert[$key])) {
-                $key = self::$convert[$key];
-            }
-            elseif ($key == 'mysqli' && (int)$val != 0) {
-                $key = 'db.driver';
-                $val = 'mysqli';
-            }
-            elseif ($key == 'password' && $val != '') {
-                $val = passwordHash($val); // in v1.7 password is hashed
-            }
-            // if (!isset(self::$dbparams[$key])) {
-            //     throw new Exception("Unknown key: $key");
-            // }
-            self::$config[$key] = $val;
-        }
-    }
 
     /**
      *
@@ -143,6 +109,12 @@ class Config
             if ( !isset(self::$dbparams[$key]) ) {
                 self::$config[$key] = $val;
             }
+        }
+
+        # Validate some
+        $day1 = self::$config['firstdayofweek'] ?? 1;
+        if (!is_int($day1) || $day1 < 0 || $day1 > 6) {
+            self::$config['firstdayofweek'] = self::$params['firstdayofweek']['default'];;
         }
     }
 
