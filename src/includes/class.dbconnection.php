@@ -87,7 +87,8 @@ abstract class Database_Abstract
         if (MTT_DEBUG && $this->logQueryToFile !== null) {
             $f = fopen($this->logQueryToFile, "a");
             if ($f) {
-                fwrite($f, $this->lastQuery . "\n");
+                $time = $_SERVER['REQUEST_TIME_FLOAT'] ?? number_format(microtime(true), 3, '.', '');
+                fwrite($f, $time. " ". $this->lastQuery . "\n");
                 fclose($f);
             }
         }
