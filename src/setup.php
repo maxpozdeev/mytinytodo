@@ -35,7 +35,7 @@ $ver = '';
 $error = '';
 
 $csrfToken = setupToken();
-if ($csrfToken == '' || strlen($csrfToken) != 36) {
+if ($csrfToken == '' || strlen($csrfToken) != 48) {
     $csrfToken = setSetupToken();
 }
 $csrfToken = htmlspecialchars($csrfToken);
@@ -127,21 +127,21 @@ if ($ver == '')
         if (!in_array($dbtype, ['sqlite', 'mysql', 'postgres'])) {
             exitMessage("Unknown database type $dbtype");
         }
-        Config::set('db.type', $dbtype);
+        SetupDbConfig::set('db.type', $dbtype);
         if ($dbtype == 'mysql' || $dbtype == 'postgres') {
-            Config::set('db.host', _post('db_host'));
-            Config::set('db.name', _post('db_name'));
-            Config::set('db.user', _post('db_user'));
-            Config::set('db.password', _post('db_password'));
-            Config::set('db.prefix', trim(_post('db_prefix')));
+            SetupDbConfig::set('db.host', _post('db_host'));
+            SetupDbConfig::set('db.name', _post('db_name'));
+            SetupDbConfig::set('db.user', _post('db_user'));
+            SetupDbConfig::set('db.password', _post('db_password'));
+            SetupDbConfig::set('db.prefix', trim(_post('db_prefix')));
         }
-        Config::defineDbConstants();
+        SetupDbConfig::defineDbConstants();
         $db = testConnect($error);
         if (!$db) {
             exitMessage("Database connection error: ". htmlspecialchars($error));
         }
         if (defined('MTT_DB_DRIVER')) {
-            Config::set('db.driver', MTT_DB_DRIVER);
+            SetupDbConfig::set('db.driver', MTT_DB_DRIVER);
         }
         tryToSaveDBConfig();
         exitMessage("<form method=post> This will create myTinyTodo database <br><br>
@@ -156,7 +156,7 @@ if ($ver == '')
         createAllTables($db, $dbtype);  # throws
 
         # create user without a password
-        $db->ex( "INSERT INTO {$db->prefix}users (id,username,name)) VALUES (?,?,?)",
+        $db->ex( "INSERT INTO {$db->prefix}users (id,username,name) VALUES (?,?,?)",
             array(1, "admin", "admin") );
 
         # create default list
@@ -210,7 +210,7 @@ function setupToken()
 
 function setSetupToken() : string
 {
-    $token = randomString(36);
+    $token = bin2hex(random_bytes(24));
     if (PHP_VERSION_ID < 70300) {
         setcookie('mtt-s-token', $token, 0, url_dir(getRequestUri()). '; samesite=lax', '', false, true ) ;
     }
@@ -284,12 +284,12 @@ function tryToSaveDbConfig()
     if (!is_writable(MTTPATH.'config.php')) {
         exitMessage("Database connection config file ('config.php') is not writable. You need to edit it manually, set contents to this and run setup once more. <br><br> \n".
             "<textarea id='contents' style='width:90%; min-height:300px;'>\n".
-            htmlspecialchars(Config::dbConfigAsFileContents()).
+            htmlspecialchars(SetupDbConfig::dbConfigAsFileContents()).
             "</textarea>\n".
             "<script type='text/javascript'>document.getElementById('contents').select();</script>"
         );
     }
-    Config::saveDbConfig();
+    SetupDbConfig::saveDbConfig();
 }
 
 function testConnect(&$error)

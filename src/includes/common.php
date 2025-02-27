@@ -205,3 +205,16 @@ function randomString(int $len = 16, string $chars = '0123456789abcdefghijklmnop
     }
     return implode('', $a);
 }
+
+function randomString2(int $len = 16, string $chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ') : string
+{
+    $bytes = random_bytes($len);
+    $bytesLen = strlen($bytes);
+    $charsLen = strlen($chars);
+    $a = [];
+    for ($i = 0; $i < $bytesLen; $i++) {
+        $index = ord($bytes[$i]) % $charsLen;
+        $a[] = $chars[$index];
+    }
+    return implode('', $a);
+}

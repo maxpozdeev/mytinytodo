@@ -12,24 +12,6 @@ class Config
     public static $noDatabase = false;
 
     /** @var array[] */
-    private static $dbparams = array(
-        # Database type: sqlite or mysql or postgres
-        'db.type'      => array('default'=>'sqlite', 'type'=>'s'),
-
-        # Specific database api
-        'db.driver'    => array('default'=>'', 'type'=>'s'),
-
-        # Mysql/Postgres connection settings
-        'db.host'     => array('default'=>'localhost',  'type'=>'s'),
-        'db.user'     => array('default'=>'mtt',        'type'=>'s'),
-        'db.password' => array('default'=>'mtt',        'type'=>'s'),
-        'db.name'     => array('default'=>'mytinytodo', 'type'=>'s'),
-
-        # Prefix for table names
-        'db.prefix'   => array('default'=>'', 'type'=>'s')
-    );
-
-    /** @var array[] */
     public static $params = array(
         # These two parameters are used when mytinytodo index.php called not from installation directory
         # 'url' - URL where index.php is called from (ex.: http://site.com/todo.php)
@@ -105,17 +87,32 @@ class Config
         }
         $j = self::requestDefaultDomain();
         foreach ($j as $key=>$val) {
-            // Ignore params for database config
-            if ( !isset(self::$dbparams[$key]) ) {
+            # ignore if not valid, default value will be used on ::get()
+            if (self::isValidConfigParam($key, $val)) {
                 self::$config[$key] = $val;
             }
         }
+    }
 
-        # Validate some
-        $day1 = self::$config['firstdayofweek'] ?? 1;
-        if (!is_int($day1) || $day1 < 0 || $day1 > 6) {
-            self::$config['firstdayofweek'] = self::$params['firstdayofweek']['default'];;
+    public static function isValidConfigParam(string $key, $value): bool
+    {
+        # Ignore User-defined parameters
+        if (!isset(self::$params[$key]))
+            return true;
+
+        # Check type
+        switch (self::$params[$key]['type']) {
+            case 's': if (!is_string($value)) return false; break;
+            case 'i': if (!is_int($value)) return false; break;
+            case 'a': if (!is_array($value)) return false; break;
         }
+
+        # values
+        $options = self::$params[$key]['options'] ?? false;
+        if ($options && !in_array($value, $options))
+            return false;
+
+        return true;
     }
 
     /**
@@ -127,7 +124,6 @@ class Config
     {
         if (isset(self::$config[$key])) return self::$config[$key];
         elseif (isset(self::$params[$key])) return self::$params[$key]['default'];
-        elseif (isset(self::$dbparams[$key])) return self::$dbparams[$key]['default'];
         else return null;
     }
 
@@ -136,7 +132,7 @@ class Config
      * @param string $key
      * @return string|null
      */
-    public static function getUrl($key)
+    public static function getUrl(string $key)
     {
         $url = '';
         if ( isset(self::$config[$key]) ) $url = self::$config[$key];
@@ -152,11 +148,9 @@ class Config
      * @return void
      * @throws Exception
      */
-    public static function set($key, $value)
+    public static function set(string $key, $value)
     {
-        if ($key == "db.prefix" && $value != "" && !preg_match("/^[a-zA-Z0-9_]+$/", $value)) {
-            throw new Exception("Incorrect table prefix. Can contain only latin letters, digits and underscore character.");
-        }
+        if (self::isValidConfigParam($key, $value))
         self::$config[$key] = $value;
     }
 
@@ -244,6 +238,47 @@ class Config
         }
     }
 
+}
+
+class SetupDbConfig
+{
+    /** @var array[] */
+    private static $dbparams = array(
+        # Database type: sqlite or mysql or postgres
+        'db.type'      => array('default'=>'sqlite', 'type'=>'s'),
+
+        # Specific database api
+        'db.driver'    => array('default'=>'', 'type'=>'s'),
+
+        # Mysql/Postgres connection settings
+        'db.host'     => array('default'=>'localhost',  'type'=>'s'),
+        'db.user'     => array('default'=>'mtt',        'type'=>'s'),
+        'db.password' => array('default'=>'mtt',        'type'=>'s'),
+        'db.name'     => array('default'=>'mytinytodo', 'type'=>'s'),
+
+        # Prefix for table names
+        'db.prefix'   => array('default'=>'', 'type'=>'s')
+    );
+
+    /** @var mixed[] */
+    private static $config = array();
+
+    public static function get($key)
+    {
+        if (isset(self::$config[$key])) return self::$config[$key];
+        elseif (isset(self::$dbparams[$key])) return self::$dbparams[$key]['default'];
+        else return null;
+    }
+
+    public static function set($key, $value)
+    {
+        if ($key == "db.prefix" && $value != "" && !preg_match("/^[a-zA-Z0-9_]+$/", $value)) {
+            throw new Exception("Incorrect table prefix. Can contain only latin letters, digits and underscore character.");
+        }
+        self::$config[$key] = $value;
+    }
+
+
     public static function defineDbConstants()
     {
         define("MTT_DB_TYPE", self::get('db.type'));
@@ -262,14 +297,15 @@ class Config
         $a = array();
         $a[] = "<?php\n";
         $a[] = "// myTinyTodo Database connection configuration\n";
-        $a[] = self::prepareDbDefine("MTT_DB_TYPE", self::get('db.type')) . "\n";
-        $a[] = self::prepareDbDefine("MTT_DB_HOST", self::get('db.host')) . "\n";
-        $a[] = self::prepareDbDefine("MTT_DB_USER", self::get('db.user')) . "\n";
-        $a[] = self::prepareDbDefine("MTT_DB_PASSWORD", self::get('db.password')) . "\n";
-        $a[] = self::prepareDbDefine("MTT_DB_NAME", self::get('db.name')) . "\n";
-        $a[] = self::prepareDbDefine("MTT_DB_PREFIX", self::get('db.prefix')) . "\n";
-        $a[] = self::prepareDbDefine("MTT_DB_DRIVER", self::get('db.driver')) . "\n";
-        $a[] = self::prepareDbDefine("MTT_SALT", defined('MTT_SALT') ? MTT_SALT : generateUUID()) . "\n";
+        $a[] = self::prepareDbDefine("MTT_DB_TYPE", self::get('db.type'));
+        $a[] = self::prepareDbDefine("MTT_DB_HOST", self::get('db.host'));
+        $a[] = self::prepareDbDefine("MTT_DB_USER", self::get('db.user'));
+        $a[] = self::prepareDbDefine("MTT_DB_PASSWORD", self::get('db.password'));
+        $a[] = self::prepareDbDefine("MTT_DB_NAME", self::get('db.name'));
+        $a[] = self::prepareDbDefine("MTT_DB_PREFIX", self::get('db.prefix'));
+        $a[] = self::prepareDbDefine("MTT_DB_DRIVER", self::get('db.driver'));
+        $salt = defined('MTT_SALT') ? MTT_SALT : randomString2(64);
+        $a[] = self::prepareDbDefine("MTT_SALT", $salt) . "\n";
         return implode("\n", $a);
     }
 
@@ -281,18 +317,16 @@ class Config
         if (preg_match('~\R~', $value)) { # newlines
             throw new Exception("Unexpected constant value: ". $value);
         }
-        return "define('$key', '". str_replace(
-                                        array("\\",   "'" ),
-                                        array("\\\\", "\\'"),
-                                        $value
-                                ) . "');";
+        $value = addslashes($value);
+        return "define('$key', '$value');";
     }
 
     public static function saveDbConfig()
     {
         $contents = self::dbConfigAsFileContents();
         $f = fopen(MTTPATH. 'config.php', 'w');
-        if ($f === false) throw new Exception("Error while saving config file");
+        if ($f === false)
+            throw new Exception("Error while saving config file");
         fwrite($f, $contents);
         fclose($f);
 
