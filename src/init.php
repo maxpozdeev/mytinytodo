@@ -5,9 +5,10 @@
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
-if (version_compare(PHP_VERSION, '7.2.0') < 0) {
-    die("PHP 7.2 or above is required");
+if (PHP_VERSION_ID < 70300) {
+    die("PHP 7.3 or above is required");
 }
+
 
 if(!defined('MTTPATH')) define('MTTPATH', dirname(__FILE__) .'/');
 if(!defined('MTTINC'))  define('MTTINC', MTTPATH. 'includes/');
@@ -269,17 +270,11 @@ function update_token(): string
         $_SESSION['token'] = $token;
     }
     else {
-        if (PHP_VERSION_ID < 70300) {
-            setcookie('mtt-token', $token, 0, url_dir(get_unsafe_mttinfo('mtt_url')). '; samesite=lax', '', false, true );
-        }
-        else {
-            /** @disregard P1006 available in php 7.3 */
-            setcookie('mtt-token', $token, [
-                'path' => url_dir(get_unsafe_mttinfo('mtt_url')),
-                'httponly' => true,
-                'samesite' => 'lax'
-            ]);
-        }
+        setcookie('mtt-token', $token, [
+            'path' => url_dir(get_unsafe_mttinfo('mtt_url')),
+            'httponly' => true,
+            'samesite' => 'lax'
+        ]);
         $_COOKIE['mtt-token'] = $token;
     }
     return $token;
@@ -305,18 +300,12 @@ function setup_and_start_session()
     $lifetime = 5184000; # 60 days session cookie lifetime
     $path = url_dir(Config::get('url')=='' ? getRequestUri() : Config::getUrl('url'));
 
-    if (PHP_VERSION_ID < 70300) {
-        # this is a known samesite flag workaround, was fixed in 7.3
-        session_set_cookie_params($lifetime, $path. '; samesite=lax', null, null, true);
-    } else {
-        /** @disregard P1006 available in php 7.3 */
-        session_set_cookie_params([
-            'lifetime' => $lifetime,
-            'path' => $path,
-            'httponly' => true,
-            'samesite' => 'lax'
-        ]);
-    }
+    session_set_cookie_params([
+        'lifetime' => $lifetime,
+        'path' => $path,
+        'httponly' => true,
+        'samesite' => 'lax'
+    ]);
     session_name('mtt-session');
     session_start();
 }

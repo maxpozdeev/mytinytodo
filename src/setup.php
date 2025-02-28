@@ -9,8 +9,8 @@
 // Can be used to upgrade database from myTinyTodo v1.7 or later
 $lastVer = '2.0';
 
-if (version_compare(PHP_VERSION, '7.2.0') < 0) {
-    die("PHP 7.2 or above is required");
+if (PHP_VERSION_ID < 70300) {
+    die("PHP 7.3 or above is required");
 }
 
 if (getenv('MTT_ENABLE_DEBUG') == 'YES') {
@@ -211,17 +211,11 @@ function setupToken()
 function setSetupToken() : string
 {
     $token = bin2hex(random_bytes(24));
-    if (PHP_VERSION_ID < 70300) {
-        setcookie('mtt-s-token', $token, 0, url_dir(getRequestUri()). '; samesite=lax', '', false, true ) ;
-    }
-    else {
-        /** @disregard P1006 available in php 7.3 */
-        setcookie('mtt-s-token', $token, [
-            'path' => url_dir(getRequestUri()),
-            'httponly' => true,
-            'samesite' => 'lax'
-        ]);
-    }
+    setcookie('mtt-s-token', $token, [
+        'path' => url_dir(getRequestUri()),
+        'httponly' => true,
+        'samesite' => 'lax'
+    ]);
     $_COOKIE['mtt-s-token'] = $token;
     return $token;
 }
