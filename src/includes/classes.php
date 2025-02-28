@@ -58,11 +58,23 @@ class ApiResponse
     public $contentType = 'application/json';
     public $code = null;
 
-    function htmlContent(string $content): ApiResponse
+    // deprecated
+    function htmlContent(string $content): self
     {
         $this->contentType = 'text/html; charset=utf-8';
         $this->data = $content;
         $this->code = 200;
+        return $this;
+    }
+
+    // deprecated
+    function errorJsonContent(string $errorMessage, int $code): self
+    {
+        $this->data = [
+            'ok' => false,
+            'error' => htmlspecialchars($errorMessage)
+        ];
+        $this->code = $code;
         return $this;
     }
 
@@ -97,15 +109,15 @@ class JsonApiResponse extends ApiResponse
     }
 }
 
-class ErrorApiResponse extends ApiResponse
+class ErrorApiResponse extends JsonApiResponse
 {
     function __construct(string $errorMessage, int $code = 500)
     {
-        $resp = new JsonApiResponse([
+        $this->data = [
             'ok' => false,
             'error' => $errorMessage
-        ]);
-        $resp->code = $code;
+        ];
+        $this->code = $code;
     }
 }
 

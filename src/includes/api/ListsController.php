@@ -15,16 +15,18 @@ class ListsController extends ApiController {
      */
     function get($username = null)
     {
+        if (!is_null($username) && $username != '') {
+            $userId = DBCore::default()->getUserIdByUsername($username);
+            if (!$userId) {
+                $this->response->errorJsonContent("User not found", 404);
+                return;
+            }
+            $this->req->setUserId($userId); //set before haveWriteAccess
+        }
+
         $db = DBConnection::instance();
         $t = array();
         $t['total'] = 0;
-
-        if (!is_null($username) && $username != '') {
-            $userId = DBCore::default()->getUserIdByUsername($username);
-            if (!$userId)
-                return;
-            $this->req->setUserId($userId); //set before haveWriteAccess
-        }
 
         $sqlWhere = 'WHERE user_id='. (int)$this->req->userId();
         $haveWriteAccess = haveWriteAccess();
