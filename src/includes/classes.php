@@ -58,25 +58,15 @@ class ApiResponse
     public $contentType = 'application/json';
     public $code = null;
 
-    function content(string $contentType, string $content, int $code = 200)
+    function htmlContent(string $content): ApiResponse
     {
-        $this->contentType = $contentType;
+        $this->contentType = 'text/html; charset=utf-8';
         $this->data = $content;
-        $this->code = $code;
+        $this->code = 200;
         return $this;
     }
 
-    function htmlContent(string $content, int $code = 200): ApiResponse
-    {
-        return $this->content('text/html', $content, $code);
-    }
-
-    function cssContent(string $content, int $code = 200): ApiResponse
-    {
-        return $this->content('text/css', $content, $code);
-    }
-
-    function  exit()
+    function exit()
     {
         if (is_null($this->data) && is_null($this->code)) {
             http_response_code(404);
@@ -84,12 +74,38 @@ class ApiResponse
         if (!is_null($this->code)) {
             http_response_code($this->code);
         }
-        if ($this->contentType != 'application/json') {
-            header('Content-type: '. $this->contentType);
-            print $this->data;
-            exit();
+        if ($this->contentType === 'application/json') {
+            header('Content-type: application/json; charset=utf-8');
+            echo json_encode($this->data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES). "\n";
         }
-        jsonExit($this->data);
+        else {
+            header('Content-type: '. $this->contentType);
+            echo $this->data;
+        }
+        MTTNotificationCenter::postDidFinishRequestNotification();
+        exit;
+    }
+}
+
+class JsonApiResponse extends ApiResponse
+{
+    function __construct(array $a, int $code = 200)
+    {
+        $this->code = $code;
+        $this->contentType = 'application/json';
+        $this->data = $a;
+    }
+}
+
+class ErrorApiResponse extends ApiResponse
+{
+    function __construct(string $errorMessage, int $code = 500)
+    {
+        $resp = new JsonApiResponse([
+            'ok' => false,
+            'error' => $errorMessage
+        ]);
+        $resp->code = $code;
     }
 }
 

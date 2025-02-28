@@ -106,12 +106,10 @@ foreach ($endpoints as $search => $methods) {
     $classDescr = $methods[$req->method] ?? null;
     // check if http method is supported for path
     if ( is_null($classDescr) ) {
-        $response->htmlContent("Unknown method for resource", 500)
-            ->exit();
+        (new ErrorApiResponse("Unknown method for resource", 500))->exit();
     }
     if ( !is_array($classDescr) || count($classDescr) < 2) {
-        $response->htmlContent("Incorrect method definition", 500)
-            ->exit();
+        (new ErrorApiResponse("Incorrect method definition", 500))->exit();
     }
 
     // check if class method exists
@@ -135,8 +133,7 @@ foreach ($endpoints as $search => $methods) {
     if (method_exists($class, $classMethod)) { // test for static with ReflectionMethod?
         if ($req->method != 'GET' && $req->contentType == 'application/json') {
             if ($req->decodeJsonBody() === false) {
-                $response->htmlContent("Failed to parse JSON body", 500)
-                    ->exit();
+                (new ErrorApiResponse("Failed to parse JSON body", 500))->exit();
             }
         }
         $instance = new $class($req, $response);
@@ -146,21 +143,18 @@ foreach ($endpoints as $search => $methods) {
     }
     else {
         if (MTT_DEBUG) {
-            $response->htmlContent("Class method $class:$classMethod() not found", 405)
-                ->exit();
+            (new ErrorApiResponse("Class method $class:$classMethod() not found", 405))->exit();
         }
-        $response->htmlContent("Class method not found", 405)
-            ->exit();
+        (new ErrorApiResponse("Class method not found", 405))->exit();
     }
 
 }
 
-if (!$executed) {
+if (!$executed || !$response) {
     if (MTT_DEBUG) {
-        $response->htmlContent("Unknown endpoint: {$req->method} {$req->path}", 404)
-            ->exit();
+        (new ErrorApiResponse("Unknown endpoint: {$req->method} {$req->path}", 404))->exit();
     }
-    $response->htmlContent("Unknown endpoint", 404);
+    (new ErrorApiResponse("Unknown endpoint", 404))->exit();
 }
 $response->exit();
 
@@ -222,16 +216,14 @@ function checkReadAccess(?int $listId = null)
         if ($id)
             return;
     }
-    http_response_code(403);
-    jsonExit( array('ok'=>false, 'total'=>0, 'list'=>array(), 'denied'=>1) );
+    (new JsonApiResponse([ 'ok'=>false, 'total'=>0, 'list'=>[], 'denied'=>1 ], 403))->exit();
 }
 
 function checkWriteAccess(?int $listId = null)
 {
     if (haveWriteAccess($listId))
         return;
-    http_response_code(403);
-    jsonExit( array('ok'=>false, 'total'=>0, 'list'=>array(), 'denied'=>1) );
+    (new JsonApiResponse([ 'ok'=>false, 'total'=>0, 'list'=>[], 'denied'=>1 ], 403))->exit();
 }
 
 function haveWriteAccess(?int $listId = null) : bool

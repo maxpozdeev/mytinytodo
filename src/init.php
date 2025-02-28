@@ -259,7 +259,7 @@ function check_token()
     $token = access_token();
     if ($token == '' || !isset($_SERVER['HTTP_MTT_TOKEN']) || $_SERVER['HTTP_MTT_TOKEN'] != $token) {
         http_response_code(403);
-        die("Access denied! No token provided.\n");
+        die("Access denied! Authentication is required.\n");
     }
 }
 
@@ -464,12 +464,9 @@ function set_nocache_headers()
     header('Pragma: no-cache'); // for old HTTP/1.0 intermediate caches
 }
 
-function jsonExit($data)
+function jsonExit(array $data)
 {
-    header('Content-type: application/json; charset=utf-8');
-    echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES). "\n";
-    MTTNotificationCenter::postDidFinishRequestNotification();
-    exit;
+    (new JsonApiResponse($data))->exit();
 }
 
 function logAndDie($userText, $errText = null)
