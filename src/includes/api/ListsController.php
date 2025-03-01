@@ -15,34 +15,31 @@ class ListsController extends ApiController {
      */
     function get($username = null)
     {
+        $db = DBConnection::instance();
         if (!is_null($username) && $username != '') {
-            $userId = DBCore::default()->getUserIdByUsername($username);
+            $userId = (new UserRepo($db))->findUserIdByUsername($username);
             if (!$userId) {
-                $this->response->errorJsonContent("User not found", 404);
-                return;
+                return $this->response->errorJsonContent("User not found", 404);
             }
             $this->req->setUserId($userId); //set before haveWriteAccess
         }
 
-        $db = DBConnection::instance();
-        $t = array();
-        $t['total'] = 0;
+        $isOwner = haveWriteAccess();
 
-        $sqlWhere = 'WHERE user_id='. (int)$this->req->userId();
-        $haveWriteAccess = haveWriteAccess();
-        if (!$haveWriteAccess) {
-            $sqlWhere .= ' AND published=1';
-        }
-        else {
-            $t['list'][] = $this->prepareAllTasksList(); // show alltasks lists only for authorized user
-            $t['total'] = 1;
-        }
-        $t['time'] = time();
-        $q = $db->dq("SELECT * FROM {$db->prefix}lists $sqlWhere ORDER BY ow ASC, id ASC");
-        while ($r = $q->fetchAssoc())
-        {
-            $t['total']++;
-            $t['list'][] = $this->prepareList($r, $haveWriteAccess);
+        $repo = new ListRepo($db);
+        if ($isOwner)
+            $lists = $repo->findListsByUserId($this->req->userId());
+        else
+            $lists = $repo->findPublicListsByUserId($this->req->userId());
+
+        $t = array();
+        $t['total'] = count($lists);
+
+        foreach ($lists as $list) {
+            if ($isOwner)
+                $t['list'][] = $list->toJsonArray();
+            else
+                $t['list'][] = $list->toPublicJsonArray();
         }
         $this->response->data = $t;
     }
@@ -91,15 +88,18 @@ class ListsController extends ApiController {
      */
     function getId($id)
     {
-        checkReadAccess($id);
-        $db = DBConnection::instance();
-        $r = $db->sqa( "SELECT * FROM {$db->prefix}lists WHERE id=?", array($id) );
-        if (!$r) {
-            $this->response->data = null;
-            return;
+        $id = (int)$id;
+        $repo = new ListRepo(DBConnection::instance());
+        $list = $repo->findListById($id);
+        if (!$list || !canReadList($list)) {
+            return $this->response->errorJsonContent(__("listNotFound"), 404);
         }
-        $t = $this->prepareList($r, haveWriteAccess());
-        $this->response->data = $t;
+
+        $isOwner = canWriteToList($list);
+        if ($isOwner)
+            $this->response->data = $list->toJsonArray();
+        else
+            $this->response->data = $list->toPublicJsonArray();
     }
 
     /**
@@ -144,29 +144,6 @@ class ListsController extends ApiController {
 
     /* Private Functions */
 
-    private function prepareAllTasksList(): array
-    {
-        //default values
-        $hidden = 1;
-        $sort = 3;
-        $showCompleted = 1;
-
-        $opts = Config::requestDomain('alltasks.json');
-        if ( isset($opts['hidden']) ) $hidden = (int)$opts['hidden'] ? 1 : 0;
-        if ( isset($opts['sort']) ) $sort = (int)$opts['sort'];
-        if ( isset($opts['showCompleted']) ) $showCompleted = (int)$opts['showCompleted'];
-
-        return array(
-            'id' => -1,
-            'name' => htmlarray(__('alltasks')),
-            'sort' => $sort,
-            'published' => 0,
-            'showCompl' => $showCompleted,
-            'showNotes' => 0,
-            'hidden' => $hidden,
-            'feedKey' => '',
-        );
-    }
 
     private function getListRowById(int $id)
     {

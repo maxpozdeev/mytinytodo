@@ -43,7 +43,10 @@ function parseRoute($queryString)
 
     if (isset($q['user'])) {
         $q['user'] = trim($q['user']);
-        $userId = (int) DBCore::default()->getUserIdByUsername($q['user']);
+        if ($q['user'] == '') {
+            htmlExit(404, "Page not found");
+        }
+        $userId = (int) (new UserRepo(DBConnection::instance()))->findUserIdByUsername($q['user']);
         if (!$userId) {
             htmlExit(404, "User not found");
         }

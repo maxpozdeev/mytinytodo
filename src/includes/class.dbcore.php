@@ -62,14 +62,6 @@ class DBCore
         self::$defaultInstance = $instance;
     }
 
-    public function getUserIdByUsername(string $username): ?int
-    {
-        $r = $this->db->sq("SELECT id FROM {$this->db->prefix}users WHERE username=?", [$username]);
-        if (is_null($r))
-            return null; # not found
-        return (int)$r;
-    }
-
 
     /**
      * Get Id of list where task is located by id of this task.

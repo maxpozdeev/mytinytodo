@@ -91,7 +91,7 @@ if ($req->path !== '/session') {
 }
 
 $req->username = ''; //FIXME: !!!
-$req->setUserId( userId() ?: 1 );
+$req->setUserId( userId() ?: 0 );
 
 $response = new ApiResponse();
 $executed = false;
@@ -206,17 +206,32 @@ function myExceptionHandler(Throwable $e)
 
 function checkReadAccess(?int $listId = null)
 {
-    $req = ApiRequest::instance();
-    if (is_logged() && $req->userId() == userId())
-        return true;
-    $db = DBConnection::instance();
-    if ($listId !== null)
+    if ($listId)
     {
-        $id = $db->sq("SELECT id FROM {$db->prefix}lists WHERE id=? AND published=1", array($listId));
-        if ($id)
-            return;
+        $repo = new ListRepo(DBConnection::instance());
+        $list = $repo->findListById($listId);
+        if (!$list) {
+            if (is_logged())
+                ErrorApiResponse::exitWithMessage(__("listNotFound"), 404);
+            else
+                ErrorApiResponse::exitWithMessage(__("denied"), 403);
+        }
+        if (!canReadList($list))
+            ErrorApiResponse::exitWithMessage(__("denied"), 403);
     }
-    (new JsonApiResponse([ 'ok'=>false, 'total'=>0, 'list'=>[], 'denied'=>1 ], 403))->exit();
+    else
+    {
+        $req = ApiRequest::instance();
+        if (!$req->userId() && !is_logged())
+            ErrorApiResponse::exitWithMessage(__("denied"), 403);
+    }
+}
+
+function canReadList(TaskList $list) : bool
+{
+    if ($list->isPublished)
+        return true;
+    return (is_logged() && userId() === $list->userId);
 }
 
 function checkWriteAccess(?int $listId = null)
@@ -245,4 +260,9 @@ function haveWriteAccess(?int $listId = null) : bool
             return false;
     }
     return true;
+}
+
+function canWriteToList(TaskList $list) : bool
+{
+    return (is_logged() && userId() === $list->userId);
 }

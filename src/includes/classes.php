@@ -119,6 +119,11 @@ class ErrorApiResponse extends JsonApiResponse
         ];
         $this->code = $code;
     }
+
+    static function exitWithMessage(string $errorMessage, int $code = 500)
+    {
+        (new static($errorMessage, $code))->exit();
+    }
 }
 
 abstract class ApiController
