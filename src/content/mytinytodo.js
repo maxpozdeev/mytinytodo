@@ -8,7 +8,8 @@
 
 "use strict";
 
-var taskList = new Array(), taskOrder = new Array();
+var taskList = new Array();
+var taskOrder = new Array();
 var filter = { compl:0, search:'', due:'' };
 var sortOrder; //save task order before dragging
 var searchTimer;
@@ -24,23 +25,55 @@ var flag = {
     showTagsFromAllLists: false
 };
 var taskCnt = { total:0, past: 0, today:0, soon:0 };
-var tabLists = {
+const tabLists = {
     _lists: {},
     _length: 0,
     _order: [],
     _alltasks: {},
     lastTime: 0,
-    clear: function(){
-        this._lists = {}; this._length = 0; this._order = [];
+    clear() {
+        this._lists = {};
+        this._length = 0;
+        this._order = [];
         this._alltasks = { id:-1, showCompl:0, sort:3, name:_mtt.lang.get('alltasks') };
     },
-    length: function(){ return this._length; },
-    exists: function(id){ if(this._lists[id] || id==-1) return true; else return false; },
-    add: function(list){ this._lists[list.id] = list; this._length++; this._order.push(list.id); },
-    replace: function(list){ this._lists[list.id] = list; },
-    get: function(id){ if(id==-1) return this._alltasks; else return this._lists[id]; },
-    getAll: function(){ var r = []; for(var i in this._order) { r.push(this._lists[this._order[i]]); }; return r; },
-    reorder: function(order){ this._order = order; }
+    length() {
+        return this._length;
+    },
+    exists(id) {
+        return (this._lists[id] || id == -1) ? true : false;
+    },
+    add(list) {
+        this._lists[list.id] = list;
+        this._length++;
+        this._order.push(list.id);
+    },
+    replace(list) {
+        this._lists[list.id] = list;
+    },
+    get(id) {
+        return (id == -1) ? this._alltasks : this._lists[id];
+    },
+    getAll() {
+        const r = [];
+        for (const id of this._order) {
+            r.push(this._lists[id]);
+        };
+        return r;
+    },
+    lastVisibleId() {
+        let lastVisible = null;
+        for (const list of tabLists.getAll()) {
+            if (!list.hidden)
+                lastVisible = list.id;
+        }
+        return lastVisible;
+    },
+    updateOrder() {
+        const order = $("#lists ul").sortable("toArray", { attribute: "data-id" });
+        this._order = order;
+        return order;
+    }
 };
 var curList = 0;
 var tagsList = [];
@@ -734,6 +767,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
         this.addAction('listRenamed', slmenuOnListRenamed);
         this.addAction('listAdded', slmenuOnListAdded);
         this.addAction('listSelected', slmenuOnListSelected);
+        this.addAction('listOrderChanged', slmenuOnListsLoaded);
         this.addAction('listHidden', slmenuOnListHidden);
 
         //History
@@ -847,17 +881,26 @@ var mytinytodo = window.mytinytodo = _mtt = {
                 }
                 tabLists.lastTime = res.time;
 
+                const hiddenLists = [];
                 res.list.forEach( (item) => {
                     item.lastTime = res.time;
                     if ( item.id == -1 ) {
                         tabLists._alltasks = item;
                         ti += prepareListHtml(item);
                     }
+                    else if (item.hidden) {
+                        hiddenLists.push(item);
+                    }
                     else {
                         tabLists.add(item);
                         ti += prepareListHtml(item);
                     }
                 });
+                // hidden lists to the end
+                for (const item of hiddenLists) {
+                    tabLists.add(item);
+                    ti += prepareListHtml(item);
+                }
             }
 
             if (openListId == 0) {
@@ -1108,15 +1151,24 @@ function addList()
     mttPrompt( _mtt.lang.get('addList'), _mtt.lang.get('addListDefault'), function(r)
     {
         _mtt.db.request('addList', {name:r}, function(json){
-            if (!parseInt(json.total)) return;
-            var item = json.list[0];
-            var i = tabLists.length();
-            tabLists.add(item);
-            if (i > 0) {
-                $('#lists ul').append(prepareListHtml(item));
+            if (!parseInt(json.total))
+                return;
+            const item = json.list[0];
+            const lastVisible = tabLists.lastVisibleId();
+
+            if (tabLists.length() > 0) {
+                tabLists.add(item);
+                const html = prepareListHtml(item);
+                if (lastVisible)
+                    $('#list_'+lastVisible).after(html);
+                else
+                    $('#lists ul').append(html);
+
+                tabLists.updateOrder();
                 mytinytodo.doAction('listAdded', item);
             }
             else {
+                // first list created?
                 _mtt.loadLists();
             }
         });
@@ -1653,7 +1705,7 @@ function tabSelect(elementOrId)
         $('#mtt').removeClass('no-list-selected');
     }
 
-    var prevList = curList;
+    const prevList = curList;
     curList = tabLists.get(id);
 
     $('#lists .mtt-tab-selected').removeClass('mtt-tab-selected');
@@ -1684,9 +1736,16 @@ function tabSelect(elementOrId)
         setLocalStorageItem('lastList', ''+id);
     }
 
+    // Unhide
     if (curList.hidden && flag.readOnly != true) {
+        const lastVisible = tabLists.lastVisibleId();
         curList.hidden = false;
-        _mtt.db.request('setHideList', {list:curList.id, hide:0});
+        if (lastVisible) {
+            $('#list_'+curList.id) .detach().insertAfter('#list_'+lastVisible);
+        }
+        const order = tabLists.updateOrder();
+        _mtt.db.request('setHideList', {list:curList.id, hide:0, order:order});
+        mytinytodo.doAction('listHidden', curList);
     }
     flag.tagsChanged = true;
     cancelTagFilter(0, 1);
@@ -2526,21 +2585,28 @@ function moveTaskToList(taskId, listId)
 
 function cmenuOnListsLoaded()
 {
-    if(_mtt.menus.cmenu) _mtt.menus.cmenu.destroy();
+    if (_mtt.menus.cmenu)
+        _mtt.menus.cmenu.destroy();
     _mtt.menus.cmenu = null;
-    var s = '';
-    var all = tabLists.getAll();
-    for(var i in all) {
-        s += '<li id="cmenu_list:'+all[i].id+'" class="'+(all[i].hidden?'mtt-list-hidden':'')+'">'+all[i].name+'</li>';
-    }
-    $('#cmenulistscontainer ul').html(s);
+    let opened = '';
+    let hidden = '';
+    tabLists.getAll().forEach( (list) => {
+        const classDisabled = (list.id == curList.id) ? 'mtt-disabled' : '';
+        const classHidden = list.hidden ? 'mtt-list-hidden' : '';
+        const s = `<li id="cmenu_list:${list.id}" class="${classHidden} ${classDisabled}">${list.name}</li>`;
+        if (list.hidden)
+            hidden += s;
+        else
+            opened += s;
+    });
+    if (hidden != '')
+        opened += '<li class="mtt-menu-delimiter"></li>';
+    $('#cmenulistscontainer ul').html(opened + hidden);
 };
 
 function cmenuOnListAdded(list)
 {
-    if(_mtt.menus.cmenu) _mtt.menus.cmenu.destroy();
-    _mtt.menus.cmenu = null;
-    $('#cmenulistscontainer ul').append('<li id="cmenu_list:'+list.id+'">'+list.name+'</li>');
+    cmenuOnListsLoaded();
 };
 
 function cmenuOnListRenamed(list)
@@ -2558,13 +2624,12 @@ function cmenuOnListSelected(a)
 function cmenuOnListOrderChanged()
 {
     cmenuOnListsLoaded();
-    $('#cmenu_list\\:'+curList.id).addClass('mtt-item-disabled');
 };
 
 function cmenuOnListHidden(list)
 {
     if (list.id == -1) return;
-    $('#cmenu_list\\:'+list.id).addClass('mtt-list-hidden');
+    cmenuOnListsLoaded();
 };
 
 
@@ -2598,12 +2663,7 @@ function tabmenuOnListSelected(a)
 
 function listOrderChanged(event, ui)
 {
-    var a = $(this).sortable("toArray");
-    var order = [];
-    for(var i in a) {
-        order.push(a[i].split('_')[1]);
-    }
-    tabLists.reorder(order);
+    const order = tabLists.updateOrder();
     _mtt.db.request('changeListOrder', {order:order});
     _mtt.doAction('listOrderChanged', {order:order});
 };
@@ -2685,15 +2745,22 @@ function slmenuOnListsLoaded()
         _mtt.menus.selectlist = null;
     }
 
-    let s = '';
+    let opened = '';
+    let hidden = '';
     tabLists.getAll().forEach( (list) => {
         const classChecked = (list.id == curList.id) ? 'mtt-item-checked' : '';
         const classHidden = list.hidden ? 'mtt-list-hidden' : '';
-        s += `<li id="slmenu_list:${list.id}" class="list-id-${list.id} ${classChecked} ${classHidden}">
+        const s = `<li id="slmenu_list:${list.id}" class="list-id-${list.id} ${classChecked} ${classHidden}">
             <div class="menu-icon"></div><a href="${_mtt.urlForList(list)}">${list.name}</a><div class="counter hidden"></div></li>`;
+        if (list.hidden)
+            hidden += s;
+        else
+            opened += s;
     })
+    if (hidden != '')
+        opened += '<li class="mtt-menu-delimiter slmenu-hidden-begin mtt-need-list"></li>';
     $('#slmenucontainer ul>.slmenu-lists-begin').nextAll().remove();
-    $('#slmenucontainer ul>.slmenu-lists-begin').after(s);
+    $('#slmenucontainer ul>.slmenu-lists-begin').after(opened + hidden);
 };
 
 function slmenuOnListRenamed(list)
@@ -2703,12 +2770,7 @@ function slmenuOnListRenamed(list)
 
 function slmenuOnListAdded(list)
 {
-    if(_mtt.menus.selectlist) {
-        _mtt.menus.selectlist.destroy();
-        _mtt.menus.selectlist = null;
-    }
-    $('#slmenucontainer ul').append(`<li id="slmenu_list:${list.id}" class="list-id-${list.id}">
-        <div class="menu-icon"></div><a href="${_mtt.urlForList(list)}">${list.name}</a><div class="counter hidden"></div></li>`);
+    slmenuOnListsLoaded();
 };
 
 function slmenuOnListSelected(a)
@@ -2722,7 +2784,7 @@ function slmenuOnListSelected(a)
 function slmenuOnListHidden(list)
 {
     if (list.id == -1) return;
-    $('#slmenucontainer li.list-id-'+list.id).addClass('mtt-list-hidden');
+    slmenuOnListsLoaded();
 };
 
 function slmenuSelect(el, menu)
@@ -2749,35 +2811,38 @@ function hideList(listId)
         return;
     }
 
-    if(!tabLists.get(listId)) return false;
+    if (!tabLists.get(listId))
+        return false;
 
-    // if we hide current tab
-    var listIdToSelect = 0;
-    if(curList.id == listId) {
-        var all = tabLists.getAll();
-        for(var i in all) {
-            if(all[i].id != curList.id && !all[i].hidden) {
-                listIdToSelect = all[i].id;
+    // if we hide current tab find a list to switch
+    let listIdToSelect = 0;
+    if (curList.id == listId) {
+        for (const list of tabLists.getAll()) {
+            if (list.id != curList.id && !list.hidden) {
+                listIdToSelect = list.id;
                 break;
             }
         }
         // do not hide the tab if others are hidden
-        if(!listIdToSelect) return false;
+        if (!listIdToSelect)
+            return false;
     }
+    tabLists.get(listId).hidden = true;
+    let lastVisible = tabLists.lastVisibleId();
 
-    if(listId == -1) {
+    if (listId == -1) {
         $('#list_all').addClass('mtt-tab-hidden').removeClass('mtt-tab-selected');
     }
     else {
-        $('#list_'+listId).addClass('mtt-tab-hidden').removeClass('mtt-tab-selected');
+        $('#list_'+listId).addClass('mtt-tab-hidden').removeClass('mtt-tab-selected')
+            .detach().insertAfter('#list_'+lastVisible);
     }
 
-    tabLists.get(listId).hidden = true;
-
-    _mtt.db.request('setHideList', {list:listId, hide:1});
+    const order = tabLists.updateOrder();
+    _mtt.db.request('setHideList', { list: listId, hide: 1, order: order });
     _mtt.doAction('listHidden', tabLists.get(listId));
 
-    if(listIdToSelect) {
+    if (listIdToSelect) {
         tabSelect(listIdToSelect);
     }
 }

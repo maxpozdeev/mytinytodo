@@ -364,6 +364,7 @@ MytinytodoAjaxApi.prototype = {
             data: JSON.stringify({
                 action: 'hide',
                 hide: params.hide,
+                order: params.order,
             }),
             success: callback,
             dataType: 'json'

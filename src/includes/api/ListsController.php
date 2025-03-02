@@ -337,7 +337,7 @@ class ListsController extends ApiController {
             return ['ok'=>false, 'total'=>0]; //error 400?
         }
         $repo = new ListRepo(DBConnection::instance());
-        $repo->updateListOrderOfUser($this->req->jsonBody['order'], userId());
+        $repo->updateListOrderOfUser($order, userId());
         return ['ok'=>true, 'total'=>1];
     }
 
