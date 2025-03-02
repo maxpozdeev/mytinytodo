@@ -63,4 +63,47 @@ class ListRepo
         $r = $this->db->sqa("SELECT * FROM {$this->db->prefix}lists WHERE id=?", [$listId]);
         return $r ? TaskList::fromArray($r) : null;
     }
+
+
+    /**
+     * Set order of lists of specfic user
+     * @param [int|string] $order Ids of Lists in order of appearance
+     * @param int $userId
+     * @return void
+     * @throws Exception
+     */
+    public function updateListOrderOfUser(array $order, int $userId)
+    {
+        $a = array();
+        $setCase = '';
+        foreach ($order as $ow => $id) {
+            $id = (int)$id;
+            $a[] = $id;
+            $setCase .= "WHEN id=$id THEN $ow\n";
+        }
+        $ids = implode(',', $a);
+        $this->db->dq("UPDATE {$this->db->prefix}lists SET ow = CASE\n $setCase END WHERE id IN ($ids) AND user_id=?",
+                    array($userId) );
+
+    }
+
+
+    /**
+     * Delete a list by id of specific user by its id
+     * @param int $listId
+     * @param int $userId
+     * @return int
+     */
+    public function deleteListOfUser(int $listId, int $userId): int
+    {
+        $this->db->ex("BEGIN");
+        $this->db->ex("DELETE FROM {$this->db->prefix}lists WHERE id=? AND user_id=?", [$listId, $userId]);
+        $affected = $this->db->affected();
+        if ($affected) {
+            $this->db->ex("DELETE FROM {$this->db->prefix}tag2task WHERE list_id=?", [$listId]);
+            $this->db->ex("DELETE FROM {$this->db->prefix}todolist WHERE list_id=?", [$listId]);
+        }
+        $this->db->ex("COMMIT");
+        return $affected;
+    }
 }

@@ -111,7 +111,7 @@ class ListsController extends ApiController {
     function deleteId($id)
     {
         checkWriteAccess();
-        $this->response->data = $this->deleteList($id);
+        $this->response->data = $this->deleteList((int)$id);
     }
 
 
@@ -332,46 +332,30 @@ class ListsController extends ApiController {
 
     private function changeListOrder(): ?array
     {
-        $t = array();
-        $t['total'] = 0;
-        if (!is_array($this->req->jsonBody['order'])) {
-            return $t;
+        $order = $this->req->jsonBody['order'] ?? null;
+        if (!is_array($order)) {
+            return ['ok'=>false, 'total'=>0]; //error 400?
         }
-        $db = DBConnection::instance();
-        $order = $this->req->jsonBody['order'];
-        $a = array();
-        $setCase = '';
-        foreach ($order as $ow => $id) {
-            $id = (int)$id;
-            $a[] = $id;
-            $setCase .= "WHEN id=$id THEN $ow\n";
-        }
-        $ids = implode(',', $a);
-        $db->dq("UPDATE {$db->prefix}lists SET d_edited=?, ow = CASE\n $setCase END WHERE id IN ($ids)",
-                    array(time()) );
-        $t['total'] = 1;
-        return $t;
+        $repo = new ListRepo(DBConnection::instance());
+        $repo->updateListOrderOfUser($this->req->jsonBody['order'], userId());
+        return ['ok'=>true, 'total'=>1];
     }
 
     private function deleteList(int $id)
     {
-        $db = DBConnection::instance();
-        $t = array();
-        $t['total'] = 0;
-        $id = (int)$id;
         $list = null;
+        $repo = new ListRepo(DBConnection::instance());
         if (MTTNotificationCenter::hasObserversForNotification(MTTNotification::didDeleteList)) {
-            $list = $this->getListRowById($id);
+            $list = $repo->findListById($id);
+            if (!$list)
+                return ['ok'=>false, 'total'=>0, 'error'=>'List not found']; //error 404?
         }
-        $db->ex("BEGIN");
-        $db->ex("DELETE FROM {$db->prefix}lists WHERE id=$id");
-        $t['total'] = $db->affected();
-        if ($t['total']) {
-            $db->ex("DELETE FROM {$db->prefix}tag2task WHERE list_id=$id");
-            $db->ex("DELETE FROM {$db->prefix}todolist WHERE list_id=$id");
-        }
-        $db->ex("COMMIT");
-        if ($t['total'] && MTTNotificationCenter::hasObserversForNotification(MTTNotification::didDeleteList)) {
+        $t = [
+            'ok' => true,
+            'total' => $repo->deleteListOfUser($id, userId())
+        ];
+        // TODO: check for 404?  if ($t['total'] == 0)
+        if ($t['total'] && $list) {
             MTTNotificationCenter::postNotification(MTTNotification::didDeleteList, $list);
         }
         return $t;
