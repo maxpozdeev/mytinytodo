@@ -875,14 +875,18 @@ var mytinytodo = window.mytinytodo = _mtt = {
                 $('#mtt').addClass('no-lists');
             }
 
-            if (_mtt.options.openList != 0 && openListId == 0) {
+            if (_mtt.options.openList != 0 && openListId == 0 && (flag.isLogged || _mtt.options.username != '')) {
                 // cant open list - not found
                 $('#tasks_info .v').text(_mtt.lang.get('listNotFound'))
                 $('#tasks_info').show();
             }
             else if (tabLists.length() == 0) {
-                if (flag.readOnly) $('#tasks_info .v').text(_mtt.lang.get('noPublicLists'));
-                else $('#tasks_info .v').text(_mtt.lang.get('listNotFound'))
+                if (_mtt.options.username == '') // homepage
+                    $('#tasks_info .v').text(_mtt.lang.get('welcome'));
+                else if (flag.readOnly)
+                    $('#tasks_info .v').text(_mtt.lang.get('noPublicLists'));
+                else
+                    $('#tasks_info .v').text(_mtt.lang.get('listNotFound'))
                 $('#tasks_info').show();
             }
 
@@ -1049,7 +1053,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
         {
             s = a[i];
             switch(s) {
-                case "u": p.username = a[++i]; break;
+                //case "u": p.username = a[++i]; break;
                 case "list": if(a[++i].match(/^-?\d+$/)) { p[s] = a[i]; } break;
                 case "alltasks": p.list = '-1'; break;
                 case "settings": p.settings = true; break;
@@ -3001,7 +3005,8 @@ function updateAccessStatus()
     }
     if(flag.needAuth && !flag.isLogged) {
         flag.readOnly = true;
-        $("#bar_public").show();
+        if (_mtt.options.username != '')
+            $("#bar_public").show();
         $('#mtt').addClass('readonly')
         liveSearchToggle(1);
         // remove some tab menu items

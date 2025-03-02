@@ -126,6 +126,7 @@ class Lang
             'denied',
             'listNotFound',
             'noPublicLists',
+            'welcome',
             'noTags',
             'withoutTags',
             'withAnyTag',

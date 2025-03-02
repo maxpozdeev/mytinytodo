@@ -54,7 +54,7 @@ $().ready(function(){
     <span id="bar_public" style="display:none" class="mtt-need-auth-enabled"><?php _e('public_tasks');?></span>
     <a href="#login" id="login_btn" class="mtt-need-auth-enabled"><?php _e('a_login');?></a>
     <a href="#logout" id="logout_btn" class="mtt-need-auth-enabled" style="display:none" ><?php _e('a_logout');?></a>
-    <span id="bar_username" class="mtt-only-authorized"><?php mttinfo('username') ?></span>
+    <a href="<?php mttinfo('tasks_uri'); ?>" id="bar_username"  class="mtt-only-authorized"><?php mttinfo('username') ?></a>
   </div>
   </div>
 

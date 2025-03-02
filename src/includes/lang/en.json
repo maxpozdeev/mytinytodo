@@ -206,6 +206,7 @@
     "denied": "Access denied",
     "listNotFound": "List not found",
     "noPublicLists": "No public tasks",
+    "welcome": "Welcome! Log in first.",
     "noTags": "No tags",
     "withoutTags": "No tags",
     "withAnyTag": "Any tag",

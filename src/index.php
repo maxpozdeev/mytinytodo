@@ -100,11 +100,13 @@ function js_options()
     }
     $a = array(
         "token" => htmlspecialchars(access_token()),
+        "me" => username() ?: '',
+        "username" => trim(_get('user')),
         "title" => get_unsafe_mttinfo('title'),
-        "lang" => Lang::instance()->jsStrings(),
         "mttUrl" => get_mttinfo('mtt_uri'),
         "homeUrl" => $homeUrl,
         "apiUrl" => get_mttinfo('api_url'),
+        "tasksUrl" => get_mttinfo('tasks_uri'),
         "needAuth" => need_auth() ? true : false,
         "isLogged" => is_logged() ? true : false,
         "showdate" => Config::get('showdate') ? true : false,
@@ -117,11 +119,8 @@ function js_options()
         "markdown" => Config::get('markup') == 'v1' ? false : true,
         "newTaskCounter" => Config::get('newTaskCounter') ? true : false,
         "newTaskCounterIcon" => Config::get('newTaskCounterIcon') ? true : false,
+        "lang" => Lang::instance()->jsStrings(),
     );
-    $username = trim(_get('user'));
-    if ($username != '') {
-        $a['username'] = $username;
-    }
     $flags = JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_INVALID_UTF8_SUBSTITUTE;
     if (MTT_DEBUG) {
         $flags |= JSON_PRETTY_PRINT;

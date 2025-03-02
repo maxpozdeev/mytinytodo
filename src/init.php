@@ -173,6 +173,10 @@ function configureDbConnection()
     }
 }
 
+// return false if mtt is configured to work as old version
+// - only one user
+// - no password
+// - no sessions are used
 function need_auth(): bool
 {
     // TODO: not needed
@@ -213,6 +217,8 @@ function userId(): ?int
 
 function username(): ?string
 {
+    if (!need_auth())
+        return 'admin';
      if (!is_logged())
         return null;
     return (string)$_SESSION['username'];
@@ -384,15 +390,20 @@ function get_unsafe_mttinfo($v)
             $_mttinfo['content_url'] = get_unsafe_mttinfo('mtt_uri'). 'content/';
             return $_mttinfo['content_url'];
         case 'url':
-            /* full url to homepage: directory with root index.php or custom index file in the root. */
-            /* ex: http://my.site/mytinytodo/   or  https://my.site/mytinytodo/home_for_2nd_theme.php  */
+            /* full url to homepage: directory with root index.php  */
+            /* ex: http://my.site/  or  http://my.site/mytinytodo/  */
             /* Should not contain a query string. Have to be set in config if custom port is used or wrong detection. */
             $_mttinfo['url'] = Config::getUrl('url');
             if ($_mttinfo['url'] == '') {
                 $is_https = is_https();
                 $_mttinfo['url'] = ($is_https ? 'https://' : 'http://'). $_SERVER['HTTP_HOST']. url_dir(getRequestUri());
             }
+            if ($_mttinfo['url'] == '' || $_mttinfo['url'][-1] != '/')
+                $_mttinfo['url'] .= '/';
             return $_mttinfo['url'];
+        case 'uri':
+            $_mttinfo['uri'] = url_dir( get_unsafe_mttinfo('url') );
+            return $_mttinfo['uri'];
         case 'mtt_url':
             /* Directory with settings.php. No need to set if you use default directory structure. */
             $_mttinfo['mtt_url'] = Config::getUrl('mtt_url'); // need to have a trailing slash
@@ -435,6 +446,18 @@ function get_unsafe_mttinfo($v)
         case 'username':
             $_mttinfo['username'] = username() ?? '';
             return $_mttinfo['username'];
+        case 'tasks_uri':
+            //$_mttinfo['tasks_uri'] = get_unsafe_mttinfo('uri'). 'u/'. (username() ?? '');
+            if (need_auth()) {
+                $u = username();
+                $_mttinfo['tasks_uri'] = is_null($u) ? '' : get_unsafe_mttinfo('uri'). "?user=$u";
+            }
+            else
+                $_mttinfo['tasks_uri'] = get_unsafe_mttinfo('uri');
+            return $_mttinfo['tasks_uri'];
+        default:
+            error_log("Unknown mttinfo key: $v");
+            return '';
     }
 }
 

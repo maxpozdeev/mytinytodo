@@ -245,6 +245,8 @@ function haveWriteAccess(?int $listId = null) : bool
 {
     if (!is_logged())
         return false;
+
+    # currently a logged user have write access to own lists only
     $req = ApiRequest::instance();
     $reqUserId = $req->userId();
     if (!$reqUserId || userId() != $reqUserId)
