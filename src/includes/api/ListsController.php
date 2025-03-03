@@ -102,7 +102,7 @@ class ListsController extends ApiController {
     function deleteId($id)
     {
         checkWriteAccess();
-        $this->response->data = $this->deleteList($id);
+        $this->response->data = $this->deleteList((int)$id);
     }
 
 
@@ -348,17 +348,19 @@ class ListsController extends ApiController {
     {
         $t = array();
         $t['total'] = 0;
-        if (!is_array($this->req->jsonBody['order'])) {
+        $order = $this->req->jsonBody['order'] ?? [];
+        if (!array_is_list($order)) {
             return $t;
         }
         $db = DBConnection::instance();
         $order = $this->req->jsonBody['order'];
         $a = array();
         $setCase = '';
-        foreach ($order as $ow => $id) {
-            $id = (int)$id;
+        $max = count($order);
+        for ($i = 0; $i < $max; $i++) {
+            $id = (int)$order[$i];
             $a[] = $id;
-            $setCase .= "WHEN id=$id THEN $ow\n";
+            $setCase .= "WHEN id=$id THEN $i\n";
         }
         $ids = implode(',', $a);
         $db->dq("UPDATE {$db->prefix}lists SET d_edited=?, ow = CASE\n $setCase END WHERE id IN ($ids)",

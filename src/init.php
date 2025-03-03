@@ -457,8 +457,8 @@ function logAndDie($userText, $errText = null)
 
 function loadExtensions()
 {
-    $a = Config::get('extensions');
-    if (!$a || !is_array($a)) {
+    $a = Config::get('extensions') ?: null;
+    if (!$a || !array_is_list($a)) {
         return;
     }
     foreach ($a as $ext) {
