@@ -218,3 +218,20 @@ function randomString2(int $len = 16, string $chars = '0123456789abcdefghijklmno
     }
     return implode('', $a);
 }
+
+// taken from symfony/polyfill-php81 (MIT License)
+if (!function_exists('array_is_list')) {
+    function array_is_list(array $array): bool
+    {
+        if ([] === $array || $array === array_values($array)) {
+            return true;
+        }
+        $nextKey = -1;
+        foreach ($array as $k => $v) {
+            if ($k !== ++$nextKey) {
+                return false;
+            }
+        }
+        return true;
+    }
+}

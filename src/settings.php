@@ -79,7 +79,7 @@ else if (isset($_POST['activate']))
     $extBundles = MTTExtensionLoader::bundles();
     $exts = array_keys($extBundles);
     $a = Config::get('extensions');
-    if (!is_array($a)) $a = [];
+    if (!array_is_list($a)) $a = [];
 
     if (in_array($ext, $exts)) {
         if ($activate) {
@@ -196,7 +196,8 @@ function listExtensions()
 {
     $extBundles = MTTExtensionLoader::bundles();
     $activatedExts = Config::get('extensions');
-    if (!is_array($activatedExts)) $activatedExts = [];
+    if (!array_is_list($activatedExts))
+        $activatedExts = [];
     $a = [];
     foreach ($extBundles as $ext => $meta) {
         $out = htmlspecialchars($meta['name']. ' v'. $meta['version']). ' ';

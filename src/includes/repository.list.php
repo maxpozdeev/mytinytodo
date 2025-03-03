@@ -74,12 +74,15 @@ class ListRepo
      */
     public function updateListOrderOfUser(array $order, int $userId)
     {
+        if (!array_is_list($order))
+            throw new InvalidArgumentException("order");
         $a = array();
         $setCase = '';
-        foreach ($order as $ow => $id) {
-            $id = (int)$id;
+        $max = count($order);
+        for ($i = 0; $i < $max; $i++) {
+            $id = (int)$order[$i];
             $a[] = $id;
-            $setCase .= "WHEN id=$id THEN $ow\n";
+            $setCase .= "WHEN id=$id THEN $i\n";
         }
         $ids = implode(',', $a);
         $this->db->dq("UPDATE {$this->db->prefix}lists SET ow = CASE\n $setCase END WHERE id IN ($ids) AND user_id=?",
