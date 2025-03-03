@@ -353,7 +353,6 @@ class ListsController extends ApiController {
             return $t;
         }
         $db = DBConnection::instance();
-        $order = $this->req->jsonBody['order'];
         $a = array();
         $setCase = '';
         $max = count($order);
