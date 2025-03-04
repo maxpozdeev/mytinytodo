@@ -675,12 +675,18 @@ var mytinytodo = window.mytinytodo = _mtt = {
             $("#mtt").removeClass("ajax-loading");
         });
 
-        $(document).ajaxError(function(event, request, settings){
-            var errtxt;
-            if (request.status == 0) errtxt = 'Bad connection';
-            else if(request.status == 403) errtxt = request.responseText;
-            else if (request.status != 200) errtxt = 'HTTP: '+request.status+'/'+request.statusText + "\n" + request.responseText;
-            else errtxt = request.responseText;
+        $(document).ajaxError(function(event, request, settings) {
+            let errtxt;
+            if (request.status == 0)
+                errtxt = 'Bad connection';
+            else if (request.responseJSON && request.responseJSON.error)
+                errtxt = request.responseJSON.error;
+            else if(request.status == 403)
+                errtxt = request.responseText;
+            else if (request.status != 200)
+                errtxt = 'HTTP: '+request.status+'/'+request.statusText + "\n" + request.responseText;
+            else
+                errtxt = request.responseText;
             flashError(_mtt.lang.get('error'), errtxt);
         });
 

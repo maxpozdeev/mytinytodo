@@ -206,7 +206,16 @@ function myExceptionHandler(Throwable $e)
 
 function checkReadAccess(?int $listId = null)
 {
-    if ($listId)
+    if (is_null($listId)) {
+        $req = ApiRequest::instance();
+        if (!$req->userId() && !is_logged())
+            ErrorApiResponse::exitWithMessage(__("denied"), 403);
+    }
+    else if ($listId === -1) {
+        if (!is_logged())
+            ErrorApiResponse::exitWithMessage(__("denied"), 403);
+    }
+    else
     {
         $repo = new ListRepo(DBConnection::instance());
         $list = $repo->findListById($listId);
@@ -217,12 +226,6 @@ function checkReadAccess(?int $listId = null)
                 ErrorApiResponse::exitWithMessage(__("denied"), 403);
         }
         if (!canReadList($list))
-            ErrorApiResponse::exitWithMessage(__("denied"), 403);
-    }
-    else
-    {
-        $req = ApiRequest::instance();
-        if (!$req->userId() && !is_logged())
             ErrorApiResponse::exitWithMessage(__("denied"), 403);
     }
 }
