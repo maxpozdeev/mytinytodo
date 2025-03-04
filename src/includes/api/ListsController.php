@@ -58,7 +58,7 @@ class ListsController extends ApiController {
         switch ($action) {
             case 'order': $this->response->data = $this->changeListOrder(); break; //compatibility
             case 'new':
-            default:      $this->response->data = $this->createList();
+            default:      $this->response->data = $this->createList(userId());
         }
     }
 
@@ -179,21 +179,23 @@ class ListsController extends ApiController {
         );
     }
 
-    private function createList(): ?array
+    private function createList(int $userId): ?array
     {
-        $t = array();
-        $t['total'] = 0;
-        $id = DBCore::default()->createListWithName($this->req->userId(), $this->req->jsonBody['name'] ?? '');
-        if (!$id) {
-            return $t;
-        }
-        $db = DBConnection::instance();
-        $t['total'] = 1;
-        $r = $db->sqa("SELECT * FROM {$db->prefix}lists WHERE id=$id");
-        $oo = $this->prepareList($r, true);
-        MTTNotificationCenter::postNotification(MTTNotification::didCreateList, $oo);
-        $t['list'][] = $oo;
-        return $t;
+        $repo = new ListRepo(DBConnection::instance());
+        $id = $repo->createList($this->req->jsonBody['name'] ?? '', $userId);
+        if (!$id)
+            return ['ok'=>false, 'total'=>0]; //error 400?
+
+        $list = $repo->findListById($id);
+        if (!$list)
+            return ['ok'=>false, 'total'=>0]; //error 500?
+        MTTNotificationCenter::postNotification(MTTNotification::didCreateList, $list);
+
+        return [
+            'ok' => true,
+            'total' => 1,
+            'list' => [$list]
+        ];
     }
 
     private function renameList(int $id): ?array
@@ -333,7 +335,7 @@ class ListsController extends ApiController {
     private function changeListOrder(): ?array
     {
         $order = $this->req->jsonBody['order'] ?? null;
-        if (!is_array($order)) {
+        if (!array_is_list($order)) {
             return ['ok'=>false, 'total'=>0]; //error 400?
         }
         $repo = new ListRepo(DBConnection::instance());

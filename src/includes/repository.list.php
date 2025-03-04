@@ -82,7 +82,8 @@ class ListRepo
         for ($i = 0; $i < $max; $i++) {
             $id = (int)$order[$i];
             $a[] = $id;
-            $setCase .= "WHEN id=$id THEN $i\n";
+            $ow = $i + 1;
+            $setCase .= "WHEN id=$id THEN $ow\n";
         }
         $ids = implode(',', $a);
         $this->db->dq("UPDATE {$this->db->prefix}lists SET ow = CASE\n $setCase END WHERE id IN ($ids) AND user_id=?",
@@ -90,6 +91,26 @@ class ListRepo
 
     }
 
+
+    /**
+     * Create new list with name
+     * @param string $name
+     * @param int $userId
+     * @return null|int
+     */
+    public function createList(string $name, int $userId): ?int
+    {
+        $name = str_replace( ['"',"'",'<','>','&'], '', trim($name) );
+        if ($name == '') {
+            return null;
+        }
+        $time = time();
+        $this->db->dq("INSERT INTO {$this->db->prefix}lists (user_id,uuid,name,d_created,d_edited,taskview,ow) VALUES (?,?,?,?,?,?,
+            (SELECT 1 + COALESCE(MAX(ow),0) FROM {$this->db->prefix}lists WHERE user_id=? AND taskview & 4 = 0) )",
+                    array($userId, generateUUID(), $name, $time, $time, 1, $userId) );
+        $id = $this->db->lastInsertId();
+        return (int)$id;
+    }
 
     /**
      * Delete a list by id of specific user by its id

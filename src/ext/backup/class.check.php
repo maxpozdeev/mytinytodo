@@ -9,6 +9,7 @@
 namespace BackupExtension;
 
 use DBConnection;
+use ListRepo;
 
 class Check
 {
@@ -89,7 +90,8 @@ class Check
         $count = (int)$db->sq("SELECT COUNT(*) FROM {$db->prefix}todolist WHERE list_id NOT IN (SELECT id FROM {$db->prefix}lists)");
         if ($count > 0) {
             // Move to new list
-            $listID = \DBCore::default()->createListWithName("Restored tasks");
+            $repo = new ListRepo($db);
+            $listID = $repo->createList("Restored tasks", userId());
             $db->ex("UPDATE {$db->prefix}todolist SET list_id=? WHERE list_id NOT IN (SELECT id FROM {$db->prefix}lists)", [$listID]);
         }
 
