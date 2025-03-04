@@ -112,21 +112,41 @@ class ListRepo
         return (int)$id;
     }
 
+
     /**
-     * Delete a list by id of specific user by its id
+     * Delete a list by id
+     * Return 1 when list record is deleted
      * @param int $listId
-     * @param int $userId
      * @return int
      */
-    public function deleteListOfUser(int $listId, int $userId): int
+    public function deleteListById(int $listId): int
     {
         $this->db->ex("BEGIN");
-        $this->db->ex("DELETE FROM {$this->db->prefix}lists WHERE id=? AND user_id=?", [$listId, $userId]);
+        $this->db->ex("DELETE FROM {$this->db->prefix}lists WHERE id=?", [$listId]);
         $affected = $this->db->affected();
         if ($affected) {
             $this->db->ex("DELETE FROM {$this->db->prefix}tag2task WHERE list_id=?", [$listId]);
             $this->db->ex("DELETE FROM {$this->db->prefix}todolist WHERE list_id=?", [$listId]);
         }
+        $this->db->ex("COMMIT");
+        return $affected;
+    }
+
+
+    /**
+     * Delete completed task in list
+     * Return number of deleted records
+     * @param int $listId
+     * @return int
+     */
+    public function deleteCompletedTasksInList(int $listId): int
+    {
+        $this->db->ex("BEGIN");
+        $this->db->ex("DELETE FROM {$this->db->prefix}tag2task WHERE task_id IN
+            (SELECT id FROM {$this->db->prefix}todolist WHERE list_id=? and compl=1)",
+                array($listId));
+        $this->db->ex("DELETE FROM {$this->db->prefix}todolist WHERE list_id=? and compl=1", [$listId]);
+        $affected = $this->db->affected();
         $this->db->ex("COMMIT");
         return $affected;
     }

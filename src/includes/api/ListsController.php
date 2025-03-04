@@ -56,7 +56,7 @@ class ListsController extends ApiController {
         checkWriteAccess();
         $action = $this->req->jsonBody['action'] ?? '';
         switch ($action) {
-            case 'order': $this->response->data = $this->changeListOrder(); break; //compatibility
+            case 'order': $this->response->data = $this->changeListOrder(userId()); break; //compatibility
             case 'new':
             default:      $this->response->data = $this->createList(userId());
         }
@@ -72,7 +72,7 @@ class ListsController extends ApiController {
         checkWriteAccess();
         $action = $this->req->jsonBody['action'] ?? '';
         switch ($action) {
-            case 'order': $this->response->data = $this->changeListOrder(); break;
+            case 'order': $this->response->data = $this->changeListOrder(userId()); break;
             default:      $this->response->data = ['total' => 0]; // error 400 ?
         }
     }
@@ -110,8 +110,8 @@ class ListsController extends ApiController {
      */
     function deleteId($id)
     {
-        checkWriteAccess();
-        $this->response->data = $this->deleteList((int)$id);
+        $list = checkAndGetListForWrite((int)$id);
+        $this->response->data = $this->deleteList($list);
     }
 
 
@@ -124,8 +124,8 @@ class ListsController extends ApiController {
      */
     function putId($id)
     {
-        checkWriteAccess();
         $id = (int)$id;
+        $list = checkAndGetListForWrite((int)$id);
 
         $action = $this->req->jsonBody['action'] ?? '';
         switch ($action) {
@@ -135,9 +135,9 @@ class ListsController extends ApiController {
             case 'enableFeedKey':  $this->response->data = $this->enableFeedKey($id);  break;
             case 'showNotes':      $this->response->data = $this->showNotes($id);      break;
             case 'hide':           $this->response->data = $this->hideList($id);       break;
-            case 'clearCompleted': $this->response->data = $this->clearCompleted($id); break;
-            case 'delete':         $this->response->data = $this->deleteList($id);     break; //compatibility
-            default:               $this->response->data = ['total' => 0];
+            case 'clearCompleted': $this->response->data = $this->clearCompleted($list); break;
+            case 'delete':         $this->response->data = $this->deleteList($list);   break; //compatibility
+            default:               $this->response->data = ['ok' => false, 'total' => 0]; //error 400?, unknown action
         }
     }
 
@@ -312,18 +312,14 @@ class ListsController extends ApiController {
         return ['total'=>1];
     }
 
-    private function clearCompleted(int $listId): ?array
+    private function clearCompleted(TaskList $list): ?array
     {
-        $db = DBConnection::instance();
-        $t = array();
-        $t['total'] = 0;
-        $db->ex("BEGIN");
-        $db->ex("DELETE FROM {$db->prefix}tag2task WHERE task_id IN (SELECT id FROM {$db->prefix}todolist WHERE list_id=? and compl=1)", array($listId));
-        $db->ex("DELETE FROM {$db->prefix}todolist WHERE list_id=$listId and compl=1");
-        $t['total'] = $db->affected();
-        $db->ex("COMMIT");
-        if (MTTNotificationCenter::hasObserversForNotification(MTTNotification::didDeleteCompletedInList)) {
-            $list = $this->getListRowById($listId);
+        $repo = new ListRepo(DBConnection::instance());
+        $t = [
+            'ok' => true,
+            'total' => $repo->deleteCompletedTasksInList($list->id)
+        ];
+        if ($t['total']) {
             MTTNotificationCenter::postNotification(MTTNotification::didDeleteCompletedInList, [
                 'total' => $t['total'],
                 'list' => $list
@@ -332,32 +328,26 @@ class ListsController extends ApiController {
         return $t;
     }
 
-    private function changeListOrder(): ?array
+    private function changeListOrder(int $userId): array
     {
         $order = $this->req->jsonBody['order'] ?? null;
-        if (!array_is_list($order)) {
+        if (!$order || !array_is_list($order)) {
             return ['ok'=>false, 'total'=>0]; //error 400?
         }
         $repo = new ListRepo(DBConnection::instance());
-        $repo->updateListOrderOfUser($order, userId());
+        $repo->updateListOrderOfUser($order, $userId);
         return ['ok'=>true, 'total'=>1];
     }
 
-    private function deleteList(int $id)
+    private function deleteList(TaskList $list)
     {
-        $list = null;
         $repo = new ListRepo(DBConnection::instance());
-        if (MTTNotificationCenter::hasObserversForNotification(MTTNotification::didDeleteList)) {
-            $list = $repo->findListById($id);
-            if (!$list)
-                return ['ok'=>false, 'total'=>0, 'error'=>'List not found']; //error 404?
-        }
         $t = [
             'ok' => true,
-            'total' => $repo->deleteListOfUser($id, userId())
+            'total' => $repo->deleteListById($list->id)
         ];
         // TODO: check for 404?  if ($t['total'] == 0)
-        if ($t['total'] && $list) {
+        if ($t['total']) {
             MTTNotificationCenter::postNotification(MTTNotification::didDeleteList, $list);
         }
         return $t;

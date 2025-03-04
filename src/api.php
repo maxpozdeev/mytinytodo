@@ -244,6 +244,22 @@ function checkWriteAccess(?int $listId = null)
     (new JsonApiResponse([ 'ok'=>false, 'total'=>0, 'list'=>[], 'denied'=>1 ], 403))->exit();
 }
 
+function checkAndGetListForWrite(int $listId): TaskList
+{
+    $repo = new ListRepo(DBConnection::instance());
+    $list = $repo->findListById($listId);
+    if (!$list) {
+        if (is_logged())
+            ErrorApiResponse::exitWithMessage(__("listNotFound"), 404);
+        else
+            ErrorApiResponse::exitWithMessage(__("denied"), 403);
+    }
+    if (!canWriteToList($list))
+        ErrorApiResponse::exitWithMessage(__("denied"), 403);
+
+    return $list;
+}
+
 function haveWriteAccess(?int $listId = null) : bool
 {
     if (!is_logged())
