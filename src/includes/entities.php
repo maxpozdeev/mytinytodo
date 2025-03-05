@@ -54,6 +54,17 @@ class TaskList extends AbstractTaskList
     public bool $isHidden = false;          # taskview
     public ?array $extra = null;
 
+    function setName(string $name)
+    {
+        if ($name === '')
+            throw new InvalidArgumentException("List name is empty");
+        $name = str_replace(['"',"'",'<','>','&'], '', $name);
+        $this->name = $name;
+        $this->d_edited = time();
+        $this->changed['name'] = true;
+        $this->changed['d_edited'] = true;
+    }
+
     function setIsPublished(bool $published)
     {
         $this->isPublished = $published;

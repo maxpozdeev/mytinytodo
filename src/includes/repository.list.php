@@ -113,6 +113,12 @@ class ListRepo
     }
 
 
+    /**
+     * Save only changed properties of a list
+     * @param TaskList $list
+     * @return int
+     * @throws InvalidArgumentException
+     */
     public function updateListProperties(TaskList $list): int
     {
         $fv = $list->toArray(true);

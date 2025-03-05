@@ -129,7 +129,7 @@ class ListsController extends ApiController {
 
         $action = $this->req->jsonBody['action'] ?? '';
         switch ($action) {
-            case 'rename':         $this->response->data = $this->renameList($id);     break;
+            case 'rename':         $this->response->data = $this->renameList($list);     break;
             case 'sort':           $this->response->data = $this->sortList($id);       break;
             case 'publish':        $this->response->data = $this->publishList($list);    break;
             case 'enableFeedKey':  $this->response->data = $this->enableFeedKey($id);  break;
@@ -143,31 +143,6 @@ class ListsController extends ApiController {
 
 
     /* Private Functions */
-
-    private function prepareList($row, bool $haveWriteAccess): array
-    {
-        $taskview = (int)$row['taskview'];
-        $feedKey = '';
-        if ($haveWriteAccess) {
-            $extra = json_decode($row['extra'] ?? '', true, 10, JSON_INVALID_UTF8_SUBSTITUTE);
-            if ($extra === false) {
-                error_log("Failed to decodes JSON data of list extra listId=". (int)$row['id'] . ": " . json_last_error_msg());
-                $extra = [];
-            }
-            $feedKey = (string) ($extra['feedKey'] ?? '');
-        }
-
-        return array(
-            'id' => $row['id'],
-            'name' => htmlarray($row['name']),
-            'sort' => (int)$row['sorting'],
-            'published' => $row['published'] ? 1 :0,
-            'showCompl' => $taskview & 1 ? 1 : 0,
-            'showNotes' => $taskview & 2 ? 1 : 0,
-            'hidden' => $taskview & 4 ? 1 : 0,
-            'feedKey' => $feedKey,
-        );
-    }
 
     private function createList(int $userId): ?array
     {
@@ -188,21 +163,15 @@ class ListsController extends ApiController {
         ];
     }
 
-    private function renameList(int $id): ?array
+    private function renameList(TaskList $list): ?array
     {
-        $db = DBConnection::instance();
-        $t = array();
-        $t['total'] = 0;
-        $name = str_replace(
-            array('"',"'",'<','>','&'),
-            array('','','','',''),
-            trim($this->req->jsonBody['name'] ?? '')
-        );
-        $db->dq("UPDATE {$db->prefix}lists SET name=?,d_edited=? WHERE id=$id", array($name, time()) );
-        $t['total'] = $db->affected();
-        $r = $db->sqa("SELECT * FROM {$db->prefix}lists WHERE id=$id");
-        $t['list'][] = $this->prepareList($r, true);
-        return $t;
+        $list->setName( trim($this->req->jsonBody['name'] ?? '') );
+        $repo = new ListRepo(DBConnection::instance());
+        return [
+            'ok' => true,
+            'total' => $repo->updateListProperties($list),
+            'list' => [$list],
+        ];
     }
 
     private function sortList(int $listId): ?array
@@ -343,7 +312,6 @@ class ListsController extends ApiController {
             'ok' => true,
             'total' => $repo->deleteListById($list->id)
         ];
-        // TODO: check for 404?  if ($t['total'] == 0)
         if ($t['total']) {
             MTTNotificationCenter::postNotification(MTTNotification::didDeleteList, $list);
         }
