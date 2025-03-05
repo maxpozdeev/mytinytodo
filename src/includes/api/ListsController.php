@@ -131,28 +131,18 @@ class ListsController extends ApiController {
         switch ($action) {
             case 'rename':         $this->response->data = $this->renameList($id);     break;
             case 'sort':           $this->response->data = $this->sortList($id);       break;
-            case 'publish':        $this->response->data = $this->publishList($id);    break;
+            case 'publish':        $this->response->data = $this->publishList($list);    break;
             case 'enableFeedKey':  $this->response->data = $this->enableFeedKey($id);  break;
-            case 'showNotes':      $this->response->data = $this->showNotes($id);      break;
+            case 'showNotes':      $this->response->data = $this->showNotes($list);      break;
             case 'hide':           $this->response->data = $this->hideList($id);       break;
             case 'clearCompleted': $this->response->data = $this->clearCompleted($list); break;
-            case 'delete':         $this->response->data = $this->deleteList($list);   break; //compatibility
+            case 'delete':         $this->response->data = $this->deleteList($list);     break; //compatibility
             default:               $this->response->data = ['ok' => false, 'total' => 0]; //error 400?, unknown action
         }
     }
 
 
     /* Private Functions */
-
-
-    private function getListRowById(int $id)
-    {
-        $r = DBCore::default()->getListById($id);
-        if (!$r) {
-            throw new Exception("Failed to fetch list data");
-        }
-        return $this->prepareList($r, true);
-    }
 
     private function prepareList($row, bool $haveWriteAccess): array
     {
@@ -252,12 +242,16 @@ class ListsController extends ApiController {
         }
     }
 
-    private function publishList(int $listId): ?array
+    private function publishList(TaskList $list): ?array
     {
-        $db = DBConnection::instance();
-        $publish = (int)($this->req->jsonBody['publish'] ?? 0);
-        $db->ex("UPDATE {$db->prefix}lists SET published=?,d_edited=? WHERE id=$listId", array($publish ? 1 : 0, time()));
-        return ['total'=>1];
+        $publish = boolval($this->req->jsonBody['publish'] ?? 0);
+        $repo = new ListRepo(DBConnection::instance());
+        $list->setIsPublished($publish);
+        $repo->updateListProperties($list);
+        return [
+            'ok' => true,
+            'total' => 1,
+        ];
     }
 
     private function enableFeedKey(int $listId): ?array
@@ -287,13 +281,16 @@ class ListsController extends ApiController {
         ];
     }
 
-    private function showNotes(int $listId): ?array
+    private function showNotes(TaskList $list): ?array
     {
-        $db = DBConnection::instance();
-        $flag = (int)($this->req->jsonBody['shownotes'] ?? 0);
-        $bitwise = ($flag == 0) ? 'taskview & ~2' : 'taskview | 2';
-        $db->dq("UPDATE {$db->prefix}lists SET taskview=$bitwise WHERE id=$listId");
-        return ['total'=>1];
+        $flag = !!(int)($this->req->jsonBody['shownotes'] ?? 0);
+        $list->setIsShowNotes($flag);
+        $repo = new ListRepo(DBConnection::instance());
+        $repo->updateListProperties($list);
+        return [
+            'ok' => true,
+            'total' => 1,
+        ];
     }
 
     private function hideList(int $listId): ?array

@@ -22,7 +22,7 @@ abstract class AbstractEntity
     }
 
     abstract public static function fromArray(array $a): self;
-    //abstract public static function toArray(self $entity): array;
+    abstract function toArray(bool $onlyChanged = false): array;
 }
 
 interface JsonApiSerialization
@@ -38,20 +38,65 @@ abstract class AbstractTaskList extends AbstractEntity implements JsonApiSeriali
 class TaskList extends AbstractTaskList
 {
     protected static array $dbfields = ['id','user_id','uuid','ow','name','d_created','d_edited','sorting','published','taskview','extra'];
+    protected array $changed = [];
 
     public ?int $id;
-    public ?int $userId;
+    public ?int $userId;                    # user_id
     public ?string $uuid;
     #public ?mixed $ow;
     public ?string $name;
     public ?int $d_created;
-    public ?int  $d_edited;
+    public ?int $d_edited;
     public ?int $sorting;
-    public bool $isPublished = false;
-    public bool $isShowCompleted = false;
-    public bool $isShowNotes = false;
-    public bool $isHidden = false;
+    public bool $isPublished = false;       # published
+    public bool $isShowCompleted = false;   # taskview
+    public bool $isShowNotes = false;       # taskview
+    public bool $isHidden = false;          # taskview
     public ?array $extra = null;
+
+    function setIsPublished(bool $published)
+    {
+        $this->isPublished = $published;
+        $this->d_edited = time();
+        $this->changed['published'] = true;
+        $this->changed['d_edited'] = true;
+    }
+
+    function setIsShowNotes(bool $show)
+    {
+        $this->isShowNotes = $show;
+        $this->changed['taskview'] = true;
+    }
+
+
+    function toArray(bool $onlyChanged = false): array
+    {
+        $a = [
+            'id' => $this->id,
+            'user_id' => $this->userId,
+            'uuid' => $this->uuid,
+            'name' => $this->name,
+            'd_created' => $this->d_created,
+            'd_edited' => $this->d_edited,
+            'sorting' => $this->sorting,
+            'published' => $this->isPublished ? 1 : 0,
+            'taskview' => ($this->isShowCompleted ? 1:0) + ($this->isShowNotes ? 2:0) + ($this->isHidden ? 4:0),
+            'extra' => null,
+        ];
+        if (!is_null($this->extra)) {
+            $a['extra'] = json_encode($this->extra, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        }
+
+        if (!$onlyChanged)
+            return $a;
+
+        $b = [];
+        $fields = array_keys($this->changed);
+        foreach ($fields as $field) {
+            $b[$field] = $a[$field];
+        }
+        return $b;
+    }
 
     static function fromArray(array $a) : self
     {
@@ -121,10 +166,26 @@ class AlltasksList extends AbstractTaskList
     static function fromArray(array $opts): self
     {
         $entity = new static();
-        $entity->sorting = (int)$opts['sort'];
-        $entity->isHidden = (int)$opts['hidden'] ? true : false;
-        $entity->isShowCompleted = (int)$opts['showCompleted'] ? true : false;
+        if (isset($opts['sort']))
+            $entity->sorting = (int)$opts['sort'];
+        if (isset($opts['hidden']))
+            $entity->isHidden = boolval($opts['hidden']);
+        if (isset($opts['showCompleted']))
+            $entity->isShowCompleted = boolval($opts['showCompleted']);
         return $entity;
+    }
+
+    function toArray(bool $onlyChanged = false): array
+    {
+        $a = [];
+        $default = new static();
+        if ($this->sorting != $default->sorting)
+            $a['sort'] = $this->sorting;
+        if ($this->isShowCompleted != $default->isShowCompleted)
+            $a['showCompleted'] = $this->isShowCompleted;
+        if ($this->isHidden != $default->isHidden)
+            $a['hidden'] = $this->isHidden;
+        return $a;
     }
 
     function toJsonArray(): array

@@ -113,6 +113,55 @@ class ListRepo
     }
 
 
+    public function updateListProperties(TaskList $list): int
+    {
+        $fv = $list->toArray(true);
+        if (count($fv) == 0) {
+            return 0;
+        }
+        $fields = [];
+        $values = [];
+        foreach ($fv as $field => $value) {
+            if (!preg_match("/^[a-zA-Z0-9_]+$/", $field))
+                throw new InvalidArgumentException("Unexpected table field name: $field");
+            $fields[] = "$field=?";
+            $values[] = $value;
+        }
+        $sqlSet = implode(',', $fields);
+        $values[] = $list->id;
+        $this->db->ex("UPDATE {$this->db->prefix}lists SET $sqlSet WHERE id=?", $values);
+        $affected = $this->db->affected();
+        return $affected;
+    }
+
+    // /**
+    //  * Change 'published' state of a list
+    //  * @param int $listId
+    //  * @param bool $published
+    //  * @return int
+    //  */
+    // public function setPublishedOfList(int $listId, bool $published): int
+    // {
+    //     $this->db->ex("UPDATE {$this->db->prefix}lists SET published=?,d_edited=? WHERE id=?",
+    //         [$published ? 1 : 0, time(), $listId] );
+    //     $affected = $this->db->affected();
+    //     return $affected;
+    // }
+
+    // /**
+    //  * Change 'showNotes' state of a list
+    //  * @param int $listId
+    //  * @param bool $show
+    //  * @return int
+    //  */
+    // public function setShowNotesOfList(int $listId, bool $show): int
+    // {
+    //     $bitwise =  $show ? 'taskview | 2' : 'taskview & ~2';
+    //     $this->db->dq("UPDATE {$this->db->prefix}lists SET taskview=$bitwise WHERE id=?", [$listId]);
+    //     $affected = $this->db->affected();
+    //     return $affected;
+    // }
+
     /**
      * Delete a list by id
      * Return 1 when list record is deleted
