@@ -9,8 +9,8 @@
 // Can be used to upgrade database from myTinyTodo v1.7 or later
 $lastVer = '2.0';
 
-if (PHP_VERSION_ID < 70300) {
-    die("PHP 7.3 or above is required");
+if (PHP_VERSION_ID < 70400) {
+    die("PHP 7.4 or above is required");
 }
 
 if (getenv('MTT_ENABLE_DEBUG') == 'YES') {

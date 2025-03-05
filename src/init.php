@@ -5,8 +5,8 @@
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
-if (PHP_VERSION_ID < 70300) {
-    die("PHP 7.3 or above is required");
+if (PHP_VERSION_ID < 70400) {
+    die("PHP 7.4 or above is required");
 }
 
 
