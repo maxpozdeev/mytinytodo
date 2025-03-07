@@ -1228,14 +1228,15 @@ function publishCurList()
 
 function enableFeedKeyInCurList()
 {
-    if (!curList) return false;
+    if (!curList)
+        return false;
     _mtt.db.request('enableFeedKey', {
         list: curList.id,
         enable: (curList.feedKey === undefined || curList.feedKey === '') ? 1 : 0
     }, function(json){
-        if (!parseInt(json.total)) return;
-        var item = json.list[0];
-        curList.feedKey = item.feedKey;
+        if (!json.ok)
+            return;
+        curList.feedKey = json.list[0].feedKey || '';
         if (curList.feedKey) {
             $('#btnFeedKey').addClass('mtt-item-checked');
             $('#btnShowFeedKey').removeClass('mtt-item-disabled');
@@ -1250,8 +1251,8 @@ function enableFeedKeyInCurList()
 
 function showFeedKeyInCurList()
 {
-    if (!curList) return false;
-    if (curList.feedKey === undefined || curList.feedKey === '') return false;
+    if (!curList || !curList.feedKey)
+        return false;
     mttAlert(curList.feedKey);
 };
 

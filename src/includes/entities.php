@@ -33,6 +33,10 @@ interface JsonApiSerialization
 
 abstract class AbstractTaskList extends AbstractEntity implements JsonApiSerialization
 {
+    public ?int $id;
+    public ?int $userId;
+    abstract function setSort(int $sort);
+    abstract function setIsHidden(bool $hidden);
 }
 
 class TaskList extends AbstractTaskList
@@ -65,6 +69,16 @@ class TaskList extends AbstractTaskList
         $this->changed['d_edited'] = true;
     }
 
+    function setSort(int $sort)
+    {
+        if ($sort < 0 || ($sort > 5 && $sort < 100) || $sort > 105)
+            $sort = 0;
+        $this->sorting = $sort;
+        $this->d_edited = time();
+        $this->changed['sorting'] = true;
+        $this->changed['d_edited'] = true;
+    }
+
     function setIsPublished(bool $published)
     {
         $this->isPublished = $published;
@@ -79,6 +93,22 @@ class TaskList extends AbstractTaskList
         $this->changed['taskview'] = true;
     }
 
+    function setIsHidden(bool $hidden)
+    {
+        $this->isHidden = $hidden;
+        $this->changed['taskview'] = true;
+    }
+
+    function setFeedKey(string $feedKey)
+    {
+        if ($feedKey === '' && $this->extra)
+            unset($this->extra['feedKey']);
+        else
+            $this->extra['feedKey'] = $feedKey;
+        $this->d_edited = time();
+        $this->changed['extra'] = true;
+        $this->changed['d_edited'] = true;
+    }
 
     function toArray(bool $onlyChanged = false): array
     {
@@ -94,7 +124,7 @@ class TaskList extends AbstractTaskList
             'taskview' => ($this->isShowCompleted ? 1:0) + ($this->isShowNotes ? 2:0) + ($this->isHidden ? 4:0),
             'extra' => null,
         ];
-        if (!is_null($this->extra)) {
+        if ($this->extra) {
             $a['extra'] = json_encode($this->extra, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         }
 
@@ -131,7 +161,7 @@ class TaskList extends AbstractTaskList
         if (isset($a['extra'])) {
             $extra = json_decode($a['extra'], true, 10, JSON_INVALID_UTF8_SUBSTITUTE);
             if ($extra === false) {
-                error_log("Failed to decodes JSON data of list extra Id={$entity->id}: " . json_last_error_msg());
+                error_log("Failed to decode JSON data of list extra with id={$entity->id}: " . json_last_error_msg());
                 $extra = [];
             }
             # save all keys (even not used)
@@ -166,13 +196,28 @@ class TaskList extends AbstractTaskList
     }
 }
 
+
 class AlltasksList extends AbstractTaskList
 {
     protected static array $dbfields = [];
 
+    public ?int $id = -1;
+    public ?int $userId;
     public int $sorting = 0;
     public bool $isShowCompleted = false;
     public bool $isHidden = false;
+
+    function setSort(int $sort)
+    {
+        if ($sort < 0 || ($sort > 5 && $sort < 100) || $sort > 105)
+            $sort = 0;
+        $this->sorting = $sort;
+    }
+
+    function setIsHidden(bool $hidden)
+    {
+        $this->isHidden = $hidden;
+    }
 
     static function fromArray(array $opts): self
     {

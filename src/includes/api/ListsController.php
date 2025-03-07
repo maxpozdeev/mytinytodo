@@ -130,11 +130,11 @@ class ListsController extends ApiController {
         $action = $this->req->jsonBody['action'] ?? '';
         switch ($action) {
             case 'rename':         $this->response->data = $this->renameList($list);     break;
-            case 'sort':           $this->response->data = $this->sortList($id);       break;
+            case 'sort':           $this->response->data = $this->sortList($list);       break;
             case 'publish':        $this->response->data = $this->publishList($list);    break;
-            case 'enableFeedKey':  $this->response->data = $this->enableFeedKey($id);  break;
+            case 'enableFeedKey':  $this->response->data = $this->enableFeedKey($list);  break;
             case 'showNotes':      $this->response->data = $this->showNotes($list);      break;
-            case 'hide':           $this->response->data = $this->hideList($id);       break;
+            case 'hide':           $this->response->data = $this->hideList($list);       break;
             case 'clearCompleted': $this->response->data = $this->clearCompleted($list); break;
             case 'delete':         $this->response->data = $this->deleteList($list);     break; //compatibility
             default:               $this->response->data = ['ok' => false, 'total' => 0]; //error 400?, unknown action
@@ -144,6 +144,7 @@ class ListsController extends ApiController {
 
     /* Private Functions */
 
+    //TODO: rewrite
     private function createList(int $userId): ?array
     {
         $repo = new ListRepo(DBConnection::instance());
@@ -174,13 +175,7 @@ class ListsController extends ApiController {
         ];
     }
 
-    private function sortList(int $listId): ?array
-    {
-        $sort = (int)($this->req->jsonBody['sort'] ?? 0);
-        self::setListSortingById($listId, $sort);
-        return ['total'=>1];
-    }
-
+    //TODO: remove
     static function setListSortingById(int $listId, int $sort)
     {
         $db = DBConnection::instance();
@@ -197,6 +192,7 @@ class ListsController extends ApiController {
         }
     }
 
+    //TODO: remove
     static function setListShowCompletedById(int $listId, bool $showCompleted)
     {
         $db = DBConnection::instance();
@@ -211,11 +207,26 @@ class ListsController extends ApiController {
         }
     }
 
+    private function sortList(AbstractTaskList $list): ?array
+    {
+        $sort = (int)($this->req->jsonBody['sort'] ?? 0);
+        $list->setSort($sort);
+        $repo = new ListRepo(DBConnection::instance());
+        if ($list instanceof AlltasksList)
+            $repo->updateAlltasksList($list);
+        else
+            $repo->updateListProperties($list);
+        return [
+            'ok' => true,
+            'total' => 1,
+        ];
+    }
+
     private function publishList(TaskList $list): ?array
     {
         $publish = boolval($this->req->jsonBody['publish'] ?? 0);
-        $repo = new ListRepo(DBConnection::instance());
         $list->setIsPublished($publish);
+        $repo = new ListRepo(DBConnection::instance());
         $repo->updateListProperties($list);
         return [
             'ok' => true,
@@ -223,29 +234,23 @@ class ListsController extends ApiController {
         ];
     }
 
-    private function enableFeedKey(int $listId): ?array
+    private function enableFeedKey(TaskList $list): ?array
     {
-        $db = DBConnection::instance();
-        $flag = (int)($this->req->jsonBody['enable'] ?? 0);
-        $json = $db->sq("SELECT extra FROM {$db->prefix}lists WHERE id=$listId") ?? '';
-        $extra = strlen($json) > 0 ? json_decode($json, true, 10, JSON_INVALID_UTF8_SUBSTITUTE) : [];
-        if ($extra === false) {
-            error_log("Failed to decodes JSON data of list extra listId=$listId: " . json_last_error_msg());
-            $extra = [];
-        }
-        if ($flag == 0) {
-            $extra['feedKey'] = '';
-        }
-        else {
-            $extra['feedKey'] = randomString();
-        }
-        $json = json_encode($extra, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-        $db->ex("UPDATE {$db->prefix}lists SET extra=?,d_edited=? WHERE id=$listId", array($json, time()));
+        $flag = !!(int)($this->req->jsonBody['enable'] ?? 0);
+        if ($flag)
+            $list->setFeedKey(randomString());
+        else
+            $list->setFeedKey('');
+
+        $repo = new ListRepo(DBConnection::instance());
+        $repo->updateListProperties($list);
+
         return [
+            'ok' => true,
             'total' => 1,
             'list' => [[
-                'id' => $listId,
-                'feedKey' => $extra['feedKey']
+                'id' => $list->id,
+                'feedKey' => $list->extra['feedKey'] ?? '',
             ]]
         ];
     }
@@ -262,20 +267,20 @@ class ListsController extends ApiController {
         ];
     }
 
-    private function hideList(int $listId): ?array
+    private function hideList(AbstractTaskList $list): ?array
     {
-        $db = DBConnection::instance();
-        $flag = (int)($this->req->jsonBody['hide'] ?? 0);
-        if ($listId == -1) {
-            $opts = Config::requestDomain('alltasks.json');
-            $opts['hidden'] = $flag ? 1 : 0;
-            Config::saveDomain('alltasks.json', $opts);
-        }
-        else {
-            $bitwise = ($flag == 0) ? 'taskview & ~4' : 'taskview | 4';
-            $db->dq("UPDATE {$db->prefix}lists SET taskview=$bitwise WHERE id=$listId");
-        }
-        return ['total'=>1];
+        $flag = !!(int)($this->req->jsonBody['hide'] ?? 0);
+        $list->setIsHidden($flag);
+
+        $repo = new ListRepo(DBConnection::instance());
+        if ($list instanceof AlltasksList)
+            $repo->updateAlltasksList($list);
+        else
+            $repo->updateListProperties($list);
+        return [
+            'ok' => true,
+            'total' => 1,
+        ];
     }
 
     private function clearCompleted(TaskList $list): ?array

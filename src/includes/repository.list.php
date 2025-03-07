@@ -25,10 +25,9 @@ class ListRepo
     {
         $a = [];
 
-        $opts = Config::requestDomain('alltasks.json');
-        $a[] = AlltasksList::fromArray($opts);
+        $a[] = $this->alltasksListByUserId($userId);
 
-        $q = $this->db->dq("SELECT * FROM {$this->db->prefix}lists WHERE user_id=? ORDER BY ow ASC, id ASC", [$userId]);
+        $q = $this->db->dq("SELECT * FROM {$this->db->prefix}lists WHERE user_id=? ORDER BY taskview & 4 ASC, ow ASC, id ASC", [$userId]);
         while ($r = $q->fetchAssoc()) {
             $a[] = TaskList::fromArray($r);
         }
@@ -62,6 +61,21 @@ class ListRepo
     {
         $r = $this->db->sqa("SELECT * FROM {$this->db->prefix}lists WHERE id=?", [$listId]);
         return $r ? TaskList::fromArray($r) : null;
+    }
+
+
+    /**
+     * Get a virtual list with all tasks
+     * @param int $userId
+     * @return AlltasksList
+     * @throws Exception
+     */
+    public function alltasksListByUserId(int $userId): AlltasksList
+    {
+        $opts = Config::requestDomain('alltasks.json');
+        $list = AlltasksList::fromArray($opts);
+        $list->userId = $userId;
+        return $list;
     }
 
 
@@ -125,6 +139,7 @@ class ListRepo
         if (count($fv) == 0) {
             return 0;
         }
+
         $fields = [];
         $values = [];
         foreach ($fv as $field => $value) {
@@ -138,6 +153,12 @@ class ListRepo
         $this->db->ex("UPDATE {$this->db->prefix}lists SET $sqlSet WHERE id=?", $values);
         $affected = $this->db->affected();
         return $affected;
+    }
+
+    public function updateAlltasksList(AlltasksList $list)
+    {
+        $opts = $list->toArray(true);
+        Config::saveDomain('alltasks.json', $opts);
     }
 
     // /**

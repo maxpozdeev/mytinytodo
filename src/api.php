@@ -244,10 +244,11 @@ function checkWriteAccess(?int $listId = null)
     (new JsonApiResponse([ 'ok'=>false, 'total'=>0, 'list'=>[], 'denied'=>1 ], 403))->exit();
 }
 
-function checkAndGetListForWrite(int $listId): TaskList
+function checkAndGetListForWrite(int $listId): AbstractTaskList
 {
     $repo = new ListRepo(DBConnection::instance());
-    $list = $repo->findListById($listId);
+
+    $list = ($listId === -1) ? $repo->alltasksListByUserId(userId()) : $repo->findListById($listId);
     if (!$list) {
         if (is_logged())
             ErrorApiResponse::exitWithMessage(__("listNotFound"), 404);
@@ -283,7 +284,7 @@ function haveWriteAccess(?int $listId = null) : bool
     return true;
 }
 
-function canWriteToList(TaskList $list) : bool
+function canWriteToList(AbstractTaskList $list) : bool
 {
     return (is_logged() && userId() === $list->userId);
 }
