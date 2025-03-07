@@ -77,9 +77,8 @@ const tabLists = {
 };
 var curList = 0;
 var tagsList = [];
-var _mtt; /* internal alias for window.mytinytodo */
 
-var mytinytodo = window.mytinytodo = _mtt = {
+const _mtt = window.mytinytodo = {
 
     theme: {
         newTaskFlashColor: '#ffffaa',
@@ -1171,7 +1170,7 @@ function addList()
                     $('#lists ul').append(html);
 
                 tabLists.updateOrder();
-                mytinytodo.doAction('listAdded', item);
+                _mtt.doAction('listAdded', item);
             }
             else {
                 // first list created?
@@ -1192,7 +1191,7 @@ function renameCurList()
             curList = item;
             tabLists.replace(item);
             $('#list_'+curList.id).replaceWith(prepareListHtml(curList, true));
-            mytinytodo.doAction('listRenamed', item);
+            _mtt.doAction('listRenamed', item);
         });
     });
 };
@@ -1730,7 +1729,7 @@ function tabSelect(elementOrId)
         if (id == -1) $('#mtt').addClass('show-all-tasks');
         else $('#mtt').removeClass('show-all-tasks');
         if (filter.search != '') liveSearchToggle(0, 1);
-        mytinytodo.doAction('listSelected', {
+        _mtt.doAction('listSelected', {
             'list': curList,
             'prevList':prevList
         });
@@ -1752,7 +1751,7 @@ function tabSelect(elementOrId)
         }
         const order = tabLists.updateOrder();
         _mtt.db.request('setHideList', {list:curList.id, hide:0, order:order});
-        mytinytodo.doAction('listHidden', curList);
+        _mtt.doAction('listHidden', curList);
     }
     flag.tagsChanged = true;
     cancelTagFilter(0, 1);
@@ -1773,8 +1772,9 @@ function tabSelect(elementOrId)
 
 function listMenu(el)
 {
-    if(!mytinytodo.menus.listMenu) mytinytodo.menus.listMenu = new mttMenu('listmenucontainer', {onclick:listMenuClick, onhover:listMenuHover});
-    mytinytodo.menus.listMenu.show(el);
+    if (!_mtt.menus.listMenu)
+        _mtt.menus.listMenu = new mttMenu('listmenucontainer', {onclick:listMenuClick, onhover:listMenuHover});
+    _mtt.menus.listMenu.show(el);
 };
 
 function listMenuClick(el, menu)
