@@ -78,17 +78,17 @@ class Sender
     }
 
     /*
-        $list['name'] is already escaped
+        TaskList $list is not escaped
     */
-    private function notifyListCreated($list)
+    private function notifyListCreated(\TaskList $list)
     {
-        $link = get_mttinfo('url'). '?list='. $list['id'];
+        $link = get_mttinfo('url'). '?list='. $list->id;
 
         //email
         if (count($this->prefs['emails']) > 0) {
             $aText = [];
             $aText[] = "New list:";
-            $aText[] = htmlspecialchars_decode($list['name']);
+            $aText[] = $list->name;
             $aText[] = "";
             $aText[] = "Link: $link";
             $text = implode("\r\n", $aText);
@@ -98,7 +98,7 @@ class Sender
 
         // telegram
         if (count($this->prefs['chats']) > 0) {
-            $text = "New list: <a href=\"$link\">". $list['name']. "</a>";
+            $text = "New list: <a href=\"$link\">". htmlspecialchars($list->name). "</a>";
 
             $this->sendTelegrams($text);
         }
