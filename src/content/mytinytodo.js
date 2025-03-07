@@ -35,7 +35,7 @@ const tabLists = {
         this._lists = {};
         this._length = 0;
         this._order = [];
-        this._alltasks = { id:-1, showCompl:0, sort:3, name:_mtt.lang.get('alltasks') };
+        this._alltasks = { id:-1, showCompl:0, sort:3, name:mtt.lang.get('alltasks') };
     },
     length() {
         return this._length;
@@ -78,7 +78,7 @@ const tabLists = {
 var curList = 0;
 var tagsList = [];
 
-const _mtt = window.mytinytodo = {
+const mtt = window.mytinytodo = {
 
     theme: {
         newTaskFlashColor: '#ffffaa',
@@ -230,10 +230,10 @@ const _mtt = window.mytinytodo = {
         });
 
         $('.mtt-tabs-select-button').click(function(event){
-            if (!_mtt.menus.selectlist) {
-                _mtt.menus.selectlist = new mttMenu( 'slmenucontainer', { onclick:slmenuSelect, alignRight: true } );
+            if (!mtt.menus.selectlist) {
+                mtt.menus.selectlist = new mttMenu( 'slmenucontainer', { onclick:slmenuSelect, alignRight: true } );
             }
-            _mtt.menus.selectlist.show(this);
+            mtt.menus.selectlist.show(this);
         });
 
 
@@ -274,7 +274,7 @@ const _mtt = window.mytinytodo = {
             if(event.keyCode == 27) return;
             if($(this).val() == '') $('#search_close').hide();  //actual value is only on keyup
             else $('#search_close').show();
-            if (_mtt.options.instantSearch) {
+            if (mtt.options.instantSearch) {
                 clearTimeout(searchTimer);
                 searchTimer = setTimeout(function(){searchTasks()}, 400);
             }
@@ -303,8 +303,8 @@ const _mtt = window.mytinytodo = {
 
 
         $('#taskview').click(function(){
-            if(!_mtt.menus.taskview) _mtt.menus.taskview = new mttMenu('taskviewcontainer');
-            _mtt.menus.taskview.show(this);
+            if(!mtt.menus.taskview) mtt.menus.taskview = new mttMenu('taskviewcontainer');
+            mtt.menus.taskview.show(this);
         });
 
         $('#mtt-tag-filters').on('click', '.mtt-filter-close', function(){
@@ -325,7 +325,7 @@ const _mtt = window.mytinytodo = {
             else {
                 $('#tagcloudAllLists').prop('checked', flag.showTagsFromAllLists).prop('disabled', false);
             }
-            if (!_mtt.menus.tagcloud) _mtt.menus.tagcloud = new mttMenu('tagcloud', {
+            if (!mtt.menus.tagcloud) mtt.menus.tagcloud = new mttMenu('tagcloud', {
                 beforeShow: function(){
                     if (flag.tagsChanged) {
                         $('#tagcloudcontent').html('');
@@ -342,34 +342,34 @@ const _mtt = window.mytinytodo = {
                     searchTags();
                 }
             });
-            _mtt.menus.tagcloud.show(this);
+            mtt.menus.tagcloud.show(this);
         });
 
         $('#tagcloudSearch').keyup(function(event) {
             if (event.keyCode == 27) return;
-            clearTimeout(_mtt.timers.searchTags);
-            _mtt.timers.searchTags = setTimeout(function(){searchTags()}, 400);
+            clearTimeout(mtt.timers.searchTags);
+            mtt.timers.searchTags = setTimeout(function(){searchTags()}, 400);
 
         })
         .keydown(function(event){
             if (event.keyCode == 27) { // Cancel on Esc
                 if (this.value === '') return; //allow to close the popup
                 this.value = '';
-                clearTimeout(_mtt.timers.searchTags);
+                clearTimeout(mtt.timers.searchTags);
                 searchTags();
                 return false;
             }
         })
 
         $('#tagcloudcancel').click(function(){
-            if(_mtt.menus.tagcloud) _mtt.menus.tagcloud.close();
+            if(mtt.menus.tagcloud) mtt.menus.tagcloud.close();
         });
 
         $('#tagcloudcontent').on('click', '.tag', function(event){
             //tag is not escaped
             addFilterTag( this.dataset.tag, this.dataset.tagId, (event.metaKey || event.ctrlKey ? true : false) );
-            if (_mtt.menus.tagcloud)
-                _mtt.menus.tagcloud.close();
+            if (mtt.menus.tagcloud)
+                mtt.menus.tagcloud.close();
             return false;
         });
 
@@ -464,20 +464,20 @@ const _mtt = window.mytinytodo = {
         });
 
         $("#duedate").datepicker({
-            dateFormat: _mtt.duedatepickerformat(),
-            firstDay: _mtt.options.firstdayofweek,
+            dateFormat: mtt.duedatepickerformat(),
+            firstDay: mtt.options.firstdayofweek,
             showOn: 'button',
-            buttonImage: _mtt.options.calendarIcon,
+            buttonImage: mtt.options.calendarIcon,
             buttonImageOnly: true,
             constrainInput: false,
             duration:'',
-            dayNamesMin:_mtt.lang.daysMin,
-            dayNames:_mtt.lang.daysLong,
-            monthNamesShort:_mtt.lang.monthsShort,
-            monthNames:_mtt.lang.monthsLong,
+            dayNamesMin:mtt.lang.daysMin,
+            dayNames:mtt.lang.daysLong,
+            monthNamesShort:mtt.lang.monthsShort,
+            monthNames:mtt.lang.monthsLong,
             changeMonth: true,
             changeYear: true,
-            isRTL: _mtt.lang.isRTL()
+            isRTL: mtt.lang.isRTL()
         });
 
         function ac_split( val ) {
@@ -491,7 +491,7 @@ const _mtt = window.mytinytodo = {
             source: function(request, response) {
                 var taskId = document.getElementById('taskedit_form').id.value;
                 var listId = (taskId != '') ? taskList[taskId].listId : curList.id;
-                _mtt.db.request('suggestTags', {list:listId, q:ac_extractLast(request.term)}, function(json){
+                mtt.db.request('suggestTags', {list:listId, q:ac_extractLast(request.term)}, function(json){
                     response(json);
                 })
             },/*
@@ -544,7 +544,7 @@ const _mtt = window.mytinytodo = {
                     viewTask(li.dataset.id);
                     return;
                 }
-                if (_mtt.options.viewTaskOnClick) {
+                if (mtt.options.viewTaskOnClick) {
                     viewTask(li.dataset.id);
                 }
             }
@@ -581,7 +581,7 @@ const _mtt = window.mytinytodo = {
         });
 
         $('#tasklist').on('click', '.tag', function(event){
-            clearTimeout(_mtt.timers.previewtag);
+            clearTimeout(mtt.timers.previewtag);
             $('#tasklist li').removeClass('not-in-tagpreview');
             //tag is not escaped
             addFilterTag(this.dataset.tag, this.dataset.tagId, (event.metaKey || event.ctrlKey ? true : false) );
@@ -614,12 +614,12 @@ const _mtt = window.mytinytodo = {
                 const cl = 'tag-id-' + this.dataset.tagId;
                 const sel = (event.metaKey || event.ctrlKey) ? 'li.'+cl : 'li:not(.'+cl+')';
                 if (event.type == 'mouseover') {
-                    _mtt.timers.previewtag = setTimeout( function(){
+                    mtt.timers.previewtag = setTimeout( function(){
                         $('#tasklist '+sel).addClass('not-in-tagpreview');
-                    }, _mtt.options.tagPreviewDelay);
+                    }, mtt.options.tagPreviewDelay);
                 }
                 else {
-                    clearTimeout(_mtt.timers.previewtag);
+                    clearTimeout(mtt.timers.previewtag);
                     $('#tasklist li').removeClass('not-in-tagpreview');
                 }
             });
@@ -663,14 +663,14 @@ const _mtt = window.mytinytodo = {
         // AJAX Errors
         $(document).ajaxSend(function(r,s){
             hideAlert();
-            clearTimeout(_mtt.timers.ajaxAnimation);
-            _mtt.timers.ajaxAnimation = setTimeout( function(){
+            clearTimeout(mtt.timers.ajaxAnimation);
+            mtt.timers.ajaxAnimation = setTimeout( function(){
                 $("#mtt").addClass("ajax-loading");
-            }, _mtt.options.ajaxAnimationDelay );
+            }, mtt.options.ajaxAnimationDelay );
         });
 
         $(document).ajaxStop(function(r,s){
-            clearTimeout(_mtt.timers.ajaxAnimation);
+            clearTimeout(mtt.timers.ajaxAnimation);
             $("#mtt").removeClass("ajax-loading");
         });
 
@@ -686,7 +686,7 @@ const _mtt = window.mytinytodo = {
                 errtxt = 'HTTP: '+request.status+'/'+request.statusText + "\n" + request.responseText;
             else
                 errtxt = request.responseText;
-            flashError(_mtt.lang.get('error'), errtxt);
+            flashError(mtt.lang.get('error'), errtxt);
         });
 
 
@@ -739,14 +739,14 @@ const _mtt = window.mytinytodo = {
         });
 
         $(document).on('click', '.mtt-back-button', function() {
-            _mtt.pageBack(true);
+            mtt.pageBack(true);
             this.blur();
             return false;
         });
 
         $(window).bind('beforeunload', function() {
-            if (_mtt.pages.current && _mtt.pages.current.page == 'taskedit' && flag.editFormChanged) {
-                return _mtt.lang.get('confirmLeave');
+            if (mtt.pages.current && mtt.pages.current.page == 'taskedit' && flag.editFormChanged) {
+                return mtt.lang.get('confirmLeave');
             }
         });
 
@@ -869,8 +869,8 @@ const _mtt = window.mytinytodo = {
             {
                 // open required or last opened or first non-hidden list
                 let list;
-                if (_mtt.options.openList) {
-                    list = res.list.find( item => _mtt.options.openList == item.id );
+                if (mtt.options.openList) {
+                    list = res.list.find( item => mtt.options.openList == item.id );
                 }
                 else {
                     const lastOpenList = getLocalStorageItem('lastList');
@@ -912,7 +912,7 @@ const _mtt = window.mytinytodo = {
                 curList = 0;
             }
 
-            if (_mtt.options.markdown == true) {
+            if (mtt.options.markdown == true) {
                 $('#mtt').addClass('markdown-enabled');
             }
 
@@ -923,27 +923,27 @@ const _mtt = window.mytinytodo = {
                 $('#mtt').addClass('no-lists');
             }
 
-            if (_mtt.options.openList != 0 && openListId == 0 && (flag.isLogged || _mtt.options.username != '')) {
+            if (mtt.options.openList != 0 && openListId == 0 && (flag.isLogged || mtt.options.username != '')) {
                 // cant open list - not found
-                $('#tasks_info .v').text(_mtt.lang.get('listNotFound'))
+                $('#tasks_info .v').text(mtt.lang.get('listNotFound'))
                 $('#tasks_info').show();
             }
             else if (tabLists.length() == 0) {
-                if (_mtt.options.username == '') // homepage
-                    $('#tasks_info .v').text(_mtt.lang.get('welcome'));
+                if (mtt.options.username == '') // homepage
+                    $('#tasks_info .v').text(mtt.lang.get('welcome'));
                 else if (flag.readOnly)
-                    $('#tasks_info .v').text(_mtt.lang.get('noPublicLists'));
+                    $('#tasks_info .v').text(mtt.lang.get('noPublicLists'));
                 else
-                    $('#tasks_info .v').text(_mtt.lang.get('listNotFound'))
+                    $('#tasks_info .v').text(mtt.lang.get('listNotFound'))
                 $('#tasks_info').show();
             }
 
-            _mtt.options.openList = 0;
+            mtt.options.openList = 0;
             $('#lists .mtt-tab-selected').removeClass('mtt-tab-selected');
             $('#mtt').addClass('no-list-selected');
             $('#lists ul').html(ti);
             $('#lists').show();
-            _mtt.doAction('listsLoaded');
+            mtt.doAction('listsLoaded');
 
             if (tabLists.length() > 0 && openListId != 0) {
                 tabSelect(openListId);
@@ -1001,8 +1001,8 @@ const _mtt = window.mytinytodo = {
         $(document).off('keydown.mttback');
         // If clicked on back button in settings or taskviewer we'll use history navigation
         if ( clicked && this.pages.current && this.pages.prev.length > 0 &&
-            ((_mtt.pages.current.page == 'ajax' && _mtt.pages.current.pageClass == 'settings')
-              || _mtt.pages.current.page == 'taskviewer') ) {
+            ((mtt.pages.current.page == 'ajax' && mtt.pages.current.pageClass == 'settings')
+              || mtt.pages.current.page == 'taskviewer') ) {
             window.history.back();
             return;
         }
@@ -1044,7 +1044,7 @@ const _mtt = window.mytinytodo = {
             this._filters.push({tagId:tagId, tag:tag, exclude:exclude});
             if (tagId == -1) {
                 // for display purposes only
-                tag = exclude ? _mtt.lang.get('withAnyTag') : _mtt.lang.get('withoutTags');
+                tag = exclude ? mtt.lang.get('withAnyTag') : mtt.lang.get('withoutTags');
                 exclude = false;
             }
             const tagHtml = this.prepareTagHtml(tagId, tag, ['tag-filter', 'tag-id-'+tagId, exclude ? 'tag-filter-exclude' : '']) ;
@@ -1135,7 +1135,7 @@ const _mtt = window.mytinytodo = {
     {
         list = list || curList;
         if (list === undefined) return '';
-        return _mtt.mttUrl + 'feed.php?list=' + list.id;
+        return mtt.mttUrl + 'feed.php?list=' + list.id;
     },
 
     urlForSettings: function(json = 0)
@@ -1153,9 +1153,9 @@ const _mtt = window.mytinytodo = {
 
 function addList()
 {
-    mttPrompt( _mtt.lang.get('addList'), _mtt.lang.get('addListDefault'), function(r)
+    mttPrompt( mtt.lang.get('addList'), mtt.lang.get('addListDefault'), function(r)
     {
-        _mtt.db.request('addList', {name:r}, function(json){
+        mtt.db.request('addList', {name:r}, function(json){
             if (!parseInt(json.total))
                 return;
             const item = json.list[0];
@@ -1170,11 +1170,11 @@ function addList()
                     $('#lists ul').append(html);
 
                 tabLists.updateOrder();
-                _mtt.doAction('listAdded', item);
+                mtt.doAction('listAdded', item);
             }
             else {
                 // first list created?
-                _mtt.loadLists();
+                mtt.loadLists();
             }
         });
     });
@@ -1183,15 +1183,15 @@ function addList()
 function renameCurList()
 {
     if (!curList) return;
-    mttPrompt( _mtt.lang.get('renameList'), dehtml(curList.name), function(r)
+    mttPrompt( mtt.lang.get('renameList'), dehtml(curList.name), function(r)
     {
-        _mtt.db.request('renameList', {list:curList.id, name:r}, function(json){
+        mtt.db.request('renameList', {list:curList.id, name:r}, function(json){
             if (!parseInt(json.total)) return;
             var item = json.list[0];
             curList = item;
             tabLists.replace(item);
             $('#list_'+curList.id).replaceWith(prepareListHtml(curList, true));
-            _mtt.doAction('listRenamed', item);
+            mtt.doAction('listRenamed', item);
         });
     });
 };
@@ -1199,11 +1199,11 @@ function renameCurList()
 function deleteCurList()
 {
     if (!curList) return false;
-    mttConfirm( _mtt.lang.get('deleteList'), function()
+    mttConfirm( mtt.lang.get('deleteList'), function()
     {
-        _mtt.db.request('deleteList', {list:curList.id}, function(json){
+        mtt.db.request('deleteList', {list:curList.id}, function(json){
             if (!parseInt(json.total)) return;
-            _mtt.loadLists();
+            mtt.loadLists();
         });
     });
 };
@@ -1211,7 +1211,7 @@ function deleteCurList()
 function publishCurList()
 {
     if(!curList) return false;
-    _mtt.db.request('publishList', { list:curList.id, publish:curList.published?0:1 }, function(json){
+    mtt.db.request('publishList', { list:curList.id, publish:curList.published?0:1 }, function(json){
         if(!parseInt(json.total)) return;
         curList.published = curList.published?0:1;
         if(curList.published) {
@@ -1229,7 +1229,7 @@ function enableFeedKeyInCurList()
 {
     if (!curList)
         return false;
-    _mtt.db.request('enableFeedKey', {
+    mtt.db.request('enableFeedKey', {
         list: curList.id,
         enable: (curList.feedKey === undefined || curList.feedKey === '') ? 1 : 0
     }, function(json){
@@ -1266,12 +1266,12 @@ function loadTasks(opts)
         $('#total').html('0');
     }
 
-    _mtt.db.request('loadTasks', {
+    mtt.db.request('loadTasks', {
         list: curList.id,
         compl: curList.showCompl,
         sort: curList.sort,
         search: filter.search,
-        tag: _mtt.filter.getTags(true),
+        tag: mtt.filter.getTags(true),
         setCompl: opts.setCompl,
         saveSort: opts.saveSort
     }, function(json){
@@ -1280,14 +1280,14 @@ function loadTasks(opts)
         taskCnt.total = taskCnt.past = taskCnt.today = taskCnt.soon = 0;
         var tasks = '';
         $.each(json.list, function(i,item){
-            tasks += _mtt.prepareTaskStr(item);
+            tasks += mtt.prepareTaskStr(item);
             taskList[item.id] = item;
             taskOrder.push(parseInt(item.id));
             changeTaskCnt(item, 1);
         });
         curList.lastTime = json.time;
         setNewTaskCounterForList(curList.id, 0);
-        _mtt.doAction("newTaskCounterUpdated", curList.id);
+        mtt.doAction("newTaskCounterUpdated", curList.id);
         if(opts.beforeShow && opts.beforeShow.call) {
             opts.beforeShow();
         }
@@ -1302,7 +1302,7 @@ function prepareListHtml(list, isSelected)
     const classHidden = list.hidden ? 'mtt-tab-hidden' : '';
     const liId = list.id == -1 ? 'list_all' : 'list_' + list.id;
     return `<li id="${liId}" class="mtt-tab ${classSelected} ${classHidden}" data-id="${list.id}">` +
-           '<a href="' + _mtt.urlForList(list) + '" title="' + list.name + '">'+
+           '<a href="' + mtt.urlForList(list) + '" title="' + list.name + '">'+
              '<div class="title-block"><span class="counter hidden"></span>'+
              '<span class="title">' + list.name + '</span></div>' +
              '<div class="list-action mtt-img-button"><span></span></div>'+
@@ -1315,13 +1315,13 @@ function prepareTaskStr(item, noteExp)
                 ((curList.showNotes && item.note != '') || noteExp ? ' task-expanded' : '') + prepareDomClassOfTags(item.tags_ids) + '">' +
                     prepareTaskBlocks(item) + "</li>\n";
 };
-_mtt.prepareTaskStr = prepareTaskStr;
+mtt.prepareTaskStr = prepareTaskStr;
 
 function prepareTaskBlocks(item)
 {
     const id = item.id;
     let markdown = '';
-    if (_mtt.options.markdown == true) markdown = 'markdown-note';
+    if (mtt.options.markdown == true) markdown = 'markdown-note';
     return '' +
         '<div class="task-block">' +
             '<div class="task-left">' +
@@ -1348,19 +1348,19 @@ function prepareTaskBlocks(item)
         '<div class="task-note-block">' +
             '<div id="tasknote' + id + '" class="task-note ' + markdown + '">' + prepareTaskNoteInlineHtml(item.note, item.noteText) + '</div>' +
             '<div id="tasknotearea'+id+'" class="task-note-area"><textarea id="notetext'+id+'"></textarea>'+
-                '<span class="task-note-actions"><a href="#" class="mtt-action-note-save">'+_mtt.lang.get('actionNoteSave') +
-                    '</a> | <a href="#" class="mtt-action-note-cancel">'+_mtt.lang.get('actionNoteCancel')+'</a></span>' +
+                '<span class="task-note-actions"><a href="#" class="mtt-action-note-save">'+mtt.lang.get('actionNoteSave') +
+                    '</a> | <a href="#" class="mtt-action-note-cancel">'+mtt.lang.get('actionNoteCancel')+'</a></span>' +
             '</div>' +
         '</div>';
 };
-_mtt.prepareTaskBlocks = prepareTaskBlocks;
+mtt.prepareTaskBlocks = prepareTaskBlocks;
 
 function prepareTaskTitleInlineHtml(s)
 {
     // Task title is already escaped on back-end
     return s;
 }
-_mtt.prepareTaskTitleInlineHtml = prepareTaskTitleInlineHtml;
+mtt.prepareTaskTitleInlineHtml = prepareTaskTitleInlineHtml;
 
 function prepareListNameInline(item)
 {
@@ -1368,14 +1368,14 @@ function prepareListNameInline(item)
     // List name is already escaped on back-end
     return '<span class="task-listname">'+ item.listName +'</span>';
 }
-_mtt.prepareListNameInline = prepareListNameInline;
+mtt.prepareListNameInline = prepareListNameInline;
 
 function prepareTaskNoteInlineHtml(s, rawText)
 {
     // Task note is already escaped on back-end
     return s;
 };
-_mtt.prepareTaskNoteInlineHtml = prepareTaskNoteInlineHtml;
+mtt.prepareTaskNoteInlineHtml = prepareTaskNoteInlineHtml;
 
 function preparePrio(prio,id)
 {
@@ -1385,7 +1385,7 @@ function preparePrio(prio,id)
     else { cl = 'prio-zero'; v = '&#177;0'; }                                                   // &#177; = &plusmn; = ±
     return '<span class="task-prio '+cl+'">'+v+'</span>';
 };
-_mtt.preparePrio = preparePrio;
+mtt.preparePrio = preparePrio;
 
 function prepareTagsStr(item, delimiter = ', ')
 {
@@ -1399,7 +1399,7 @@ function prepareTagsStr(item, delimiter = ', ')
     }
     return a.join(delimiter);
 };
-_mtt.prepareTagsStr = prepareTagsStr;
+mtt.prepareTagsStr = prepareTagsStr;
 
 function prepareDomClassOfTags(ids)
 {
@@ -1411,14 +1411,14 @@ function prepareDomClassOfTags(ids)
     }
     return ' '+a.join(' ');
 };
-_mtt.prepareDomClassOfTags = prepareDomClassOfTags;
+mtt.prepareDomClassOfTags = prepareDomClassOfTags;
 
 function prepareDueDate(item)
 {
     if(!item.duedate) return '';
     return '<span class="duedate" title="'+item.dueTitle+'">'+item.dueStr+'</span>';
 };
-_mtt.prepareDueDate = prepareDueDate;
+mtt.prepareDueDate = prepareDueDate;
 
 function prepareInlineDate(item)
 {
@@ -1434,12 +1434,12 @@ function prepareInlineDate(item)
     }
     return '<span class="task-id">#' + item.id + '</span> <span title="' + title +'">' + inlineDate + '</span>';
 }
-_mtt.prepareInlineDate = prepareInlineDate;
+mtt.prepareInlineDate = prepareInlineDate;
 
 function submitNewTask(form)
 {
     if(form.task.value == '') return false;
-    _mtt.db.request('newTask', { list:curList.id, title: form.task.value, tag:_mtt.filter.getTags() }, function(json){
+    mtt.db.request('newTask', { list:curList.id, title: form.task.value, tag:mtt.filter.getTags() }, function(json){
         if(!json.total) return;
         $('#total').text( parseInt($('#total').text()) + 1 );
         taskCnt.total++;
@@ -1447,9 +1447,9 @@ function submitNewTask(form)
         var item = json.list[0];
         taskList[item.id] = item;
         taskOrder.push(parseInt(item.id));
-        $('#tasklist').append(_mtt.prepareTaskStr(item));
+        $('#tasklist').append(mtt.prepareTaskStr(item));
         changeTaskOrder(item.id);
-        $('#taskrow_'+item.id).effect("highlight", {color:_mtt.theme.newTaskFlashColor}, 2000);
+        $('#taskrow_'+item.id).effect("highlight", {color:mtt.theme.newTaskFlashColor}, 2000);
         refreshTaskCnt();
     });
     flag.tagsChanged = true;
@@ -1582,12 +1582,12 @@ function prioClick(prio, el)
 
 function setTaskPrio(id, prio)
 {
-    _mtt.db.request('setTaskPriority', {id:id, priority:prio});
+    mtt.db.request('setTaskPriority', {id:id, priority:prio});
     taskList[id].prio = prio;
     var $t = $('#taskrow_'+id);
     $t.find('.task-prio').replaceWith(preparePrio(prio, id));
     if (curList.sort != 0 && curList.sort != 100) changeTaskOrder(id);
-    $t.effect("highlight", {color:_mtt.theme.editTaskFlashColor}, 'normal');
+    $t.effect("highlight", {color:mtt.theme.editTaskFlashColor}, 'normal');
 };
 
 function setSort(v, init)
@@ -1653,7 +1653,7 @@ function setTaskview(v)
     if(v == 0)
     {
         if(filter.due == '') return;
-        $('#taskview .btnstr').text(_mtt.lang.get('tasks'));
+        $('#taskview .btnstr').text(mtt.lang.get('tasks'));
         $('#tasklist').removeClass('filter-'+filter.due);
         filter.due = '';
         $('#total').text(taskCnt.total);
@@ -1665,7 +1665,7 @@ function setTaskview(v)
             $('#tasklist').removeClass('filter-'+filter.due);
         }
         $('#tasklist').addClass('filter-'+v);
-        $('#taskview .btnstr').text(_mtt.lang.get('f_'+v));
+        $('#taskview .btnstr').text(mtt.lang.get('f_'+v));
         $('#total').text(taskCnt[v]);
         filter.due = v;
     }
@@ -1681,8 +1681,8 @@ function toggleAllNotes(show, event)
         else $('#taskrow_'+id).removeClass('task-expanded');
     }
     curList.showNotes = show;
-    if (_mtt.options.saveShowNotes || (event && (event.metaKey || event.ctrlKey)) ) {
-        _mtt.db.request('setShowNotesInList', {list:curList.id, shownotes:show}, function(json){});
+    if (mtt.options.saveShowNotes || (event && (event.metaKey || event.ctrlKey)) ) {
+        mtt.db.request('setShowNotesInList', {list:curList.id, shownotes:show}, function(json){});
     }
 };
 
@@ -1700,7 +1700,7 @@ function tabSelect(elementOrId)
     }
 
     if ( !tabLists.exists(id) ) {
-        $('#tasks_info .v').text(_mtt.lang.get('listNotFound'))
+        $('#tasks_info .v').text(mtt.lang.get('listNotFound'))
         $('#tasks_info').show();
         $('.mtt-need-list').addClass('mtt-item-disabled');
         return;
@@ -1729,15 +1729,15 @@ function tabSelect(elementOrId)
         if (id == -1) $('#mtt').addClass('show-all-tasks');
         else $('#mtt').removeClass('show-all-tasks');
         if (filter.search != '') liveSearchToggle(0, 1);
-        _mtt.doAction('listSelected', {
+        mtt.doAction('listSelected', {
             'list': curList,
             'prevList':prevList
         });
     }
-    const newTitle = curList.name + ' - ' + _mtt.options.title;
+    const newTitle = curList.name + ' - ' + mtt.options.title;
     const isFirstLoad = flag.firstLoad;
-    //replaceHistoryState( 'list', { list:id }, _mtt.urlForList(curList), newTitle );
-    updateHistoryState( { list:id }, _mtt.urlForList(curList), newTitle );
+    //replaceHistoryState( 'list', { list:id }, mtt.urlForList(curList), newTitle );
+    updateHistoryState( { list:id }, mtt.urlForList(curList), newTitle );
     if (!flag.readOnly) {
         setLocalStorageItem('lastList', ''+id);
     }
@@ -1750,8 +1750,8 @@ function tabSelect(elementOrId)
             $('#list_'+curList.id) .detach().insertAfter('#list_'+lastVisible);
         }
         const order = tabLists.updateOrder();
-        _mtt.db.request('setHideList', {list:curList.id, hide:0, order:order});
-        _mtt.doAction('listHidden', curList);
+        mtt.db.request('setHideList', {list:curList.id, hide:0, order:order});
+        mtt.doAction('listHidden', curList);
     }
     flag.tagsChanged = true;
     cancelTagFilter(0, 1);
@@ -1772,9 +1772,9 @@ function tabSelect(elementOrId)
 
 function listMenu(el)
 {
-    if (!_mtt.menus.listMenu)
-        _mtt.menus.listMenu = new mttMenu('listmenucontainer', {onclick:listMenuClick, onhover:listMenuHover});
-    _mtt.menus.listMenu.show(el);
+    if (!mtt.menus.listMenu)
+        mtt.menus.listMenu = new mttMenu('listmenucontainer', {onclick:listMenuClick, onhover:listMenuHover});
+    mtt.menus.listMenu.show(el);
 };
 
 function listMenuClick(el, menu)
@@ -1807,22 +1807,22 @@ function listMenuHover(el, menu)
 {
     if(!el.id) return;
     switch(el.id) {
-        case 'btnExportCSV': $('#'+el.id+'>a').attr('href', _mtt.urlForExport('csv')) ; break;
-        case 'btnExportICAL': $('#'+el.id+'>a').attr('href', _mtt.urlForExport('ical')) ; break;
-        case 'btnRssFeed': $('#'+el.id+'>a').attr('href', _mtt.urlForFeed()) ; break;
+        case 'btnExportCSV': $('#'+el.id+'>a').attr('href', mtt.urlForExport('csv')) ; break;
+        case 'btnExportICAL': $('#'+el.id+'>a').attr('href', mtt.urlForExport('ical')) ; break;
+        case 'btnRssFeed': $('#'+el.id+'>a').attr('href', mtt.urlForFeed()) ; break;
     }
 }
 
 function deleteTask(id)
 {
-    mttConfirm( _mtt.lang.get('confirmDelete'), function()
+    mttConfirm( mtt.lang.get('confirmDelete'), function()
     {
         flag.tagsChanged = true;
-        _mtt.db.request('deleteTask', {id:id}, function(json){
+        mtt.db.request('deleteTask', {id:id}, function(json){
             if (!parseInt(json.total)) return;
             var item = json.list[0];
             taskOrder.splice($.inArray(id,taskOrder), 1);
-            $('#taskrow_'+id).effect("highlight", {color:_mtt.theme.deleteTaskFlashColor}, 'normal', function(){ $(this).remove() });
+            $('#taskrow_'+id).effect("highlight", {color:mtt.theme.deleteTaskFlashColor}, 'normal', function(){ $(this).remove() });
             changeTaskCnt(taskList[id], -1);
             refreshTaskCnt();
             delete taskList[id];
@@ -1836,7 +1836,7 @@ function completeTask(id, ch)
     if(!taskList[id]) return; //click on already removed from the list while anim. effect
     var compl = 0;
     if(ch.checked) compl = 1;
-    _mtt.db.request('completeTask', {id:id, compl:compl, list:curList.id}, function(json){
+    mtt.db.request('completeTask', {id:id, compl:compl, list:curList.id}, function(json){
         if(!parseInt(json.total)) return;
         var item = json.list[0];
         if(item.compl) $('#taskrow_'+id).addClass('task-completed');
@@ -1849,10 +1849,10 @@ function completeTask(id, ch)
             $('#taskrow_'+id).fadeOut('normal', function(){ $(this).remove() });
         }
         else if(curList.showCompl) {
-            $('#taskrow_'+item.id).replaceWith(_mtt.prepareTaskStr(taskList[id]));
+            $('#taskrow_'+item.id).replaceWith(mtt.prepareTaskStr(taskList[id]));
             $('#taskrow_'+id).fadeOut('fast', function(){
                 changeTaskOrder(id);
-                $(this).effect("highlight", {color:_mtt.theme.editTaskFlashColor}, 'normal', function(){$(this).css('display','')});
+                $(this).effect("highlight", {color:mtt.theme.editTaskFlashColor}, 'normal', function(){$(this).css('display','')});
             });
         }
         refreshTaskCnt();
@@ -1886,7 +1886,7 @@ function cancelTaskNote(id)
 
 function saveTaskNote(id)
 {
-    _mtt.db.request('editNote', {id:id, note:$('#notetext'+id).val()}, function(json){
+    mtt.db.request('editNote', {id:id, note:$('#notetext'+id).val()}, function(json){
         if(!parseInt(json.total)) return;
         var item = json.list[0];
         taskList[id].note = item.note;
@@ -1924,8 +1924,8 @@ function viewTask(id)
 {
     const item = fillTaskViewer(id);
     if (!item) return;
-    _mtt.pageSet('taskviewer');
-    updateHistoryState({ task: item.id, list: item.listId }, '#task/'+item.id, dehtml(item.title) + ' - ' + curList.name + ' - ' + _mtt.options.title);
+    mtt.pageSet('taskviewer');
+    updateHistoryState({ task: item.id, list: item.listId }, '#task/'+item.id, dehtml(item.title) + ' - ' + curList.name + ' - ' + mtt.options.title);
 }
 
 
@@ -1982,10 +1982,10 @@ function showEditForm(isAdd)
         clearEditForm();
         $('#page_taskedit').removeClass('mtt-inedit').addClass('mtt-inadd');
         form.isadd.value = 1;
-        if (_mtt.options.autotag) form.tags.value = _mtt.filter.getTags();
+        if (mtt.options.autotag) form.tags.value = mtt.filter.getTags();
         if ($('#task').val() != '')
         {
-            _mtt.db.request('parseTaskStr', { list:curList.id, title:$('#task').val(), tag:_mtt.filter.getTags() }, function(json){
+            mtt.db.request('parseTaskStr', { list:curList.id, title:$('#task').val(), tag:mtt.filter.getTags() }, function(json){
                 if(!json) return;
                 form.task.value = json.title
                 form.tags.value = (form.tags.value != '') ? form.tags.value +', '+ json.tags : json.tags;
@@ -2002,12 +2002,12 @@ function showEditForm(isAdd)
     }
     $(document).on('keydown.mttback', function(event) {
         if (event.keyCode == 27) { //Esc pressed
-            _mtt.pageBack(true);
+            mtt.pageBack(true);
         }
     });
 
     flag.editFormChanged = false;
-    _mtt.pageSet('taskedit');
+    mtt.pageSet('taskedit');
 };
 
 function saveTask(form)
@@ -2018,7 +2018,7 @@ function saveTask(form)
     if (form.isadd.value != 0)
         return submitFullTask(form);
 
-    _mtt.db.request('editTask', {id:form.id.value, title: form.task.value, note:form.note.value,
+    mtt.db.request('editTask', {id:form.id.value, title: form.task.value, note:form.note.value,
         prio:form.prio.value, tags:form.tags.value, duedate:form.duedate.value},
         function(json) {
             if (!parseInt(json.total))
@@ -2027,17 +2027,17 @@ function saveTask(form)
             changeTaskCnt(item, 0, taskList[item.id]);
             taskList[item.id] = item;
             const noteExpanded = (item.note != '' && $('#taskrow_'+item.id).is('.task-expanded')) ? 1 : 0;
-            $('#taskrow_'+item.id).replaceWith(_mtt.prepareTaskStr(item, noteExpanded));
+            $('#taskrow_'+item.id).replaceWith(mtt.prepareTaskStr(item, noteExpanded));
             if (curList.sort != 0 && curList.sort != 100) {
                 changeTaskOrder(item.id);
             }
             refreshTaskCnt();
-            _mtt.pageBack(); //back to list or viewer
-            if (_mtt.pages.current.page == 'taskviewer') {
+            mtt.pageBack(); //back to list or viewer
+            if (mtt.pages.current.page == 'taskviewer') {
                 fillTaskViewer(item.id);
             }
             else {
-                $('#taskrow_'+item.id).effect("highlight", {color:_mtt.theme.editTaskFlashColor}, 'normal', function(){$(this).css('display','')});
+                $('#taskrow_'+item.id).effect("highlight", {color:mtt.theme.editTaskFlashColor}, 'normal', function(){$(this).css('display','')});
             }
 
     });
@@ -2071,7 +2071,7 @@ function fillEditAllTags()
     tagsList.forEach( (item) => {
         a.push('<span class="tag" data-tag="' + item.tag +'">' + item.tag + '</span>');
     });
-    const content = (a.length == 0)  ?  _mtt.lang.get('noTags')  :  a.join('');
+    const content = (a.length == 0)  ?  mtt.lang.get('noTags')  :  a.join('');
     $('#alltags').html(content);
     $('#alltags').show();
 };
@@ -2090,7 +2090,7 @@ function addEditTag(tag)
 function loadTags(listId, callback)
 {
     if (flag.showTagsFromAllLists) listId = -1;
-    _mtt.db.request('tagCloud', {list:listId}, function(json){
+    mtt.db.request('tagCloud', {list:listId}, function(json){
         if (!parseInt(json.total)) tagsList = [];
         else tagsList = json.items;
         flag.tagsChanged = false;
@@ -2107,24 +2107,24 @@ function setTagcloudContent(tags, isFiltered = false)
         cloud += ` <span class="tag" data-tag="${item.tag}" data-tag-id="${item.id}">${item.tag}</span>`;
     });
     if (cloud == '') {
-        cloud = _mtt.lang.get('noTags');
+        cloud = mtt.lang.get('noTags');
     }
     else if (!isFiltered) {
-        cloud = `<span class="tag" data-tag="^" data-tag-id="-1">${_mtt.lang.get('withoutTags')}</span>` + cloud;
+        cloud = `<span class="tag" data-tag="^" data-tag-id="-1">${mtt.lang.get('withoutTags')}</span>` + cloud;
     }
     $('#tagcloudcontent').html(cloud)
 }
 
 function cancelTagFilter(tagId, dontLoadTasks)
 {
-    if(tagId)  _mtt.filter.cancelTag(tagId);
-    else _mtt.filter.clear();
+    if(tagId)  mtt.filter.cancelTag(tagId);
+    else mtt.filter.clear();
     if(dontLoadTasks==null || !dontLoadTasks) loadTasks();
 };
 
 function addFilterTag(tag, tagId, exclude)
 {
-    if (!_mtt.filter.addTag(tagId, tag, exclude))
+    if (!mtt.filter.addTag(tagId, tag, exclude))
         return false;
     loadTasks();
 };
@@ -2185,10 +2185,10 @@ function submitFullTask(form)
 {
     if(flag.readOnly) return false;
 
-    _mtt.db.request( 'fullNewTask',
+    mtt.db.request( 'fullNewTask',
         {
             list: curList.id,
-            tag: _mtt.filter.getTags(),
+            tag: mtt.filter.getTags(),
             title: form.task.value,
             note: form.note.value,
             prio: form.prio.value,
@@ -2202,10 +2202,10 @@ function submitFullTask(form)
             taskList[item.id] = item;
             taskOrder.push(parseInt(item.id));
             curList.lastTaskCreatedTime = item.dateInt;
-            $('#tasklist').append(_mtt.prepareTaskStr(item));
+            $('#tasklist').append(mtt.prepareTaskStr(item));
             changeTaskOrder(item.id);
-            _mtt.pageBack();
-            $('#taskrow_'+item.id).effect("highlight", {color:_mtt.theme.newTaskFlashColor}, 2000);
+            mtt.pageBack();
+            $('#taskrow_'+item.id).effect("highlight", {color:mtt.theme.newTaskFlashColor}, 2000);
             changeTaskCnt(item, 1);
             refreshTaskCnt();
         }
@@ -2271,7 +2271,7 @@ function tasklistSortUpdated(event, ui)
         }
     }
 
-    _mtt.db.request('changeOrder', {order:o});
+    mtt.db.request('changeOrder', {order:o});
 };
 
 
@@ -2518,7 +2518,7 @@ function mttMenu(container, options)
 
 function taskContextMenu(el, id)
 {
-    if(!_mtt.menus.cmenu) _mtt.menus.cmenu = new mttMenu('taskcontextcontainer', {
+    if(!mtt.menus.cmenu) mtt.menus.cmenu = new mttMenu('taskcontextcontainer', {
         onclick: taskContextClick,
         beforeShow: function() {
             var taskId = this.tag;
@@ -2531,14 +2531,14 @@ function taskContextMenu(el, id)
         },
         alignRight: true
     });
-    _mtt.menus.cmenu.tag = id;
-    _mtt.menus.cmenu.show(el);
+    mtt.menus.cmenu.tag = id;
+    mtt.menus.cmenu.show(el);
 };
 
 function taskContextClick(el, menu)
 {
     if(!el.id) return;
-    var taskId = parseInt(_mtt.menus.cmenu.tag);
+    var taskId = parseInt(mtt.menus.cmenu.tag);
     var id = el.id, value;
     var a = id.split(':');
     if(a.length == 2) {
@@ -2560,7 +2560,7 @@ function taskContextClick(el, menu)
 function moveTaskToList(taskId, listId)
 {
     if(curList.id == listId) return;
-    _mtt.db.request('moveTask', {id:taskId, from:curList.id, to:listId}, function(json){
+    mtt.db.request('moveTask', {id:taskId, from:curList.id, to:listId}, function(json){
         if(!parseInt(json.total)) return;
         if(curList.id == -1)
         {
@@ -2569,12 +2569,12 @@ function moveTaskToList(taskId, listId)
             changeTaskCnt(item, 0, taskList[item.id]);
             taskList[item.id] = item;
             var noteExpanded = (item.note != '' && $('#taskrow_'+item.id).is('.task-expanded')) ? 1 : 0;
-            $('#taskrow_'+item.id).replaceWith(_mtt.prepareTaskStr(item, noteExpanded));
+            $('#taskrow_'+item.id).replaceWith(mtt.prepareTaskStr(item, noteExpanded));
             if (curList.sort != 0 && curList.sort != 100) {
                 changeTaskOrder(item.id);
             }
             refreshTaskCnt();
-            $('#taskrow_'+item.id).effect("highlight", {color:_mtt.theme.editTaskFlashColor}, 'normal', function(){$(this).css('display','')});
+            $('#taskrow_'+item.id).effect("highlight", {color:mtt.theme.editTaskFlashColor}, 'normal', function(){$(this).css('display','')});
         }
         else {
             // remove the task from currrent tab
@@ -2592,9 +2592,9 @@ function moveTaskToList(taskId, listId)
 
 function cmenuOnListsLoaded()
 {
-    if (_mtt.menus.cmenu)
-        _mtt.menus.cmenu.destroy();
-    _mtt.menus.cmenu = null;
+    if (mtt.menus.cmenu)
+        mtt.menus.cmenu.destroy();
+    mtt.menus.cmenu = null;
     let opened = '';
     let hidden = '';
     tabLists.getAll().forEach( (list) => {
@@ -2671,8 +2671,8 @@ function tabmenuOnListSelected(a)
 function listOrderChanged(event, ui)
 {
     const order = tabLists.updateOrder();
-    _mtt.db.request('changeListOrder', {order:order});
-    _mtt.doAction('listOrderChanged', {order:order});
+    mtt.db.request('changeListOrder', {order:order});
+    mtt.doAction('listOrderChanged', {order:order});
 };
 
 function showCompletedToggle()
@@ -2687,9 +2687,9 @@ function showCompletedToggle()
 function clearCompleted()
 {
     if (!curList) return false;
-    mttConfirm( _mtt.lang.get('clearCompleted'), function()
+    mttConfirm( mtt.lang.get('clearCompleted'), function()
     {
-        _mtt.db.request('clearCompletedInList', {list:curList.id}, function(json){
+        mtt.db.request('clearCompletedInList', {list:curList.id}, function(json){
             if(!parseInt(json.total)) return;
             flag.tagsChanged = true;
             if(curList.showCompl) loadTasks();
@@ -2747,9 +2747,9 @@ function escapeHtml(str) {
 
 function slmenuOnListsLoaded()
 {
-    if (_mtt.menus.selectlist) {
-        _mtt.menus.selectlist.destroy();
-        _mtt.menus.selectlist = null;
+    if (mtt.menus.selectlist) {
+        mtt.menus.selectlist.destroy();
+        mtt.menus.selectlist = null;
     }
 
     let opened = '';
@@ -2758,7 +2758,7 @@ function slmenuOnListsLoaded()
         const classChecked = (list.id == curList.id) ? 'mtt-item-checked' : '';
         const classHidden = list.hidden ? 'mtt-list-hidden' : '';
         const s = `<li id="slmenu_list:${list.id}" class="list-id-${list.id} ${classChecked} ${classHidden}">
-            <div class="menu-icon"></div><a href="${_mtt.urlForList(list)}">${list.name}</a><div class="counter hidden"></div></li>`;
+            <div class="menu-icon"></div><a href="${mtt.urlForList(list)}">${list.name}</a><div class="counter hidden"></div></li>`;
         if (list.hidden)
             hidden += s;
         else
@@ -2846,8 +2846,8 @@ function hideList(listId)
     }
 
     const order = tabLists.updateOrder();
-    _mtt.db.request('setHideList', { list: listId, hide: 1, order: order });
-    _mtt.doAction('listHidden', tabLists.get(listId));
+    mtt.db.request('setHideList', { list: listId, hide: 1, order: order });
+    mtt.doAction('listHidden', tabLists.get(listId));
 
     if (listIdToSelect) {
         tabSelect(listIdToSelect);
@@ -2877,8 +2877,8 @@ function setLocalStorageItem(key, value)
 
 function newTaskCounterStart()
 {
-    clearInterval(_mtt.timers.newTaskCounter);
-    _mtt.timers.newTaskCounter = setInterval(newTaskCounter, 60*1000); //every 60 sec
+    clearInterval(mtt.timers.newTaskCounter);
+    mtt.timers.newTaskCounter = setInterval(newTaskCounter, 60*1000); //every 60 sec
 }
 
 function newTaskCounter()
@@ -2899,7 +2899,7 @@ function newTaskCounter()
         });
     });
 
-    _mtt.db.request("newTaskCounter", params, json => {
+    mtt.db.request("newTaskCounter", params, json => {
         if (json && json.ok) {
             let counters = {};
             let curCounter = 0;
@@ -2923,7 +2923,7 @@ function newTaskCounter()
                     setNewTaskCounterForList(list.id, counters[list.id]);
                 }
             });
-            _mtt.doAction("newTaskCounterUpdated");
+            mtt.doAction("newTaskCounterUpdated");
         }
     });
 }
@@ -3037,7 +3037,7 @@ function flashError(str, details)
     $("#msg>.msg-text").text(dehtml(str))
     $("#msg>.msg-details").text(dehtml(details));
     $("#loading").hide();
-    $("#msg").addClass('mtt-error').effect("highlight", {color:_mtt.theme.msgFlashColor}, 700);
+    $("#msg").addClass('mtt-error').effect("highlight", {color:mtt.theme.msgFlashColor}, 700);
 }
 
 function flashInfo(str, details)
@@ -3046,7 +3046,7 @@ function flashInfo(str, details)
     $("#msg>.msg-text").text(dehtml(str))
     $("#msg>.msg-details").text(dehtml(details));
     $("#loading").hide();
-    $("#msg").addClass('mtt-info').effect("highlight", {color:_mtt.theme.msgFlashColor}, 700);
+    $("#msg").addClass('mtt-info').effect("highlight", {color:mtt.theme.msgFlashColor}, 700);
 }
 
 function hideAlert()
@@ -3077,7 +3077,7 @@ function updateAccessStatus()
     }
     if(flag.needAuth && !flag.isLogged) {
         flag.readOnly = true;
-        if (_mtt.options.username != '')
+        if (mtt.options.username != '')
             $("#bar_public").show();
         $('#mtt').addClass('readonly')
         liveSearchToggle(1);
@@ -3095,16 +3095,16 @@ function updateAccessStatus()
 
 function showLogin()
 {
-    if (_mtt.pages.current && _mtt.pages.current.page == 'login') {
+    if (mtt.pages.current && mtt.pages.current.page == 'login') {
         return false;
     }
-    _mtt.pageSet('login', '');
+    mtt.pageSet('login', '');
     $('#username').val('').focus();
 }
 
 function doAuth(form)
 {
-    _mtt.db.request( 'login', {
+    mtt.db.request( 'login', {
         username: form.username.value,
         password: form.password.value
     }, function(json) {
@@ -3116,7 +3116,7 @@ function doAuth(form)
             window.location.reload();
         }
         else {
-            flashError(_mtt.lang.get('invalidpass'));
+            flashError(mtt.lang.get('invalidpass'));
             $('#password').focus();
         }
     });
@@ -3124,7 +3124,7 @@ function doAuth(form)
 
 function logout()
 {
-    _mtt.db.request( 'logout', {}, function(json) {
+    mtt.db.request( 'logout', {}, function(json) {
         flag.isLogged = false;
         window.location.hash = '';
         window.location.reload();
@@ -3140,16 +3140,16 @@ function logout()
 function showSettings(json = 0)
 {
     let reload = false;
-    if (_mtt.pages.current && _mtt.pages.current.page == 'ajax' && _mtt.pages.current.pageClass == 'settings') {
+    if (mtt.pages.current && mtt.pages.current.page == 'ajax' && mtt.pages.current.pageClass == 'settings') {
         reload = true;
     }
     const jsonParam = (json == 1) ? '&json=1' : '';
-    $('#page_ajax').load(_mtt.mttUrl + 'settings.php?ajax=yes' + jsonParam, null, function(){
+    $('#page_ajax').load(mtt.mttUrl + 'settings.php?ajax=yes' + jsonParam, null, function(){
         if (!reload) {
-            _mtt.pageSet('ajax','settings');
-            const newTitle = _mtt.lang.get('set_header') + ' - ' + _mtt.options.title;
-            updateHistoryState( { settings:1, settingsJson:json }, _mtt.urlForSettings(json), newTitle );
-            _mtt.doAction('settingsLoaded');
+            mtt.pageSet('ajax','settings');
+            const newTitle = mtt.lang.get('set_header') + ' - ' + mtt.options.title;
+            updateHistoryState( { settings:1, settingsJson:json }, mtt.urlForSettings(json), newTitle );
+            mtt.doAction('settingsLoaded');
         }
     })
 }
@@ -3160,11 +3160,11 @@ function saveSettings(frm)
     var params = { save:'ajax' };
     $(frm).find("input:hidden,input:text,input:password,input:checked,select,textarea").filter(":enabled").each(function() { params[this.name || '__'] = this.value; });
     $(frm).find(":submit").attr('disabled','disabled').blur();
-    $.post(_mtt.mttUrl+'settings.php', params, function(json){
+    $.post(mtt.mttUrl+'settings.php', params, function(json){
         if(json.saved) {
-            flashInfo(_mtt.lang.get('settingsSaved'));
+            flashInfo(mtt.lang.get('settingsSaved'));
             setTimeout( function(){
-                window.location.assign(_mtt.homeUrl); //window.location.reload();
+                window.location.assign(mtt.homeUrl); //window.location.reload();
             }, 1000);
         }
     }, 'json');
@@ -3176,9 +3176,9 @@ function activateExtension(activate, ext)
         'activate': activate ? 1 : 0,
         'ext': ext
     }
-    $.post(_mtt.mttUrl+'settings.php', params, function(json){
+    $.post(mtt.mttUrl+'settings.php', params, function(json){
         if(json.saved) {
-            flashInfo(_mtt.lang.get('settingsSaved'));
+            flashInfo(mtt.lang.get('settingsSaved'));
             showSettings(0);
         }
     }, 'json');
@@ -3186,13 +3186,13 @@ function activateExtension(activate, ext)
 
 function showExtensionSettings(ext, callback, reload)
 {
-    if (_mtt.pages.current && _mtt.pages.current.page == 'ajax' && _mtt.pages.current.pageClass == 'settings') {
-        $('#page_ajax').load(_mtt.apiUrl + 'ext-settings/' + ext, null, function() {
+    if (mtt.pages.current && mtt.pages.current.page == 'ajax' && mtt.pages.current.pageClass == 'settings') {
+        $('#page_ajax').load(mtt.apiUrl + 'ext-settings/' + ext, null, function() {
             if (callback) callback();
             if (!reload) {
-                _mtt.pageSet('ajax','settings');
-                const newTitle = `${ext} - ${_mtt.lang.get('set_header')} - ${_mtt.options.title}`;
-                replaceHistoryState('extSettings', { extSettings:true, ext:ext }, _mtt.urlForExtSettings(ext), newTitle );
+                mtt.pageSet('ajax','settings');
+                const newTitle = `${ext} - ${mtt.lang.get('set_header')} - ${mtt.options.title}`;
+                replaceHistoryState('extSettings', { extSettings:true, ext:ext }, mtt.urlForExtSettings(ext), newTitle );
             }
         });
     }
@@ -3205,7 +3205,7 @@ function saveExtensionSettings(frm)
     var params = {};
     $(frm).find("input:hidden,input:text,input:password,input:checked,select,textarea").filter(":enabled").each(function() { params[this.name || '__'] = this.value; });
     $.ajax({
-        url: _mtt.apiUrl + 'ext-settings/' + ext,
+        url: mtt.apiUrl + 'ext-settings/' + ext,
         method: 'PUT',
         contentType : 'application/json',
         data: JSON.stringify(params),
@@ -3265,7 +3265,7 @@ function extensionSettingsAction(actionString, ext, formData)
     };
     if (formData === undefined) {
         $.ajax({
-            url: _mtt.apiUrl + 'ext/' + ext + '/' + action,
+            url: mtt.apiUrl + 'ext/' + ext + '/' + action,
             method: method.toUpperCase(),
             contentType : 'application/json',
             data: '{}',
@@ -3275,7 +3275,7 @@ function extensionSettingsAction(actionString, ext, formData)
     }
     else {
         $.ajax({
-            url: _mtt.apiUrl + 'ext/' + ext + '/' + action,
+            url: mtt.apiUrl + 'ext/' + ext + '/' + action,
             method: method.toUpperCase(),
             contentType : false,
             data: formData,
@@ -3284,7 +3284,7 @@ function extensionSettingsAction(actionString, ext, formData)
         });
     }
 }
-_mtt.extensionSettingsAction = extensionSettingsAction;
+mtt.extensionSettingsAction = extensionSettingsAction;
 
 /*
  *  Dialogs
@@ -3418,7 +3418,7 @@ function mttModalDialog(dialogType = 'alert')
  */
 function updateHistoryState(state, url, title)
 {
-    if (!_mtt.options.history) {
+    if (!mtt.options.history) {
         document.title = title;
         return;
     }
@@ -3426,22 +3426,22 @@ function updateHistoryState(state, url, title)
         flag.dontChangeHistoryOnce = false;
     }
     else {
-        if (_mtt.lastHistoryState) {
-            //_mtt.lastHistoryState.title = document.title;
-            window.history.pushState(_mtt.lastHistoryState, _mtt.lastHistoryState.title, _mtt.lastHistoryState.url);
+        if (mtt.lastHistoryState) {
+            //mtt.lastHistoryState.title = document.title;
+            window.history.pushState(mtt.lastHistoryState, mtt.lastHistoryState.title, mtt.lastHistoryState.url);
         }
         state.url = url;
         state.title = title;
         window.history.replaceState(state, title, url); //also refresh visible URL
     }
-    _mtt.lastHistoryState = history.state;
+    mtt.lastHistoryState = history.state;
     flag.firstLoad = false;
     document.title = title;
 }
 
 function replaceHistoryState(param, _state, url, title)
 {
-    if (!_mtt.options.history) {
+    if (!mtt.options.history) {
         document.title = title;
         return;
     }
@@ -3454,7 +3454,7 @@ function replaceHistoryState(param, _state, url, title)
         _state.title = title;
         history.replaceState(_state, '', url);
         document.title = title;
-        _mtt.lastHistoryState = history.state;
+        mtt.lastHistoryState = history.state;
     }
     else {
         updateHistoryState(_state, url, title);
@@ -3464,11 +3464,11 @@ function replaceHistoryState(param, _state, url, title)
 function historyOnPopState(event)
 {
     if (!event.state) return;
-    if (event.state.list && _mtt.pages.current &&
-        ((_mtt.pages.current.page == 'ajax' && _mtt.pages.current.pageClass == 'settings') || _mtt.pages.current.page == 'taskviewer') ) {
+    if (event.state.list && mtt.pages.current &&
+        ((mtt.pages.current.page == 'ajax' && mtt.pages.current.pageClass == 'settings') || mtt.pages.current.page == 'taskviewer') ) {
         // Here we go back to tasklist from settings or view task, no reload.
         // Just show and hide pages without history actions.
-        _mtt.pageBack();
+        mtt.pageBack();
         flag.dontChangeHistoryOnce = true;
         updateHistoryState( { list:event.state.list }, event.state.url, event.state.title );
     }
@@ -3481,9 +3481,9 @@ function historyOnPopState(event)
         tabSelect(event.state.list);
     }
     else if (event.state.settings) {
-        _mtt.pageBack(); // will do nothing if back from tasks
+        mtt.pageBack(); // will do nothing if back from tasks
         flag.dontChangeHistoryOnce = true;
-        _mtt.lastHistoryState = event.state;
+        mtt.lastHistoryState = event.state;
         // will pageSet() if back from tasks
         // will not pageSet() if back from extSettings
         showSettings(event.state.settingsJson);
