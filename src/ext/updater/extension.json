@@ -2,5 +2,6 @@
     "bundleId": "updater",
     "name": "Updates",
     "version": "0.9.4",
-    "description": "myTinyTodo self-updater"
+    "description": "myTinyTodo self-updater",
+    "compatibility": "1.7-1.8"
 }

@@ -149,6 +149,10 @@ abstract class MTTExtension
     function init() {
     }
 
+    /**
+     * @param string $ext
+     * @return null|array
+     */
     public static function extMetaInfo(string $ext): ?array
     {
         $file = MTT_EXT. $ext. '/extension.json';
@@ -262,7 +266,7 @@ class MTTExtensionLoader
     }
 
     /**
-     * @return string[]
+     * @return array<string, array>
      */
     public static function bundles(): array
     {
@@ -288,6 +292,26 @@ class MTTExtensionLoader
             $a[$ext] = $meta;
         }
         return $a;
+    }
+
+    /**
+     * @param array $meta
+     * @return bool
+     */
+    public static function isBundleCompatible(array $meta): bool
+    {
+        $cpt = $meta['compatibility'] ?? '';
+        if ($cpt === '' || !is_string($cpt))
+            return false;
+        list($vmin, $vmax) = explode('-', $cpt, 2);
+        if (!isset($vmin) || !isset($vmax))
+            return false;
+
+        if (version_compare(mytinytodo\Version::VERSION, $vmin) < 0)
+            return false;
+        if (version_compare(mytinytodo\Version::VERSION, $vmax) > 0)
+            return false;
+        return true;
     }
 
     public static function extensionInstance(string $ext): ?MTTExtension

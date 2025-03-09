@@ -201,13 +201,19 @@ function listExtensions()
     $a = [];
     foreach ($extBundles as $ext => $meta) {
         $out = htmlspecialchars($meta['name']. ' v'. $meta['version']). ' ';
+        $isCompatible = MTTExtensionLoader::isBundleCompatible($meta);
+        if (!$isCompatible) {
+            $out .= " &lt;not compatible&gt; ";
+        }
         if (in_array($ext, $activatedExts)) {
-            $out .= "<a href='#' data-settings-link='ext-deactivate' data-ext='". htmlspecialchars($ext).  "'>". __('set_deactivate', true). '</a>';
-            $instance = MTTExtensionLoader::extensionInstance($ext);
-            if ($instance instanceof MTTExtensionSettingsInterface) {
-                $out .= " <a href='#' data-settings-link='ext-index' data-ext='". htmlspecialchars($ext). "'>". __('a_settings', true). "</a>";
-            }
             $activatedExts = array_diff($activatedExts, [$ext]);
+            $out .= "<a href='#' data-settings-link='ext-deactivate' data-ext='". htmlspecialchars($ext).  "'>". __('set_deactivate', true). '</a>';
+            if ($isCompatible) {
+                $instance = MTTExtensionLoader::extensionInstance($ext);
+                if ($instance instanceof MTTExtensionSettingsInterface) {
+                    $out .= " <a href='#' data-settings-link='ext-index' data-ext='". htmlspecialchars($ext). "'>". __('a_settings', true). "</a>";
+                }
+            }
         }
         else {
             $out .= "<a href='#' data-settings-link='ext-activate' data-ext='". htmlspecialchars($ext). "'>". __('set_activate', true). '</a>';
