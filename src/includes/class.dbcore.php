@@ -11,7 +11,7 @@
 
 class DBCore
 {
-    /** @var Database_Abstract $db */
+    /** @var AbstractDatabase $db */
     protected $db;
 
     /** @var DBCore $defaultdb */
@@ -19,16 +19,16 @@ class DBCore
 
     /**
      *
-     * @param Database_Abstract $db Value of DBConnection::instance() or similar
+     * @param AbstractDatabase $db Value of DBConnection::instance() or similar
      * @return void
      */
-    public function __construct(Database_Abstract $db) {
+    public function __construct(AbstractDatabase $db) {
         $this->db = $db;
     }
 
     /**
      *
-     * @return Database_Abstract
+     * @return AbstractDatabase
      * @throws Exception
      */
     public function connection()

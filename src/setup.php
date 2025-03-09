@@ -228,7 +228,7 @@ function checkSetupToken()
     }
 }
 
-function databaseVersion(Database_Abstract $db): string
+function databaseVersion(AbstractDatabase $db): string
 {
     if ( !$db ) return '';
     if ( !$db->tableExists($db->prefix.'todolist') ) return '';
@@ -252,7 +252,7 @@ function databaseVersion(Database_Abstract $db): string
     return $v;
 }
 
-function hasMysqlUnicode520(Database_Abstract $db): bool
+function hasMysqlUnicode520(AbstractDatabase $db): bool
 {
     $r = $db->sq("SHOW COLLATION WHERE Charset='utf8mb4' and Collation='utf8mb4_unicode_520_ci'");
     return $r ? true : false;
@@ -329,7 +329,7 @@ function testConnect(&$error)
                 if ($hasMysqli) {
                     require_once(MTTINC. 'class.db.mysqli.php');
                     if (!defined('MTT_DB_DRIVER')) define('MTT_DB_DRIVER', 'mysqli');
-                    $db = new Database_Mysqli();
+                    $db = new MysqliDatabase();
                 }
                 else {
                     throw new Exception("Required PHP extension 'MySQLi' is not installed.");
@@ -339,7 +339,7 @@ function testConnect(&$error)
                 if ($hasPDO) {
                     require_once(MTTINC. 'class.db.mysql.php');
                     if (!defined('MTT_DB_DRIVER')) define('MTT_DB_DRIVER', ''); // set pdo?
-                    $db = new Database_Mysql();
+                    $db = new MysqlDatabase();
                 }
                 else {
                     throw new Exception("Required PHP extension 'PDO_MySQL' is not installed.");
@@ -368,7 +368,7 @@ function testConnect(&$error)
                 if (!defined($c)) throw new Exception("$c is not defined");
             }
 
-            $db = new Database_Postgres;
+            $db = new PostgresDatabase;
             $db->connect([
                 'host' => MTT_DB_HOST,
                 'user' => MTT_DB_USER,
@@ -387,8 +387,8 @@ function testConnect(&$error)
             if (!is_writable(MTTPATH. 'db/')) {
                 throw new Exception("database directory ('db') is not writable");
             }
-            require_once(MTTINC. 'class.db.sqlite3.php');
-            $db = new Database_Sqlite3;
+            require_once(MTTINC. 'class.db.sqlite.php');
+            $db = new SqliteDatabase;
             $db->connect([
                 'filename' => MTTPATH. 'db/todolist.db'
             ]);
@@ -429,7 +429,7 @@ function myExceptionHandler(Throwable $e)
     exit;
 }
 
-function databaseTypeName(Database_Abstract $db)
+function databaseTypeName(AbstractDatabase $db)
 {
     switch ($db::DBTYPE) {
         case DBConnection::DBTYPE_MYSQL: return "MySQL";
@@ -458,7 +458,7 @@ function createAllTables($db, $dbtype)
 
 /* ===== mysql ============================================================= */
 
-function createMysqlTables(Database_Abstract $db)
+function createMysqlTables(AbstractDatabase $db)
 {
     //$collation = hasMysqlUnicode520($db) ? 'utf8mb4_unicode_520_ci' : 'utf8mb4_unicode_ci';
     $collation = 'utf8mb4_unicode_520_ci';
@@ -545,7 +545,7 @@ function createMysqlTables(Database_Abstract $db)
 
 /* ===== postgres ========================================================= */
 
-function createPostgresTables(Database_Abstract $db)
+function createPostgresTables(AbstractDatabase $db)
 {
     $db->ex(
 "CREATE TABLE {$db->prefix}lists (
@@ -620,7 +620,7 @@ function createPostgresTables(Database_Abstract $db)
 
 /* ===== sqlite ============================================================ */
 
-function createSqliteTables(Database_Abstract $db)
+function createSqliteTables(AbstractDatabase $db)
 {
     $db->ex(
 "CREATE TABLE {$db->prefix}lists (
@@ -720,7 +720,7 @@ function createSqliteTables(Database_Abstract $db)
 
 
 ### update v1.7 to v1.8 ##########
-function update_17_18(Database_Abstract $db, $dbtype)
+function update_17_18(AbstractDatabase $db, $dbtype)
 {
     $db->ex("BEGIN");
 
@@ -798,7 +798,7 @@ function update_17_18(Database_Abstract $db, $dbtype)
 
 
 
-function update_18_20(Database_Abstract $db, $dbtype)
+function update_18_20(AbstractDatabase $db, $dbtype)
 {
     $db->ex("BEGIN");
 

@@ -14,13 +14,13 @@ class DBConnection
 
     protected static $instance;
 
-    public static function init(Database_Abstract $instance) : Database_Abstract
+    public static function init(AbstractDatabase $instance) : AbstractDatabase
     {
         self::$instance = $instance;
         return $instance;
     }
 
-    public static function instance() : Database_Abstract
+    public static function instance() : AbstractDatabase
     {
         if (!isset(self::$instance)) {
             throw new Exception("DBConnection is not initialized");
@@ -35,7 +35,7 @@ class DBConnection
     }
 }
 
-abstract class Database_Abstract
+abstract class AbstractDatabase
 {
     const DBTYPE = '';
     protected static $readonlyProps = ['prefix', 'lastQuery'];
@@ -52,7 +52,7 @@ abstract class Database_Abstract
     abstract function connect(array $params): void;
     abstract function sq(string $query, ?array $values = null);
     abstract function sqa(string $query, ?array $values = null): ?array;
-    abstract function dq(string $query, ?array $values = null): DatabaseResult_Abstract;
+    abstract function dq(string $query, ?array $values = null): AbstractDatabaseResult;
     abstract function ex(string $query, ?array $values = null): void;
     abstract function affected(): int;
     abstract function quote($value): string;
@@ -95,7 +95,7 @@ abstract class Database_Abstract
     }
 }
 
-abstract class DatabaseResult_Abstract
+abstract class AbstractDatabaseResult
 {
     abstract function fetchRow(): ?array;
     abstract function fetchAssoc(): ?array;

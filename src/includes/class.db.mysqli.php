@@ -7,7 +7,7 @@
 */
 
 // ---------------------------------------------------------------------------- //
-class DatabaseResult_Mysqli extends DatabaseResult_Abstract
+class MysqliDatabaseResult extends AbstractDatabaseResult
 {
     /** @var mysqli_result */
     protected $q;
@@ -37,7 +37,7 @@ class DatabaseResult_Mysqli extends DatabaseResult_Abstract
 }
 
 // ---------------------------------------------------------------------------- //
-class Database_Mysqli extends Database_Abstract
+class MysqliDatabase extends AbstractDatabase
 {
     const DBTYPE = 'mysql';
 
@@ -92,7 +92,7 @@ class Database_Mysqli extends Database_Abstract
         return $res;
     }
 
-    function dq(string $query, ?array $values = null) : DatabaseResult_Abstract
+    function dq(string $query, ?array $values = null) : AbstractDatabaseResult
     {
         return $this->_dq($query, $values);
     }
@@ -105,7 +105,7 @@ class Database_Mysqli extends Database_Abstract
         $this->_dq($query, $values, true);
     }
 
-    private function _dq(string $query, ?array $values = null, bool $resultless = false) : DatabaseResult_Abstract
+    private function _dq(string $query, ?array $values = null, bool $resultless = false) : AbstractDatabaseResult
     {
         if (null !== $values && sizeof($values) > 0)
         {
@@ -123,7 +123,7 @@ class Database_Mysqli extends Database_Abstract
             $query .= $m[$i];
         }
         $this->setLastQuery($query);
-        return new DatabaseResult_Mysqli($this->dbh, $query, $resultless);
+        return new MysqliDatabaseResult($this->dbh, $query, $resultless);
     }
 
     function affected(): int

@@ -9,7 +9,7 @@
 class MTTSessionHandler implements SessionHandlerInterface, SessionUpdateTimestampHandlerInterface
 {
     /**
-     * @var Database_Abstract
+     * @var AbstractDatabase
      */
     private $db;
 

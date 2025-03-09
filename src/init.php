@@ -100,11 +100,11 @@ function configureDbConnection()
     {
         if (defined('MTT_DB_DRIVER') && MTT_DB_DRIVER == 'mysqli') {
             require_once(MTTINC. 'class.db.mysqli.php');
-            $db = new Database_Mysqli();
+            $db = new MysqliDatabase();
         }
         else {
             require_once(MTTINC. 'class.db.mysql.php');
-            $db = new Database_Mysql();
+            $db = new MysqlDatabase();
         }
         DBConnection::init($db);
         try {
@@ -125,7 +125,7 @@ function configureDbConnection()
     else if (MTT_DB_TYPE == 'postgres')
     {
         require_once(MTTINC. 'class.db.postgres.php');
-        $db = DBConnection::init(new Database_Postgres());
+        $db = DBConnection::init(new PostgresDatabase());
         try {
             $db->connect([
                 'host' => MTT_DB_HOST,
@@ -150,8 +150,8 @@ function configureDbConnection()
     elseif (MTT_DB_TYPE == 'sqlite')
     {
         require_once(MTTINC. 'vendor/autoload.php');
-        require_once(MTTINC. 'class.db.sqlite3.php');
-        $db = DBConnection::init(new Database_Sqlite3());
+        require_once(MTTINC. 'class.db.sqlite.php');
+        $db = DBConnection::init(new SqliteDatabase());
         $db->connect([
             'filename' => MTTPATH. 'db/todolist.db'
         ]);

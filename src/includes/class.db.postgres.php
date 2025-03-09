@@ -7,7 +7,7 @@
 */
 
 // ---------------------------------------------------------------------------- //
-class DatabaseResult_Postgres extends DatabaseResult_Abstract
+class PostgresDatabaseResult extends AbstractDatabaseResult
 {
     /** @var PDOStatement */
     protected $q;
@@ -55,7 +55,7 @@ class DatabaseResult_Postgres extends DatabaseResult_Abstract
 }
 
 // ---------------------------------------------------------------------------- //
-class Database_Postgres extends Database_Abstract
+class PostgresDatabase extends AbstractDatabase
 {
     const DBTYPE = 'postgres';
 
@@ -120,7 +120,7 @@ class Database_Postgres extends Database_Abstract
         return $res;
     }
 
-    function dq(string $query, ?array $values = null) : DatabaseResult_Abstract
+    function dq(string $query, ?array $values = null) : AbstractDatabaseResult
     {
         return $this->_dq($query, $values);
     }
@@ -133,7 +133,7 @@ class Database_Postgres extends Database_Abstract
         $this->_dq($query, $values, true);
     }
 
-    private function _dq(string $query, ?array $values = null, bool $resultless = false) : DatabaseResult_Abstract
+    private function _dq(string $query, ?array $values = null, bool $resultless = false) : AbstractDatabaseResult
     {
         if (null !== $values && sizeof($values) > 0)
         {
@@ -151,7 +151,7 @@ class Database_Postgres extends Database_Abstract
             $query .= $m[$i];
         }
         $this->setLastQuery($query);
-        $dbr = new DatabaseResult_Postgres($this->dbh, $query, $resultless);
+        $dbr = new PostgresDatabaseResult($this->dbh, $query, $resultless);
         $this->affected = $dbr->rowsAffected();
         return $dbr;
     }

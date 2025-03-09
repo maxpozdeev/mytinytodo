@@ -6,7 +6,7 @@
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
-class DatabaseResult_Sqlite3 extends DatabaseResult_Abstract
+class SqliteDatabaseResult extends AbstractDatabaseResult
 {
     /** @var PDOStatement */
     protected $q;
@@ -54,7 +54,7 @@ class DatabaseResult_Sqlite3 extends DatabaseResult_Abstract
 
 }
 
-class Database_Sqlite3 extends Database_Abstract
+class SqliteDatabase extends AbstractDatabase
 {
     const DBTYPE = 'sqlite';
 
@@ -121,7 +121,7 @@ class Database_Sqlite3 extends Database_Abstract
     /*
         SELECT queries for multiple rows
     */
-    function dq(string $query, ?array $values = null) : DatabaseResult_Abstract
+    function dq(string $query, ?array $values = null) : AbstractDatabaseResult
     {
         return $this->_dq($query, $values);
     }
@@ -134,7 +134,7 @@ class Database_Sqlite3 extends Database_Abstract
         $this->_dq($query, $values, true);
     }
 
-    private function _dq(string $query, ?array $values = null, bool $resultless = false) : DatabaseResult_Abstract
+    private function _dq(string $query, ?array $values = null, bool $resultless = false) : AbstractDatabaseResult
     {
         if (null !== $values && sizeof($values) > 0)
         {
@@ -152,7 +152,7 @@ class Database_Sqlite3 extends Database_Abstract
             $query .= $m[$i];
         }
         $this->setLastQuery($query);
-        $dbr = new DatabaseResult_Sqlite3($this->dbh, $query, $resultless);
+        $dbr = new SqliteDatabaseResult($this->dbh, $query, $resultless);
         $this->affected = $dbr->rowsAffected();
         return $dbr;
     }

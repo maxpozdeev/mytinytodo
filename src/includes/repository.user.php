@@ -8,9 +8,9 @@
 
 class UserRepo
 {
-    protected Database_Abstract $db;
+    protected AbstractDatabase $db;
 
-    function __construct(Database_Abstract $db)
+    function __construct(AbstractDatabase $db)
     {
         $this->db = $db;
     }
