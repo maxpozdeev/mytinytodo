@@ -120,7 +120,7 @@ class Config
      * @param string $key
      * @return mixed
      */
-    public static function get($key)
+    public static function get(string $key)
     {
         if (isset(self::$config[$key])) return self::$config[$key];
         elseif (isset(self::$params[$key])) return self::$params[$key]['default'];
@@ -151,7 +151,7 @@ class Config
     public static function set(string $key, $value)
     {
         if (self::isValidConfigParam($key, $value))
-        self::$config[$key] = $value;
+            self::$config[$key] = $value;
     }
 
 
@@ -194,7 +194,8 @@ class Config
     {
         $db = DBConnection::instance();
         $json = $db->sq("SELECT param_value FROM {$db->prefix}settings WHERE param_key = ?", array($key));
-        if (!$json) return array();
+        if (!$json)
+            return array();
         $j = json_decode($json, true, 100, JSON_INVALID_UTF8_SUBSTITUTE);
         if ($j === null) {
             error_log("MTT Error: Failed to decode JSON object with settings. Code: ". (int)json_last_error());
@@ -222,7 +223,7 @@ class Config
      * @return void
      * @throws Exception
      */
-    public static function saveDomain($key, $array)
+    public static function saveDomain(string $key, array $array)
     {
         $json = json_encode($array, JSON_PRETTY_PRINT /*| JSON_INVALID_UTF8_SUBSTITUTE*/);
         if ($json === false) {
@@ -336,4 +337,50 @@ class SetupDbConfig
             opcache_invalidate(MTTPATH. 'config.php', true);
         }
     }
+}
+
+class UserConfig
+{
+    public static function requestDomain(string $key): array
+    {
+        $userId = userId();
+        return static::requestUserDomain($userId, $key);
+    }
+
+    public static function requestUserDomain(int $userId, string $key): array
+    {
+        $db = DBConnection::instance();
+        $json = $db->sq("SELECT param_value FROM {$db->prefix}usersettings WHERE user_id = ? AND param_key = ?",  [$userId, $key]);
+        if (!$json)
+            return array();
+        $j = json_decode($json, true, 100, JSON_INVALID_UTF8_SUBSTITUTE);
+        if ($j === null) {
+            error_log("MTT Error: Failed to decode JSON object with settings. Code: ". (int)json_last_error());
+            return array();
+        }
+        return $j;
+    }
+
+    public static function saveDomain(string $key, array $array)
+    {
+        $userId = userId();
+        return static::saveUserDomain($userId, $key, $array);
+    }
+
+    public static function saveUserDomain(int $userId, string $key, array $array)
+    {
+        $json = json_encode($array, JSON_PRETTY_PRINT /*| JSON_INVALID_UTF8_SUBSTITUTE*/);
+        if ($json === false) {
+            throw new Exception("Failed to create JSON object with settings. Code: ". (int)json_last_error());
+        }
+        $db = DBConnection::instance();
+        $keyExists = $db->sq("SELECT COUNT(param_key) FROM {$db->prefix}usersettings WHERE user_id = ? AND param_key = ?", [$userId, $key] );
+        if ($keyExists) {
+            $db->ex("UPDATE {$db->prefix}usersettings SET param_value = ? WHERE user_id = ? AND param_key = ?", [$json, $userId, $key] );
+        }
+        else {
+            $db->ex("INSERT INTO {$db->prefix}usersettings (user_id,param_key,param_value) VALUES (?,?,?)", [$userId, $key, $json] );
+        }
+    }
+
 }

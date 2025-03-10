@@ -183,9 +183,9 @@ class ListsController extends ApiController {
             $sort = 0;
         }
         if ($listId == -1) {
-            $opts = Config::requestDomain('alltasks.json');
+            $opts = UserConfig::requestDomain('alltasks.json');
             $opts['sort'] = $sort;
-            Config::saveDomain('alltasks.json', $opts);
+            UserConfig::saveDomain('alltasks.json', $opts);
         }
         else {
             $db->ex("UPDATE {$db->prefix}lists SET sorting=$sort,d_edited=? WHERE id=$listId", array(time()));
@@ -197,9 +197,9 @@ class ListsController extends ApiController {
     {
         $db = DBConnection::instance();
         if ($listId == -1) {
-            $opts = Config::requestDomain('alltasks.json');
+            $opts = UserConfig::requestDomain('alltasks.json');
             $opts['showCompleted'] = (int)$showCompleted;
-            Config::saveDomain('alltasks.json', $opts);
+            UserConfig::saveDomain('alltasks.json', $opts);
         }
         else {
             $bitwise = $showCompleted ? 'taskview | 1' : 'taskview & ~1';

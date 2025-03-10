@@ -72,7 +72,7 @@ class ListRepo
      */
     public function alltasksListByUserId(int $userId): AlltasksList
     {
-        $opts = Config::requestDomain('alltasks.json');
+        $opts = UserConfig::requestUserDomain($userId, 'alltasks.json');
         $list = AlltasksList::fromArray($opts);
         $list->userId = $userId;
         return $list;
@@ -158,7 +158,7 @@ class ListRepo
     public function updateAlltasksList(AlltasksList $list)
     {
         $opts = $list->toArray(true);
-        Config::saveDomain('alltasks.json', $opts);
+        UserConfig::saveUserDomain($list->userId, 'alltasks.json', $opts);
     }
 
     // /**
