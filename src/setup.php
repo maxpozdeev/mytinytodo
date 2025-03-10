@@ -80,12 +80,19 @@ if ($configExists)
         // Old or previously failed while install
         exitMessage(htmlspecialchars("Can not update. Unsupported database version ($ver)."));
     }
-
-    require_once('./init.php');
-    if ( !Config::$noDatabase && !is_logged() ) {
-        die("Access denied!<br> Disable password protection or Log in.");
+    else {
+        // 1.7, 1.8
+        $dontStartSession = true;
     }
 
+    require_once('./init.php');
+
+    if ($ver != '' && $dontStartSession) {
+        askPasswordV18($csrfToken);
+    }
+    else if ( !Config::$noDatabase && !is_logged() ) {
+        die("Access denied!<br> Disable password protection or Log in.");
+    }
 }
 
 if ($ver == '')
@@ -214,7 +221,7 @@ function setSetupToken() : string
     setcookie('mtt-s-token', $token, [
         'path' => url_dir(getRequestUri()),
         'httponly' => true,
-        'samesite' => 'lax'
+        'samesite' => 'Strict'
     ]);
     $_COOKIE['mtt-s-token'] = $token;
     return $token;
@@ -227,6 +234,78 @@ function checkSetupToken()
         die("Access denied! No token provided.");
     }
 }
+
+function askPasswordV18(string $csrfToken)
+{
+    $passhash = Config::get('password');
+    if ($passhash == '') {
+        return;
+    }
+
+    if (isset($_POST['configpassword'])) {
+        checkSetupToken();
+    }
+    if (isset($_COOKIE['mtt-v18token'])) {
+        if (validateTokenV18(['password'=>$passhash], $_COOKIE['mtt-v18token'])) {
+            return; //authorized
+        }
+        if (MTT_DEBUG)
+            error_log("Failed validation of v18token");
+    }
+
+    if ( !isset($_POST['configpassword']) || !isPasswordEqualsToHash($_POST['configpassword'], $passhash) ) {
+        exitMessage("Enter current password to continue.
+            <form method=post><input type=hidden name=stoken value='$csrfToken'>
+            <input type=password name=configpassword> <input type=submit value=' Continue '></form>");
+    }
+    $token = generateTokenV18(['password'=>$passhash]);
+
+    setcookie('mtt-v18token', $token, [
+        'path' => url_dir(getRequestUri()),
+        'httponly' => true,
+        'samesite' => 'Strict'
+    ]);
+}
+
+function validateTokenV18(
+    #[SensitiveParameter]
+    array $config,
+    string $token) : bool
+{
+    if (!isset($config['password']) || $config['password'] == '') {
+        return true;
+    }
+    $parts = explode('.', $token);
+    if (count($parts) != 2) {
+        return false;
+    }
+    $signature = base64_decode($parts[1]); //binary
+    if ($signature === false) {
+        return false;
+    }
+    if ( !hash_equals($signature, hash_hmac('sha256', $parts[0], $config['password'], true)) ) {
+        return false;
+    }
+    $payload = json_decode(base64_decode($parts[0]), true);
+    if (!isset($payload['exp']) || time() > $payload['exp']) {
+        return false;
+    }
+    return true;
+}
+
+function generateTokenV18(
+    #[SensitiveParameter]
+    array $config ) : ?string
+{
+    if (!isset($config['password']) || $config['password'] == '') {
+        return null;
+    }
+    $payload = base64_encode(json_encode([
+        'exp' => time() + 120   # 2 min lifetime
+    ]));
+    return $payload. '.'. base64_encode(hash_hmac('sha256', $payload, $config['password'], true));
+}
+
 
 function databaseVersion(AbstractDatabase $db): string
 {
@@ -684,14 +763,14 @@ function createSqliteTables(AbstractDatabase $db)
 
     $db->ex(
         "CREATE TABLE {$db->prefix}users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        username VARCHAR(250) NOT NULL DEFAULT '',
-        email VARCHAR(250) NOT NULL DEFAULT '',
-        name  VARCHAR(250) NOT NULL DEFAULT '',
-        pwhash VARCHAR(250) NOT NULL DEFAULT '',
+        id         INTEGER PRIMARY KEY AUTOINCREMENT,
+        username   VARCHAR(250) NOT NULL DEFAULT '',
+        email      VARCHAR(250) NOT NULL DEFAULT '',
+        name       VARCHAR(250) NOT NULL DEFAULT '',
+        pwhash     VARCHAR(250) NOT NULL DEFAULT '',
         last_visit DATE default NULL,
-        settings TEXT NOT NULL DEFAULT '',
-        extra TEXT default NULL
+        settings   TEXT NOT NULL DEFAULT '',
+        extra      TEXT default NULL
     ) ");
     $db->ex("CREATE UNIQUE INDEX users_username ON {$db->prefix}users (username COLLATE NOCASE)");
     $db->ex("CREATE UNIQUE INDEX users_email ON {$db->prefix}users (email COLLATE NOCASE)");
@@ -702,8 +781,16 @@ function createSqliteTables(AbstractDatabase $db)
     param_key   VARCHAR(250) NOT NULL default '',
     param_value TEXT
 ) ");
-
     $db->ex("CREATE UNIQUE INDEX settings_key ON {$db->prefix}settings (param_key COLLATE NOCASE)");
+
+
+    $db->ex(
+        "CREATE TABLE {$db->prefix}usersettings (
+        user_id     INTEGER UNSIGNED NOT NULL default 0,
+        param_key   VARCHAR(250) NOT NULL default '',
+        param_value TEXT
+    ) ");
+    $db->ex("CREATE UNIQUE INDEX usersettings_ukey ON {$db->prefix}usersettings (user_id, param_key COLLATE NOCASE)");
 
 
     $db->ex(
@@ -841,17 +928,26 @@ function update_18_20(AbstractDatabase $db, $dbtype)
 
         $db->ex(
             "CREATE TABLE {$db->prefix}users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            username VARCHAR(250) NOT NULL DEFAULT '',
-            email VARCHAR(250) NOT NULL DEFAULT '',
-            name  VARCHAR(250) NOT NULL DEFAULT '',
-            pwhash VARCHAR(250) NOT NULL DEFAULT '',
+            id         INTEGER PRIMARY KEY AUTOINCREMENT,
+            username   VARCHAR(250) NOT NULL DEFAULT '',
+            email      VARCHAR(250) NOT NULL DEFAULT '',
+            name       VARCHAR(250) NOT NULL DEFAULT '',
+            pwhash     VARCHAR(250) NOT NULL DEFAULT '',
             last_visit DATE default NULL,
-            settings TEXT NOT NULL DEFAULT '',
-            extra TEXT default NULL
+            settings   TEXT NOT NULL DEFAULT '',
+            extra      TEXT default NULL
         ) ");
         $db->ex("CREATE UNIQUE INDEX users_username ON {$db->prefix}users (username COLLATE NOCASE)");
         $db->ex("CREATE UNIQUE INDEX users_email ON {$db->prefix}users (email COLLATE NOCASE)");
+
+        $db->ex(
+            "CREATE TABLE {$db->prefix}usersettings (
+            user_id     INTEGER UNSIGNED NOT NULL default 0,
+            param_key   VARCHAR(250) NOT NULL default '',
+            param_value TEXT
+        ) ");
+        $db->ex("CREATE UNIQUE INDEX usersettings_ukey ON {$db->prefix}usersettings (user_id, param_key COLLATE NOCASE)");
+
     }
 
     $pwhash = (string)Config::get('password');
@@ -862,6 +958,9 @@ function update_18_20(AbstractDatabase $db, $dbtype)
     $db->ex("UPDATE {$db->prefix}lists SET user_id = 1");
     $db->ex("UPDATE {$db->prefix}tags SET user_id = 1");
 
+    $db->ex("INSERT INTO {$db->prefix}usersettings (user_id,param_key,param_value)
+        SELECT 1,param_key,param_value FROM {$db->prefix}settings WHERE param_key='alltasks.json' ");
+    $db->ex("DELETE FROM {$db->prefix}settings WHERE param_key='alltasks.json'");
 
     $db->ex("COMMIT");
 }
