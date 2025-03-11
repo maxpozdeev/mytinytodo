@@ -16,7 +16,7 @@ https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 myTinyTodo
 --------------
 Url:        https://www.mytinytodo.net/
-Copyright:  2009-2011,2019-2023 Max Pozdeev <maxpozdeev@gmail.com>
+Copyright:  2009-2011,2019-2025 Max Pozdeev <maxpozdeev@gmail.com>
 License:    GPL version 2 or any later (see LICENSE file)
 
 
@@ -48,7 +48,12 @@ Url:        https://parsedown.org/
 Copyright:  (c) 2013-2018 Emanuil Rusev, erusev.com
 License:    MIT license. Compatible with GNU GPL.
 
+Other libraries (in includes/vendor)
+----------------------------------------------
+symfony/polyfill-intl-normalizer
+league/commonmark
+
 Images
-------
+--------------
 This software contains images by 3d-parties.
-See files content/themes/images/COPYRIGHT for details.
+See file content/theme/images/COPYRIGHT for details.
