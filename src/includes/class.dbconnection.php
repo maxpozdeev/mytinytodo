@@ -77,9 +77,27 @@ abstract class AbstractDatabase
         $this->prefix = $prefix;
     }
 
-    function setLogQueryToFile(?string $path) {
-        //any checks?
+    /**
+     * Set a filename to write every sql query before execution.
+     * Set to null to disable logging.
+     * Return false if given filename is not writable or creatable.
+     * @param string $path
+     * @return bool
+     */
+    function setLogQueryToFile(?string $path): bool
+    {
+        if (is_null($path)) {
+        }
+        else if (file_exists($path)) {
+            if (!is_writable($path)) {
+                return false;
+            }
+        }
+        else if (!is_writable(dirname($path))) {
+            return false;
+        }
         $this->logQueryToFile = $path;
+        return true;
     }
 
     function setLastQuery(string $lastQuery) {

@@ -163,6 +163,12 @@ function configureDbConnection()
     DBConnection::setTablePrefix(MTT_DB_PREFIX);
     DBCore::setDefaultInstance(new DBCore($db));
 
+    if (MTT_DEBUG && defined('MTT_DEBUG_QUERY_FILE')) {
+        if (!$db->setLogQueryToFile(MTT_DEBUG_QUERY_FILE)) {
+            error_log("MTT_DEBUG_QUERY_FILE is not writable". MTT_DEBUG_QUERY_FILE);
+        }
+    }
+
     # Check tables created
     global $checkDbExists;
     if (!Config::$noDatabase && isset($checkDbExists) && $checkDbExists) {
