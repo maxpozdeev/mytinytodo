@@ -92,12 +92,12 @@ else if (isset($_POST['activate']))
                 logAndDie($e->getMessage());
             }
         }
-        else $a = array_diff($a, [$ext]);
+        else $a = array_values(array_diff($a, [$ext]));
         Config::set('extensions', $a);
         Config::save();
     }
     else if (!$activate && in_array($ext, $a)) {
-        $a = array_diff($a, [$ext]);
+        $a = array_values(array_diff($a, [$ext]));
         Config::set('extensions', $a);
         Config::save();
     }
@@ -196,7 +196,8 @@ function listExtensions()
 {
     $extBundles = MTTExtensionLoader::bundles();
     $activatedExts = Config::get('extensions');
-    if (!is_array($activatedExts)) $activatedExts = [];
+    if (!is_array($activatedExts))
+        $activatedExts = [];
     $a = [];
     foreach ($extBundles as $ext => $meta) {
         $out = htmlspecialchars($meta['name']. ' v'. $meta['version']). ' ';
