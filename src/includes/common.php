@@ -198,16 +198,19 @@ function randomString(int $len = 16, string $chars = '0123456789abcdefghijklmnop
     return implode('', $a);
 }
 
-// taken from symfony/polyfill-php81 (MIT License)
 if (!function_exists('array_is_list')) {
+    /**
+     * Checks whether a given array is a list
+     * @param array $array
+     * @return bool
+     */
+    // https://www.php.net/manual/en/function.array-is-list.php#127044
     function array_is_list(array $array): bool
     {
-        if ([] === $array || $array === array_values($array)) {
-            return true;
-        }
-        $nextKey = -1;
+        $i = -1;
         foreach ($array as $k => $v) {
-            if ($k !== ++$nextKey) {
+            ++$i;
+            if ($k !== $i) {
                 return false;
             }
         }
