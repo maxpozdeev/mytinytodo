@@ -141,6 +141,22 @@ class Config
         return str_replace( ["\r","\n"], '', $url );
     }
 
+    public static function getList(string $key): ?array
+    {
+        $a = static::get($key);
+        if (is_null($a)) {
+            return null;
+        }
+        else if (!is_array($a)) {
+            error_log("Unexpected type in Config for key '$key' (array expected)");
+            return null;
+        }
+        else if (!array_is_list($a)) {
+            return array_values($a);
+        }
+        return $a;
+    }
+
     /**
      *
      * @param string $key

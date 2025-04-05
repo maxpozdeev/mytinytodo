@@ -78,8 +78,7 @@ else if (isset($_POST['activate']))
 
     $extBundles = MTTExtensionLoader::bundles();
     $exts = array_keys($extBundles);
-    $a = Config::get('extensions');
-    if (!array_is_list($a)) $a = [];
+    $a = Config::getList('extensions') ?? [];
 
     if (in_array($ext, $exts)) {
         if ($activate) {
@@ -195,9 +194,7 @@ function timezoneIdentifiers()
 function listExtensions()
 {
     $extBundles = MTTExtensionLoader::bundles();
-    $activatedExts = Config::get('extensions');
-    if (!array_is_list($activatedExts))
-        $activatedExts = [];
+    $activatedExts = Config::getList('extensions') ?? [];
     $a = [];
     foreach ($extBundles as $ext => $meta) {
         $out = htmlspecialchars($meta['name']. ' v'. $meta['version']). ' ';
