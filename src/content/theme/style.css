@@ -1520,7 +1520,6 @@ li.mtt-item-hidden { display:none; }
   .mtt-settings-table select,
   .mtt-settings-table label {
     margin-top:5px;
-    background-color: var(--color-settings-row) !important;
     box-sizing: border-box;
   }
 
