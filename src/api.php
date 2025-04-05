@@ -91,7 +91,7 @@ if ($req->path !== '/session') {
 }
 
 $req->username = ''; //FIXME: !!!
-$req->setUserId( userId() ?: 0 );
+$req->setUserId( userId() ?? 0 );
 
 $response = new ApiResponse();
 $executed = false;

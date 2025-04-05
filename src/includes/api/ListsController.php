@@ -302,7 +302,7 @@ class ListsController extends ApiController {
     private function changeListOrder(int $userId): array
     {
         $order = $this->req->jsonBody['order'] ?? null;
-        if (!$order || !array_is_list($order)) {
+        if (!$order || !is_array($order) || !array_is_list($order)) {
             return ['ok'=>false, 'total'=>0]; //error 400?
         }
         $repo = new ListRepo(DBConnection::instance());

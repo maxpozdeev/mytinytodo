@@ -100,7 +100,7 @@ function js_options()
     }
     $a = array(
         "token" => htmlspecialchars(access_token()),
-        "me" => username() ?: '',
+        "me" => username() ?? '',
         "username" => trim(_get('user')),
         "title" => get_unsafe_mttinfo('title'),
         "mttUrl" => get_mttinfo('mtt_uri'),
