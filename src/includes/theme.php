@@ -13,9 +13,9 @@
   <link rel="stylesheet" type="text/css" href="<?php mttinfo('theme_url'); ?>style.css?v=<?php filever('theme', 'style.css'); ?>" media="all">
   <link rel="stylesheet" type="text/css" href="<?php mttinfo('theme_url'); ?>markdown.css?v=<?php filever('theme', 'markdown.css'); ?>" media="all">
   <?php if (get_mttinfo('appearance') == 'system'): ?>
-  <link rel="stylesheet" type="text/css" href="<?php mttinfo('theme_url'); ?>dark.css?v=<?php filever('theme', 'dark.css'); ?>" media="screen and (prefers-color-scheme:dark)">
+  <link id="link_css_dark" rel="stylesheet" type="text/css" href="<?php mttinfo('theme_url'); ?>dark.css?v=<?php filever('theme', 'dark.css'); ?>" media="screen and (prefers-color-scheme:dark)">
   <?php elseif (get_mttinfo('appearance') == 'dark'): ?>
-  <link rel="stylesheet" type="text/css" href="<?php mttinfo('theme_url'); ?>dark.css?v=<?php filever('theme', 'dark.css'); ?>" media="screen">
+  <link id="link_css_dark" rel="stylesheet" type="text/css" href="<?php mttinfo('theme_url'); ?>dark.css?v=<?php filever('theme', 'dark.css'); ?>" media="screen">
   <?php endif; ?>
   <link rel="stylesheet" type="text/css" href="<?php mttinfo('theme_url'); ?>print.css?v=<?php filever('theme', 'print.css'); ?>" media="print">
   <?php if(Config::get('rtl')): ?>
@@ -31,6 +31,8 @@
 <script type="text/javascript" src="<?php mttinfo('content_url'); ?>js/jquery.ui.touch-punch.js?v=1.1.5-2"></script>
 <script type="text/javascript" src="<?php mttinfo('content_url'); ?>mytinytodo.js?v=<?php filever('content', 'mytinytodo.js'); ?>"></script>
 <script type="text/javascript" src="<?php mttinfo('content_url'); ?>mytinytodo_api.js?v=<?php filever('content', 'mytinytodo_api.js'); ?>"></script>
+
+<?php do_action('theme_scripts'); ?>
 
 <script type="text/javascript">
 $().ready(function(){
