@@ -129,6 +129,17 @@ abstract class MTTExtension
         return $url;
     }
 
+    public static function getFileVer(string $filename): string
+    {
+        return (string)get_filever('ext', $filename, static::bundleId);
+    }
+
+    public static function getFileUri(string $filename, bool $versioned = true): string
+    {
+        $version = ($versioned) ? '?v='. htmlspecialchars(static::getFileVer($filename)) : '';
+        return get_mttinfo('mtt_uri'). htmlspecialchars('ext/'. static::bundleId. '/'. $filename) . $version;
+    }
+
 }
 
 interface MTTHttpApiExtender

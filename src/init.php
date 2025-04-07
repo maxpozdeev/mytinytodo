@@ -477,10 +477,10 @@ function loadExtensions()
     }
 }
 
-function filever(string $dir, string $filename)
+function get_filever(string $dir, string $filename, ?string $ext = null)
 {
     if (!MTT_DEBUG) {
-        return mttinfo('version');
+        return get_mttinfo('version');
     }
     $prefix = get_mttinfo('version'). '-'. time();
     $path = null;
@@ -490,16 +490,24 @@ function filever(string $dir, string $filename)
     else if ($dir == 'theme') {
         $path = MTTPATH. 'content/'. MTT_THEME. '/';
     }
+    else if ($dir == 'ext') {
+        $path = MTT_EXT. $ext. '/';
+    }
     else {
-        return print($prefix. '-unknown');
+        return $prefix. '-unknown';
     }
     $fullPath = $path. $filename;
     if (!file_exists($fullPath)) {
-        return print($prefix. '-not-found');
+        return $prefix. '-not-found';
     }
     $mtime = filemtime($fullPath);
     if ($mtime === false) {
-        return print($prefix. '-no-access');
+        return $prefix. '-no-access';
     }
-    return print($mtime);
+    return $mtime;
+}
+
+function filever(string $dir, string $filename)
+{
+    print get_filever($dir, $filename);
 }
