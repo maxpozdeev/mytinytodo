@@ -28,7 +28,7 @@ class ListsController extends ApiController {
 
         $repo = new ListRepo($db);
         if ($isOwner)
-            $lists = $repo->findListsByUserId($this->req->userId());
+            $lists = $repo->findListsByUserId($this->req->userId(), true);
         else
             $lists = $repo->findPublicListsByUserId($this->req->userId());
 

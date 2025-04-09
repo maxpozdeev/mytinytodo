@@ -18,15 +18,18 @@ class ListRepo
     /**
      *
      * @param int $userId
+     * @param bool $includeAlltasks
      * @return AbstractTasklist[]
      * @throws Exception
      */
-    function findListsByUserId(int $userId): array
+    function findListsByUserId(int $userId, bool $includeAlltasks = false): array
     {
         $a = [];
 
-        $a[] = $this->alltasksListByUserId($userId);
+        if ($includeAlltasks)
+            $a[] = $this->alltasksListByUserId($userId);
 
+        # taskview & 4 - isHidden flag
         $q = $this->db->dq("SELECT * FROM {$this->db->prefix}lists WHERE user_id=? ORDER BY taskview & 4 ASC, ow ASC, id ASC", [$userId]);
         while ($r = $q->fetchAssoc()) {
             $a[] = TaskList::fromArray($r);

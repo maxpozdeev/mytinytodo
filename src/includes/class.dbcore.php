@@ -80,22 +80,6 @@ class DBCore
     }
 
 
-    public function getListById(int $id): ?array
-    {
-        $db = $this->db;
-        $r = $db->sqa("SELECT * FROM {$db->prefix}lists WHERE id=?", [$id]);
-        return $r;
-    }
-
-
-    public function taskExists(int $id): bool
-    {
-        $db = $this->db;
-        $count = (int) $db->sq("SELECT COUNT(*) FROM {$db->prefix}todolist WHERE id = $id");
-        return ($count > 0) ? true : false;
-    }
-
-
     public function getTaskById(int $id): ?array
     {
         $db = $this->db;
