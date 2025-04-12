@@ -37,9 +37,9 @@ class ListsController extends ApiController {
 
         foreach ($lists as $list) {
             if ($isOwner)
-                $t['list'][] = $list->toJsonArray();
+                $t['list'][] = $list->toJsonApiArray();
             else
-                $t['list'][] = $list->toPublicJsonArray();
+                $t['list'][] = $list->toPublicJsonApiArray();
         }
         $this->response->data = $t;
     }
@@ -97,9 +97,9 @@ class ListsController extends ApiController {
 
         $isOwner = canWriteToList($list);
         if ($isOwner)
-            $this->response->data = $list->toJsonArray();
+            $this->response->data = $list->toJsonApiArray();
         else
-            $this->response->data = $list->toPublicJsonArray();
+            $this->response->data = $list->toPublicJsonApiArray();
     }
 
     /**
@@ -160,7 +160,7 @@ class ListsController extends ApiController {
         return [
             'ok' => true,
             'total' => 1,
-            'list' => [$list]
+            'list' => [$list->toJsonApiArray()]
         ];
     }
 
@@ -171,7 +171,7 @@ class ListsController extends ApiController {
         return [
             'ok' => true,
             'total' => $repo->updateListProperties($list),
-            'list' => [$list],
+            'list' => [$list->toJsonApiArray()],
         ];
     }
 

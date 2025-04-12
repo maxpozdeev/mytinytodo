@@ -17,8 +17,13 @@ abstract class AbstractEntity
             if (!array_key_exists($field, $a))
                 throw new Exception("Field `$field' does not present in input");
         }
-        if (count(static::$dbfields) != count($a))
+        if (count(static::$dbfields) != count($a)) {
+            if (MTT_DEBUG) {
+                $diff = array_diff(array_keys($a), static::$dbfields);
+                throw new Exception("Unexpected fields in input: ". implode(', ', $diff));
+            }
             throw new Exception("Unexpected number of fields in input");
+        }
     }
 
     abstract public static function fromArray(array $a): self;
@@ -27,8 +32,8 @@ abstract class AbstractEntity
 
 interface JsonApiSerialization
 {
-    function toJsonArray(): array;
-    function toPublicJsonArray(): array;
+    function toJsonApiArray(): array;
+    function toPublicJsonApiArray(): array;
 }
 
 abstract class AbstractTaskList extends AbstractEntity implements JsonApiSerialization
@@ -53,9 +58,9 @@ class TaskList extends AbstractTaskList
     public ?int $d_edited;
     public ?int $sorting;
     public bool $isPublished = false;       # published
-    public bool $isShowCompleted = false;   # taskview
-    public bool $isShowNotes = false;       # taskview
-    public bool $isHidden = false;          # taskview
+    public bool $isShowCompleted = false;   # taskview & 1
+    public bool $isShowNotes = false;       # taskview & 2
+    public bool $isHidden = false;          # taskview & 4
     public ?array $extra = null;
 
     function setName(string $name)
@@ -171,7 +176,7 @@ class TaskList extends AbstractTaskList
         return $entity;
     }
 
-    function toJsonArray(bool $public = false): array
+    function toJsonApiArray(bool $public = false): array
     {
         $feedKey = '';
         if (!$public) {
@@ -190,9 +195,9 @@ class TaskList extends AbstractTaskList
         );
     }
 
-    function toPublicJsonArray(): array
+    function toPublicJsonApiArray(): array
     {
-        return $this->isPublished ? $this->toJsonArray(true) : [];
+        return $this->isPublished ? $this->toJsonApiArray(true) : [];
     }
 }
 
@@ -244,7 +249,7 @@ class AlltasksList extends AbstractTaskList
         return $a;
     }
 
-    function toJsonArray(): array
+    function toJsonApiArray(): array
     {
         return array(
             'id' => -1,
@@ -258,8 +263,10 @@ class AlltasksList extends AbstractTaskList
         );
     }
 
-    function toPublicJsonArray(): array
+    function toPublicJsonApiArray(): array
     {
         return [];
     }
 }
+
+
