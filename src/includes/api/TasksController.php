@@ -6,7 +6,6 @@
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
-require_once(MTTINC. 'markup.php');
 require_once(MTTINC. 'smartsyntax.php');
 
 class TasksController extends ApiController {
@@ -208,9 +207,13 @@ class TasksController extends ApiController {
     function deleteId($id)
     {
         $id = (int)$id;
-        $listId = DBCore::default()->getListIdByTaskId($id);
-        checkWriteAccess($listId);
-        $this->response->data = $this->deleteTask($id);
+        $repo = new TaskRepo(DBConnection::instance());
+        $task = $repo->findTaskById($id);
+        if (!$task) {
+            return $this->response->errorJsonContent(__("taskNotFound"), 404);
+        }
+        checkWriteAccess($task->listId);
+        $this->response->data = $this->deleteTask($task);
     }
 
     /**
@@ -222,17 +225,21 @@ class TasksController extends ApiController {
     function putId($id)
     {
         $id = (int)$id;
-        $listId = DBCore::default()->getListIdByTaskId($id);
-        checkWriteAccess($listId);
+        $repo = new TaskRepo(DBConnection::instance());
+        $task = $repo->findTaskById($id);
+        if (!$task) {
+            return $this->response->errorJsonContent(__("taskNotFound"), 404);
+        }
+        checkWriteAccess($task->listId);
 
         $action = $this->req->jsonBody['action'] ?? '';
         switch ($action) {
             case 'edit':     $this->response->data = $this->editTask($id);     break;
-            case 'complete': $this->response->data = $this->completeTask($id); break;
+            case 'complete': $this->response->data = $this->completeTask($task); break;
             case 'note':     $this->response->data = $this->editNote($id);     break;
             case 'move':     $this->response->data = $this->moveTask($id);     break;
             case 'priority': $this->response->data = $this->priorityTask($id); break;
-            case 'delete':   $this->response->data = $this->deleteTask($id);   break; //compatibility
+            case 'delete':   $this->response->data = $this->deleteTask($task);   break; //compatibility
             default:         $this->response->data = ['total' => 0];
         }
     }
@@ -258,7 +265,7 @@ class TasksController extends ApiController {
             $t['prio'] = (int) ($a['prio'] ?? 0);
             $t['tags'] = (string) ($a['tags'] ?? '');
             if (isset($a['duedate']) && $a['duedate'] != '') {
-                $dueA = $this->prepareDuedate($a['duedate']);
+                $dueA = Task::prepareDuedate($a['duedate']);
                 $t['duedate'] = $dueA['formatted'];
             }
         }
@@ -495,23 +502,20 @@ class TasksController extends ApiController {
         return true;
     }
 
-    private function completeTask(int $id): ?array
+    private function completeTask(Task $task): ?array
     {
-        $db = DBConnection::instance();
-        $compl = (int)($this->req->jsonBody['compl'] ?? 0);
-        $listId = (int)$db->sq("SELECT list_id FROM {$db->prefix}todolist WHERE id=$id");
-        if ($compl) $ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->prefix}todolist WHERE list_id=$listId AND compl=1");
-        else $ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->prefix}todolist WHERE list_id=$listId AND compl=0");
-        $date = time();
-        $dateCompleted = $compl ? $date : 0;
-        $db->dq("UPDATE {$db->prefix}todolist SET compl=$compl,ow=$ow,d_completed=?,d_edited=? WHERE id=$id",
-                    array($dateCompleted, $date) );
-        $task = $this->getTaskRowById($id);
-        MTTNotificationCenter::postNotification(MTTNotification::didCompleteTask, $task);
-        $t = array();
-        $t['total'] = 1;
-        $t['list'][] = $task;
-        return $t;
+        $compl = boolval($this->req->jsonBody['compl'] ?? 0);
+        if ($task->setIsCompleted($compl)) {
+            $repo = new TaskRepo(DBConnection::instance());
+            $repo->updateTaskProperties($task);
+            MTTNotificationCenter::postNotification(MTTNotification::didCompleteTask, $task);
+        }
+
+        return [
+            'ok' => true,
+            'total' => 1,
+            'list' => [ $task->toJsonApiArray() ],
+        ];
     }
 
     private function editNote(int $id): ?array
@@ -580,26 +584,17 @@ class TasksController extends ApiController {
         return $t;
     }
 
-    private function deleteTask(int $id)
+    private function deleteTask(Task $task)
     {
-        $id = (int)$id;
-        $task = null;
-        if (MTTNotificationCenter::hasObserversForNotification(MTTNotification::didDeleteTask)) {
-            $task = $this->getTaskRowById($id);
-        }
-        $db = DBConnection::instance();
-        $db->ex("BEGIN");
-        $db->ex("DELETE FROM {$db->prefix}tag2task WHERE task_id=$id");
-        //TODO: delete unused tags?
-        $db->dq("DELETE FROM {$db->prefix}todolist WHERE id=$id");
-        $deleted = $db->affected();
-        $db->ex("COMMIT");
-        if ($deleted && MTTNotificationCenter::hasObserversForNotification(MTTNotification::didDeleteTask)) {
+        $repo = new TaskRepo(DBConnection::instance());
+        $t = [
+            'ok' => true,
+            'total' => $repo->deleteTaskById($task->id),
+            'list' => [ array('id' => $task->id) ]
+        ];
+        if ($t['total']) {
             MTTNotificationCenter::postNotification(MTTNotification::didDeleteTask, $task);
         }
-        $t = array();
-        $t['total'] = $deleted;
-        $t['list'][] = array('id' => $id);
         return $t;
     }
 
@@ -630,7 +625,7 @@ class TasksController extends ApiController {
     private function prepareTaskRow(array $r): array
     {
         $lang = Lang::instance();
-        $dueA = $this->prepareDuedate($r['duedate']);
+        $dueA = Task::prepareDuedate($r['duedate']);
         $dCreated = timestampToDatetime($r['d_created']);
         $isEdited = ($r['d_edited'] != $r['d_created']);
         $dEdited = $isEdited ? timestampToDatetime($r['d_edited']) : '';
@@ -679,77 +674,6 @@ class TasksController extends ApiController {
         );
     }
 
-    private function prepareDuedate($duedate): array
-    {
-        $lang = Lang::instance();
-
-        $a = array( 'class'=>'', 'str'=>'', 'formatted'=>'', 'formattedlong'=>'', 'timestamp'=>0 );
-        if ($duedate == '') {
-            return $a;
-        }
-        $ad = explode('-', $duedate);
-        $y = (int)$ad[0];
-        $m = (int)$ad[1];
-        $d = (int)$ad[2];
-        $a['timestamp'] = mktime(0, 0, 0, $m, $d, $y);
-
-        $oToday = new DateTimeImmutable(date("Y-m-d"));
-        $oDue = new DateTimeImmutable($duedate);
-        $oDiff = $oToday->diff($oDue);
-        if ($oDiff === false) {
-            return $a;
-        }
-        $thisYear = ((int)$oToday->format('Y') == $y);
-        $days = $oDiff->days;
-        if ($oDiff->invert) $days *= -1;
-
-        $exact = Config::get('exactduedate') ? true : false;
-
-        if ($days < -7 && !$thisYear) {
-            $a['class'] = 'past';
-            $a['str'] = formatDate3(Config::get('dateformat2'), $y, $m, $d, $lang);
-        }
-        elseif ($days < -7) {
-            $a['class'] = 'past';
-            $a['str'] = formatDate3(Config::get('dateformatshort'), $y, $m, $d, $lang);
-        }
-        elseif ($days < -1) {
-             $a['class'] = 'past';
-             $a['str'] = !$exact ? sprintf($lang->get('daysago'), abs($days)) : formatDate3(Config::get('dateformatshort'), $y, $m, $d, $lang);
-        }
-        elseif ($days == -1)  {
-             $a['class'] = 'past';
-             $a['str'] = !$exact ? $lang->get('yesterday') : formatDate3(Config::get('dateformatshort'), $y, $m, $d, $lang);
-        }
-        elseif ($days == 0) {
-            $a['class'] = 'today';
-            $a['str'] = !$exact ? $lang->get('today') : formatDate3(Config::get('dateformatshort'), $y, $m, $d, $lang);
-        }
-        elseif ($days == 1) {
-            $a['class'] = 'today';
-            $a['str'] = !$exact ? $lang->get('tomorrow') : formatDate3(Config::get('dateformatshort'), $y, $m, $d, $lang);
-        }
-        elseif ($days <= 7) {
-            $a['class'] = 'soon';
-            $a['str'] = !$exact ? sprintf($lang->get('indays'), $days) : formatDate3(Config::get('dateformatshort'), $y, $m, $d, $lang);
-        }
-        elseif ($thisYear) {
-            $a['class'] = 'future';
-            $a['str'] = formatDate3(Config::get('dateformatshort'), $y, $m, $d, $lang);
-        }
-        else {
-            $a['class'] = 'future';
-            $a['str'] = formatDate3(Config::get('dateformat2'), $y, $m, $d, $lang);
-        }
-
-        #avoid short year
-        $fmt = str_replace('y', 'Y', Config::get('dateformat2'));
-        $a['formatted'] = formatTime($fmt, $a['timestamp']);
-        $a['formattedlong'] = formatTime(Config::get('dateformat'), $a['timestamp']);
-
-        return $a;
-    }
-
     private function date2int($d) : int
     {
         if (!$d) {
@@ -760,13 +684,6 @@ class TasksController extends ApiController {
         if (strlen($ad[1]) < 2) $s .= "0$ad[1]"; else $s .= $ad[1];
         if (strlen($ad[2]) < 2) $s .= "0$ad[2]"; else $s .= $ad[2];
         return (int)$s;
-    }
-
-    private function getTagId($tag)
-    {
-        $db = DBConnection::instance();
-        $id = $db->sq("SELECT id FROM {$db->prefix}tags WHERE name=?", array($tag));
-        return $id ? $id : 0;
     }
 
     private function getOrCreateTag(int $userId, $name): array

@@ -42,8 +42,10 @@ require_once(MTTINC. 'class.dbcore.php');
 require_once(MTTINC. 'class.config.php');
 require_once(MTTINC. 'notifications.php');
 require_once(MTTINC. 'filters.php');
+require_once(MTTINC. 'markup.php');
 require_once(MTTINC. 'entities.php');
 require_once(MTTINC. 'repository.list.php');
+require_once(MTTINC. 'repository.task.php');
 require_once(MTTINC. 'repository.user.php');
 
 configureDbConnection();
@@ -165,7 +167,7 @@ function configureDbConnection()
 
     if (MTT_DEBUG && defined('MTT_DEBUG_QUERY_FILE')) {
         if (!$db->setLogQueryToFile(MTT_DEBUG_QUERY_FILE)) {
-            error_log("MTT_DEBUG_QUERY_FILE is not writable". MTT_DEBUG_QUERY_FILE);
+            error_log("MTT_DEBUG_QUERY_FILE is not writable - ". MTT_DEBUG_QUERY_FILE);
         }
     }
 

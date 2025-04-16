@@ -270,3 +270,270 @@ class AlltasksList extends AbstractTaskList
 }
 
 
+
+abstract class AbstractTask extends AbstractEntity
+{
+    public ?int $id;
+    public ?int $listId;
+}
+
+class Task extends AbstractTask
+{
+    protected static array $dbfields = ['id','uuid','list_id','parent_id','d_created','d_completed','d_edited',
+        'compl','title','note','prio','duedate','extra','ow','tags_ids','tags'];
+    protected array $changed = [];
+
+    public ?int $id;
+    public ?string $uuid;
+    public ?int $listId;                # list_id
+    public ?int $parentId;              # parent_id
+    public ?string $titleText;          # title
+    public ?string $noteText;           # note
+    public int $d_created = 0;
+    public int $d_edited = 0;
+    public int $d_completed = 0;
+    public bool $isCompleted = false;   # compl
+    public int $priority = 0;           # prio
+    public ?string $duedate = null;
+    public ?array $extra = null;
+
+    protected int $ow = 0;
+    //FIXME: tags!
+    protected ?string $tags_ids;
+    protected ?string $tags;
+
+    static function fromArray(array $a) : self
+    {
+        $entity = new static();
+        $entity::checkDbFields($a);
+        $entity->id = (int)$a['id'];
+        $entity->uuid = (string)$a['uuid'];
+        $entity->listId = (int)$a['list_id'];
+        $entity->parentId = $a['parent_id'];
+        $entity->titleText = (string)$a['title'];
+        $entity->noteText = (string)$a['note'];
+        $entity->d_created = (int)$a['d_created'];
+        $entity->d_edited = (int)$a['d_edited'];
+        $entity->d_completed = (int)$a['d_completed'];
+        $entity->isCompleted = boolval($a['compl']);
+        $entity->priority = (int)$a['prio'];
+        $entity->duedate = (string)$a['duedate'];
+
+        $entity->ow = (int)$a['ow'];
+        //FIXME: tags!
+        $entity->tags_ids = $a['tags_ids'];
+        $entity->tags = $a['tags'];
+
+        if (isset($a['extra'])) {
+            $extra = json_decode($a['extra'], true, 10, JSON_INVALID_UTF8_SUBSTITUTE);
+            if ($extra === false) {
+                error_log("Failed to decode JSON data of task extra with id={$entity->id}: " . json_last_error_msg());
+                $extra = [];
+            }
+            # save all keys (even not used)
+            $entity->extra = $extra;
+        }
+
+        return $entity;
+    }
+
+    function toArray(bool $onlyChanged = false): array
+    {
+        $a = [
+            'id' => $this->id,
+            'uuid' => $this->uuid,
+            'list_id' => $this->listId,
+            'title' => $this->titleText,
+            'note' => $this->noteText,
+            'compl' => $this->isCompleted ? 1 : 0,
+            'prio' => $this->priority,
+            'd_created' => $this->d_created,
+            'd_edited' => $this->d_edited,
+            'd_completed' => $this->d_completed,
+            'extra' => null,
+            'ow' => $this->ow,
+            //FIXME: tags!
+            'tags_ids' => $this->tags_ids ?? '',
+            'tags' => $this->tags ?? '',
+        ];
+        if ($this->extra) {
+            $a['extra'] = json_encode($this->extra, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        }
+
+        if (!$onlyChanged)
+            return $a;
+
+        $b = [];
+        $fields = array_keys($this->changed);
+        foreach ($fields as $field) {
+            $b[$field] = $a[$field];
+        }
+        return $b;
+    }
+
+    function toJsonApiArray(): array
+    {
+        $lang = Lang::instance();
+
+        $isEdited = ($this->d_edited && $this->d_edited != $this->d_created);
+        $dCreated = timestampToDatetime($this->d_created);
+        $dEdited = $isEdited ? timestampToDatetime($this->d_edited) : '';
+        $dCompleted = $this->d_completed ? timestampToDatetime($this->d_completed) : '';
+
+        if (!Config::get('showtime')) {
+            $dCreatedFull = timestampToDatetime($this->d_created, true);
+            $dEditedFull = $isEdited ? timestampToDatetime($this->d_edited, true) : '';
+            $dCompletedFull = $this->d_completed ? timestampToDatetime($this->d_completed, true) : '';
+        }
+        else {
+            $dCreatedFull = $dCreated;
+            $dEditedFull = $dEdited;
+            $dCompletedFull = $dCompleted;
+        }
+        $dueA = static::prepareDuedate($this->duedate);
+
+
+
+        return array(
+            'id' => $this->id ?? '',                //int
+            'listId' => $this->listId ?? 0,         //int
+            'listName' => '',
+                # htmlarray($r['list_name'] ?? '')
+            'title' => $this->titleHtml(),
+            'titleText' => $this->titleText,        // raw, not escaped
+            'note' => $this->noteHtml(),
+            'noteText' => $this->noteText ?? '',    // raw, not escaped
+            'compl' => $this->isCompleted ? 1 : 0,
+            'prio' => $this->priority,              //int
+            'isEdited' => (bool)$isEdited,          //bool
+
+            'date' => htmlspecialchars($dCreated),
+            'dateInt' => $this->d_created,                      //int
+            'dateFull' => htmlspecialchars($dCreatedFull),
+            'dateInlineTitle' => htmlspecialchars(sprintf($lang->get('taskdate_inline_created'), $dCreated)), //TODO: move preparing of *inlineTitle to js
+
+            'dateEdited' => htmlspecialchars($dEdited),
+            'dateEditedInt' => $this->d_edited,                 //int
+            'dateEditedFull' => htmlspecialchars($dEditedFull),
+            'dateEditedInlineTitle' => htmlspecialchars(sprintf($lang->get('taskdate_inline_edited'), $dEdited)), //todo:!
+
+            'dateCompleted' => htmlspecialchars($dCompleted),
+            'dateCompletedFull' => htmlspecialchars($dCompletedFull),
+            'dateCompletedInlineTitle' => htmlspecialchars(sprintf($lang->get('taskdate_inline_completed'), $dCompleted)),
+
+            'duedate' => htmlspecialchars($dueA['formatted']),
+            'dueClass' => htmlspecialchars($dueA['class']),
+            'dueStr' => htmlspecialchars($dueA['str']),
+            'dueInt' => $dueA['int'],                           //int
+            'dueTitle' => htmlspecialchars(sprintf($lang->get('taskdate_inline_duedate'), $dueA['formattedlong'])),
+
+            'tags' => htmlspecialchars($this->tags ?? ''),
+            'tags_ids' => htmlspecialchars($this->tags_ids ?? ''),
+
+            //FIXME: dont use ow
+            'ow' => $this->ow ?? 0,
+        );
+    }
+
+    function titleHtml()
+    {
+        return titleMarkup($this->titleText);
+    }
+
+    function noteHtml()
+    {
+        return noteMarkup($this->noteText);
+    }
+
+    function setIsCompleted(bool $completed): bool
+    {
+        if ($completed === $this->isCompleted)
+            return false;
+        $this->isCompleted = $completed;
+        $this->d_completed = $completed ? time() : 0;
+        # NB: we do not change the edited date (new in v2.0)
+
+        $this->changed['compl'] = true;
+        $this->changed['d_completed'] = true;
+        return true;
+    }
+
+
+    /**
+     * Parse duedate and prepare array of properties for Json Api
+     * @param null|string $duedate
+     * @return array<string, mixed>
+     */
+    static function prepareDuedate(?string $duedate): array
+    {
+        $lang = Lang::instance();
+
+        $a = array( 'class'=>'', 'str'=>'', 'formatted'=>'', 'formattedlong'=>'', 'timestamp'=>0, 'int'=>0 );
+        if (is_null($duedate) || $duedate === '') {
+            return $a;
+        }
+        $ad = explode('-', $duedate);
+        $y = (int)$ad[0];
+        $m = (int)$ad[1];
+        $d = (int)$ad[2];
+        $a['timestamp'] = mktime(0, 0, 0, $m, $d, $y);
+        $a['int'] = $y * 10000 + $m * 100 + $d;
+
+        $oToday = new DateTimeImmutable(date("Y-m-d"));
+        $oDue = new DateTimeImmutable($duedate);
+        $oDiff = $oToday->diff($oDue);
+        if ($oDiff === false) {
+            return $a;
+        }
+        $thisYear = ((int)$oToday->format('Y') == $y);
+        $days = $oDiff->days;
+        if ($oDiff->invert) $days *= -1;
+
+        $exact = Config::get('exactduedate') ? true : false;
+
+        if ($days < -7 && !$thisYear) {
+            $a['class'] = 'past';
+            $a['str'] = formatDate3(Config::get('dateformat2'), $y, $m, $d, $lang);
+        }
+        elseif ($days < -7) {
+            $a['class'] = 'past';
+            $a['str'] = formatDate3(Config::get('dateformatshort'), $y, $m, $d, $lang);
+        }
+        elseif ($days < -1) {
+             $a['class'] = 'past';
+             $a['str'] = !$exact ? sprintf($lang->get('daysago'), abs($days)) : formatDate3(Config::get('dateformatshort'), $y, $m, $d, $lang);
+        }
+        elseif ($days == -1)  {
+             $a['class'] = 'past';
+             $a['str'] = !$exact ? $lang->get('yesterday') : formatDate3(Config::get('dateformatshort'), $y, $m, $d, $lang);
+        }
+        elseif ($days == 0) {
+            $a['class'] = 'today';
+            $a['str'] = !$exact ? $lang->get('today') : formatDate3(Config::get('dateformatshort'), $y, $m, $d, $lang);
+        }
+        elseif ($days == 1) {
+            $a['class'] = 'today';
+            $a['str'] = !$exact ? $lang->get('tomorrow') : formatDate3(Config::get('dateformatshort'), $y, $m, $d, $lang);
+        }
+        elseif ($days <= 7) {
+            $a['class'] = 'soon';
+            $a['str'] = !$exact ? sprintf($lang->get('indays'), $days) : formatDate3(Config::get('dateformatshort'), $y, $m, $d, $lang);
+        }
+        elseif ($thisYear) {
+            $a['class'] = 'future';
+            $a['str'] = formatDate3(Config::get('dateformatshort'), $y, $m, $d, $lang);
+        }
+        else {
+            $a['class'] = 'future';
+            $a['str'] = formatDate3(Config::get('dateformat2'), $y, $m, $d, $lang);
+        }
+
+        #avoid short year
+        $fmt = str_replace('y', 'Y', Config::get('dateformat2'));
+        $a['formatted'] = formatTime($fmt, $a['timestamp']);
+        $a['formattedlong'] = formatTime(Config::get('dateformat'), $a['timestamp']);
+
+        return $a;
+    }
+
+}
