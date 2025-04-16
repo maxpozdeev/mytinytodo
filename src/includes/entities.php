@@ -392,8 +392,6 @@ class Task extends AbstractTask
         }
         $dueA = static::prepareDuedate($this->duedate);
 
-
-
         return array(
             'id' => $this->id ?? '',                //int
             'listId' => $this->listId ?? 0,         //int
@@ -435,16 +433,30 @@ class Task extends AbstractTask
         );
     }
 
-    function titleHtml()
+    /**
+     * Get formatted title
+     * @return string
+     */
+    function titleHtml(): string
     {
-        return titleMarkup($this->titleText);
+        return titleMarkup($this->titleText ?? '');
     }
 
-    function noteHtml()
+    /**
+     * Get formatted note using markup method defined in settings
+     * @return string
+     */
+    function noteHtml(): string
     {
         return noteMarkup($this->noteText);
     }
 
+    /**
+     * Change the completed state of a task
+     * Return true of the state was changed
+     * @param bool $completed
+     * @return bool
+     */
     function setIsCompleted(bool $completed): bool
     {
         if ($completed === $this->isCompleted)
@@ -462,7 +474,7 @@ class Task extends AbstractTask
     /**
      * Parse duedate and prepare array of properties for Json Api
      * @param null|string $duedate
-     * @return array<string, mixed>
+     * @return array{class:string,str:string,formatted:string,formattedlong:string,timestamp:int,int:int}
      */
     static function prepareDuedate(?string $duedate): array
     {

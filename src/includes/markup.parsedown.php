@@ -21,7 +21,7 @@ class MTTParsedownWrapper implements MTTMarkdownInterface
         //$this->converter->setBreaksEnabled(true);
     }
 
-    public function convert(string $s, bool $toExternal = false)
+    public function convert(string $s, bool $toExternal = false): string
     {
         $this->converter->setToExternal($toExternal);
         return $this->converter->text($s);

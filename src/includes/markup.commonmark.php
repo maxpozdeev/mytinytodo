@@ -53,7 +53,7 @@ class MTTCommonmarkWrapper implements MTTMarkdownInterface
         $this->converter = new MarkdownConverter($environment);
     }
 
-    public function convert(string $s, bool $toExternal = false)
+    public function convert(string $s, bool $toExternal = false): string
     {
         $this->toExternal = $toExternal;
         return (string) $this->converter->convert($s);

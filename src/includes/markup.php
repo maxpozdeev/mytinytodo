@@ -9,10 +9,12 @@
 require_once(MTTINC. 'markup.parsedown.php');
 //require_once(MTTINC. 'markup.commonmark.php');
 
+
 interface MTTMarkdownInterface
 {
-    public function convert(string $s, bool $toExternal = false);
+    public function convert(string $s, bool $toExternal = false): string;
 }
+
 
 final class MTTMarkdown
 {
@@ -33,7 +35,14 @@ final class MTTMarkdown
     }
 }
 
-function noteMarkup($note, $toExternal = false)
+
+/**
+ * Convert note using markup method defined in settings
+ * @param null|string $note
+ * @param bool $toExternal
+ * @return string
+ */
+function noteMarkup(?string $note, bool $toExternal = false): string
 {
     if ($note === null) {
         $note = '';
@@ -44,14 +53,28 @@ function noteMarkup($note, $toExternal = false)
     return markdownToHtml($note, $toExternal);
 }
 
-function markdownToHtml($s, $toExternal = false)
+
+/**
+ * Convert text in markdown format to html
+ * @param null|string $s
+ * @param bool $toExternal
+ * @return string
+ */
+function markdownToHtml(?string $s, bool $toExternal = false): string
 {
+    if (is_null($s) || $s === '')
+        return '';
     return MTTMarkdown::instance()->convert($s, $toExternal);
 }
 
 
-// Convert note's raw text to html with allowed elements (b,i,u,s and raw urls)
-function mttMarkup_v1($s)
+/**
+ * Convert note's raw text to html with allowed elements (b,i,u,s and raw urls).
+ * The same behaviour as in first versions of the app.
+ * @param string $s
+ * @return string
+ */
+function mttMarkup_v1(string $s): string
 {
     //hide allowed elements from escaping
     $c1 = chr(1);
@@ -78,11 +101,16 @@ function mttMarkup_v1($s)
         $s
     );
 
-    return $s;
+    return (string)$s;
 }
 
-// Convert raw title to html with allowed urls
-function titleMarkup($title)
+
+/**
+ * Convert raw title to html with allowed urls
+ * @param string $title
+ * @return string
+ */
+function titleMarkup(string $title): string
 {
     //escape all unsafe
     $title = htmlspecialchars($title, ENT_QUOTES);
@@ -100,6 +128,6 @@ function titleMarkup($title)
         '$1<a href="$2" target="_blank">$2</a>$4' ,
         $title
     );
-    return $title;
+    return (string)$title;
 }
 
