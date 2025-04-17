@@ -471,6 +471,22 @@ class Task extends AbstractTask
     }
 
 
+    function setPriority(int $prio): bool
+    {
+        if ($this->priority === $prio)
+            return false;
+
+        if ($prio < -1 || $prio > 2)
+            throw new InvalidArgumentException("Unexpected priority value: $prio");
+
+        $this->priority = $prio;
+        $this->d_edited = time();
+
+        $this->changed['prio'] = true;
+        $this->changed['d_edited'] = true;
+        return true;
+    }
+
     /**
      * Parse duedate and prepare array of properties for Json Api
      * @param null|string $duedate

@@ -238,7 +238,7 @@ class TasksController extends ApiController {
             case 'complete': $this->response->data = $this->completeTask($task); break;
             case 'note':     $this->response->data = $this->editNote($id);     break;
             case 'move':     $this->response->data = $this->moveTask($id);     break;
-            case 'priority': $this->response->data = $this->priorityTask($id); break;
+            case 'priority': $this->response->data = $this->priorityTask($task); break;
             case 'delete':   $this->response->data = $this->deleteTask($task);   break; //compatibility
             default:         $this->response->data = ['total' => 0];
         }
@@ -537,24 +537,27 @@ class TasksController extends ApiController {
         return $t;
     }
 
-    private function priorityTask(int $id): ?array
+    private function priorityTask(Task $task): ?array
     {
-        $db = DBConnection::instance();
         $prio = (int)($this->req->jsonBody['prio'] ?? 0);
-        if ($prio < -1) $prio = -1;
-        elseif ($prio > 2) $prio = 2;
-        $db->ex("UPDATE {$db->prefix}todolist SET prio=$prio,d_edited=? WHERE id=$id", array(time()) );
-        if (MTTNotificationCenter::hasObserversForNotification(MTTNotification::didEditTask)) {
-            $task = $this->getTaskRowById($id);
+        if ($prio < -1)
+            $prio = -1;
+        elseif ($prio > 2)
+            $prio = 2;
+
+        if ($task->setPriority($prio)) {
+            $repo = new TaskRepo(DBConnection::instance());
+            $repo->updateTaskProperties($task);
             MTTNotificationCenter::postNotification(MTTNotification::didEditTask, [
                 'property' => 'priority',
                 'task' => $task
             ]);
         }
-        $t = array();
-        $t['total'] = 1;
-        $t['list'][] = array('id'=>$id, 'prio'=>$prio);
-        return $t;
+        return [
+            'ok' => true,
+            'total' => 1,
+            'list' => [ $task->toJsonApiArray() ]
+        ];
     }
 
 
