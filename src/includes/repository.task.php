@@ -71,6 +71,36 @@ class TaskRepo
         return $deleted;
     }
 
+
+    /**
+     * Update order weights of tasks to change their display order
+     * @param array{id:int|string,diff:int}[] $order
+     * @return void
+     */
+    public function changeTaskOrder(array $order)
+    {
+        /** @var array<int,int[]> */
+        $ad = array();
+        foreach ($order as $obj) {
+            $id = (int) ($obj['id'] ?? 0);
+            $diff = (int) ($obj['diff'] ?? 0);
+            if ($id === 0 || $diff === 0)
+                continue;
+            $ad[$diff][] = $id;
+        }
+
+        $this->db->ex("BEGIN");
+        foreach ($ad as $diff=>$ids) {
+            if ($diff >=0)
+                $set = "ow=ow+".$diff;
+            else
+                $set = "ow=ow-".abs($diff);
+            $this->db->dq( "UPDATE {$this->db->prefix}todolist SET $set WHERE id IN (". implode(',', $ids). ")" );
+        }
+        $this->db->ex("COMMIT");
+    }
+
+
     public function updateTaskProperties(Task $task): int
     {
         $fv = $task->toArray(true);

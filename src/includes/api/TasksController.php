@@ -560,29 +560,24 @@ class TasksController extends ApiController {
 
     private function changeTaskOrder(): ?array
     {
-        $db = DBConnection::instance();
         $order = $this->req->jsonBody['order'] ?? null;
-        $t = array();
-        $t['total'] = 0;
-        if (is_array($order))
-        {
-            $ad = array();
-            foreach ($order as $obj) {
-                $id = $obj['id'] ?? 0;
-                $diff = $obj['diff'] ?? 0;
-                $ad[(int)$diff][] = (int)$id;
-            }
-            $db->ex("BEGIN");
-            foreach ($ad as $diff=>$ids) {
-                if ($diff >=0) $set = "ow=ow+".$diff;
-                else $set = "ow=ow-".abs($diff);
-                $db->dq("UPDATE {$db->prefix}todolist SET $set,d_edited=? WHERE id IN (".implode(',',$ids).")", array(time()) );
-            }
-            $db->ex("COMMIT");
-            $t['total'] = 1;
+
+        if (!is_array($order)) {
+            return [
+                'ok' => false,
+                'total' => 0,
+                'error' => "Unexpected type of order"
+            ];
         }
-        return $t;
+
+        $repo = new TaskRepo(DBConnection::instance());
+        $repo->changeTaskOrder($order);
+        return [
+            'ok' => true,
+            'total' => 1,
+        ];
     }
+
 
     private function deleteTask(Task $task)
     {
