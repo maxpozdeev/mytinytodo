@@ -116,9 +116,9 @@ class TaskRepo
             $fields[] = "$field=?";
             $values[] = $value;
         }
-        if (isset($fv['compl'])) {
+        if (isset($fv['compl']) || isset($fv['list_id'])) {
             # Calculate new order weight
-            if ($fv['compl'])
+            if ($task->isCompleted)
                 $ow = 1 + (int)$this->db->sq("SELECT MAX(ow) FROM {$this->db->prefix}todolist WHERE list_id=? AND compl=1", [$task->listId]);
             else
                 $ow = 1 + (int)$this->db->sq("SELECT MAX(ow) FROM {$this->db->prefix}todolist WHERE list_id=? AND compl=0", [$task->listId]);
@@ -128,8 +128,13 @@ class TaskRepo
         }
         $sqlSet = implode(',', $fields);
         $values[] = $task->id;
+        $this->db->ex("BEGIN");
+        if (isset($fv['list_id'])) {
+            $this->db->ex("UPDATE {$this->db->prefix}tag2task SET list_id=? WHERE task_id=?", [$task->listId, $task->id]);
+        }
         $this->db->ex("UPDATE {$this->db->prefix}todolist SET $sqlSet WHERE id=?", $values);
         $affected = $this->db->affected();
+        $this->db->ex("COMMIT");
         return $affected;
     }
 }

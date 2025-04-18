@@ -302,6 +302,8 @@ class Task extends AbstractTask
     protected ?string $tags_ids;
     protected ?string $tags;
 
+    protected ?string $listName;
+
     static function fromArray(array $a) : self
     {
         $entity = new static();
@@ -395,8 +397,7 @@ class Task extends AbstractTask
         return array(
             'id' => $this->id ?? '',                //int
             'listId' => $this->listId ?? 0,         //int
-            'listName' => '',
-                # htmlarray($r['list_name'] ?? '')
+            'listName' => htmlspecialchars($this->listName ?? ''),
             'title' => $this->titleHtml(),
             'titleText' => $this->titleText,        // raw, not escaped
             'note' => $this->noteHtml(),
@@ -484,6 +485,20 @@ class Task extends AbstractTask
 
         $this->changed['prio'] = true;
         $this->changed['d_edited'] = true;
+        return true;
+    }
+
+
+    function setList(TaskList $list): bool
+    {
+        if ($this->listId === $list->id)
+            return false;
+
+        $this->listId = $list->id;
+        # NB: we do not change the edited date (new in v2.0)
+        $this->listName = $list->name;
+
+        $this->changed['list_id'] = true;
         return true;
     }
 

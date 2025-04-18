@@ -237,7 +237,7 @@ class TasksController extends ApiController {
             case 'edit':     $this->response->data = $this->editTask($id);     break;
             case 'complete': $this->response->data = $this->completeTask($task); break;
             case 'note':     $this->response->data = $this->editNote($id);     break;
-            case 'move':     $this->response->data = $this->moveTask($id);     break;
+            case 'move':     $this->response->data = $this->moveTask($task);     break;
             case 'priority': $this->response->data = $this->priorityTask($task); break;
             case 'delete':   $this->response->data = $this->deleteTask($task);   break; //compatibility
             default:         $this->response->data = ['total' => 0];
@@ -452,55 +452,42 @@ class TasksController extends ApiController {
         return $t;
     }
 
-    private function moveTask(int $id): ?array
+
+    private function moveTask(Task $task): ?array
     {
-        $fromId = (int)($this->req->jsonBody['from'] ?? 0);
+        #$fromId = (int)($this->req->jsonBody['from'] ?? 0);
         $toId = (int)($this->req->jsonBody['to'] ?? 0);
-        $listName = '';
-        $result = $this->doMoveTask($id, $toId, $listName);
-        $task = null;
-        if ($result && MTTNotificationCenter::hasObserversForNotification(MTTNotification::didEditTask)) {
-            $task = $this->getTaskRowById($id);
+
+        $failedResult = [
+            'ok' => false,
+            'total' => 0,
+            'error' => "Failed to move a task",
+        ];
+
+        if ($task->listId == $toId) {
+            return $failedResult;
+        }
+        $list = (new ListRepo(DBConnection::instance()))->findListById($toId);
+        if (!$list) {
+            return $failedResult;
+        }
+
+        if ($task->setList($list)) {
+            $repo = new TaskRepo(DBConnection::instance());
+            $repo->updateTaskProperties($task);
             MTTNotificationCenter::postNotification(MTTNotification::didEditTask, [
                 'property' => 'list',
                 'task' => $task
             ]);
         }
-        $t = array('total' => $result ? 1 : 0);
-        if ($fromId == -1 && $result) {
-            if (!$task) {
-                $r = DBCore::default()->getTaskById($id);
-                $r['list_name'] = $listName;
-                $task = $this->prepareTaskRow($r);
-            }
-            $t['list'][] = $task;
-        }
-        return $t;
+
+        return [
+            'ok' => true,
+            'total' => 1,
+            'list' => [ $task->toJsonApiArray() ]
+        ];
     }
 
-    private function doMoveTask(int $id, int $listId, &$listName): bool
-    {
-        $db = DBConnection::instance();
-
-        // Check task exists and not in target list
-        $r = $db->sqa("SELECT * FROM {$db->prefix}todolist WHERE id=?", array($id));
-        if (!$r || $listId == $r['list_id'])
-            return false;
-
-        // Check target list exists
-        $l = $db->sqa("SELECT id,name FROM {$db->prefix}lists WHERE id=?", [$listId]);
-        if (!$l)
-            return false;
-        $listName = $l['name'];
-
-        $ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->prefix}todolist WHERE list_id=? AND compl=?", array($listId, $r['compl']?1:0));
-
-        $db->ex("BEGIN");
-        $db->ex("UPDATE {$db->prefix}tag2task SET list_id=? WHERE task_id=?", array($listId, $id));
-        $db->dq("UPDATE {$db->prefix}todolist SET list_id=?, ow=?, d_edited=? WHERE id=?", array($listId, $ow, time(), $id));
-        $db->ex("COMMIT");
-        return true;
-    }
 
     private function completeTask(Task $task): ?array
     {
