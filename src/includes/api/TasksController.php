@@ -240,7 +240,11 @@ class TasksController extends ApiController {
             case 'move':     $this->response->data = $this->moveTask($task);     break;
             case 'priority': $this->response->data = $this->priorityTask($task); break;
             case 'delete':   $this->response->data = $this->deleteTask($task);   break; //compatibility
-            default:         $this->response->data = ['total' => 0];
+            default:         $this->response->data = [
+                'ok' => false,
+                'total' => 0,
+                'error' => "Unexpected action",
+            ];
         }
     }
 

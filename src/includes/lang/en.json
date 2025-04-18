@@ -205,6 +205,7 @@
     "error": "Some error occurred (click for details)",
     "denied": "Access denied",
     "listNotFound": "List not found",
+    "taskNotFound": "Task not found",
     "noPublicLists": "No public tasks",
     "welcome": "Welcome! Log in first.",
     "noTags": "No tags",
