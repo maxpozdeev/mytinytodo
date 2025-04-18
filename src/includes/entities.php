@@ -471,6 +471,19 @@ class Task extends AbstractTask
         return true;
     }
 
+    function setNote(string $note): bool
+    {
+        $note = str_replace("\r\n", "\n", $note);
+        if ($this->noteText === $note)
+            return false;
+
+        $this->noteText = $note;
+        $this->d_edited = time();
+
+        $this->changed['note'] = true;
+        $this->changed['d_edited'] = true;
+        return true;
+    }
 
     function setPriority(int $prio): bool
     {

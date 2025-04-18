@@ -236,7 +236,7 @@ class TasksController extends ApiController {
         switch ($action) {
             case 'edit':     $this->response->data = $this->editTask($id);     break;
             case 'complete': $this->response->data = $this->completeTask($task); break;
-            case 'note':     $this->response->data = $this->editNote($id);     break;
+            case 'note':     $this->response->data = $this->editNote($task);     break;
             case 'move':     $this->response->data = $this->moveTask($task);     break;
             case 'priority': $this->response->data = $this->priorityTask($task); break;
             case 'delete':   $this->response->data = $this->deleteTask($task);   break; //compatibility
@@ -509,23 +509,23 @@ class TasksController extends ApiController {
         ];
     }
 
-    private function editNote(int $id): ?array
+
+    private function editNote(Task $task): ?array
     {
-        $db = DBConnection::instance();
         $note = $this->req->jsonBody['note'] ?? '';
-        $note = str_replace("\r\n", "\n", $note);
-        $db->dq("UPDATE {$db->prefix}todolist SET note=?,d_edited=? WHERE id=$id", array($note, time()) );
-        if (MTTNotificationCenter::hasObserversForNotification(MTTNotification::didEditTask)) {
-            $task = $this->getTaskRowById($id);
+        if ($task->setNote($note)) {
+            $repo = new TaskRepo(DBConnection::instance());
+            $repo->updateTaskProperties($task);
             MTTNotificationCenter::postNotification(MTTNotification::didEditTask, [
                 'property' => 'note',
                 'task' => $task
             ]);
         }
-        $t = array();
-        $t['total'] = 1;
-        $t['list'][] = array('id'=>$id, 'note'=> noteMarkup($note), 'noteText'=>(string)$note);
-        return $t;
+        return [
+            'ok' => true,
+            'total' => 1,
+            'list' => [ $task->toJsonApiArray() ],
+        ];
     }
 
     private function priorityTask(Task $task): ?array
