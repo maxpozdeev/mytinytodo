@@ -116,6 +116,7 @@ class TaskRepo
             $fields[] = "$field=?";
             $values[] = $value;
         }
+
         if (isset($fv['compl']) || isset($fv['list_id'])) {
             # Calculate new order weight
             if ($task->isCompleted)
@@ -128,6 +129,7 @@ class TaskRepo
         }
         $sqlSet = implode(',', $fields);
         $values[] = $task->id;
+
         $this->db->ex("BEGIN");
         if (isset($fv['list_id'])) {
             $this->db->ex("UPDATE {$this->db->prefix}tag2task SET list_id=? WHERE task_id=?", [$task->listId, $task->id]);
@@ -173,6 +175,29 @@ class TaskRepo
         }
         else {
             # Update record
+            $a = $task->toArray();
+            //TODO: if completed flag was changed we have to update the $ow
+
+            $this->db->ex("BEGIN");
+
+            $this->db->ex("DELETE FROM {$this->db->prefix}tag2task WHERE task_id=?", [$task->id]);
+            if ($task->tagNames)
+            {
+                $tagRepo = new TagRepo($this->db);
+                $tags = $tagRepo->getTags($task->tagNames, $userId);
+                foreach ($tags as $tag) {
+                    $this->db->ex(
+                        "INSERT INTO {$this->db->prefix}tag2task (task_id,tag_id,list_id) VALUES (?,?,?)",
+                        array($task->id, $tag->id, $task->listId)
+                    );
+                }
+                $task->setTags($tags);
+            }
+
+            $this->db->dq("UPDATE {$this->db->prefix}todolist SET title=?,note=?,prio=?,duedate=?,d_edited=?,extra=? WHERE id=?",
+                [$task->title, $task->note, $task->priority, $task->duedate, $task->d_edited, $a['extra'],  $task->id] );
+
+            $this->db->ex("COMMIT");
         }
     }
 

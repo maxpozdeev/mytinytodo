@@ -340,6 +340,12 @@ class Task extends AbstractTask
         return $entity;
     }
 
+
+    function changedFields(): array
+    {
+        return array_keys($this->changed);
+    }
+
     function toArray(bool $onlyChanged = false): array
     {
         $a = [
@@ -367,7 +373,7 @@ class Task extends AbstractTask
             return $a;
 
         $b = [];
-        $fields = array_keys($this->changed);
+        $fields = $this->changedFields();
         foreach ($fields as $field) {
             $b[$field] = $a[$field];
         }
@@ -468,6 +474,22 @@ class Task extends AbstractTask
         return noteMarkup($this->note);
     }
 
+
+    function setTitle(string $title): bool
+    {
+        if ($title === '') {
+            throw new InvalidArgumentException("Unspecified title");
+        }
+        $this->title = $title;
+        $this->changed['title'] = true;
+
+        if ($this->id) {
+            $this->d_edited = time();
+            $this->changed['d_edited'] = true;
+        }
+        return true;
+    }
+
     /**
      * Change the completed state of a task
      * Return true of the state was changed
@@ -513,6 +535,21 @@ class Task extends AbstractTask
 
         $this->priority = $prio;
         $this->changed['prio'] = true;
+
+        if ($this->id) {
+            $this->d_edited = time();
+            $this->changed['d_edited'] = true;
+        }
+        return true;
+    }
+
+    function setDuedate(string $duedate): bool
+    {
+        if ($this->duedate === $duedate)
+            return false;
+
+        $this->duedate = $duedate;
+        $this->changed['duedate'] = true;
 
         if ($this->id) {
             $this->d_edited = time();

@@ -235,7 +235,7 @@ class TasksController extends ApiController {
 
         $action = $this->req->jsonBody['action'] ?? '';
         switch ($action) {
-            case 'edit':     $this->response->data = $this->editTask($id);     break;
+            case 'edit':     $this->response->data = $this->editTask($task);     break;
             case 'complete': $this->response->data = $this->completeTask($task); break;
             case 'note':     $this->response->data = $this->editNote($task);     break;
             case 'move':     $this->response->data = $this->moveTask($task);     break;
@@ -367,7 +367,7 @@ class TasksController extends ApiController {
 
         $task = Task::create($title, $listId);
         $task->setPriority($prio);
-        $task->duedate = $duedate;
+        $task->setDuedate($duedate);
         $task->tagNames = explode(',', $tags);
 
         $repo = new TaskRepo(DBConnection::instance());
@@ -404,7 +404,7 @@ class TasksController extends ApiController {
         $task = Task::create($title, $listId);
         $task->setNote($note);
         $task->setPriority($prio);
-        $task->duedate = $duedate;
+        $task->setDuedate($duedate);
         $task->tagNames = explode(',', $tags);
 
         $repo = new TaskRepo(DBConnection::instance());
@@ -418,36 +418,42 @@ class TasksController extends ApiController {
         ];
     }
 
-    private function editTask(int $id): ?array
+    private function editTask(Task $task): ?array
     {
-        $db = DBConnection::instance();
         $title = trim($this->req->jsonBody['title'] ?? '');
-        $note = str_replace("\r\n", "\n", $this->req->jsonBody['note'] ?? '');
+        if ($title == '')
+            return [
+                'ok' => false,
+                'total' => 0,
+                'error' => "Invalid argument"
+            ];
+        $note = $this->req->jsonBody['note'] ?? '';
         $prio = (int)($this->req->jsonBody['prio'] ?? 0);
-        if ($prio < -1) $prio = -1;
-        elseif ($prio > 2) $prio = 2;
+        if ($prio < -1)
+            $prio = -1;
+        elseif ($prio > 2)
+            $prio = 2;
         $duedate = MTTSmartSyntax::parseDuedate(trim( $this->req->jsonBody['duedate'] ?? '' ));
-        $t = array();
-        $t['total'] = 0;
-        if ($title == '') {
-            return $t;
-        }
-        $listId = (int) $db->sq("SELECT list_id FROM {$db->prefix}todolist WHERE id=$id");
         $tags = trim( $this->req->jsonBody['tags'] ?? '' );
-        $db->ex("BEGIN");
-        $db->ex("DELETE FROM {$db->prefix}tag2task WHERE task_id=$id");
-        $aTags = $this->prepareTags($this->req->userId(), $tags);
-        if ($aTags) {
-            $this->addTaskTags($id, $aTags['ids'], $listId);
-        }
-        $db->dq("UPDATE {$db->prefix}todolist SET title=?,note=?,prio=?,duedate=?,d_edited=? WHERE id=$id",
-                array($title, $note, $prio, $duedate, time()) );
-        $db->ex("COMMIT");
-        $task = $this->getTaskRowById($id);
-        MTTNotificationCenter::postNotification(MTTNotification::didEditTask, ['task' => $task]);
-        $t['list'][] = $task;
-        $t['total'] = 1;
-        return $t;
+
+        $task->setTitle($title);
+        $task->setNote($note);
+        $task->setPriority($prio);
+        $task->setDuedate($duedate);
+        $task->tagNames = explode(',', $tags);
+
+        $repo = new TaskRepo(DBConnection::instance());
+        $repo->saveTask($task, $this->req->userId());
+
+        MTTNotificationCenter::postNotification(MTTNotification::didEditTask, [
+            'task' => $task
+        ]);
+
+        return [
+            'ok' => true,
+            'total' => 1,
+            'list' => [ $task->toJsonApiArray() ],
+        ];
     }
 
 
