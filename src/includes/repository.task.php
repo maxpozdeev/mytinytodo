@@ -149,7 +149,7 @@ class TaskRepo
                     [$task->listId, $task->isCompleted ? 1 : 0]);
 
             $this->db->ex("BEGIN");
-
+            //TODO:parent_id
             $this->db->dq("INSERT INTO {$this->db->prefix}todolist (uuid,list_id,title,note,d_created,d_edited,prio,duedate,compl,d_completed,ow,extra)
                            VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
                     [$task->uuid, $task->listId, $task->title, $task->note, $task->d_created, $task->d_edited, $task->priority, $task->duedate,
@@ -167,6 +167,7 @@ class TaskRepo
                         array($task->id, $tag->id, $task->listId)
                     );
                 }
+                $task->setTags($tags);
             }
             $this->db->ex("COMMIT");
         }

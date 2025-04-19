@@ -536,6 +536,23 @@ class Task extends AbstractTask
     }
 
     /**
+     *
+     * @param Tag[] $tags
+     * @return void
+     */
+    function setTags(array $tags)
+    {
+        $tagIds = [];
+        $tagNames = [];
+        foreach ($tags as $tag) {
+            $tagIds[] = $tag->id;
+            $tagNames[] = $tag->name;
+        }
+        $this->tags = implode(',', $tagNames);
+        $this->tags_ids = implode(',', $tagIds);
+    }
+
+    /**
      * Parse duedate and prepare array of properties for Json Api
      * @param null|string $duedate
      * @return array{class:string,str:string,formatted:string,formattedlong:string,timestamp:int,int:int}
