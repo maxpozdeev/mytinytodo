@@ -383,40 +383,39 @@ class TasksController extends ApiController {
 
     private function fullNewTaskInList(int $listId): ?array
     {
-        $db = DBConnection::instance();
         $title = trim($this->req->jsonBody['title'] ?? '');
-        $note = str_replace("\r\n", "\n", $this->req->jsonBody['note'] ?? '');
+        if ($title == '')
+            return [
+                'ok' => false,
+                'total' => 0,
+                'error' => "Invalid argument"
+            ];
+        $note = $this->req->jsonBody['note'] ?? '';
         $prio = (int)($this->req->jsonBody['prio'] ?? 0);
-        if ($prio < -1) $prio = -1;
-        elseif ($prio > 2) $prio = 2;
+        if ($prio < -1)
+            $prio = -1;
+        elseif ($prio > 2)
+            $prio = 2;
         $duedate = MTTSmartSyntax::parseDuedate(trim( $this->req->jsonBody['duedate'] ?? '' ));
-        $t = array();
-        $t['total'] = 0;
-        if ($title == '') {
-            return $t;
-        }
         $tags = $this->req->jsonBody['tags'] ?? '';
         if (Config::get('autotag'))
             $tags .= ',' . ($this->req->jsonBody['tag'] ?? '');
-        $ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->prefix}todolist WHERE list_id=$listId AND compl=0");
-        $date = time();
-        $db->ex("BEGIN");
-        $db->dq("INSERT INTO {$db->prefix}todolist (uuid,list_id,title,d_created,d_edited,ow,prio,note,duedate) VALUES (?,?,?,?,?,?,?,?,?)",
-                    array(generateUUID(), $listId, $title, $date, $date, $ow, $prio, $note, $duedate) );
-        $id = (int) $db->lastInsertId();
-        if ($tags != '')
-        {
-            $aTags = $this->prepareTags($this->req->userId(), $tags);
-            if ($aTags) {
-                $this->addTaskTags($id, $aTags['ids'], $listId);
-            }
-        }
-        $db->ex("COMMIT");
-        $task = $this->getTaskRowById($id);
+
+        $task = Task::create($title, $listId);
+        $task->setNote($note);
+        $task->setPriority($prio);
+        $task->duedate = $duedate;
+        $task->tagNames = explode(',', $tags);
+
+        $repo = new TaskRepo(DBConnection::instance());
+        $repo->saveTask($task, $this->req->userId());
         MTTNotificationCenter::postNotification(MTTNotification::didCreateTask, $task);
-        $t['list'][] = $task;
-        $t['total'] = 1;
-        return $t;
+
+        return [
+            'ok' => true,
+            'total' => 1,
+            'list' => [ $task->toJsonApiArray() ],
+        ];
     }
 
     private function editTask(int $id): ?array

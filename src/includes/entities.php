@@ -439,7 +439,7 @@ class Task extends AbstractTask
     static function create(string $title, int $listId): Task
     {
         if ($title === '' || !$listId) {
-            throw new InvalidArgumentException("Unexpectied title or listId");
+            throw new InvalidArgumentException("Unspecified title or list id");
         }
         $task = new static();
         $task->title = $title;
