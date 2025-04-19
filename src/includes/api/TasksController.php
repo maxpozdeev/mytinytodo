@@ -193,7 +193,7 @@ class TasksController extends ApiController {
         $action = $this->req->jsonBody['action'] ?? '';
         switch ($action) {
             case 'order': $this->response->data = $this->changeTaskOrder(); break;
-            default:      $this->response->data = ['total' => 0]; // error 400 ?
+            default:      return $this->response->errorJsonContent("Unexpected action", 400);
         }
     }
 
@@ -206,6 +206,7 @@ class TasksController extends ApiController {
      */
     function deleteId($id)
     {
+        checkWriteAccess();
         $id = (int)$id;
         $repo = new TaskRepo(DBConnection::instance());
         $task = $repo->findTaskById($id);
@@ -240,11 +241,7 @@ class TasksController extends ApiController {
             case 'move':     $this->response->data = $this->moveTask($task);     break;
             case 'priority': $this->response->data = $this->priorityTask($task); break;
             case 'delete':   $this->response->data = $this->deleteTask($task);   break; //compatibility
-            default:         $this->response->data = [
-                'ok' => false,
-                'total' => 0,
-                'error' => "Unexpected action",
-            ];
+            default:         return $this->response->errorJsonContent("Unexpected action", 400);
         }
     }
 

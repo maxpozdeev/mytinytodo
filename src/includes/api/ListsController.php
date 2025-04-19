@@ -137,7 +137,7 @@ class ListsController extends ApiController {
             case 'hide':           $this->response->data = $this->hideList($list);       break;
             case 'clearCompleted': $this->response->data = $this->clearCompleted($list); break;
             case 'delete':         $this->response->data = $this->deleteList($list);     break; //compatibility
-            default:               $this->response->data = ['ok' => false, 'total' => 0]; //error 400?, unknown action
+            default:               return $this->response->errorJsonContent("Unexpected action", 400);
         }
     }
 

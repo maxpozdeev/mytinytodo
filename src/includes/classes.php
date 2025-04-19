@@ -67,7 +67,7 @@ class ApiResponse
         return $this;
     }
 
-    // deprecated
+    // deprecated, use ErrorApiResponse
     function errorJsonContent(string $errorMessage, int $code): self
     {
         $this->data = [
