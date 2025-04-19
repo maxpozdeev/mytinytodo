@@ -286,9 +286,9 @@ class Task extends AbstractTask
     public ?int $id = null;
     public ?string $uuid;
     public ?int $listId;                # list_id
-    public ?int $parentId;              # parent_id
-    public ?string $titleText;          # title
-    public ?string $noteText = null;    # note
+    public ?int $parentId = null;       # parent_id
+    public ?string $title;              # title
+    public ?string $note = null;        # note
     public int $d_created = 0;
     public int $d_edited = 0;
     public int $d_completed = 0;
@@ -313,8 +313,8 @@ class Task extends AbstractTask
         $entity->uuid = (string)$a['uuid'];
         $entity->listId = (int)$a['list_id'];
         $entity->parentId = $a['parent_id'];
-        $entity->titleText = (string)$a['title'];
-        $entity->noteText = (string)$a['note'];
+        $entity->title = (string)$a['title'];
+        $entity->note = (string)$a['note'];
         $entity->d_created = (int)$a['d_created'];
         $entity->d_edited = (int)$a['d_edited'];
         $entity->d_completed = (int)$a['d_completed'];
@@ -346,8 +346,8 @@ class Task extends AbstractTask
             'id' => $this->id,
             'uuid' => $this->uuid,
             'list_id' => $this->listId,
-            'title' => $this->titleText,
-            'note' => $this->noteText,
+            'title' => $this->title,
+            'note' => $this->note,
             'compl' => $this->isCompleted ? 1 : 0,
             'prio' => $this->priority,
             'd_created' => $this->d_created,
@@ -400,9 +400,9 @@ class Task extends AbstractTask
             'listId' => $this->listId ?? 0,         //int
             'listName' => htmlspecialchars($this->listName ?? ''),
             'title' => $this->titleHtml(),
-            'titleText' => $this->titleText,        // raw, not escaped
+            'titleText' => $this->title,            // raw, not escaped
             'note' => $this->noteHtml(),
-            'noteText' => $this->noteText ?? '',    // raw, not escaped
+            'noteText' => $this->note ?? '',        // raw, not escaped
             'compl' => $this->isCompleted ? 1 : 0,
             'prio' => $this->priority,              //int
             'isEdited' => (bool)$isEdited,          //bool
@@ -442,7 +442,7 @@ class Task extends AbstractTask
             throw new InvalidArgumentException("Unexpectied title or listId");
         }
         $task = new static();
-        $task->titleText = $title;
+        $task->title = $title;
         $task->listId = $listId;
         $task->uuid = generateUUID();
         $task->d_created = time();
@@ -456,7 +456,7 @@ class Task extends AbstractTask
      */
     function titleHtml(): string
     {
-        return titleMarkup($this->titleText ?? '');
+        return titleMarkup($this->title ?? '');
     }
 
     /**
@@ -465,7 +465,7 @@ class Task extends AbstractTask
      */
     function noteHtml(): string
     {
-        return noteMarkup($this->noteText);
+        return noteMarkup($this->note);
     }
 
     /**
@@ -490,10 +490,10 @@ class Task extends AbstractTask
     function setNote(string $note): bool
     {
         $note = str_replace("\r\n", "\n", $note);
-        if ($this->noteText === $note)
+        if ($this->note === $note)
             return false;
 
-        $this->noteText = $note;
+        $this->note = $note;
         $this->changed['note'] = true;
 
         if ($this->id) {

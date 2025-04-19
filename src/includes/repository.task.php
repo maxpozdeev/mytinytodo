@@ -152,7 +152,7 @@ class TaskRepo
 
             $this->db->dq("INSERT INTO {$this->db->prefix}todolist (uuid,list_id,title,note,d_created,d_edited,prio,duedate,compl,d_completed,ow,extra)
                            VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
-                    [$task->uuid, $task->listId, $task->titleText, $task->noteText, $task->d_created, $task->d_edited, $task->priority, $task->duedate,
+                    [$task->uuid, $task->listId, $task->title, $task->note, $task->d_created, $task->d_edited, $task->priority, $task->duedate,
                     $a['compl'], $task->d_completed, $a['ow'], $a['extra']] );
 
             $task->id = (int) $this->db->lastInsertId();
