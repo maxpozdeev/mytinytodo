@@ -45,6 +45,7 @@ require_once(MTTINC. 'filters.php');
 require_once(MTTINC. 'markup.php');
 require_once(MTTINC. 'entities.php');
 require_once(MTTINC. 'repository.list.php');
+require_once(MTTINC. 'repository.tag.php');
 require_once(MTTINC. 'repository.task.php');
 require_once(MTTINC. 'repository.user.php');
 

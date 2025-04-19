@@ -339,9 +339,11 @@ class TasksController extends ApiController {
 
     private function newTaskInList(int $listId): ?array
     {
-        $db = DBConnection::instance();
-        $t = array();
-        $t['total'] = 0;
+        $failedResult = [
+            'ok' => false,
+            'total' => 0,
+            'error' => "Invalid argument"
+        ];
         $title = trim($this->req->jsonBody['title'] ?? '');
         $prio = 0;
         $tags = '';
@@ -350,7 +352,7 @@ class TasksController extends ApiController {
         {
             $a = parseSmartSyntax($title);
             if ($a === false) {
-                return $t;
+                return $failedResult;
             }
             $title = (string)$a['title'];
             $prio = (int)$a['prio'];
@@ -360,30 +362,26 @@ class TasksController extends ApiController {
             }
         }
         if ($title == '') {
-            return $t;
+            return $failedResult;
         }
         if (Config::get('autotag')) {
             $tags .= ',' . ($this->req->jsonBody['tag'] ?? '');
         }
-        $ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->prefix}todolist WHERE list_id=$listId AND compl=0");
-        $date = time();
-        $db->ex("BEGIN");
-        $db->dq("INSERT INTO {$db->prefix}todolist (uuid,list_id,title,d_created,d_edited,ow,prio,duedate) VALUES (?,?,?,?,?,?,?,?)",
-                    array(generateUUID(), $listId, $title, $date, $date, $ow, $prio, $duedate) );
-        $id = (int) $db->lastInsertId();
-        if ($tags != '')
-        {
-            $aTags = $this->prepareTags($this->req->userId(), $tags);
-            if ($aTags) {
-                $this->addTaskTags($id, $aTags['ids'], $listId);
-            }
-        }
-        $db->ex("COMMIT");
-        $task = $this->getTaskRowById($id);
+
+        $task = Task::create($title, $listId);
+        $task->setPriority($prio);
+        $task->duedate = $duedate;
+        $task->tagNames = explode(',', $tags);
+
+        $repo = new TaskRepo(DBConnection::instance());
+        $repo->saveTask($task, $this->req->userId());
         MTTNotificationCenter::postNotification(MTTNotification::didCreateTask, $task);
-        $t['list'][] = $task;
-        $t['total'] = 1;
-        return $t;
+
+        return [
+            'ok' => true,
+            'total' => 1,
+            'list' => [ $task->toJsonApiArray() ],
+        ];
     }
 
     private function fullNewTaskInList(int $listId): ?array

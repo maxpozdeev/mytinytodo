@@ -283,12 +283,12 @@ class Task extends AbstractTask
         'compl','title','note','prio','duedate','extra','ow','tags_ids','tags'];
     protected array $changed = [];
 
-    public ?int $id;
+    public ?int $id = null;
     public ?string $uuid;
     public ?int $listId;                # list_id
     public ?int $parentId;              # parent_id
     public ?string $titleText;          # title
-    public ?string $noteText;           # note
+    public ?string $noteText = null;    # note
     public int $d_created = 0;
     public int $d_edited = 0;
     public int $d_completed = 0;
@@ -301,6 +301,7 @@ class Task extends AbstractTask
     //FIXME: tags!
     protected ?string $tags_ids;
     protected ?string $tags;
+    public ?array $tagNames;
 
     protected ?string $listName;
 
@@ -434,6 +435,21 @@ class Task extends AbstractTask
         );
     }
 
+
+    static function create(string $title, int $listId): Task
+    {
+        if ($title === '' || !$listId) {
+            throw new InvalidArgumentException("Unexpectied title or listId");
+        }
+        $task = new static();
+        $task->titleText = $title;
+        $task->listId = $listId;
+        $task->uuid = generateUUID();
+        $task->d_created = time();
+        $task->d_edited = $task->d_created;
+        return $task;
+    }
+
     /**
      * Get formatted title
      * @return string
@@ -478,10 +494,12 @@ class Task extends AbstractTask
             return false;
 
         $this->noteText = $note;
-        $this->d_edited = time();
-
         $this->changed['note'] = true;
-        $this->changed['d_edited'] = true;
+
+        if ($this->id) {
+            $this->d_edited = time();
+            $this->changed['d_edited'] = true;
+        }
         return true;
     }
 
@@ -494,10 +512,12 @@ class Task extends AbstractTask
             throw new InvalidArgumentException("Unexpected priority value: $prio");
 
         $this->priority = $prio;
-        $this->d_edited = time();
-
         $this->changed['prio'] = true;
-        $this->changed['d_edited'] = true;
+
+        if ($this->id) {
+            $this->d_edited = time();
+            $this->changed['d_edited'] = true;
+        }
         return true;
     }
 
@@ -592,4 +612,12 @@ class Task extends AbstractTask
         return $a;
     }
 
+}
+
+
+class Tag
+{
+    public int $id;
+    public string $name;
+    public int $userId;
 }

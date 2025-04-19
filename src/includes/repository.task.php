@@ -137,4 +137,42 @@ class TaskRepo
         $this->db->ex("COMMIT");
         return $affected;
     }
+
+
+    public function saveTask(Task $task, int $userId)
+    {
+        if ($task->id === null) {
+            # Create new record
+            $a = $task->toArray();
+
+            $a['ow'] = 1 + (int)$this->db->sq("SELECT MAX(ow) FROM {$this->db->prefix}todolist WHERE list_id=? AND compl=?",
+                    [$task->listId, $task->isCompleted ? 1 : 0]);
+
+            $this->db->ex("BEGIN");
+
+            $this->db->dq("INSERT INTO {$this->db->prefix}todolist (uuid,list_id,title,note,d_created,d_edited,prio,duedate,compl,d_completed,ow,extra)
+                           VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
+                    [$task->uuid, $task->listId, $task->titleText, $task->noteText, $task->d_created, $task->d_edited, $task->priority, $task->duedate,
+                    $a['compl'], $task->d_completed, $a['ow'], $a['extra']] );
+
+            $task->id = (int) $this->db->lastInsertId();
+
+            if ($task->tagNames)
+            {
+                $tagRepo = new TagRepo($this->db);
+                $tags = $tagRepo->getTags($task->tagNames, $userId);
+                foreach ($tags as $tag) {
+                    $this->db->ex(
+                        "INSERT INTO {$this->db->prefix}tag2task (task_id,tag_id,list_id) VALUES (?,?,?)",
+                        array($task->id, $tag->id, $task->listId)
+                    );
+                }
+            }
+            $this->db->ex("COMMIT");
+        }
+        else {
+            # Update record
+        }
+    }
+
 }
