@@ -602,14 +602,6 @@ class TasksController extends ApiController {
         return $a;
     }
 
-    private function getTaskRowById(int $id): ?array
-    {
-        $r = DBCore::default()->getTaskById($id);
-        if (!$r) {
-            throw new Exception("Failed to fetch task data");
-        }
-        return $this->prepareTaskRow($r);
-    }
 
     private function prepareTaskRow(array $r): array
     {
@@ -674,53 +666,5 @@ class TasksController extends ApiController {
         if (strlen($ad[2]) < 2) $s .= "0$ad[2]"; else $s .= $ad[2];
         return (int)$s;
     }
-
-    private function getOrCreateTag(int $userId, $name): array
-    {
-        $db = DBConnection::instance();
-        $tagId = $db->sq("SELECT id FROM {$db->prefix}tags WHERE user_id=? AND name=?", array($userId, $name));
-        if ($tagId)
-            return array('id'=>$tagId, 'name'=>$name);
-
-        $db->ex("INSERT INTO {$db->prefix}tags (user_id,name) VALUES (?,?)", array($userId, $name));
-        return array(
-            'id' => $db->lastInsertId(),
-            'name' => $name
-        );
-    }
-
-    private function prepareTags(int $userId, string $tagsStr): ?array
-    {
-        $tags = explode(',', $tagsStr);
-        if (!$tags) return null;
-
-        $aTags = array('tags'=>array(), 'ids'=>array());
-        foreach ($tags as $tag)
-        {
-            $tag = str_replace(array('^','#'),'',trim($tag));
-            if ($tag == '') continue;
-
-            $aTag = $this->getOrCreateTag($userId, $tag);
-            if ($aTag && !in_array($aTag['id'], $aTags['ids'])) {
-                $aTags['tags'][] = $aTag['name'];
-                $aTags['ids'][] = $aTag['id'];
-            }
-        }
-        return $aTags;
-    }
-
-    private function addTaskTags(int $taskId, array $tagIds, int $listId)
-    {
-        $db = DBConnection::instance();
-        if (!$tagIds) return;
-        foreach ($tagIds as $tagId) {
-            $db->ex(
-                "INSERT INTO {$db->prefix}tag2task (task_id,tag_id,list_id) VALUES (?,?,?)",
-                array($taskId, $tagId, $listId)
-            );
-        }
-    }
-
-
 
 }
