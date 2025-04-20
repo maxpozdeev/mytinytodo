@@ -543,7 +543,7 @@ class Task extends AbstractTask
         return true;
     }
 
-    function setDuedate(string $duedate): bool
+    function setDuedate(?string $duedate): bool
     {
         if ($this->duedate === $duedate)
             return false;
