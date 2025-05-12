@@ -154,6 +154,7 @@ interface MTTExtensionSettingsInterface
     function saveSettings(array $array, ?string &$outMesssage): bool;
 }
 
+class MTTExtensionLoaderException extends Exception {}
 
 class MTTExtensionLoader
 {
@@ -181,20 +182,20 @@ class MTTExtensionLoader
         $instanceFunc = 'mtt_ext_'. $extNormalized. '_instance';
 
         if (!function_exists($instanceFunc)) {
-            throw new Exception("Failed to init extension '$ext': no '$instanceFunc' function");
+            throw new MTTExtensionLoaderException("Failed to init extension '$ext': no '$instanceFunc' function");
         }
 
         $instance = $instanceFunc();
         if ( ! ($instance instanceof MTTExtension) ) {
-            throw new Exception("Failed to init extension '$ext': incompatible instance");
+            throw new MTTExtensionLoaderException("Failed to init extension '$ext': incompatible instance");
         }
 
         $className = get_class($instance);
         if (!defined("$className::bundleId")) {
-            throw new Exception("Failed to load extension '$ext': missing required class constants (bundleId)");
+            throw new MTTExtensionLoaderException("Failed to load extension '$ext': missing required class constants (bundleId)");
         }
         if ($instance::bundleId != $ext) {
-            throw new Exception("Failed to load extension '$ext': bundleId does not conforms to extension dir");
+            throw new MTTExtensionLoaderException("Failed to load extension '$ext': bundleId does not conforms to extension dir");
         }
 
         Lang::instance()->loadExtensionLang($ext);

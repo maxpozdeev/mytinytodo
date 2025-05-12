@@ -470,8 +470,14 @@ function loadExtensions()
             try {
                 MTTExtensionLoader::loadExtension($ext);
             }
-            catch (Exception $e) {
+            catch (MTTExtensionLoaderException $e) {
                 error_log($e->getMessage());
+            }
+            catch (Exception $e) {
+                if (MTT_DEBUG)
+                    throw $e;
+                else
+                    error_log("Error while loading extension '$ext': ". $e->getMessage());
             }
 
         }
