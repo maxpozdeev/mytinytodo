@@ -2,7 +2,7 @@
 
 /*
     This file is a part of myTinyTodo.
-    (C) Copyright 2021-2022 Max Pozdeev <maxpozdeev@gmail.com>
+    (C) Copyright 2021-2025 Max Pozdeev <maxpozdeev@gmail.com>
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
@@ -19,17 +19,34 @@ final class MTTMarkdown
     /** @var MTTMarkdownInterface */
     private static $instance;
 
+    /** @var string */
+    private static $instanceClass = MTTParsedownWrapper::class;
+    //private static $instanceClass = MTTCommonmarkWrapper::class;
+
     /**
      *
      * @return MTTMarkdownInterface
      */
     public static function instance() : MTTMarkdownInterface
     {
-        if (!isset(self::$instance)) {
-            self::$instance = new MTTParsedownWrapper();
-            //self::$instance = new MTTCommonmarkWrapper();
-        }
+        if (isset(self::$instance))
+            return self::$instance;
+
+        // if (do_filter('markdownConverterClass', self::$instanceClass, $newClass) && $newClass) {
+        //     self::setInstanceClass($newClass);
+        // }
+
+        self::$instance = new self::$instanceClass();
         return self::$instance;
+    }
+
+    public static function setInstanceClass(string $class)
+    {
+        if (!is_a($class, MTTMarkdownInterface::class, true)) {
+            throw new Exception("Class '$class' is not a MTTMarkdownInterface");
+        }
+        self::$instanceClass = $class;
+        self::$instance = null;
     }
 }
 

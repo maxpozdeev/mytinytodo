@@ -6,7 +6,6 @@
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
-require_once(MTTINC. 'markup.php');
 require_once(MTTINC. 'smartsyntax.php');
 
 class TasksController extends ApiController {
