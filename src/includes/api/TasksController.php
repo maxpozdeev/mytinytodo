@@ -439,7 +439,7 @@ class TasksController extends ApiController {
         $db->dq("UPDATE {$db->prefix}todolist SET title=?,note=?,prio=?,duedate=?,d_edited=? WHERE id=$id",
                 array($title, $note, $prio, $duedate, time()) );
         $db->ex("COMMIT");
-        $task = $this->getTaskRowById($id);
+        $task = $this->getTaskRowById($id, true);
         MTTNotificationCenter::postNotification(MTTNotification::didEditTask, ['task' => $task]);
         $t['list'][] = $task;
         $t['total'] = 1;
@@ -619,11 +619,15 @@ class TasksController extends ApiController {
         return $a;
     }
 
-    private function getTaskRowById(int $id): ?array
+    private function getTaskRowById(int $id, bool $getListName = false): ?array
     {
         $r = DBCore::default()->getTaskById($id);
         if (!$r) {
             throw new Exception("Failed to fetch task data");
+        }
+        if ($getListName) {
+            $list = DBCore::default()->getListById( (int)$r['list_id'] );
+            $r['list_name'] = (string) ($list['name'] ?? '');
         }
         return $this->prepareTaskRow($r);
     }
