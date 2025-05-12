@@ -215,11 +215,9 @@ class ListsController extends ApiController {
         $db = DBConnection::instance();
         $t = array();
         $t['total'] = 0;
-        $name = str_replace(
-            array('"',"'",'<','>','&'),
-            array('','','','',''),
-            trim($this->req->jsonBody['name'] ?? '')
-        );
+        $name = trim($this->req->jsonBody['name'] ?? '');
+        if ($name == '')
+            return $t;
         $db->dq("UPDATE {$db->prefix}lists SET name=?,d_edited=? WHERE id=$id", array($name, time()) );
         $t['total'] = $db->affected();
         $r = $db->sqa("SELECT * FROM {$db->prefix}lists WHERE id=$id");

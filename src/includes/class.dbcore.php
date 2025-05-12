@@ -175,7 +175,7 @@ class DBCore
     function createListWithName(string $name): ?int
     {
         $db = DBConnection::instance();
-        $name = str_replace( ['"',"'",'<','>','&'], '', trim($name) );
+        $name = trim($name);
         if ($name == '') {
             return null;
         }
