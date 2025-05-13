@@ -51,18 +51,18 @@ class TasksController extends ApiController {
                 if ($atv == '^') {
                     $tagIds = [];
                     $tagExIds = [];
-                    if ($db::DBTYPE == DBConnection::DBTYPE_MYSQL)
-                        $sqlHaving = "tags_ids = ''";
-                    else
+                    if ($db::DBTYPE == DBConnection::DBTYPE_POSTGRES)
                         $sqlHaving = "string_agg(tags.name, ',') IS NULL"; // catches if tag name is ''
+                    else
+                        $sqlHaving = "tags_ids IS NULL OR tags_ids = ''";
                     break;
                 }
                 // tasks with any tag
                 else if ($atv == '^^') {
-                    if ($db::DBTYPE == DBConnection::DBTYPE_MYSQL)
-                        $sqlHaving = "tags_ids != ''";
-                    else
+                    if ($db::DBTYPE == DBConnection::DBTYPE_POSTGRES)
                         $sqlHaving = "string_agg(tags.name, ',') != ''";
+                    else
+                        $sqlHaving = "tags_ids != ''";
                 }
                 else if (substr($atv,0,1) == '^') {
                     array_push($tagExIds, ...$dbcore->getTagIdsByName(substr($atv,1)));
