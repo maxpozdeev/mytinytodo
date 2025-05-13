@@ -38,16 +38,15 @@ class DBConnection
 abstract class AbstractDatabase
 {
     const DBTYPE = '';
-    protected static $readonlyProps = ['prefix', 'lastQuery'];
+    protected static array $readonlyProps = ['prefix', 'lastQuery'];
 
-    /** @var string */
-    protected $prefix = '';
+    protected string $prefix = '';
+    protected string $lastQuery = '';
 
-    /** @var string */
-    protected $lastQuery = '';
-
-    /** @var null|string  */
-    protected $logQueryToFile = null;
+    protected ?string $logQueryToFile = null;
+    protected bool $isFirstLog = true;
+    protected int $lastQueryStart = 0;
+    protected int $lastQueryFinish = 0;
 
     abstract function connect(array $params): void;
     abstract function sq(string $query, ?array $values = null);
@@ -97,16 +96,37 @@ abstract class AbstractDatabase
             return false;
         }
         $this->logQueryToFile = $path;
+        $this->isFirstLog = true;
         return true;
     }
 
     function setLastQuery(string $lastQuery) {
+        $this->lastQueryStart = hrtime(true);
         $this->lastQuery = $lastQuery;
-        if (MTT_DEBUG && $this->logQueryToFile !== null) {
+    }
+
+    function setLastQueryFinished(bool $failed = false) {
+        $this->lastQueryFinish = $failed ? 0 : hrtime(true);
+        $this->logLastQuery();
+    }
+
+    function logLastQuery()
+    {
+        if (MTT_DEBUG && $this->logQueryToFile !== null)
+        {
             $f = fopen($this->logQueryToFile, "a");
             if ($f) {
-                $time = $_SERVER['REQUEST_TIME_FLOAT'] ?? number_format(microtime(true), 3, '.', '');
-                fwrite($f, $time. " ". $this->lastQuery . "\n");
+                if ($this->isFirstLog) {
+                    $this->isFirstLog = false;
+                    fwrite($f, "====== ". ($_SERVER['REQUEST_TIME_FLOAT'] ?? ""). " (". static::DBTYPE. ") ======\n");
+                }
+                # execution time of last query
+                if ($this->lastQueryFinish)
+                    $time = "+". number_format( ($this->lastQueryFinish - $this->lastQueryStart) / 1_000_000_000, 3, '.'). " ";
+                else
+                    $time = 'Error ';
+
+                fwrite($f, "{$time}{$this->lastQuery}\n");
                 fclose($f);
             }
         }

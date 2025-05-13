@@ -123,7 +123,15 @@ class MysqliDatabase extends AbstractDatabase
             $query .= $m[$i];
         }
         $this->setLastQuery($query);
-        return new MysqliDatabaseResult($this->dbh, $query, $resultless);
+        try {
+            $dbr = new MysqliDatabaseResult($this->dbh, $query, $resultless);
+        }
+        catch (Exception $e) {
+            $this->setLastQueryFinished(true);
+            throw $e;
+        }
+        $this->setLastQueryFinished();
+        return $dbr;
     }
 
     function affected(): int

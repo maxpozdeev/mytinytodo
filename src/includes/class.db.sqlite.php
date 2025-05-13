@@ -152,7 +152,14 @@ class SqliteDatabase extends AbstractDatabase
             $query .= $m[$i];
         }
         $this->setLastQuery($query);
-        $dbr = new SqliteDatabaseResult($this->dbh, $query, $resultless);
+        try {
+            $dbr = new SqliteDatabaseResult($this->dbh, $query, $resultless);
+        }
+        catch (Exception $e) {
+            $this->setLastQueryFinished(true);
+            throw $e;
+        }
+        $this->setLastQueryFinished();
         $this->affected = $dbr->rowsAffected();
         return $dbr;
     }
