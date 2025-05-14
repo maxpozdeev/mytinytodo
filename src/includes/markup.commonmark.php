@@ -29,6 +29,7 @@ class MTTCommonmarkWrapper implements MTTMarkdownInterface
         $environment = new Environment([
             'html_input' => 'escape',
             'allow_unsafe_links' => false,
+            'max_nesting_level' => 5,
             'mentions' => [
                 'task_id' => [
                     'prefix'    => '#',
