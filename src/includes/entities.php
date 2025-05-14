@@ -67,7 +67,7 @@ class TaskList extends AbstractTaskList
     {
         if ($name === '')
             throw new InvalidArgumentException("List name is empty");
-        $name = str_replace(['"',"'",'<','>','&'], '', $name);
+
         $this->name = $name;
         $this->d_edited = time();
         $this->changed['name'] = true;

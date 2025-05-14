@@ -117,7 +117,7 @@ class ListRepo
      */
     public function createList(string $name, int $userId): ?int
     {
-        $name = str_replace( ['"',"'",'<','>','&'], '', trim($name) );
+        $name = trim($name);
         if ($name == '') {
             return null;
         }
