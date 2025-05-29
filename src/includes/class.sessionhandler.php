@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
     This file is a part of myTinyTodo.
@@ -128,7 +128,7 @@ class MTTSessionHandler implements SessionHandlerInterface, SessionUpdateTimesta
      * @param string $id
      * @return bool
      */
-    public function validateId(string $id): bool
+    public function validateId($id): bool
     {
         $r = $this->db->sq("SELECT COUNT(*) FROM {$this->db->prefix}sessions WHERE id = ?", [$id]);
         if ($r)
@@ -142,7 +142,7 @@ class MTTSessionHandler implements SessionHandlerInterface, SessionUpdateTimesta
      * @param string $data
      * @return bool
      */
-    public function updateTimestamp(string $id, string $data): bool
+    public function updateTimestamp($id, $data): bool
     {
         // Warning if return false
         return true;
