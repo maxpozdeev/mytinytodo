@@ -1671,7 +1671,7 @@ function tabSelect(elementOrId)
             'prevList':prevList
         });
     }
-    const newTitle = curList.name + ' - ' + _mtt.options.title;
+    const newTitle = dehtml(curList.name) + ' - ' + _mtt.options.title;
     const isFirstLoad = flag.firstLoad;
     //replaceHistoryState( 'list', { list:id }, _mtt.urlForList(curList), newTitle );
     updateHistoryState( { list:id }, _mtt.urlForList(curList), newTitle );
@@ -1854,7 +1854,7 @@ function viewTask(id)
     const item = fillTaskViewer(id);
     if (!item) return;
     _mtt.pageSet('taskviewer');
-    updateHistoryState({ task: item.id, list: item.listId }, '#task/'+item.id, dehtml(item.title) + ' - ' + curList.name + ' - ' + _mtt.options.title);
+    updateHistoryState({ task: item.id, list: item.listId }, '#task/'+item.id, dehtml(item.title) + ' - ' + dehtml(curList.name) + ' - ' + _mtt.options.title);
 }
 
 
