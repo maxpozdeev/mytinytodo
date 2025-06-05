@@ -2018,12 +2018,16 @@ function saveTask(form)
     if (form.isadd.value != 0)
         return submitFullTask(form);
 
+    const oldItem = taskList[form.id.value];
+
     mtt.db.request('editTask', {id:form.id.value, title: form.task.value, note:form.note.value,
         prio:form.prio.value, tags:form.tags.value, duedate:form.duedate.value},
         function(json) {
             if (!parseInt(json.total))
                 return;
             const item = json.list[0];
+            if (item.listName === '' || item.listName === undefined)
+                item.listName = oldItem.listName;
             changeTaskCnt(item, 0, taskList[item.id]);
             taskList[item.id] = item;
             const noteExpanded = (item.note != '' && $('#taskrow_'+item.id).is('.task-expanded')) ? 1 : 0;

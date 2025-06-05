@@ -40,8 +40,9 @@ class TaskRepo
             $groupConcat = "GROUP_CONCAT(tags.id) AS tags_ids, GROUP_CONCAT(tags.name) AS tags";
         }
         $r = $this->db->sqa("
-            SELECT todo.*, $groupConcat
+            SELECT todo.*, lists.name list_name, $groupConcat
             FROM {$this->db->prefix}todolist AS todo
+            INNER JOIN {$this->db->prefix}lists AS lists ON todo.list_id = lists.id
             LEFT JOIN {$this->db->prefix}tag2task AS t2t ON todo.id = t2t.task_id
             LEFT JOIN {$this->db->prefix}tags AS tags ON t2t.tag_id = tags.id
             WHERE todo.id = $id

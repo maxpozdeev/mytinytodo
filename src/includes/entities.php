@@ -280,7 +280,7 @@ abstract class AbstractTask extends AbstractEntity
 class Task extends AbstractTask
 {
     protected static array $dbfields = ['id','uuid','list_id','parent_id','d_created','d_completed','d_edited',
-        'compl','title','note','prio','duedate','extra','ow','tags_ids','tags'];
+        'compl','title','note','prio','duedate','extra','ow','tags_ids','tags','list_name'];
     protected array $changed = [];
 
     public ?int $id = null;
@@ -321,7 +321,7 @@ class Task extends AbstractTask
         $entity->isCompleted = boolval($a['compl']);
         $entity->priority = (int)$a['prio'];
         $entity->duedate = (string)$a['duedate'];
-
+        //$entity->listName = (string)$a['list_name'];
         $entity->ow = (int)$a['ow'];
         //FIXME: tags!
         $entity->tags_ids = $a['tags_ids'];
@@ -561,8 +561,10 @@ class Task extends AbstractTask
 
     function setList(TaskList $list): bool
     {
-        if ($this->listId === $list->id)
+        if ($this->listId === $list->id) {
+            $this->listName = $list->name;
             return false;
+        }
 
         $this->listId = $list->id;
         # NB: we do not change the edited date (new in v2.0)
