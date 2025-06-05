@@ -889,6 +889,7 @@ const mtt = window.mytinytodo = {
                 const hiddenLists = [];
                 res.list.forEach( (item) => {
                     item.lastTime = res.time;
+                    item.nameText = dehtml(item.name);
                     if ( item.id == -1 ) {
                         tabLists._alltasks = item;
                         ti += prepareListHtml(item);
@@ -1183,7 +1184,7 @@ function addList()
 function renameCurList()
 {
     if (!curList) return;
-    mttPrompt( mtt.lang.get('renameList'), dehtml(curList.name), function(r)
+    mttPrompt( mtt.lang.get('renameList'), curList.nameText, function(r)
     {
         mtt.db.request('renameList', {list:curList.id, name:r}, function(json){
             if (!parseInt(json.total)) return;
@@ -1734,7 +1735,7 @@ function tabSelect(elementOrId)
             'prevList':prevList
         });
     }
-    const newTitle = dehtml(curList.name) + ' - ' + mtt.options.title;
+    const newTitle = curList.nameText + ' - ' + mtt.options.title;
     const isFirstLoad = flag.firstLoad;
     //replaceHistoryState( 'list', { list:id }, mtt.urlForList(curList), newTitle );
     updateHistoryState( { list:id }, mtt.urlForList(curList), newTitle );
@@ -1925,7 +1926,7 @@ function viewTask(id)
     const item = fillTaskViewer(id);
     if (!item) return;
     mtt.pageSet('taskviewer');
-    updateHistoryState({ task: item.id, list: item.listId }, '#task/'+item.id, dehtml(item.title) + ' - ' + dehtml(curList.name) + ' - ' + mtt.options.title);
+    updateHistoryState({ task: item.id, list: item.listId }, '#task/'+item.id, item.titleText + ' - ' + curList.nameText + ' - ' + mtt.options.title);
 }
 
 
