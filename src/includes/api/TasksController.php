@@ -274,53 +274,54 @@ class TasksController extends ApiController {
     }
 
 
-    function postNewCounter()
+    function postCounterOfNewTasks()
     {
-        checkReadAccess();
+        $curList = (int) ($this->req->jsonBody['list'] ?? 0);
+        $curLater = (int) ($this->req->jsonBody['later'] ?? 0);
+
+        haveWriteAccess(); # need to be logged
+        checkReadAccess($curList);
+
+        /** @var array{listId:int|string,later:int|null}[] */
         $lists = $this->req->jsonBody['lists'] ?? [];
-        if (!is_array($lists)) $lists = [];
-        $userLists = []; // [string]
-        if (!haveWriteAccess()) {
-            $userLists = $this->getUserListsSimple(true);
-            if ($userLists) {
-                $sqlWhereList = "AND list_id IN (". implode(',', $userLists). ")";
-                // remove lists without access granted
-                $lists = array_filter($lists, function($item) use ($userLists) {
-                    return in_array( (string)($item['listId'] ?? ''), $userLists );
-                });
-            }
-        }
-        $sqlWhereList = [];
-        foreach ($lists as $item) {
-            $later = (int) ($item['later'] ?? 0);
-            $sqlWhereList[] = "(list_id = ". (int)$item['listId']. " AND compl=0 AND d_created > $later)";
+
+        if (!is_array($lists)) {
+            return [
+                'ok' => false,
+                'error' => "Invalid argument"
+            ];
         }
 
-        $db = DBConnection::instance();
+        # remove lists without access granted
+        if ($lists)
+        {
+            /** @var array<int,int> */
+            $listsLater = [];
+            foreach ($lists as $item) {
+                $id = (int)($item['listId'] ?? 0);
+                $later = (int) ($item['later'] ?? 0);
+                $listsLater[$id] = $later;
+            }
+            $listRepo = new ListRepo(DBConnection::instance());
+            $filteredLists = $listRepo->filterReadableListsForUser(userId(), array_keys($listsLater));
+
+            $listsLater = array_filter($listsLater, function($listId) use ($filteredLists) {
+                return in_array( $listId, $filteredLists );
+            }, ARRAY_FILTER_USE_KEY);
+        }
+
         $a = [];
+        if ($listsLater) {
+            $taskRepo = new TaskRepo(DBConnection::instance());
+            $a = $taskRepo->counterOfNewTasksInLists($listsLater);
+        }
+
         $time = time();
 
-        if ($sqlWhereList) {
-            $sqlWhere = implode(' OR ', $sqlWhereList);
-            $q = $db->dq("SELECT list_id, COUNT(id) c FROM {$db->prefix}todolist
-                          WHERE $sqlWhere GROUP BY list_id");
-            while ($r = $q->fetchAssoc()) {
-                $a[] = [
-                    'listId' => (int)$r['list_id'],
-                    'counter' => (int)$r['c'],
-                ];
-            }
-        }
-
         $b = [];
-        $list = (int) ($this->req->jsonBody['list'] ?? 0);
-        $later = (int) ($this->req->jsonBody['later'] ?? 0);
-        if ($list > 0 && $later > 0 && (!$userLists || in_array((string)$list, $userLists))) {
-            $q = $db->dq("SELECT id FROM {$db->prefix}todolist
-                          WHERE list_id = $list AND compl=0 AND d_created > $later");
-            while ($r = $q->fetchAssoc()) {
-                $b[] = (int)$r['id'];
-            }
+        if ($curLater > 0) {
+            $taskRepo = new TaskRepo(DBConnection::instance());
+            $b = $taskRepo->idsOfNewTasksInList($curList, $curLater);
         }
 
         $this->response->data = [

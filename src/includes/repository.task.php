@@ -53,6 +53,51 @@ class TaskRepo
         return null;
     }
 
+
+    /**
+     * Get number of tasks created and not completed in specified lists after some timestamp.
+     * Does not check access rights.
+     * @param array<int,int> $listIds
+     * @return array{listId:int,counter:int}[]
+     */
+    public function counterOfNewTasksInLists(array $listIds): array
+    {
+        $sqlWhereList = [];
+        foreach ($listIds as $listId => $later) {
+            $sqlWhereList[] = "(list_id = ". (int)$listId. " AND compl=0 AND d_created > ". (int)$later. ")";
+        }
+        if (!$sqlWhereList) {
+            return [];
+        }
+        $a = [];
+        $sqlWhere = implode(' OR ', $sqlWhereList);
+        $q = $this->db->dq("SELECT list_id, COUNT(id) c FROM {$this->db->prefix}todolist WHERE $sqlWhere GROUP BY list_id");
+        while ($r = $q->fetchAssoc()) {
+            $a[] = [
+                'listId' => (int)$r['list_id'],
+                'counter' => (int)$r['c'],
+            ];
+        }
+        return $a;
+    }
+
+    /**
+     * Get ids of tasks created and not completed in specified list after some timestamp.
+     * @param int $listId
+     * @param int $later
+     * @return int[]
+     */
+    public function idsOfNewTasksInList(int $listId, int $later): array
+    {
+        $a = [];
+        $q = $this->db->dq("SELECT id FROM {$this->db->prefix}todolist WHERE list_id = ? AND compl=0 AND d_created > ?",
+            [$listId, $later]);
+        while ($r = $q->fetchAssoc()) {
+            $a[] = (int)$r['id'];
+        }
+        return $a;
+    }
+
     /**
      * Delete a task by id
      * Return 1 when task record is deleted

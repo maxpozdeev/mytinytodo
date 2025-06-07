@@ -110,6 +110,35 @@ class ListRepo
 
 
     /**
+     * Filter ids of lists (max 100) which user owns or are published by other users
+     * @param int $userId
+     * @param (int|string)[] $listIds
+     * @return int[]
+     * @throws Exception
+     */
+    public function filterReadableListsForUser(int $userId, array $listIds): array
+    {
+        $ids = [];
+        foreach ($listIds as $id) {
+            $ids[] = (int) $id;
+        }
+        if (count($ids) > 100) {
+            throw new InvalidArgumentException("Limit of lists");
+        }
+        if (count($ids) == 0)
+            return [];
+        $strIds = implode(',', $ids);
+
+        $a = [];
+        $q = $this->db->dq("SELECT id FROM {$this->db->prefix}lists WHERE id IN ($strIds) AND (user_id=? OR published=1)", [$userId]);
+        while ($r = $q->fetchAssoc()) {
+            $a[] = (int) $r['id'];
+        }
+        return $a;
+    }
+
+
+    /**
      * Create new list with name
      * @param string $name
      * @param int $userId

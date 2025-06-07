@@ -27,12 +27,14 @@ class ListsController extends ApiController {
         $isOwner = haveWriteAccess();
 
         $repo = new ListRepo($db);
+        $t = [
+            'time' => time(),
+        ];
         if ($isOwner)
             $lists = $repo->findListsByUserId($this->req->userId(), true);
         else
             $lists = $repo->findPublicListsByUserId($this->req->userId());
 
-        $t = array();
         $t['total'] = count($lists);
 
         foreach ($lists as $list) {
