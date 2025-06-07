@@ -69,7 +69,8 @@ function parseRoute($queryString)
     }
     else if (isset($q['task'])) {
         // TODO: check access
-        $listId = (int)DBCore::default()->getListIdByTaskId((int)$q['task']);
+        $taskRepo = new TaskRepo(DBConnection::instance());
+        $listId = $taskRepo->findListIdByTaskId((int)$q['task']);
         if ($listId > 0) {
             $h = [ 'list', $listId, 'search', '#'. (int)$q['task']];
             redirectWithHashRoute($h);
