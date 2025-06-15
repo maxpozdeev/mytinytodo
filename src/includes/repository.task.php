@@ -65,7 +65,7 @@ class TaskRepo
                 else
                     $sqlHaving = "tags_ids != ''";
             }
-            if ($tags['include'] ?: 0) {
+            if ($tags['include'] ?? 0) {
                 # Include tags
                 $tagAnd = [];
                 foreach ($tags['include'] as $ids) {
@@ -75,7 +75,7 @@ class TaskRepo
                 $sqlWhere .= "\n AND todo.id IN (".
                              "SELECT DISTINCT task_id FROM {$this->db->prefix}tag2task WHERE ". implode(' AND ', $tagAnd). ")";
             }
-            if ($tags['exclude'] ?: 0) {
+            if ($tags['exclude'] ?? 0) {
                 # Exclude tags
                 $makeInts($tags['exclude']);
                 $sqlWhere .= "\n AND todo.id NOT IN (SELECT DISTINCT task_id FROM {$this->db->prefix}tag2task ".

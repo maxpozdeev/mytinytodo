@@ -310,9 +310,7 @@ class Task extends AbstractTask
     public ?array $extra = null;
 
     protected int $ow = 0;
-    //FIXME: tags!
-    protected ?string $tags_ids;
-    protected ?string $tags;
+    protected ?array $tagIds;
     public ?array $tagNames;
 
     protected ?string $listName;
@@ -335,9 +333,8 @@ class Task extends AbstractTask
         $entity->duedate = (string)$a['duedate'];
         $entity->listName = (string)$a['list_name'];
         $entity->ow = (int)$a['ow'];
-        //FIXME: tags!
-        $entity->tags_ids = $a['tags_ids'];
-        $entity->tags = $a['tags'];
+        $entity->tagNames = ($a['tags'] != '') ? explode(',', $a['tags']) : []; // TODO: use '#' to separate tags
+        $entity->tagIds = ($a['tags_ids'] != '') ? explode(',', $a['tags_ids']) : [];
 
         if (isset($a['extra'])) {
             $extra = json_decode($a['extra'], true, 10, JSON_INVALID_UTF8_SUBSTITUTE);
@@ -445,8 +442,8 @@ class Task extends AbstractTask
             'dueInt' => $dueA['int'],                           //int
             'dueTitle' => htmlspecialchars(sprintf($lang->get('taskdate_inline_duedate'), $dueA['formattedlong'])),
 
-            'tags' => htmlspecialchars($this->tags ?? ''),
-            'tags_ids' => htmlspecialchars($this->tags_ids ?? ''),
+            'tags' => htmlspecialchars( implode(',', $this->tagNames) ),
+            'tags_ids' => htmlspecialchars( implode(',', $this->tagIds) ),
 
             //FIXME: dont use ow
             'ow' => $this->ow ?? 0,
@@ -593,14 +590,12 @@ class Task extends AbstractTask
      */
     function setTags(array $tags)
     {
-        $tagIds = [];
-        $tagNames = [];
+        $this->tagIds = [];
+        $this->tagNames = [];
         foreach ($tags as $tag) {
-            $tagIds[] = $tag->id;
-            $tagNames[] = $tag->name;
+            $this->tagIds[] = $tag->id;
+            $this->tagNames[] = $tag->name;
         }
-        $this->tags = implode(',', $tagNames);
-        $this->tags_ids = implode(',', $tagIds);
     }
 
     /**
