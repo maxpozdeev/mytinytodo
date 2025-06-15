@@ -92,7 +92,7 @@ class ListsController extends ApiController {
     {
         $id = (int)$id;
         $repo = new ListRepo(DBConnection::instance());
-        $list = $repo->findListById($id);
+        $list = $repo->findRealListById($id);
         if (!$list || !canReadList($list)) {
             return $this->response->errorJsonContent(__("listNotFound"), 404);
         }
@@ -154,7 +154,7 @@ class ListsController extends ApiController {
         if (!$id)
             return ['ok'=>false, 'total'=>0]; //error 400?
 
-        $list = $repo->findListById($id);
+        $list = $repo->findRealListById($id);
         if (!$list)
             return ['ok'=>false, 'total'=>0]; //error 500?
         MTTNotificationCenter::postNotification(MTTNotification::didCreateList, $list);

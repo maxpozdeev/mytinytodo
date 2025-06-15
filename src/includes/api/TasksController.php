@@ -430,7 +430,7 @@ class TasksController extends ApiController {
         if ($task->listId == $toId) {
             return $failedResult;
         }
-        $list = (new ListRepo(DBConnection::instance()))->findListById($toId);
+        $list = (new ListRepo(DBConnection::instance()))->findRealListById($toId);
         if (!$list) {
             return $failedResult;
         }

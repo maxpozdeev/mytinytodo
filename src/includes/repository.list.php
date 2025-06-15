@@ -60,9 +60,12 @@ class ListRepo
      * @return null|TaskList
      * @throws Exception
      */
-    public function findListById(int $listId): ?TaskList
+    public function findRealListById(int $listId, ?int $userId = null): ?TaskList
     {
-        $r = $this->db->sqa("SELECT * FROM {$this->db->prefix}lists WHERE id=?", [$listId]);
+        if ($userId === null)
+            $r = $this->db->sqa("SELECT * FROM {$this->db->prefix}lists WHERE id=?", [$listId]);
+        else
+            $r = $this->db->sqa("SELECT * FROM {$this->db->prefix}lists WHERE id=? AND user_id=?", [$listId, $userId]);
         return $r ? TaskList::fromArray($r) : null;
     }
 
@@ -81,6 +84,21 @@ class ListRepo
         return $list;
     }
 
+
+    /**
+     *
+     * @param int $listId
+     * @param int $userId
+     * @return null|AlltasksList|TaskList
+     * @throws Exception
+     */
+    public function getListById(int $listId, int $userId): ?AbstractTaskList
+    {
+        if ($listId === -1)
+            return $this->alltasksListByUserId($userId);
+
+        return $this->findRealListById($listId, $userId);
+    }
 
     /**
      * Get all Ids and names of tasklists user owns (as dictonary)
