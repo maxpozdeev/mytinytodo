@@ -574,3 +574,24 @@ function filever(string $dir, string $filename)
 {
     print get_filever($dir, $filename);
 }
+
+function canReadList(TaskList $list, string $inFeedKey = '') : bool
+{
+    if ($list->isPublished)
+        return true;
+
+    if (is_logged() && userId() === $list->userId)
+        return true;
+
+    $feedKey = (string) ($list->extra['feedKey'] ?? '');
+    if ($feedKey !== '' && $feedKey === $inFeedKey)     //check length?
+        return true;
+
+    return false;
+}
+
+
+function canWriteToList(AbstractTaskList $list) : bool
+{
+    return (is_logged() && userId() === $list->userId);
+}

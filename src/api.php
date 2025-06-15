@@ -230,13 +230,6 @@ function checkReadAccess(?int $listId = null)
     }
 }
 
-function canReadList(TaskList $list) : bool
-{
-    if ($list->isPublished)
-        return true;
-    return (is_logged() && userId() === $list->userId);
-}
-
 function checkWriteAccess(?int $listId = null)
 {
     if (haveWriteAccess($listId))
@@ -284,7 +277,3 @@ function haveWriteAccess(?int $listId = null) : bool
     return true;
 }
 
-function canWriteToList(AbstractTaskList $list) : bool
-{
-    return (is_logged() && userId() === $list->userId);
-}
