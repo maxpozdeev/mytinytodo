@@ -32,9 +32,11 @@ class TasksController extends ApiController {
             $lists = [ $listId ];
         }
 
-        $isCompleted = null;
-        if (_get('compl') == 0) {
-            $isCompleted = false;
+        # dont show completed tasks by default
+        $showCompleted = false;
+        if (_get('compl') == 1) {
+            # show both
+            $showCompleted = null;
         }
 
         $tags = [
@@ -94,7 +96,7 @@ class TasksController extends ApiController {
         $t['list'] = [];
 
         $taskRepo = new TaskRepo($db);
-        $tasks = $taskRepo->findTasks($lists, $isCompleted, $tags, $search, $sort);
+        $tasks = $taskRepo->findTasks($lists, $showCompleted, $tags, $search, $sort);
         foreach ($tasks as $task) {
             if ($listId == -1) {
                 //$r['list_name'] = $userLists[ (string)$r['list_id'] ] ?? '((undefined))';
@@ -105,13 +107,25 @@ class TasksController extends ApiController {
         }
         $t['total'] = count($t['list']);
 
-        // TODO: use repo instead of controller
-        if (_get('setCompl') && haveWriteAccess($listId)) {
-            ListsController::setListShowCompletedById($listId, !(_get('compl') == 0) );
+
+        if ( (_get('setCompl') || _get('saveSort'))  && haveWriteAccess($listId))
+        {
+            if (!isset($listRepo))
+                $listRepo = new ListRepo($db);
+
+            $list = $listRepo->getListById($listId, userId());
+
+            if (_get('setCompl'))
+                $list->setIsShowCompleted( $showCompleted === null );
+            if (_get('saveSort'))
+                $list->setSort($sort);
+
+            if ($list instanceof AlltasksList)
+                $listRepo->updateAlltasksList($list);
+            else
+                $listRepo->updateListProperties($list);
         }
-        if (_get('saveSort') == 1 && haveWriteAccess($listId)) {
-            ListsController::setListSortingById($listId, $sort);
-        }
+
         $this->response->data = $t;
     }
 

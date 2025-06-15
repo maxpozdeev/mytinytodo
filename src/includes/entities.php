@@ -93,6 +93,12 @@ class TaskList extends AbstractTaskList
         $this->changed['d_edited'] = true;
     }
 
+    function setIsShowCompleted(bool $showCompleted)
+    {
+        $this->isShowCompleted = $showCompleted;
+        $this->changed['taskview'] = true;
+    }
+
     function setIsShowNotes(bool $show)
     {
         $this->isShowNotes = $show;
@@ -223,6 +229,11 @@ class AlltasksList extends AbstractTaskList
     function setIsHidden(bool $hidden)
     {
         $this->isHidden = $hidden;
+    }
+
+    function setIsShowCompleted(bool $showCompleted)
+    {
+        $this->isShowCompleted = $showCompleted;
     }
 
     static function fromArray(array $opts): self

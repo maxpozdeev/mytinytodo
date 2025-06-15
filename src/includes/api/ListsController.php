@@ -177,37 +177,6 @@ class ListsController extends ApiController {
         ];
     }
 
-    //TODO: remove
-    static function setListSortingById(int $listId, int $sort)
-    {
-        $db = DBConnection::instance();
-        if ($sort < 0 || ($sort > 5 && $sort < 100) || $sort > 105) {
-            $sort = 0;
-        }
-        if ($listId == -1) {
-            $opts = UserConfig::requestDomain('alltasks.json');
-            $opts['sort'] = $sort;
-            UserConfig::saveDomain('alltasks.json', $opts);
-        }
-        else {
-            $db->ex("UPDATE {$db->prefix}lists SET sorting=$sort,d_edited=? WHERE id=$listId", array(time()));
-        }
-    }
-
-    //TODO: remove
-    static function setListShowCompletedById(int $listId, bool $showCompleted)
-    {
-        $db = DBConnection::instance();
-        if ($listId == -1) {
-            $opts = UserConfig::requestDomain('alltasks.json');
-            $opts['showCompleted'] = (int)$showCompleted;
-            UserConfig::saveDomain('alltasks.json', $opts);
-        }
-        else {
-            $bitwise = $showCompleted ? 'taskview | 1' : 'taskview & ~1';
-            $db->dq("UPDATE {$db->prefix}lists SET taskview=$bitwise WHERE id=?", [$listId]);
-        }
-    }
 
     private function sortList(AbstractTaskList $list): ?array
     {
