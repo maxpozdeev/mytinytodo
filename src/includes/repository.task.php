@@ -10,9 +10,149 @@ class TaskRepo
 {
     protected AbstractDatabase $db;
 
+    const SORT_MANUAL = 0;
+    const SORT_MANUAL_REVERSE = 100;
+    const SORT_PRIORITY = 1;
+    const SORT_PRIORITY_REVERSE = 101;
+    const SORT_DUEDATE = 2;
+    const SORT_DUEDATE_REVERSE = 101;
+    const SORT_DATE_CREATED = 3;
+    const SORT_DATE_CREATED_REVERSE = 103;
+    const SORT_DATE_EDITED = 4;
+    const SORT_DATE_EDITED_REVERSE = 104;
+    const SORT_TITLE = 5;
+    const SORT_TITLE_REVERSE = 105;
+
     function __construct(AbstractDatabase $db)
     {
         $this->db = $db;
+    }
+
+
+    public function findTasks(array $lists, ?bool $compl, array $tags, string $search, int $sort)
+    {
+        $makeInts = function (array &$a) { foreach ($a as &$v) $v = (int)$v; };
+        $sqlWhere = $sqlWhereListId = $sqlHaving = '';
+
+        # list ids (make int)
+        if (count($lists) == 0) {
+            throw new InvalidArgumentException("No list specified");
+        }
+        $makeInts($lists);
+        $sqlWhereListId = "todo.list_id IN (". implode(",", $lists). ") ";
+
+        # completed flag (null - show both)
+        if ($compl === false) {
+            $sqlWhere .= ' AND compl=0';
+        }
+        else if ($compl === true) {
+            $sqlWhere .= ' AND compl=1';
+        }
+
+        # tags
+        if (isset($tags['excludeAll']) && $tags['excludeAll']) {
+            # No Tags
+            if ($this->db::DBTYPE == DBConnection::DBTYPE_POSTGRES)
+                $sqlHaving = "string_agg(tags.name, ',') IS NULL"; // catches if tag name is ''
+            else
+                $sqlHaving = "tags_ids IS NULL OR tags_ids = ''";
+        }
+        else {
+            if ($tags['includeAny'] ?? false) {
+                # Having any tag
+                if ($this->db::DBTYPE == DBConnection::DBTYPE_POSTGRES)
+                    $sqlHaving = "string_agg(tags.name, ',') != ''";
+                else
+                    $sqlHaving = "tags_ids != ''";
+            }
+            if ($tags['include'] ?: 0) {
+                # Include tags
+                $tagAnd = [];
+                foreach ($tags['include'] as $ids) {
+                    $makeInts($ids);
+                    $tagAnd[] = "task_id IN (SELECT task_id FROM {$this->db->prefix}tag2task WHERE tag_id IN (". implode(',', $ids). "))";
+                }
+                $sqlWhere .= "\n AND todo.id IN (".
+                             "SELECT DISTINCT task_id FROM {$this->db->prefix}tag2task WHERE ". implode(' AND ', $tagAnd). ")";
+            }
+            if ($tags['exclude'] ?: 0) {
+                # Exclude tags
+                $makeInts($tags['exclude']);
+                $sqlWhere .= "\n AND todo.id NOT IN (SELECT DISTINCT task_id FROM {$this->db->prefix}tag2task ".
+                            "WHERE tag_id IN (". implode(',', $tags['exclude']). "))";
+            }
+        }
+
+        # Search filter
+        if ($search != '') {
+            if (preg_match("|^#(\d+)$|", $search, $m)) {
+                $sqlWhere .= " AND todo.id = ". (int)$m[1];
+            }
+            else {
+                $sqlWhere .= " AND (". $this->db->like("title", "%%%s%%", $search). " OR ". $this->db->like("note", "%%%s%%", $search). ")";
+            }
+        }
+
+        # Sort
+        $sqlSort = "ORDER BY compl ASC, ";
+        if ($sort == self::SORT_MANUAL)
+                                                        $sqlSort .= "ow ASC";
+        elseif ($sort == self::SORT_MANUAL_REVERSE)
+                                                        $sqlSort .= "ow DESC";
+        elseif ($sort == self::SORT_PRIORITY)
+                                                        $sqlSort .= "prio DESC, ddn ASC, duedate ASC, ow ASC";
+        elseif ($sort == self::SORT_PRIORITY_REVERSE)
+                                                        $sqlSort .= "prio ASC, ddn DESC, duedate DESC, ow DESC";
+        elseif ($sort == self::SORT_DUEDATE)
+                                                        $sqlSort .= "ddn ASC, duedate ASC, prio DESC, ow ASC";
+        elseif ($sort == self::SORT_DUEDATE_REVERSE)
+                                                        $sqlSort .= "ddn DESC, duedate DESC, prio ASC, ow DESC";
+        elseif ($sort == self::SORT_DATE_CREATED)
+                                                        $sqlSort .= "d_created ASC, prio DESC, ow ASC";
+        elseif ($sort == self::SORT_DATE_CREATED_REVERSE)
+                                                        $sqlSort .= "d_created DESC, prio ASC, ow DESC";
+        elseif ($sort == self::SORT_DATE_EDITED)
+                                                        $sqlSort .= "d_edited ASC, prio DESC, ow ASC";
+        elseif ($sort == self::SORT_DATE_EDITED_REVERSE)
+                                                        $sqlSort .= "d_edited DESC, prio ASC, ow DESC";
+        elseif ($sort == self::SORT_TITLE)
+                                                        $sqlSort .= "title ASC, prio DESC, ow ASC";
+        elseif ($sort == self::SORT_TITLE_REVERSE)
+                                                        $sqlSort .= "title DESC, prio ASC, ow DESC";
+        else
+            $sqlSort .= "d_created ASC, prio DESC, ow ASC";             // same as byDateCreated
+
+
+        $groupConcat = '';
+        if ($this->db::DBTYPE == DBConnection::DBTYPE_POSTGRES) {
+            $groupConcat =  "array_to_string(array_agg(tags.id), ',') AS tags_ids, string_agg(tags.name, ',') AS tags";
+        }
+        else {
+            $groupConcat = "GROUP_CONCAT(tags.id) AS tags_ids, GROUP_CONCAT(tags.name) AS tags";
+        }
+
+        if ($sqlHaving != '')
+            $sqlHaving = "HAVING $sqlHaving";
+
+        $q = $this->db->dq("
+            SELECT todo.*, lists.name list_name, todo.duedate IS NULL AS ddn, $groupConcat
+            FROM {$this->db->prefix}todolist AS todo
+            INNER JOIN {$this->db->prefix}lists AS lists ON todo.list_id = lists.id
+            LEFT JOIN {$this->db->prefix}tag2task AS t2t ON todo.id = t2t.task_id
+            LEFT JOIN {$this->db->prefix}tags AS tags ON t2t.tag_id = tags.id
+            WHERE $sqlWhereListId $sqlWhere
+            GROUP BY todo.id   $sqlHaving
+            $sqlSort
+        ");
+
+        $a = [];
+        while ($r = $q->fetchAssoc())
+        {
+            unset($r['ddn']); # used only for ORDER BY
+             $a[] = Task::fromArray($r);
+        }
+
+        return $a;
     }
 
     /**

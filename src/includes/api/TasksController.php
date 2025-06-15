@@ -20,134 +20,92 @@ class TasksController extends ApiController {
     {
         $listId = (int)_get('list');
         checkReadAccess($listId);
-        $db = DBConnection::instance();
-        $dbcore = DBCore::default();
 
-        $sqlWhere = $sqlWhereListId = $sqlHaving = '';
-        $userLists = [];
+        $db = DBConnection::instance();
+
         if ($listId == -1) {
-            $userLists = $this->getUserListsSimple();
-            $userListsIds = implode(',', array_keys($userLists));
-            $sqlWhereListId = "todo.list_id IN ($userListsIds) ";
+            $listRepo = new ListRepo($db);
+            $userLists = $listRepo->findListNamesByUserId( userId() );
+            $lists = array_keys($userLists);
         }
         else {
-            $sqlWhereListId = "todo.list_id=". $listId;
-        }
-        if (_get('compl') == 0) {
-            $sqlWhere .= ' AND compl=0';
+            $lists = [ $listId ];
         }
 
-        $tag = trim(_get('t'));
-        if ($tag != '')
-        {
-            $at = explode(',', $tag);
-            $tagIds = array(); # [ [id1,id2], [id3]... ]
-            $tagExIds = array();
+        $isCompleted = null;
+        if (_get('compl') == 0) {
+            $isCompleted = false;
+        }
+
+        $tags = [
+            'excludeAll' => false,
+            'includeAny' => false,
+            'include' => [],
+            'exclude' => [],
+        ];
+        $t = trim(_get('t'));
+        if ($t != '') {
+            $at = explode(',', $t);
+            $tagNames = [];
+            $exTagNames = [];
             foreach ($at as $atv) {
                 $atv = trim($atv);
                 if ($atv == '')
                     continue;
                 // tasks without tags (ignore other tags included or excluded)
                 if ($atv == '^') {
-                    $tagIds = [];
-                    $tagExIds = [];
-                    if ($db::DBTYPE == DBConnection::DBTYPE_POSTGRES)
-                        $sqlHaving = "string_agg(tags.name, ',') IS NULL"; // catches if tag name is ''
-                    else
-                        $sqlHaving = "tags_ids IS NULL OR tags_ids = ''";
+                    $tags = [ 'excludeAll' => true ];
+                    $tagNames = $exTagNames = [];
                     break;
                 }
                 // tasks with any tag
                 else if ($atv == '^^') {
-                    if ($db::DBTYPE == DBConnection::DBTYPE_POSTGRES)
-                        $sqlHaving = "string_agg(tags.name, ',') != ''";
-                    else
-                        $sqlHaving = "tags_ids != ''";
+                    $tags['includeAny'] = true;
                 }
                 else if (substr($atv,0,1) == '^') {
-                    array_push($tagExIds, ...$dbcore->getTagIdsByName(substr($atv,1)));
+                    $exTagNames[] = substr($atv,1);
                 } else {
-                    $tagIds[] = $dbcore->getTagIdsByName($atv);
+                    $tagNames[] = $atv;
                 }
             }
-
-            // Include tags
-            if (count($tagIds) > 0) {
-                $tagAnd = [];
-                foreach ($tagIds as $ids) {
-                    $tagAnd[] = "task_id IN (SELECT task_id FROM {$db->prefix}tag2task WHERE tag_id IN (". implode(',', $ids). "))";
+            $tagRepo = new TagRepo($db);
+            # TODO: maybe use tag ids?
+            if (count($tagNames) > 0) {
+                # 2-dimensional array
+                foreach ($tagNames as $tagName) {
+                    $tags['include'][] = $tagRepo->getTagIdsByName($tagName);
                 }
-                $sqlWhere .= "\n AND todo.id IN (".
-                             "SELECT DISTINCT task_id FROM {$db->prefix}tag2task WHERE ". implode(' AND ', $tagAnd). ")";
-            }
 
-            // Exclude tags
-            if (count($tagExIds) > 0) {
-                $sqlWhere .= "\n AND todo.id NOT IN (SELECT DISTINCT task_id FROM {$db->prefix}tag2task ".
-                            "WHERE tag_id IN (". implode(',', $tagExIds). "))";
+            }
+            if (count($exTagNames) > 0) {
+                # 1-dimensional array
+                foreach ($exTagNames as $tagName) {
+                    array_push($tags['exclude'], ...$tagRepo->getTagIdsByName($tagName));
+                }
             }
         }
 
-        $s = trim(_get('s'));
-        if ($s != '') {
-            if (preg_match("|^#(\d+)$|", $s, $m)) {
-                $sqlWhere .= " AND todo.id = ". (int)$m[1];
-            }
-            else {
-                $sqlWhere .= " AND (". $db->like("title", "%%%s%%", $s). " OR ". $db->like("note", "%%%s%%", $s). ")";
-            }
-        }
-
+        $search = trim(_get('s'));
         $sort = (int)_get('sort');
-        $sqlSort = "ORDER BY compl ASC, ";
-        // sortings are same as in DBCore::getTasksByListId
-        if ($sort == 0) $sqlSort .= "ow ASC";                                           // byHand
-        elseif ($sort == 100) $sqlSort .= "ow DESC";                                    // byHand (reverse)
-        elseif ($sort == 1) $sqlSort .= "prio DESC, ddn ASC, duedate ASC, ow ASC";      // byPrio
-        elseif ($sort == 101) $sqlSort .= "prio ASC, ddn DESC, duedate DESC, ow DESC";  // byPrio (reverse)
-        elseif ($sort == 2) $sqlSort .= "ddn ASC, duedate ASC, prio DESC, ow ASC";      // byDueDate
-        elseif ($sort == 102) $sqlSort .= "ddn DESC, duedate DESC, prio ASC, ow DESC";  // byDueDate (reverse)
-        elseif ($sort == 3) $sqlSort .= "d_created ASC, prio DESC, ow ASC";             // byDateCreated
-        elseif ($sort == 103) $sqlSort .= "d_created DESC, prio ASC, ow DESC";          // byDateCreated (reverse)
-        elseif ($sort == 4) $sqlSort .= "d_edited ASC, prio DESC, ow ASC";              // byDateModified
-        elseif ($sort == 104) $sqlSort .= "d_edited DESC, prio ASC, ow DESC";           // byDateModified (reverse)
-        elseif ($sort == 5) $sqlSort .= "title ASC, prio DESC, ow ASC";                 // byTitle
-        elseif ($sort == 105) $sqlSort .= "title DESC, prio ASC, ow DESC";              // byTitle (reverse)
-        else $sqlSort .= "ow ASC";
 
         $t = array();
         $t['total'] = 0;
-        $t['list'] = array();
         $t['time'] = time();
+        $t['list'] = [];
 
-        $groupConcat = '';
-        if ($db::DBTYPE == DBConnection::DBTYPE_POSTGRES) {
-            $groupConcat =  "array_to_string(array_agg(tags.id), ',') AS tags_ids, string_agg(tags.name, ',') AS tags";
-        }
-        else {
-            $groupConcat = "GROUP_CONCAT(tags.id) AS tags_ids, GROUP_CONCAT(tags.name) AS tags";
-        }
-        if ($sqlHaving != '')
-            $sqlHaving = "HAVING $sqlHaving";
+        $taskRepo = new TaskRepo($db);
+        $tasks = $taskRepo->findTasks($lists, $isCompleted, $tags, $search, $sort);
+        foreach ($tasks as $task) {
+            if ($listId == -1) {
+                //$r['list_name'] = $userLists[ (string)$r['list_id'] ] ?? '((undefined))';
 
-        $q = $db->dq("
-            SELECT todo.*, todo.duedate IS NULL AS ddn, $groupConcat
-            FROM {$db->prefix}todolist AS todo
-            LEFT JOIN {$db->prefix}tag2task AS t2t ON todo.id = t2t.task_id
-            LEFT JOIN {$db->prefix}tags AS tags ON t2t.tag_id = tags.id
-            WHERE $sqlWhereListId $sqlWhere
-            GROUP BY todo.id   $sqlHaving
-            $sqlSort
-        ");
-
-        while ($r = $q->fetchAssoc())
-        {
-            $t['total']++;
-            if ($listId == -1 && $r['list_id']) {
-                $r['list_name'] = $userLists[ (string)$r['list_id'] ] ?? '((undefined))';
             }
-            $t['list'][] = $this->prepareTaskRow($r);
+
+            $t['list'][] = $task->toJsonApiArray();
         }
+        $t['total'] = count($t['list']);
+
+        // TODO: use repo instead of controller
         if (_get('setCompl') && haveWriteAccess($listId)) {
             ListsController::setListShowCompletedById($listId, !(_get('compl') == 0) );
         }
@@ -586,86 +544,6 @@ class TasksController extends ApiController {
             MTTNotificationCenter::postNotification(MTTNotification::didDeleteTask, $task);
         }
         return $t;
-    }
-
-    private function getUserListsSimple(bool $readOnly = false): array
-    {
-        $db = DBConnection::instance();
-        $sqlWhere = 'WHERE user_id='. $this->req->userId();
-        if ($readOnly) {
-            $sqlWhere .= " AND published=1";
-        }
-        $a = array();
-        $q = $db->dq("SELECT id,name FROM {$db->prefix}lists $sqlWhere ORDER BY id ASC");
-        while($r = $q->fetchRow()) {
-            $a[ (string)$r[0] ] = (string)$r[1];
-        }
-        return $a;
-    }
-
-
-    private function prepareTaskRow(array $r): array
-    {
-        $lang = Lang::instance();
-        $dueA = Task::prepareDuedate($r['duedate']);
-        $dCreated = timestampToDatetime($r['d_created']);
-        $isEdited = ($r['d_edited'] != $r['d_created']);
-        $dEdited = $isEdited ? timestampToDatetime($r['d_edited']) : '';
-        $dCompleted = $r['d_completed'] ? timestampToDatetime($r['d_completed']) : '';
-        if (!Config::get('showtime')) {
-            $dCreatedFull = timestampToDatetime($r['d_created'], true);
-            $dEditedFull = $isEdited ? timestampToDatetime($r['d_edited'], true) : '';
-            $dCompletedFull = $r['d_completed'] ? timestampToDatetime($r['d_completed'], true) : '';
-        }
-        else {
-            $dCreatedFull = $dCreated;
-            $dEditedFull = $dEdited;
-            $dCompletedFull = $dCompleted;
-        }
-
-        return array(
-            'id' => $r['id'],
-            'title' => titleMarkup( $r['title'] ),
-            'titleText' => (string)$r['title'],
-            'listId' => $r['list_id'],
-            'listName' => htmlarray($r['list_name'] ?? ''),
-            'date' => htmlarray($dCreated),
-            'dateInt' => (int)$r['d_created'],
-            'dateFull' => htmlarray($dCreatedFull),
-            'dateInlineTitle' => htmlarray(sprintf($lang->get('taskdate_inline_created'), $dCreated)), //TODO: move preparing of *inlineTitle to js
-            'dateEdited' => htmlarray($dEdited),
-            'dateEditedInt' => (int)$r['d_edited'],
-            'dateEditedFull' => htmlarray($dEditedFull),
-            'dateEditedInlineTitle' => htmlarray(sprintf($lang->get('taskdate_inline_edited'), $dEdited)),
-            'isEdited' => (bool)$isEdited,
-            'dateCompleted' => htmlarray($dCompleted),
-            'dateCompletedFull' => htmlarray($dCompletedFull),
-            'dateCompletedInlineTitle' => htmlarray(sprintf($lang->get('taskdate_inline_completed'), $dCompleted)),
-            'compl' => (int)$r['compl'],
-            'prio' => $r['prio'],
-            'note' => noteMarkup($r['note']),
-            'noteText' => (string)$r['note'],
-            'ow' => (int)$r['ow'],
-            'tags' => htmlarray($r['tags'] ?? ''),
-            'tags_ids' => htmlarray($r['tags_ids'] ?? ''),
-            'duedate' => htmlarray($dueA['formatted']),
-            'dueClass' => $dueA['class'],
-            'dueStr' => htmlarray($dueA['str']),
-            'dueInt' => $this->date2int($r['duedate']),
-            'dueTitle' => htmlarray(sprintf($lang->get('taskdate_inline_duedate'), $dueA['formattedlong'])),
-        );
-    }
-
-    private function date2int($d) : int
-    {
-        if (!$d) {
-            return 33330000;
-        }
-        $ad = explode('-', $d);
-        $s = $ad[0];
-        if (strlen($ad[1]) < 2) $s .= "0$ad[1]"; else $s .= $ad[1];
-        if (strlen($ad[2]) < 2) $s .= "0$ad[2]"; else $s .= $ad[2];
-        return (int)$s;
     }
 
 }

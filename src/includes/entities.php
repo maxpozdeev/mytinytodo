@@ -12,11 +12,12 @@ abstract class AbstractEntity
 
     public static function checkDbFields(array $a)
     {
-        // Check all fields are present and no more
+        // Check all fields are present
         foreach (static::$dbfields as $field) {
             if (!array_key_exists($field, $a))
                 throw new Exception("Field `$field' does not present in input");
         }
+        //  and no more
         if (count(static::$dbfields) != count($a)) {
             if (MTT_DEBUG) {
                 $diff = array_diff(array_keys($a), static::$dbfields);
@@ -321,7 +322,7 @@ class Task extends AbstractTask
         $entity->isCompleted = boolval($a['compl']);
         $entity->priority = (int)$a['prio'];
         $entity->duedate = (string)$a['duedate'];
-        //$entity->listName = (string)$a['list_name'];
+        $entity->listName = (string)$a['list_name'];
         $entity->ow = (int)$a['ow'];
         //FIXME: tags!
         $entity->tags_ids = $a['tags_ids'];

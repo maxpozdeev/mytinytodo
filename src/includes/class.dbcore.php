@@ -70,6 +70,7 @@ class DBCore
      * @param int $id
      * @return null|int
      */
+/*
     public function getListIdByTaskId(int $id): ?int
     {
         $db = $this->db;
@@ -78,8 +79,9 @@ class DBCore
             return null;
         return (int)$r['list_id'];
     }
+*/
 
-
+/*
     public function getTaskById(int $id): ?array
     {
         $db = $this->db;
@@ -100,7 +102,7 @@ class DBCore
         ");
         return $r;
     }
-
+*/
     /**
      *
      * @param int $listId
@@ -168,6 +170,7 @@ class DBCore
      * @return int[]
      * @throws Exception
      */
+/*
     function getTagIdsByName(string $name): array
     {
         $db = DBConnection::instance();
@@ -178,5 +181,6 @@ class DBCore
         }
         return $a;
     }
+*/
 }
 

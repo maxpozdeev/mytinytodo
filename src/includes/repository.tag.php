@@ -41,6 +41,22 @@ class TagRepo
 
 
     /**
+     * Finds all variations of tag by its "normalized" name. Return array of id.
+     * @param string[] $tagNames
+     * @return int[]
+     */
+    public function getTagIdsByName(string $name): array
+    {
+        $ids = [];
+        $q = $this->db->dq("SELECT id FROM {$this->db->prefix}tags WHERE ". $this->db->ciEquals('name', $name));
+        while ($r = $q->fetchAssoc()) {
+            $ids[] = (int) $r['id'];
+        }
+        return $ids;
+    }
+
+
+    /**
      *
      * @param string $name
      * @param int $userId

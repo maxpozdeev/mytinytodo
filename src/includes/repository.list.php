@@ -83,6 +83,27 @@ class ListRepo
 
 
     /**
+     * Get all Ids and names of tasklists user owns (as dictonary)
+     * @param int $userId
+     * @param bool $publicOnly
+     * @return array<string,string>
+     */
+    public function findListNamesByUserId(int $userId, bool $publicOnly = false): array
+    {
+        $sqlWhere = '';
+        if ($publicOnly) {
+            $sqlWhere .= " AND published=1";
+        }
+        $a = array();
+        $q = $this->db->dq("SELECT id,name FROM {$this->db->prefix}lists WHERE user_id=? $sqlWhere", [$userId]);
+        while ($r = $q->fetchRow()) {
+            $a[ (string)$r[0] ] = (string)$r[1];
+        }
+        return $a;
+    }
+
+
+    /**
      * Set order of lists of specfic user
      * @param [int|string] $order Ids of Lists in order of appearance
      * @param int $userId
