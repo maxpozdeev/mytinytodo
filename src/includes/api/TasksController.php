@@ -108,14 +108,14 @@ class TasksController extends ApiController {
         $t['total'] = count($t['list']);
 
 
-        if ( (_get('setCompl') || _get('saveSort'))  && haveWriteAccess($listId))
+        if ( (_get('saveCompl') || _get('saveSort'))  && haveWriteAccess($listId))
         {
             if (!isset($listRepo))
                 $listRepo = new ListRepo($db);
 
             $list = $listRepo->getListById($listId, userId());
 
-            if (_get('setCompl'))
+            if (_get('saveCompl'))
                 $list->setIsShowCompleted( $showCompleted === null );
             if (_get('saveSort'))
                 $list->setSort($sort);

@@ -51,7 +51,7 @@ MytinytodoAjaxApi.prototype = {
         let q = '';
         if (params.search && params.search != '') q += '&s=' + encodeURIComponent(params.search);
         if (params.tag && params.tag != '') q += '&t=' + encodeURIComponent(params.tag);
-        if (params.setCompl && params.setCompl != 0) q += '&setCompl=1';
+        if (params.saveCompl && params.saveCompl != 0) q += '&saveCompl=1';
         if (params.saveSort && params.saveSort != 0) q += '&saveSort=1';
 
         $.getJSON(mytinytodo.apiUrl + 'tasks' + (mytinytodo.apiUrl.indexOf('?') > -1 ? '&' : '?') +

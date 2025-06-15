@@ -1273,7 +1273,7 @@ function loadTasks(opts)
         sort: curList.sort,
         search: filter.search,
         tag: mtt.filter.getTags(true),
-        setCompl: opts.setCompl,
+        saveCompl: opts.saveCompl,
         saveSort: opts.saveSort
     }, function(json){
         taskList.length = 0;
@@ -2686,7 +2686,7 @@ function showCompletedToggle()
     curList.showCompl = tabLists.get(curList.id).showCompl = act;
     if(act) $('#btnShowCompleted').addClass('mtt-item-checked');
     else $('#btnShowCompleted').removeClass('mtt-item-checked');
-    loadTasks({setCompl:1});
+    loadTasks({saveCompl:1});
 };
 
 function clearCompleted()
