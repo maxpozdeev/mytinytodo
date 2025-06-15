@@ -98,11 +98,6 @@ class TasksController extends ApiController {
         $taskRepo = new TaskRepo($db);
         $tasks = $taskRepo->findTasks($lists, $showCompleted, $tags, $search, $sort);
         foreach ($tasks as $task) {
-            if ($listId == -1) {
-                //$r['list_name'] = $userLists[ (string)$r['list_id'] ] ?? '((undefined))';
-
-            }
-
             $t['list'][] = $task->toJsonApiArray();
         }
         $t['total'] = count($t['list']);
