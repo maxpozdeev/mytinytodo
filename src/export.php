@@ -1,54 +1,63 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
     This file is a part of myTinyTodo.
-    (C) Copyright 2010-2011,2019-2021 Max Pozdeev <maxpozdeev@gmail.com>
+    (C) Copyright 2010-2011,2019-2025 Max Pozdeev <maxpozdeev@gmail.com>
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
-//$dontStartSession = 1;
 require_once('./init.php');
 
 $listId = (int)_get('list');
-$db = DBConnection::instance();
-$listData = $db->sqa("SELECT * FROM {$db->prefix}lists WHERE id=$listId");
-if ( $listData && !is_logged() && !$listData['published'] ) {
-    $extra = json_decode($listData['extra'] ?? '', true, 10, JSON_INVALID_UTF8_SUBSTITUTE);
-    $feedKey = (string) ($extra['feedKey'] ?? '');
-    $inFeedKey = trim(_get('key'));
-    if ($feedKey == '' || $feedKey != $inFeedKey) {
+
+$listRepo = new ListRepo(DBConnection::instance());
+$list = $listRepo->findRealListById($listId);
+
+if (!$list) {
+    if (is_logged())
+        die("No list found.");
+    else
         die("Access denied.");
-    }
-}
-if (!$listData) {
-    die("No list found.");
 }
 
-$data = DBCore::default()->getTasksByListId($listId, '', (int)$listData['sorting']);
-
-if (_get('format') == 'ical') {
-    printICal($listData, $data);
-}
-else {
-    printCSV($listData, $data);
+if (!canReadList($list, trim(_get('key')))) {
+    die("Access denied.");
 }
 
+$taskRepo = new TaskRepo(DBConnection::instance());
+$tasks = $taskRepo->findTasks([$list->id], null, [], '', $taskRepo::SORT_DATE_CREATED);
 
-function printCSV(array $listData, array $data)
+switch (_get('format')) {
+    case 'ical': printICal($list, $tasks); break;
+    case 'csv' : printCSV($list, $tasks);  break;
+    default: die("Unsupported format requested.");
+}
+
+
+/**
+ * @param TaskList $list
+ * @param Task[] $tasks
+ * @return void
+ */
+function printCSV(TaskList $list, array $tasks)
 {
-    $s = "\xEF\xBB\xBF". "Completed;Priority;Task;Notes;Tags;Due;DateCreated;DateCompleted\n";
-    foreach($data as $r)
+    $s = "\xEF\xBB\xBF". "Id;Completed;Priority;Task;Notes;Tags;Due;DateCreated;DateCompleted\n";
+    foreach($tasks as $task)
     {
-        $s .= ($r['compl']?'1':'0'). ';'.
-            $r['prio']. ';'. escape_csv($r['title'] ?? ''). ';'.
-            escape_csv($r['note'] ?? ''). ';'.
-            escape_csv($r['tags'] ?? ''). ';'.
-            $r['duedate']. ';'.
-            date('Y-m-d H:i:s O',$r['d_created']). ';'.
-            ($r['d_completed'] ? date('Y-m-d H:i:s O',$r['d_completed']) :''). "\n";
+        $row = [];
+        $row[] = $task->id;
+        $row[] = $task->isCompleted ? '1' : '0';
+        $row[] = $task->priority;
+        $row[] = escape_csv($task->title);
+        $row[] = escape_csv($task->note ?? '');
+        $row[] = escape_csv( implode(',', $task->tagNames) );
+        $row[] = $task->duedate ?? '';
+        $row[] = date('Y-m-d H:i:s O', $task->d_created);
+        $row[] = $task->d_completed ? date('Y-m-d H:i:s O', $task->d_completed) : '';
+        $s .= implode(';', $row). "\n";
     }
     header('Content-type: text/csv; charset=utf-8');
-    header('Content-disposition: attachment; filename=list_'.(int)$listData['id'].'.csv');
+    header('Content-disposition: attachment; filename=list_'. (int)$list->id. '.csv');
     print $s;
 }
 
@@ -63,68 +72,95 @@ function escape_csv(string $v)
     return '"'. $nf. str_replace('"', '""', $v). '"';
 }
 
-function printICal(array $listData, array $data)
+/**
+ * @param TaskList $list
+ * @param Task[] $tasks
+ * @return void
+ */
+function printICal(TaskList $list, array $tasks)
 {
-    $mttToIcalPrio = array("1" => 5, "2" => 1);
-    $s = "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nMETHOD:PUBLISH\r\nCALSCALE:GREGORIAN\r\nPRODID:-//myTinyTodo//iCalendar Export v1.4//EN\r\n".
-        "X-WR-CALNAME:". $listData['name']. "\r\nX-MTT-TIMEZONE:".Config::get('timezone')."\r\n";
+    $mttToIcalPrio = array(1 => 5, "1" => 5, "2" => 1, 2 => 1, "-1" => 9, -1 => 9);
+    $s = "BEGIN:VCALENDAR\r\n".
+         "VERSION:2.0\r\n".
+         "METHOD:PUBLISH\r\n". #?
+         "CALSCALE:GREGORIAN\r\n". #?
+         "PRODID:-//myTinyTodo//iCalendar Export v2.0//EN\r\n".
+         utf8chunks("NAME:". $list->name). "\r\n".
+         utf8chunks("X-WR-CALNAME:". $list->name). "\r\n".
+         "X-MTT-TIMEZONE:". Config::get('timezone')."\r\n";
+
     # to-do
-    foreach($data as $r)
+    foreach ($tasks as $task)
     {
         $a = array();
         $a[] = "BEGIN:VTODO";
-        $a[] = "UID:". $r['uuid'];
-        $a[] = "CREATED:". gmdate('Ymd\THis\Z', $r['d_created']);
-        $a[] = "DTSTAMP:". gmdate('Ymd\THis\Z', $r['d_edited']);
-        $a[] = "LAST-MODIFIED:". gmdate('Ymd\THis\Z', $r['d_edited']);
-        $a[] = utf8chunks("SUMMARY:". $r['title']);
-        if($r['duedate']) {
-            $dda = explode('-', $r['duedate']);
+        $a[] = "UID:". $task->uuid;
+        $a[] = "CREATED:". gmdate('Ymd\THis\Z', $task->d_created);
+        $a[] = "DTSTAMP:". gmdate('Ymd\THis\Z', $task->d_edited);
+        $a[] = "LAST-MODIFIED:". gmdate('Ymd\THis\Z', $task->d_edited);
+        $a[] = utf8chunks("SUMMARY:". $task->title);
+        if ($task->duedate) {
+            $dda = explode('-', $task->duedate);
             $a[] = "DUE;VALUE=DATE:".sprintf("%u%02u%02u", $dda[0], $dda[1], $dda[2]);
         }
-        # Apple's iCal priorities: low-9, medium-5, high-1
-        if($r['prio'] > 0 && isset($mttToIcalPrio[$r['prio']])) $a[] = "PRIORITY:". $mttToIcalPrio[$r['prio']];
-        $a[] = "X-MTT-PRIORITY:". $r['prio'];
+        # Apple's iCal and Thunderbird priorities: low-9, medium-5, high-1
+        if ($task->priority != 0 && isset($mttToIcalPrio[$task->priority]))
+            $a[] = "PRIORITY:". $mttToIcalPrio[$task->priority];
+        $a[] = "X-MTT-PRIORITY:". $task->priority;
 
         $descr = array();
-        if($r['tags'] != '') $descr[] = Lang::instance()->get('tags'). ": ". str_replace(',', ', ', $r['tags']);
-        if($r['note'] != '') $descr[] = Lang::instance()->get('note'). ": ". $r['note'];
-        if($descr) $a[] = utf8chunks("DESCRIPTION:". str_replace("\n", '\\n', implode("\n",$descr)));
+        if ($task->tagNames)
+            $descr[] = Lang::instance()->get('tags'). ": ". implode(', ', $task->tagNames);
+        if ($task->note && $task->note != '')
+            $descr[] = Lang::instance()->get('note'). ": ". $task->note;
+        if ($descr)
+            $a[] = utf8chunks("DESCRIPTION:". str_replace("\n", '\\n', implode("\n", $descr)));
 
-        if($r['compl']) {
-            $a[] = "STATUS:COMPLETED"; #used in Sunbird
-            $a[] = "COMPLETED:". gmdate('Ymd\THis\Z', $r['d_completed']);
-            #$a[] = "PERCENT-COMPLETE:100"; #used in Sunbird
+        if ($task->isCompleted) {
+            $a[] = "STATUS:COMPLETED"; #used in Mozilla Thunderbird
+            $a[] = "COMPLETED:". gmdate('Ymd\THis\Z', $task->d_completed);
+            #$a[] = "PERCENT-COMPLETE:100"; #used in Mozilla Thunderbird
         }
-        if($r['tags'] != '') $a[] = utf8chunks("X-MTT-TAGS:". $r['tags']);
+        #if ($task->tagNames)
+        #    $a[] = utf8chunks("X-MTT-TAGS:". implode(',', $task->tagNames));
+
         $a[] = "END:VTODO\r\n";
         $s .= implode("\r\n", $a);
     }
+
     # events
-    foreach($data as $r)
+    foreach ($tasks as $task)
     {
-        if(!$r['duedate'] || $r['compl']) continue;  # skip tasks completed and without duedate
+        if (!$task->duedate || $task->isCompleted)
+            continue;  # skip tasks completed and without duedate
         $a = array();
         $a[] = "BEGIN:VEVENT";
-        $a[] = "UID:_". $r['uuid'];  # do not duplicate VTODO UID
-        $a[] = "CREATED:". gmdate('Ymd\THis\Z', $r['d_created']);
-        $a[] = "DTSTAMP:". gmdate('Ymd\THis\Z', $r['d_edited']);
-        $a[] = "LAST-MODIFIED:". gmdate('Ymd\THis\Z', $r['d_edited']);
-        $a[] = utf8chunks("SUMMARY:". $r['title']);
-        if($r['prio'] > 0 && isset($mttToIcalPrio[$r['prio']])) $a[] = "PRIORITY:". $mttToIcalPrio[$r['prio']];
-        $dda = explode('-', $r['duedate']);
+        $a[] = "UID:_". $task->uuid;  # do not duplicate VTODO UID
+        $a[] = "CREATED:". gmdate('Ymd\THis\Z', $task->d_created);
+        $a[] = "DTSTAMP:". gmdate('Ymd\THis\Z', $task->d_edited);
+        $a[] = "LAST-MODIFIED:". gmdate('Ymd\THis\Z', $task->d_edited);
+        $a[] = utf8chunks("SUMMARY:". $task->title);
+        if ($task->priority != 0 && isset($mttToIcalPrio[$task->priority]))
+            $a[] = "PRIORITY:". $mttToIcalPrio[$task->priority];
+        $dda = explode('-', $task->duedate);
         $a[] = "DTSTART;VALUE=DATE:".sprintf("%u%02u%02u", $dda[0], $dda[1], $dda[2]);
-        $a[] = "DTEND;VALUE=DATE:".date('Ymd', mktime(1,1,1,$dda[1],$dda[2],$dda[0]) + 86400);
+        $a[] = "DTEND;VALUE=DATE:".date('Ymd', mktime(1,1,1,(int)$dda[1],(int)$dda[2],(int)$dda[0]) + 86400);
+
         $descr = array();
-        if($r['tags'] != '') $descr[] = Lang::instance()->get('tags'). ": ". str_replace(',', ', ', $r['tags']);
-        if($r['note'] != '') $descr[] = Lang::instance()->get('note'). ": ". $r['note'];
-        if($descr) $a[] = utf8chunks("DESCRIPTION:". str_replace("\n", '\\n', implode("\n",$descr)));
+        if (count($task->tagNames))
+            $descr[] = Lang::instance()->get('tags'). ": ". implode(', ', $task->tagNames);
+        if ($task->note && $task->note != '')
+            $descr[] = Lang::instance()->get('note'). ": ". $task->note;
+        if ($descr)
+            $a[] = utf8chunks("DESCRIPTION:". str_replace("\n", '\\n', implode("\n", $descr)));
+
         $a[] = "END:VEVENT\r\n";
         $s .= implode("\r\n", $a);
     }
+
     $s .= "END:VCALENDAR\r\n";
     header('Content-type: text/calendar; charset=utf-8');
-    header('Content-disposition: attachment; filename=list_'.(int)$listData['id'].'.ics');
+    header('Content-disposition: attachment; filename=list_'. (int)$list->id. '.ics');
     print $s;
 }
 
