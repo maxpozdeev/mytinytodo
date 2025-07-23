@@ -23,16 +23,29 @@ class TaskRepo
     const SORT_TITLE = 5;
     const SORT_TITLE_REVERSE = 105;
 
+    const SORT_FIELD_ID = 1000;
+    const SORT_FIELD_TITLE = 1001;
+    const SORT_FIELD_CREATED = 1004;
+    const SORT_FIELD_COMPLETED = 1003;
+    const SORT_FIELD_EDITED = 1004;
+    const SORT_FIELD_PRIORITY = 1005;
+    const SORT_FIELD_OW = 1006;
+
+    const FILTER_OPEN = 1;
+    const FILTER_COMPLETED = 2;
+    const FILTER_EDITED = 4;
+    const FILTER_OPEN_AND_EDITED = 5; # 1+4
+
     function __construct(AbstractDatabase $db)
     {
         $this->db = $db;
     }
 
 
-    public function findTasks(array $lists, ?bool $compl, array $tags, string $search, int $sort)
+    public function findTasks(array $lists, ?bool $compl, array $tags, string $search, int $sort, int $filter = 0, int $limit = 0)
     {
         $makeInts = function (array &$a) { foreach ($a as &$v) $v = (int)$v; };
-        $sqlWhere = $sqlWhereListId = $sqlHaving = '';
+        $sqlWhere = $sqlWhereListId = $sqlHaving = $sqlLimit = '';
 
         # list ids (make int)
         if (count($lists) == 0) {
@@ -119,6 +132,13 @@ class TaskRepo
                                                         $sqlSort .= "title ASC, prio DESC, ow ASC";
         elseif ($sort == self::SORT_TITLE_REVERSE)
                                                         $sqlSort .= "title DESC, prio ASC, ow DESC";
+        elseif ($sort == self::SORT_FIELD_ID)           $sqlSort .= "todo.id DESC";
+        elseif ($sort == self::SORT_FIELD_TITLE)        $sqlSort .= "title ASC";
+        elseif ($sort == self::SORT_FIELD_CREATED)      $sqlSort .= "d_created DESC";
+        elseif ($sort == self::SORT_FIELD_COMPLETED)    $sqlSort .= "d_completed DESC";
+        elseif ($sort == self::SORT_FIELD_EDITED)       $sqlSort .= "d_edited DESC";
+        elseif ($sort == self::SORT_FIELD_PRIORITY)     $sqlSort .= "prio DESC";
+        elseif ($sort == self::SORT_FIELD_OW)           $sqlSort .= "ow ASC";
         else
             $sqlSort .= "d_created ASC, prio DESC, ow ASC";             // same as byDateCreated
 
@@ -134,6 +154,14 @@ class TaskRepo
         if ($sqlHaving != '')
             $sqlHaving = "HAVING $sqlHaving";
 
+        if     ($filter == self::FILTER_OPEN)             $sqlWhere .= " AND compl=0";
+        elseif ($filter == self::FILTER_COMPLETED)        $sqlWhere .= " AND compl=1";
+        elseif ($filter == self::FILTER_EDITED)           $sqlWhere .= " AND d_edited > d_created";
+        elseif ($filter == self::FILTER_OPEN_AND_EDITED)  $sqlWhere .= " AND compl=0 AND d_edited > d_created";
+
+        if ($limit > 0)
+            $sqlLimit = "LIMIT $limit";
+
         $q = $this->db->dq("
             SELECT todo.*, lists.name list_name, todo.duedate IS NULL AS ddn, $groupConcat
             FROM {$this->db->prefix}todolist AS todo
@@ -142,7 +170,7 @@ class TaskRepo
             LEFT JOIN {$this->db->prefix}tags AS tags ON t2t.tag_id = tags.id
             WHERE $sqlWhereListId $sqlWhere
             GROUP BY todo.id   $sqlHaving
-            $sqlSort
+            $sqlSort   $sqlLimit
         ");
 
         $a = [];

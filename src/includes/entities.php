@@ -478,9 +478,9 @@ class Task extends AbstractTask
      * Get formatted note using markup method defined in settings
      * @return string
      */
-    function noteHtml(): string
+    function noteHtml(bool $toExternal = false): string
     {
-        return noteMarkup($this->note);
+        return noteMarkup($this->note, $toExternal);
     }
 
 
