@@ -183,7 +183,14 @@ h3.page-title {
   padding:0.6rem 0;
   font-size:1.1rem;
 }
-a { color: var(--color-link); cursor:pointer; text-decoration:underline; }
+a {
+  color: var(--color-link);
+  cursor:pointer;
+  text-decoration:underline;
+}
+h3.page-title .page-title-right {
+  margin-left: auto;
+}
 
 .topblock { display:flex; align-items:flex-start; margin-bottom:1rem; }
 #footer {
@@ -947,10 +954,12 @@ textarea.form-input.inmax {
 #priopopup .prio-pos-1:hover { border-color: var(--color-priority-high); }
 
 
-#tagcloudbtn {
+#tagcloudbtn, #sortmenubtn {
   font-size: 1rem;
   font-weight: normal;
-  margin-left: auto;
+}
+#tagcloudbtn {
+  margin-left: 1em;
 }
 #tagcloud {
   overflow: hidden; z-index:100;

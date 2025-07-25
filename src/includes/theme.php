@@ -117,7 +117,10 @@ $().ready(function(){
 <h3 class="page-title">
   <span id="taskview" class="mtt-menu-button"><span class="btnstr"><?php _e('tasks');?></span> (<span id="total">0</span>) <span class="arrdown"></span></span>
   <span class="mtt-notes-showhide"><?php _e('notes');?> <a href="#" id="mtt-notes-show"><?php _e('notes_show');?></a> / <a href="#" id="mtt-notes-hide"><?php _e('notes_hide');?></a></span>
-  <span id="tagcloudbtn" class="mtt-menu-button"><?php _e('tagcloud');?> <span class="arrdown2"></span></span>
+  <span class="page-title-right">
+    <span id="sortmenubtn" class="mtt-menu-button"><span class="title"><?php _e('sortShort');?></span> <span class="arrdown2"></span></span>
+    <span id="tagcloudbtn" class="mtt-menu-button"><span class="title"><?php _e('tagcloud');?></span> <span class="arrdown2"></span></span>
+</span>
 </h3>
 
 <div id="tasks_info" style="display:none;">
@@ -134,7 +137,7 @@ $().ready(function(){
 <div id="page_taskedit" style="display:none">
 
 <h3 class="page-title mtt-inadd"><a class="mtt-back-button"></a><?php _e('add_task');?></h3>
-<h3 class="page-title mtt-inedit"><a class="mtt-back-button"></a><?php _e('edit_task');?> <span id="taskedit_id"></span></h3>
+<h3 class="page-title mtt-inedit"><a class="mtt-back-button"></a><?php _e('edit_task');?> <a id="taskedit_id" href=""></a></h3>
 
 <div id="taskedit_info" class="mtt-inedit">
     <div class="date-created"><?php _e('taskdate_created'); ?>: <span class="date-created-value"></span></div>
@@ -193,7 +196,7 @@ $().ready(function(){
 <div id="page_taskviewer" style="display:none">
 <h3 class="page-title">
   <a class="mtt-back-button"></a>
-  <div><span class="title"></span> <span id="taskviewer_id"></span></div>
+  <div><span class="title"></span> <a id="taskviewer_id" href=""></a></div>
 </h3>
   <div class="container">
     <div class="left">
@@ -279,13 +282,6 @@ $().ready(function(){
   <li class="mtt-menu-delimiter"></li>
   <li class="mtt-need-list mtt-need-real-list mtt-menu-indicator" submenu="listsharemenucontainer"><div class="submenu-icon"></div><?php _e('list_share'); ?></li>
   <li class="mtt-menu-delimiter mtt-need-real-list"></li>
-  <li class="mtt-need-list mtt-need-real-list sort-item" id="sortByHand"><div class="menu-icon"></div><?php _e('sortByHand');?> <span class="mtt-sort-direction"></span></li>
-  <li class="mtt-need-list sort-item" id="sortByDateCreated"><div class="menu-icon"></div><?php _e('sortByDateCreated');?> <span class="mtt-sort-direction"></span></li>
-  <li class="mtt-need-list sort-item" id="sortByPrio"><div class="menu-icon"></div><?php _e('sortByPriority');?> <span class="mtt-sort-direction"></span></li>
-  <li class="mtt-need-list sort-item" id="sortByDueDate"><div class="menu-icon"></div><?php _e('sortByDueDate');?> <span class="mtt-sort-direction"></span></li>
-  <li class="mtt-need-list sort-item" id="sortByDateModified"><div class="menu-icon"></div><?php _e('sortByDateModified');?> <span class="mtt-sort-direction"></span></li>
-  <!--<li class="mtt-need-list sort-item" id="sortByTitle"><div class="menu-icon"></div><?php _e('sortByTitle');?> <span class="mtt-sort-direction"></span></li>-->
-  <li class="mtt-menu-delimiter"></li>
   <li class="mtt-need-list" id="btnShowCompleted"><div class="menu-icon"></div><?php _e('list_showcompleted');?></li>
 </ul>
 </div>
@@ -299,6 +295,17 @@ $().ready(function(){
   <li class="mtt-menu-delimiter"></li>
   <li class="mtt-need-list mtt-need-real-list" id="btnFeedKey"><div class="menu-icon"></div><?php _e('list_enable_feedkey');?></li>
   <li class="mtt-need-list mtt-need-real-list" id="btnShowFeedKey"><div class="menu-icon"></div><?php _e('list_show_feedkey');?></li>
+</ul>
+</div>
+
+<div id="sortmenucontainer" class="mtt-menu-container" style="display:none">
+<ul>
+  <li class="mtt-need-list mtt-need-real-list sort-item" id="sortByHand"><div class="menu-icon"></div><?php _e('sortByHand');?> <span class="mtt-sort-direction"></span></li>
+  <li class="mtt-need-list sort-item" id="sortByDateCreated"><div class="menu-icon"></div><?php _e('sortByDateCreated');?> <span class="mtt-sort-direction"></span></li>
+  <li class="mtt-need-list sort-item" id="sortByPrio"><div class="menu-icon"></div><?php _e('sortByPriority');?> <span class="mtt-sort-direction"></span></li>
+  <li class="mtt-need-list sort-item" id="sortByDueDate"><div class="menu-icon"></div><?php _e('sortByDueDate');?> <span class="mtt-sort-direction"></span></li>
+  <li class="mtt-need-list sort-item" id="sortByDateModified"><div class="menu-icon"></div><?php _e('sortByDateModified');?> <span class="mtt-sort-direction"></span></li>
+  <!--<li class="mtt-need-list sort-item" id="sortByTitle"><div class="menu-icon"></div><?php _e('sortByTitle');?> <span class="mtt-sort-direction"></span></li>-->
 </ul>
 </div>
 

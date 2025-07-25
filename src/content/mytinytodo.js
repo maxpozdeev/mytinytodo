@@ -383,6 +383,16 @@ const mtt = window.mytinytodo = {
             });
         });
 
+        $('#sortmenubtn').click(function(){
+            if (!mtt.menus.sort) {
+                mtt.menus.sort = new mttMenu('sortmenucontainer', {
+                    onclick: sortMenuClick,
+                    alignRight: true
+                });
+            }
+            mtt.menus.sort.show(this);
+        });
+
         $('#mtt-notes-show').click(function(e){
             toggleAllNotes(1, e);
             this.blur();
@@ -1636,14 +1646,35 @@ function setSort(v, init)
 
 function updateSortUI(v)
 {
-    $('#listmenucontainer .sort-item').removeClass('mtt-item-checked').children('.mtt-sort-direction').text('');
-    if (v == 0 || v == 100) $('#sortByHand').addClass('mtt-item-checked').children('.mtt-sort-direction').text(v==0 ? '↓' : '↑');
-    else if(v==1 || v==101) $('#sortByPrio').addClass('mtt-item-checked').children('.mtt-sort-direction').text(v==1 ? '↑' : '↓');
-    else if(v==2 || v==102) $('#sortByDueDate').addClass('mtt-item-checked').children('.mtt-sort-direction').text(v==2 ? '↑' : '↓');
-    else if(v==3 || v==103) $('#sortByDateCreated').addClass('mtt-item-checked').children('.mtt-sort-direction').text(v==3 ? '↓' : '↑');
-    else if(v==4 || v==104) $('#sortByDateModified').addClass('mtt-item-checked').children('.mtt-sort-direction').text(v==4 ? '↓' : '↑');
-    else if(v==5 || v==105) $('#sortByTitle').addClass('mtt-item-checked').children('.mtt-sort-direction').text(v==5 ? '↓' : '↑');
-    else return;
+    $('#sortmenucontainer .sort-item').removeClass('mtt-item-checked').children('.mtt-sort-direction').text('');
+    if (v == 0 || v == 100) {
+        $('#sortByHand').addClass('mtt-item-checked').children('.mtt-sort-direction').text(v==0 ? '↓' : '↑');
+        $('#sortmenubtn .title').text((v==0 ? '↓' : '↑') + ' ' + mtt.lang.get('sortShortByHand'));
+    }
+    else if(v==1 || v==101) {
+        $('#sortByPrio').addClass('mtt-item-checked').children('.mtt-sort-direction').text(v==1 ? '↑' : '↓');
+        $('#sortmenubtn .title').text((v==1 ? '↑' : '↓') + ' ' + mtt.lang.get('sortShortByPriority'));
+    }
+    else if(v==2 || v==102) {
+        $('#sortByDueDate').addClass('mtt-item-checked').children('.mtt-sort-direction').text(v==2 ? '↑' : '↓');
+        $('#sortmenubtn .title').text((v==2 ? '↑' : '↓') + ' ' + mtt.lang.get('sortShortByDueDate'));
+    }
+    else if(v==3 || v==103) {
+        $('#sortByDateCreated').addClass('mtt-item-checked').children('.mtt-sort-direction').text(v==3 ? '↓' : '↑');
+        $('#sortmenubtn .title').text((v==3 ? '↓' : '↑') + ' ' + mtt.lang.get('sortShortByDateCreated'));
+    }
+    else if(v==4 || v==104) {
+        $('#sortByDateModified').addClass('mtt-item-checked').children('.mtt-sort-direction').text(v==4 ? '↓' : '↑');
+        $('#sortmenubtn .title').text((v==4 ? '↓' : '↑') + ' ' + mtt.lang.get('sortShortByDateModified'));
+    }
+    else if(v==5 || v==105) {
+        $('#sortByTitle').addClass('mtt-item-checked').children('.mtt-sort-direction').text(v==5 ? '↓' : '↑');
+        $('#sortmenubtn .title').text((v==5 ? '↓' : '↑') + ' ' + mtt.lang.get('sortShortByTitle'));
+    }
+    else {
+        $('#sortmenubtn .title').text(mtt.lang.get('sortShort'));
+        return;
+    }
 
     curList.sort = v;
     if ( (v == 0 || v == 100) && !flag.readOnly) $("#tasklist").sortable('enable');
@@ -1753,10 +1784,12 @@ function tabSelect(elementOrId)
     if (id == -1) {
         $('#list_all').addClass('mtt-tab-selected').removeClass('mtt-tab-hidden');
         $('#listmenucontainer .mtt-need-real-list').addClass('mtt-item-hidden');
+        $('#sortmenucontainer .mtt-need-real-list').addClass('mtt-item-hidden');
     }
     else {
         $('#list_'+id).addClass('mtt-tab-selected').removeClass('mtt-tab-hidden');
         $('#listmenucontainer .mtt-need-real-list').removeClass('mtt-item-hidden');
+        $('#sortmenucontainer .mtt-need-real-list').removeClass('mtt-item-hidden');
     }
 
     if (prevList.id != id) {
@@ -1829,12 +1862,6 @@ function listMenuClick(el, menu)
         case 'btnRssFeed': return true;
         case 'btnShowCompleted': showCompletedToggle(); break;
         case 'btnClearCompleted': clearCompleted(); break;
-        case 'sortByHand': setSort(curList.sort==0 ? 100 : 0); break;
-        case 'sortByPrio': setSort(curList.sort==1 ? 101 : 1); break;
-        case 'sortByDueDate': setSort(curList.sort==2 ? 102 : 2); break;
-        case 'sortByDateCreated': setSort(curList.sort==3 ? 103 : 3); break;
-        case 'sortByDateModified': setSort(curList.sort==4 ? 104 : 4); break;
-        case 'sortByTitle': setSort(curList.sort==5 ? 105 : 5); break;
     }
     return false;
 };
@@ -2259,6 +2286,23 @@ function submitFullTask(form)
     );
 
     flag.tagsChanged = true;
+    return false;
+};
+
+
+function sortMenuClick(el, menu)
+{
+    if (!el.id)
+        return;
+
+    switch(el.id) {
+        case 'sortByHand': setSort(curList.sort==0 ? 100 : 0); break;
+        case 'sortByPrio': setSort(curList.sort==1 ? 101 : 1); break;
+        case 'sortByDueDate': setSort(curList.sort==2 ? 102 : 2); break;
+        case 'sortByDateCreated': setSort(curList.sort==3 ? 103 : 3); break;
+        case 'sortByDateModified': setSort(curList.sort==4 ? 104 : 4); break;
+        case 'sortByTitle': setSort(curList.sort==5 ? 105 : 5); break;
+    }
     return false;
 };
 

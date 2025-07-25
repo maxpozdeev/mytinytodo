@@ -143,7 +143,14 @@ class Lang
             'f_today',
             'f_soon',
             'alltasks',
-            'set_header'
+            'set_header',
+            'sortShort',
+            "sortShortByHand",
+            "sortShortByTitle",
+            "sortShortByPriority",
+            "sortShortByDueDate",
+            "sortShortByDateCreated",
+            "sortShortByDateModified",
         ]);
         $a['_rtl'] = $this->rtl() ? 1 : 0;
 
