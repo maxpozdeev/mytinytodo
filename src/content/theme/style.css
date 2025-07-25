@@ -860,6 +860,7 @@ textarea.form-input.inmax {
   color: var(--color-text-reduced2);
   font-weight: normal;
   margin-left: 5px;
+  text-decoration: none;
 }
 #taskedit_info { font-size:1rem; font-weight:normal; color:var(--color-text-reduced2); margin-bottom:6px; }
 #taskedit_info > div { margin-top:6px; }

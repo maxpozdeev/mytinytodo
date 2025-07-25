@@ -1173,6 +1173,11 @@ const mtt = window.mytinytodo = {
     urlForExtSettings: function(ext)
     {
         return '#settings/ext/' + ext;
+    },
+
+    urlForTask: function(id)
+    {
+        return mtt.mttUrl + '?task=' + id;
     }
 
 }; // End of mytinytodo object
@@ -1935,7 +1940,7 @@ function fillTaskViewer(id)
     const item = taskList[id];
     if (!item) return false;
     $('#page_taskviewer').attr('data-id', item.id);
-    $('#taskviewer_id').text('#' + item.id);
+    $('#taskviewer_id').text('#' + item.id).attr('href', mtt.urlForTask(item.id));
     $('#page_taskviewer .title').html(item.title);
     $('#page_taskviewer .note').html(item.note);
     $('#page_taskviewer .prio .content').html(preparePrio(item.prio,item.id));
@@ -1972,7 +1977,7 @@ function editTask(id)
     form.tags.value = dehtml(item.tags).split(',').join(', ');
     form.duedate.value = item.duedate;
     form.prio.value = item.prio;
-    $('#taskedit_id').text('#' + item.id);
+    $('#taskedit_id').text('#' + item.id).attr('href', mtt.urlForTask(item.id));
     $('#taskedit_info .date-created-value').text(item.date).attr('title', item.dateFull);;
     if (item.isEdited && !item.compl) {
         $('#taskedit_info .date-edited-value').text(item.dateEdited).attr('title', item.dateEditedFull);
