@@ -65,6 +65,16 @@ function parseRoute($queryString)
     if (isset($q['list'])) {
         $hash = ($q['list'] == 'alltasks') ? ['alltasks'] : ['list', (int)$q['list']];
         unset($q['list']);
+        if (isset($q['tags'])) {
+            $hash[] = 'tags';
+            $hash[] = (string)$q['tags'];
+            unset($q['tags']);
+        }
+        if (isset($q['search'])) {
+            $hash[] = 'search';
+            $hash[] = (string)$q['search'];
+            unset($q['search']);
+        }
         redirectWithHashRoute($hash, $q);
     }
     else if (isset($q['task'])) {

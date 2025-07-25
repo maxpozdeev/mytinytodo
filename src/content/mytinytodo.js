@@ -292,7 +292,7 @@ const mtt = window.mytinytodo = {
                 return false; //need to return false in firefox (for AJAX?)
             }
             else if ( event.keyCode == 13 ) {
-                searchTasks(1);
+                searchTasks(true);
                 return false;
             }
         }).focusin(function(){
@@ -804,11 +804,6 @@ const mtt = window.mytinytodo = {
         return this;
     },
 
-    log: function(v)
-    {
-        console.log.apply(this, arguments);
-    },
-
     addAction: function(action, proc)
     {
         if(!this.actions[action]) this.actions[action] = new Array();
@@ -829,15 +824,20 @@ const mtt = window.mytinytodo = {
 
     run: function()
     {
-        var path = this.parseAnchor();
+        const path = mtt.parseAnchor();
 
         updateAccessStatus();
 
         if (path.settings) {
             showSettings(path.settings == 'json' ? 1 : 0);
         }
-        else if (path.search && path.list) {
+        else if ( (path.search || path.tags) && path.list) {
             filter.search = path.search;
+            if (path.tags) {
+                for (const tag of path.tags) {
+                    mtt.filter.addTag(tag[0], tag[1], tag[2]);
+                }
+            }
             this.pageSet('tasks', '');
             this.loadLists();
         }
@@ -849,7 +849,7 @@ const mtt = window.mytinytodo = {
 
     loadLists: function()
     {
-        if(filter.search != '') {
+        if (filter.search != '') {
             //filter.search = '' will be in tabSelect
             $('#searchbarkeyword').text('');
             $('#searchbar').hide();
@@ -1071,7 +1071,7 @@ const mtt = window.mytinytodo = {
 
         getTags(withExcluded)
         {
-            let a = [];
+            const a = [];
             for (const filter of this._filters) {
                 if (filter.tagId) {
                     if (filter.exclude && withExcluded)
@@ -1080,7 +1080,7 @@ const mtt = window.mytinytodo = {
                         a.push(filter.tag)
                 }
             }
-            return a.join(', ');
+            return a.join(withExcluded ? ',' : ', ');
         },
 
         prepareTagHtml(tagId, tag, classes)
@@ -1092,36 +1092,61 @@ const mtt = window.mytinytodo = {
 
     parseAnchor: function()
     {
-        if(location.hash == '') return false;
-        var h = location.hash.substr(1);
-        var a = h.split("/");
-        var p = {};
-        var s = '';
+        if (location.hash == '')
+            return false;
+        const h = location.hash.substr(1);
+        const a = h.split("/");
+        const p = {};
+        let s = '';
 
-        for(var i=0; i<a.length; i++)
+        for (let i = 0; i < a.length; i++)
         {
             s = a[i];
             switch(s) {
                 //case "u": p.username = a[++i]; break;
-                case "list": if(a[++i].match(/^-?\d+$/)) { p[s] = a[i]; } break;
+                case "list": if (a[++i].match(/^-?\d+$/)) { p.list = a[i]; } break;
                 case "alltasks": p.list = '-1'; break;
                 case "settings": p.settings = true; break;
                 case "settings.json": p.settings = 'json'; break;
                 case "search":   p.search = decodeURIComponent(a[++i]); break;
+                case "tags": if (p.list) p.tags = decodeURIComponent(a[++i]); break;
             }
         }
 
-        if(p.list) this.options.openList = p.list;
+        if (p.list)
+            this.options.openList = p.list;
+
+        if (p.tags) {
+            let i = -100;
+            const aTags = [];
+            for (let tag of p.tags.split(',')) {
+                tag = tag.trim();
+                if (tag.startsWith('^')) {
+                    tag = tag.replace(/^[\^]+/, '');
+                    aTags.push([--i, tag, true]);
+                }
+                else
+                    aTags.push([--i, tag, false]);
+            }
+            p.tags = aTags;
+        }
 
         return p;
     },
 
-    urlForList: function(list)
+    urlForList: function(list, addFilters)
     {
-        var l = list || curList;
-        if (l === undefined) return '';
-        if (l.id == -1) return '#alltasks';
-        return '#list/' + l.id;
+        const l = list || curList;
+        if (l === undefined)
+            return '';
+        const pathList = (l.id == -1) ? 'alltasks' : 'list/' + l.id;
+        let ret = '#' + pathList;
+        if (addFilters) {
+            const tags = mtt.filter.getTags(true);
+            if (tags)
+                ret += '/tags/' + encodeURIComponent(tags);
+        }
+        return ret;
     },
 
     urlForExport: function(format, list)
@@ -1257,12 +1282,15 @@ function showFeedKeyInCurList()
 };
 
 
+/*  called from: setSort, tabSelect, liveSearchToggle, showCompletedToggle, clearCompleted
+    and: cancelTagFilter, addFilterTag,  searchTasks  */
 function loadTasks(opts)
 {
-    if(!curList) return false;
+    if (!curList)
+        return false;
     updateSortUI(curList.sort);
     opts = opts || {};
-    if(opts.clearTasklist) {
+    if (opts.clearTasklist) {
         $('#tasklist').html('');
         $('#total').html('0');
     }
@@ -1279,7 +1307,7 @@ function loadTasks(opts)
         taskList.length = 0;
         taskOrder.length = 0;
         taskCnt.total = taskCnt.past = taskCnt.today = taskCnt.soon = 0;
-        var tasks = '';
+        let tasks = '';
         $.each(json.list, function(i,item){
             tasks += mtt.prepareTaskStr(item);
             taskList[item.id] = item;
@@ -1738,7 +1766,7 @@ function tabSelect(elementOrId)
     const newTitle = curList.nameText + ' - ' + mtt.options.title;
     const isFirstLoad = flag.firstLoad;
     //replaceHistoryState( 'list', { list:id }, mtt.urlForList(curList), newTitle );
-    updateHistoryState( { list:id }, mtt.urlForList(curList), newTitle );
+    updateHistoryState( { list:id }, mtt.urlForList(curList, isFirstLoad), newTitle );
     if (!flag.readOnly) {
         setLocalStorageItem('lastList', ''+id);
     }
@@ -1755,7 +1783,9 @@ function tabSelect(elementOrId)
         mtt.doAction('listHidden', curList);
     }
     flag.tagsChanged = true;
-    cancelTagFilter(0, 1);
+    if (!isFirstLoad) {
+        cancelTagFilter(0, 1);
+    }
     setTaskview(0);
 
     if (isFirstLoad && filter.search != '') {
@@ -2122,15 +2152,20 @@ function setTagcloudContent(tags, isFiltered = false)
 
 function cancelTagFilter(tagId, dontLoadTasks)
 {
-    if(tagId)  mtt.filter.cancelTag(tagId);
-    else mtt.filter.clear();
-    if(dontLoadTasks==null || !dontLoadTasks) loadTasks();
+    if (tagId)
+        mtt.filter.cancelTag(tagId);
+    else
+        mtt.filter.clear();
+    replaceHistoryUrl(mtt.urlForList(curList, true));
+    if (dontLoadTasks==null || !dontLoadTasks)
+        loadTasks();
 };
 
 function addFilterTag(tag, tagId, exclude)
 {
     if (!mtt.filter.addTag(tagId, tag, exclude))
         return false;
+    replaceHistoryUrl(mtt.urlForList(curList, true));
     loadTasks();
 };
 
@@ -2173,14 +2208,16 @@ function liveSearchToggle(toSearch, dontLoad)
 
 function searchTasks(force)
 {
-    var newkeyword = $('#search').val();
-    if(newkeyword == filter.search && !force) return false;
+    const newkeyword = $('#search').val();
+    if (newkeyword == filter.search && !force)
+        return false;
     filter.search = newkeyword;
     if (filter.search != '') {
         $('#searchbarkeyword').text(filter.search);
         $('#searchbar').fadeIn('fast');
     }
-    else $('#searchbar').fadeOut('fast');
+    else
+        $('#searchbar').fadeOut('fast');
     loadTasks();
     return false;
 };
@@ -2682,10 +2719,12 @@ function listOrderChanged(event, ui)
 
 function showCompletedToggle()
 {
-    var act = curList.showCompl ? 0 : 1;
+    const act = curList.showCompl ? 0 : 1;
     curList.showCompl = tabLists.get(curList.id).showCompl = act;
-    if(act) $('#btnShowCompleted').addClass('mtt-item-checked');
-    else $('#btnShowCompleted').removeClass('mtt-item-checked');
+    if (act)
+        $('#btnShowCompleted').addClass('mtt-item-checked');
+    else
+        $('#btnShowCompleted').removeClass('mtt-item-checked');
     loadTasks({saveCompl:1});
 };
 
@@ -3464,6 +3503,16 @@ function replaceHistoryState(param, _state, url, title)
     else {
         updateHistoryState(_state, url, title);
     }
+}
+
+function replaceHistoryUrl(url)
+{
+    if (!mtt.options.history) {
+        document.title = title;
+        return;
+    }
+    const state = history.state;
+    window.history.replaceState(state, '', url);
 }
 
 function historyOnPopState(event)
