@@ -43,6 +43,7 @@ abstract class AbstractTaskList extends AbstractEntity implements JsonApiSeriali
     public ?int $userId;
     abstract function setSort(int $sort);
     abstract function setIsHidden(bool $hidden);
+    const defaultSort = 3;
 }
 
 class TaskList extends AbstractTaskList
@@ -57,7 +58,7 @@ class TaskList extends AbstractTaskList
     public ?string $name;
     public ?int $d_created;
     public ?int $d_edited;
-    public ?int $sorting;
+    public int $sorting = parent::defaultSort;
     public bool $isPublished = false;       # published
     public bool $isShowCompleted = false;   # taskview & 1
     public bool $isShowNotes = false;       # taskview & 2
@@ -78,7 +79,7 @@ class TaskList extends AbstractTaskList
     function setSort(int $sort)
     {
         if ($sort < 0 || ($sort > 5 && $sort < 100) || $sort > 105)
-            $sort = 0;
+            $sort = self::defaultSort;
         $this->sorting = $sort;
         $this->d_edited = time();
         $this->changed['sorting'] = true;
@@ -193,7 +194,7 @@ class TaskList extends AbstractTaskList
         return array(
             'id' => $this->id ?? '',
             'name' => htmlspecialchars($this->name ?? ''),
-            'sort' => $this->sorting ?? 0,
+            'sort' => $this->sorting ?? self::defaultSort,
             'published' => $this->isPublished ? 1 : 0,
             'showCompl' => $this->isShowCompleted ? 1 : 0,
             'showNotes' => $this->isShowNotes ? 1 : 0,
@@ -215,14 +216,14 @@ class AlltasksList extends AbstractTaskList
 
     public ?int $id = -1;
     public ?int $userId;
-    public int $sorting = 0;
+    public int $sorting = parent::defaultSort;
     public bool $isShowCompleted = false;
     public bool $isHidden = false;
 
     function setSort(int $sort)
     {
         if ($sort < 0 || ($sort > 5 && $sort < 100) || $sort > 105)
-            $sort = 0;
+            $sort = self::defaultSort;
         $this->sorting = $sort;
     }
 

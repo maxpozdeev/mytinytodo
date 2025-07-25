@@ -190,9 +190,9 @@ class ListRepo
             return null;
         }
         $time = time();
-        $this->db->dq("INSERT INTO {$this->db->prefix}lists (user_id,uuid,name,d_created,d_edited,taskview,ow) VALUES (?,?,?,?,?,?,
+        $this->db->dq("INSERT INTO {$this->db->prefix}lists (user_id,uuid,name,sorting,d_created,d_edited,taskview,ow) VALUES (?,?,?,?,?,?,?,
             (SELECT 1 + COALESCE(MAX(ow),0) FROM {$this->db->prefix}lists WHERE user_id=? AND taskview & 4 = 0) )",
-                    array($userId, generateUUID(), $name, $time, $time, 1, $userId) );
+                    array($userId, generateUUID(), $name, TaskList::defaultSort, $time, $time, 1, $userId) );
         $id = $this->db->lastInsertId();
         return (int)$id;
     }
