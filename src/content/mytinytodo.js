@@ -88,6 +88,7 @@ const mtt = window.mytinytodo = {
     },
 
     actions: {},
+    /** @type {Object.<string,mttMenu>} */
     menus: {},
     mttUrl: '',
     homeUrl: '',
@@ -386,8 +387,7 @@ const mtt = window.mytinytodo = {
         $('#sortmenubtn').click(function(){
             if (!mtt.menus.sort) {
                 mtt.menus.sort = new mttMenu('sortmenucontainer', {
-                    onclick: sortMenuClick,
-                    alignRight: true
+                    onclick: sortMenuClick
                 });
             }
             mtt.menus.sort.show(this);
