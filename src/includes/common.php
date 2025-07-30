@@ -40,9 +40,9 @@ function _post($param,$defvalue = '')
     }
 }
 
-function _get($param,$defvalue = '')
+function _get($param, $defvalue = '')
 {
-    if(!isset($_GET[$param])) {
+    if (!isset($_GET[$param])) {
         return $defvalue;
     }
     else {

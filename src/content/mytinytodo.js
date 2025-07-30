@@ -93,6 +93,8 @@ const mtt = window.mytinytodo = {
     mttUrl: '',
     homeUrl: '',
     apiUrl: '',
+    goPrefix: '',
+    routerPrefix: '',
     options: {
         token: '',
         title: '',
@@ -195,6 +197,20 @@ const mtt = window.mytinytodo = {
         }
         else {
             this.apiUrl = this.mttUrl + 'api.php?_path=/';
+        }
+        if (options.hasOwnProperty('routerPrefix')) {
+            this.routerPrefix = options.routerPrefix;
+            delete options.routerPrefix;
+        }
+        else {
+            this.routerPrefix = this.mttUrl + 'index.php?_path=/';
+        }
+        if (options.hasOwnProperty('goPrefix')) {
+            this.goPrefix = options.goPrefix;
+            delete options.goPrefix;
+        }
+        else {
+            this.goPrefix = this.mttUrl + 'index.php?';
         }
         if (options.hasOwnProperty('db')) {
             delete options.db;
@@ -1178,7 +1194,7 @@ const mtt = window.mytinytodo = {
 
     urlForTask: function(id)
     {
-        return mtt.mttUrl + '?task=' + id;
+        return mtt.goPrefix + 'task=' + id;
     }
 
 }; // End of mytinytodo object

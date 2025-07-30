@@ -63,7 +63,13 @@ foreach ($endpoints as $search => $methods) {
 function getIndexPath(): string
 {
     if (!defined('MTT_USE_REWRITE') || !MTT_USE_REWRITE) {
-        return _get('_path');
+        if (isset($_GET['_path'])) {
+            return $_GET['_path'];
+        }
+        else if ('' !== ($_SERVER['QUERY_STRING'] ?? '')) {
+            return '/go'; #hack
+        }
+        return '/';
     }
     $path = $_SERVER['REQUEST_URI'] ?? '';
     if (false !== $p = strpos($path, '?')) {
@@ -157,6 +163,8 @@ function js_options()
         "mttUrl" => get_mttinfo('mtt_uri'),
         "homeUrl" => $homeUrl,
         "apiUrl" => get_mttinfo('api_url'),
+        "goPrefix" => htmlspecialchars(get_go_prefix()),
+        "routerPrefix" => htmlspecialchars(get_router_url('')),
         "tasksUrl" => get_mttinfo('tasks_uri'),
         "needAuth" => need_auth() ? true : false,
         "isLogged" => is_logged() ? true : false,
@@ -196,6 +204,34 @@ function htmlExit(int $code = 200, string $msg = '')
     }
     http_response_code($code);
     exit;
+}
+
+
+function get_router_url(string $path): string
+{
+    $prefix = get_unsafe_mttinfo('uri');
+    if (!defined('MTT_USE_REWRITE') || !MTT_USE_REWRITE) {
+        return $prefix. '?_path=/'. $path;
+    }
+    else {
+        return $prefix. $path;
+    }
+}
+
+function router_url(string $path)
+{
+    echo htmlspecialchars(get_router_url($path));
+}
+
+function get_go_prefix()
+{
+    $prefix = get_unsafe_mttinfo('uri');
+    if (!defined('MTT_USE_REWRITE') || !MTT_USE_REWRITE) {
+        return $prefix. '?';
+    }
+    else {
+        return $prefix .= 'go?';
+    }
 }
 
 function page_login()
