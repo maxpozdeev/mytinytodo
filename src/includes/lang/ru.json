@@ -218,7 +218,7 @@
     "noTags": "Нет тегов",
     "withoutTags": "Без тегов",
     "withAnyTag": "Любой тег",
-    "invalidpass": "Неверный пароль",
+    "invalidUsernameOrPassword": "Неверное имя пользователя или пароль",
     "addList": "Новый список",
     "addListDefault": "Todo",
     "renameList": "Переименовать список",

@@ -218,7 +218,7 @@
     "noTags": "No tags",
     "withoutTags": "No tags",
     "withAnyTag": "Any tag",
-    "invalidpass": "Wrong password",
+    "invalidUsernameOrPassword": "Unknown username or wrong password",
     "addList": "Create new list",
     "addListDefault": "Todo",
     "renameList": "Rename list",

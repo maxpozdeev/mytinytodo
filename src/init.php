@@ -18,8 +18,15 @@ requireConfig();
 
 if (!defined('MTT_THEME')) {
     define('MTT_THEME', 'theme');
+    define('MTT_THEME_PATH', MTTINC. 'theme/');
 }
-define('MTT_THEME_PATH', MTT_CONTENT_PATH. MTT_THEME. '/');
+else {
+    define('MTT_THEME_PATH', MTT_CONTENT_PATH. MTT_THEME. '/');
+}
+
+if (!defined('MTT_USE_REWRITE')) {
+    define('MTT_USE_REWRITE', false);
+}
 
 
 if (getenv('MTT_ENABLE_DEBUG') == 'YES' || (defined('MTT_DEBUG') && MTT_DEBUG) ) {
@@ -67,6 +74,9 @@ if ( $forceLang !== '' && preg_match("/^[a-z-]+$/i", $forceLang) ) {
 
 require_once(MTTINC. 'class.lang.php');
 Lang::loadLang( Config::get('lang') );
+if (Lang::instance()->rtl()) {
+    Config::set('rtl', 1); #runtime only
+}
 
 $_mttinfo = array();
 

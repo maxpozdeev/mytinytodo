@@ -5,41 +5,81 @@
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
+
 $checkDbExists = true;
 require_once('./init.php');
-
-//Parse query string
-if ( isset($_SERVER['QUERY_STRING']) && $_SERVER['QUERY_STRING'] != '' ) {
-    parseRoute($_SERVER['QUERY_STRING']);
-}
-
-
-$lang = Lang::instance();
-
-if ($lang->rtl()) {
-    Config::set('rtl', 1);
-}
-
 
 if ( access_token() == '' ) {
     update_token();
 }
 
-if (MTT_THEME != 'theme') {
-    // custom theme
-    require(MTT_THEME_PATH. 'index.php');
+$path = getIndexPath();
+
+if ($path === '/') {
+    page_tasks();
+}
+else if ($path === '/go' ) {
+    if ( isset($_SERVER['QUERY_STRING']) && $_SERVER['QUERY_STRING'] != '' ) {
+        parseGoRoute($_SERVER['QUERY_STRING']);
+    }
+    else {
+        header("Location: ". get_unsafe_mttinfo('url'));
+        exit;
+    }
+}
+else if ($path == '/u/') {
+}
+else if ($path === '/login') {
+    if (is_logged()) {
+        header("Location: ". get_unsafe_mttinfo('url'));
+        exit;
+    }
+    page_login();
 }
 else {
-    require(MTTINC. 'theme.php');
+    http_response_code(404);
+    print "<h1>Page Not Found</h1>";
 }
 
 MTTNotificationCenter::postDidFinishRequestNotification();
+
+exit;
+
+/*
+$endpoints = array(
+    '/u/([^/]+)' => [
+        'GET' => [] # User tasks
+    ]
+);
+
+foreach ($endpoints as $search => $methods) {
+}
+*/
+
+
 // end
 
 
-function parseRoute($queryString)
+function getIndexPath(): string
+{
+    if (!defined('MTT_USE_REWRITE') || !MTT_USE_REWRITE) {
+        return _get('_path');
+    }
+    $path = $_SERVER['REQUEST_URI'] ?? '';
+    if (false !== $p = strpos($path, '?')) {
+        $path = substr($path, 0, $p);
+    }
+    $uri = get_unsafe_mttinfo('uri');
+    if ($path != '' && 0 === strncmp($path, $uri, strlen($uri))) {
+        $path = substr($path, strlen($uri) -1);
+    }
+    return $path;
+}
+
+function parseGoRoute($queryString)
 {
     parse_str($queryString, $q);
+    unset($q['_path']);
 
     if (isset($q['user'])) {
         $q['user'] = trim($q['user']);
@@ -156,4 +196,18 @@ function htmlExit(int $code = 200, string $msg = '')
     }
     http_response_code($code);
     exit;
+}
+
+function page_login()
+{
+    require_once(MTT_THEME_PATH. 'header.php');
+    require_once(MTT_THEME_PATH. 'login.php');
+    require_once(MTT_THEME_PATH. 'footer.php');
+}
+
+function page_tasks()
+{
+    require_once(MTT_THEME_PATH. 'header.php');
+    require_once(MTT_THEME_PATH. 'tasks.php');
+    require_once(MTT_THEME_PATH. 'footer.php');
 }

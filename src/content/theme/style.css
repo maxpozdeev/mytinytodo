@@ -157,7 +157,20 @@ body, td, th, input, textarea, select, button {
   box-sizing: border-box;
 }
 
-form { display: inline; }
+form {
+  display: inline;
+}
+fieldset {
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+fieldset:disabled {
+  /*opacity: 0.8;*/
+}
+.mtt-hidden {
+  display: none;
+}
 .topblock h2 {
   margin:0;
   font-size:1.5rem;
@@ -233,7 +246,7 @@ h3.page-title .page-title-right {
 #mtt.no-need-auth .mtt-need-auth-enabled { display:none; }
 
 .form-input {
-  padding: 3px;
+  padding: 4px;
   border: 1px solid var(--color-border-default);
   background-color: var(--color-input-bg);
   border-radius: 2px;
@@ -270,24 +283,29 @@ select.form-input {
 
 
 #page_login {
-  max-width: 250px;
+  max-width: 350px;
   margin:0 auto; /* center */
   margin-top: 100px;
 }
+
 #authform {
+  position: relative;
+  /*
   background-color: var(--color-menu);
   border: 1px solid var(--color-menu-border);
   border-radius: 5px;
+  */
 }
+
 #authform .auth-content {
   padding: 1.5rem;
 }
 #authform .auth-content div {
-  padding: 3px 0;
+  padding: 4px 0;
 }
 #authform div { padding:2px 0px; }
 #authform .form-bottom-buttons {
-  border-top: 1px solid var(--color-border-default);
+  /*border-top: 1px solid var(--color-border-default);*/
   padding: 0.8rem 0;
 }
 
@@ -296,6 +314,30 @@ select.form-input {
   width: 100%;
   box-sizing: border-box;
 }
+#authmsg {
+  color: red;
+  text-align: center;
+  opacity: 0;
+}
+#authmsg.show {
+  opacity: 1;
+  transition: opacity 0.5s;
+}
+#authform .overlay {
+  /* NB: parent needs to have a relative position */
+  background-color: #ccc;
+  height: 100%;
+  position: absolute;
+  width: 100%;
+  z-index: 10;
+  top: 0;
+  opacity: 0.2;
+  border-radius: 3px;
+}
+.mtt-overlay .overlay {
+  display: unset;
+}
+
 
 #msg .msg-text {  font-weight:bold; cursor:pointer; padding:0 1px; }
 #msg .msg-details {

@@ -171,6 +171,7 @@ const mtt = window.mytinytodo = {
     // procs
     setApiDriver: function(driver)
     {
+        // TODO: rename mtt.db to .api
         this.db = new driver({
             useREST: false
         });
@@ -707,18 +708,8 @@ const mtt = window.mytinytodo = {
 
 
         // Authentication
-        $('#login_btn').click(function(){
-            showLogin();
-            return false;
-        });
-
         $('#logout_btn').click(function(){
             logout();
-            return false;
-        });
-
-        $('#login_form').submit(function(){
-            doAuth(this);
             return false;
         });
 
@@ -3186,34 +3177,6 @@ function updateAccessStatus()
     $('#page_ajax').hide();
 }
 
-function showLogin()
-{
-    if (mtt.pages.current && mtt.pages.current.page == 'login') {
-        return false;
-    }
-    mtt.pageSet('login', '');
-    $('#username').val('').focus();
-}
-
-function doAuth(form)
-{
-    mtt.db.request( 'login', {
-        username: form.username.value,
-        password: form.password.value
-    }, function(json) {
-        form.password.value = '';
-        if (json.logged)
-        {
-            flag.isLogged = true;
-            window.location.hash = '';
-            window.location.reload();
-        }
-        else {
-            flashError(mtt.lang.get('invalidpass'));
-            $('#password').focus();
-        }
-    });
-}
 
 function logout()
 {
