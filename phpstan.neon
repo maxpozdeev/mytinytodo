@@ -8,5 +8,7 @@ parameters:
 	excludePaths:
 		analyse:
 			- src/includes/vendor
+	bootstrapFiles:
+		- src/config-sample.php
 	fileExtensions:
 		- php
