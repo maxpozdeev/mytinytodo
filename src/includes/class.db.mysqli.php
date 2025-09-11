@@ -12,7 +12,7 @@ class DatabaseResult_Mysqli extends DatabaseResult_Abstract
     /** @var mysqli_result */
     protected $q;
 
-    function __construct(mysqli $dbh, string $query, bool $resultless = false)
+    function __construct(mysqli $dbh, string $query)
     {
         $this->q = $dbh->query($query); //throws mysqli_sql_exception
     }
@@ -105,7 +105,7 @@ class Database_Mysqli extends Database_Abstract
         $this->_dq($query, $values, true);
     }
 
-    private function _dq(string $query, ?array $values = null, bool $resultless = false) : DatabaseResult_Abstract
+    private function _dq(string $query, ?array $values = null) : DatabaseResult_Abstract
     {
         if (null !== $values && sizeof($values) > 0)
         {
@@ -123,7 +123,7 @@ class Database_Mysqli extends Database_Abstract
             $query .= $m[$i];
         }
         $this->setLastQuery($query);
-        return new DatabaseResult_Mysqli($this->dbh, $query, $resultless);
+        return new DatabaseResult_Mysqli($this->dbh, $query);
     }
 
     function affected(): int
