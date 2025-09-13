@@ -102,7 +102,7 @@ class Database_Mysqli extends Database_Abstract
     */
     function ex(string $query, ?array $values = null): void
     {
-        $this->_dq($query, $values, true);
+        $this->_dq($query, $values);
     }
 
     private function _dq(string $query, ?array $values = null) : DatabaseResult_Abstract
