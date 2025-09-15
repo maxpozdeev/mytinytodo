@@ -100,6 +100,10 @@ abstract class Database_Abstract
             }
         }
     }
+
+    function getLastQuery(): string {
+        return $this->lastQuery;
+    }
 }
 
 abstract class DatabaseResult_Abstract

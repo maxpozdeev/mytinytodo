@@ -200,7 +200,7 @@ class Restore
             $db->ex("INSERT INTO {$db->getPrefix()}{$table} ($fieldsStr) VALUES ($subsStr)", $values);
         }
         catch (Exception $e) {
-            error_log("Failed query: {$db->lastQuery}");
+            error_log("Failed query: {$db->getLastQuery()}");
             $this->lastErrorString = "Failed to add data to table '{$db->getPrefix()}$table'. Database error (see query in error log): ". $e->getMessage();
             return false;
         }
