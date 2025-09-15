@@ -11,7 +11,7 @@ class Config
     /** @var bool */
     public static $noDatabase = false;
 
-    /** @var array[] */
+    /** @var array */
     private static $dbparams = array(
         # Database type: sqlite or mysql
         'db.type'      => array('default'=>'sqlite', 'type'=>'s'),
@@ -29,7 +29,7 @@ class Config
         'db.prefix'   => array('default'=>'', 'type'=>'s')
     );
 
-    /** @var array[] */
+    /** @var array */
     private static $convert = array(
         'mysql.host' => 'db.host',
         'mysql.user' => 'db.user',
@@ -39,7 +39,7 @@ class Config
         'prefix' => 'db.prefix'
     );
 
-    /** @var array[] */
+    /** @var array */
     public static $params = array(
         # These two parameters are used when mytinytodo index.php called not from installation directory
         # 'url' - URL where index.php is called from (ex.: http://site.com/todo.php)
@@ -98,13 +98,13 @@ class Config
         'extensions' => array('default'=>[], 'type'=>'a')
     );
 
-    /** @var mixed[] */
+    /** @var array */
     private static $config = array();
 
 
     /**
      *
-     * @param mixed[] $config
+     * @param array $config
      * @return void
      */
     public static function loadConfigV14(array $config)
