@@ -61,11 +61,11 @@ class Backup
         $this->level = 0;
 
 
-        $this->writeTable($db->prefix.'lists', 'lists', 'list');
-        $this->writeTable($db->prefix.'todolist', 'tasks', 'task');
-        $this->writeTable($db->prefix.'tags', 'tags', 'tag');
-        $this->writeTable($db->prefix.'tag2task', 'tag2task', 'item');
-        $this->writeTable($db->prefix.'settings', 'settings', 'item');
+        $this->writeTable($db->getTableWithPrefix('lists'), 'lists', 'list');
+        $this->writeTable($db->getTableWithPrefix('todolist'), 'tasks', 'task');
+        $this->writeTable($db->getTableWithPrefix('tags'), 'tags', 'tag');
+        $this->writeTable($db->getTableWithPrefix('tag2task'), 'tag2task', 'item');
+        $this->writeTable($db->getTableWithPrefix('settings'), 'settings', 'item');
 
 
         $this->writeClosingTag('mttdb');

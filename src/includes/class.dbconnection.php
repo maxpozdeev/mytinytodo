@@ -77,6 +77,14 @@ abstract class Database_Abstract
         $this->prefix = $prefix;
     }
 
+    function getPrefix(): string {
+        return $this->prefix;
+    }
+
+    function getTableWithPrefix(string $table): string {
+        return $this->prefix . $table;
+    }
+
     function setLogQueryToFile(?string $path) {
         //any checks?
         $this->logQueryToFile = $path;

@@ -70,7 +70,7 @@ class DBCore
     public function getListIdByTaskId(int $id): int
     {
         $db = $this->db;
-        $listId = (int)$db->sq("SELECT list_id FROM {$db->prefix}todolist WHERE id=". (int)$id);
+        $listId = (int)$db->sq("SELECT list_id FROM {$db->getPrefix()}todolist WHERE id=". (int)$id);
         return $listId;
     }
 
@@ -78,7 +78,7 @@ class DBCore
     public function getListById(int $id): ?array
     {
         $db = $this->db;
-        $r = $db->sqa("SELECT * FROM {$db->prefix}lists WHERE id=?", [$id]);
+        $r = $db->sqa("SELECT * FROM {$db->getPrefix()}lists WHERE id=?", [$id]);
         return $r;
     }
 
@@ -86,7 +86,7 @@ class DBCore
     public function taskExists(int $id): bool
     {
         $db = $this->db;
-        $count = (int) $db->sq("SELECT COUNT(*) FROM {$db->prefix}todolist WHERE id = $id");
+        $count = (int) $db->sq("SELECT COUNT(*) FROM {$db->getPrefix()}todolist WHERE id = $id");
         return ($count > 0) ? true : false;
     }
 
@@ -103,9 +103,9 @@ class DBCore
         }
         $r = $db->sqa("
             SELECT todo.*, $groupConcat
-            FROM {$db->prefix}todolist AS todo
-            LEFT JOIN {$db->prefix}tag2task AS t2t ON todo.id = t2t.task_id
-            LEFT JOIN {$db->prefix}tags AS tags ON t2t.tag_id = tags.id
+            FROM {$db->getPrefix()}todolist AS todo
+            LEFT JOIN {$db->getPrefix()}tag2task AS t2t ON todo.id = t2t.task_id
+            LEFT JOIN {$db->getPrefix()}tags AS tags ON t2t.tag_id = tags.id
             WHERE todo.id = $id
             GROUP BY todo.id
         ");
@@ -156,9 +156,9 @@ class DBCore
 
         $q = $db->dq("
             SELECT todo.*, todo.duedate IS NULL AS ddn, GROUP_CONCAT(tags.id) AS tags_ids, GROUP_CONCAT(tags.name) AS tags
-            FROM {$db->prefix}todolist AS todo
-            LEFT JOIN {$db->prefix}tag2task AS t2t ON todo.id = t2t.task_id
-            LEFT JOIN {$db->prefix}tags AS tags ON t2t.tag_id = tags.id
+            FROM {$db->getPrefix()}todolist AS todo
+            LEFT JOIN {$db->getPrefix()}tag2task AS t2t ON todo.id = t2t.task_id
+            LEFT JOIN {$db->getPrefix()}tags AS tags ON t2t.tag_id = tags.id
             WHERE todo.list_id = $listId  $sqlWhere
             GROUP BY todo.id
             $sqlSort
@@ -179,9 +179,9 @@ class DBCore
         if ($name == '') {
             return null;
         }
-        $ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->prefix}lists");
+        $ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->getPrefix()}lists");
         $time = time();
-        $db->dq("INSERT INTO {$db->prefix}lists (uuid,name,ow,d_created,d_edited,taskview) VALUES (?,?,?,?,?,?)",
+        $db->dq("INSERT INTO {$db->getPrefix()}lists (uuid,name,ow,d_created,d_edited,taskview) VALUES (?,?,?,?,?,?)",
                     array(generateUUID(), $name, $ow, $time, $time, 1) );
         $id = $db->lastInsertId();
         return (int)$id;
@@ -196,7 +196,7 @@ class DBCore
     function getTagIdsByName(string $name): array
     {
         $db = DBConnection::instance();
-        $q = $db->dq("SELECT id FROM {$db->prefix}tags WHERE ". $db->ciEquals('name', $name));
+        $q = $db->dq("SELECT id FROM {$db->getPrefix()}tags WHERE ". $db->ciEquals('name', $name));
         $a = [];
         while ($r = $q->fetchAssoc()) {
             $a[] = (int) $r['id'];

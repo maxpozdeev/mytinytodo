@@ -36,7 +36,7 @@ class NotificationObserver implements \MTTNotificationObserverInterface
             case MTTNotification::didCreateTask:
             case MTTNotification::didCreateList:
                 // Get list name
-                $list = $db->sqa( "SELECT name FROM {$db->prefix}lists WHERE id=?", array($object['listId'] ?? 0) );
+                $list = $db->sqa( "SELECT name FROM {$db->getPrefix()}lists WHERE id=?", array($object['listId'] ?? 0) );
                 $object['listName'] = htmlspecialchars($list['name'] ?? '');
                 $this->delayedNotifications[] = [
                     'notification' => $notification,

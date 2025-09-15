@@ -227,7 +227,7 @@ class Config
     public static function requestDomain(string $key): array
     {
         $db = DBConnection::instance();
-        $json = $db->sq("SELECT param_value FROM {$db->prefix}settings WHERE param_key = ?", array($key));
+        $json = $db->sq("SELECT param_value FROM {$db->getPrefix()}settings WHERE param_key = ?", array($key));
         if (!$json) return array();
         $j = json_decode($json, true, 100, JSON_INVALID_UTF8_SUBSTITUTE);
         if ($j === null) {
@@ -263,12 +263,12 @@ class Config
             throw new Exception("Failed to create JSON object with settings. Code: ". (int)json_last_error());
         }
         $db = DBConnection::instance();
-        $keyExists = $db->sq("SELECT COUNT(param_key) FROM {$db->prefix}settings WHERE param_key = ?", array($key) );
+        $keyExists = $db->sq("SELECT COUNT(param_key) FROM {$db->getPrefix()}settings WHERE param_key = ?", array($key) );
         if ($keyExists) {
-            $db->ex("UPDATE {$db->prefix}settings SET param_value = ? WHERE param_key = ?", array($json,$key) );
+            $db->ex("UPDATE {$db->getPrefix()}settings SET param_value = ? WHERE param_key = ?", array($json,$key) );
         }
         else {
-            $db->ex("INSERT INTO {$db->prefix}settings (param_key,param_value) VALUES (?,?)", array($key,$json) );
+            $db->ex("INSERT INTO {$db->getPrefix()}settings (param_key,param_value) VALUES (?,?)", array($key,$json) );
         }
     }
 
