@@ -327,7 +327,7 @@ class TasksController extends ApiController {
 
     /* Private Functions */
 
-    private function newTaskInList(int $listId): ?array
+    private function newTaskInList(int $listId): array
     {
         $db = DBConnection::instance();
         $t = array();
@@ -376,7 +376,7 @@ class TasksController extends ApiController {
         return $t;
     }
 
-    private function fullNewTaskInList(int $listId): ?array
+    private function fullNewTaskInList(int $listId): array
     {
         $db = DBConnection::instance();
         $title = trim($this->req->jsonBody['title'] ?? '');
@@ -414,7 +414,7 @@ class TasksController extends ApiController {
         return $t;
     }
 
-    private function editTask(int $id): ?array
+    private function editTask(int $id): array
     {
         $db = DBConnection::instance();
         $title = trim($this->req->jsonBody['title'] ?? '');
@@ -446,7 +446,7 @@ class TasksController extends ApiController {
         return $t;
     }
 
-    private function moveTask(int $id): ?array
+    private function moveTask(int $id): array
     {
         $fromId = (int)($this->req->jsonBody['from'] ?? 0);
         $toId = (int)($this->req->jsonBody['to'] ?? 0);
@@ -496,7 +496,7 @@ class TasksController extends ApiController {
         return true;
     }
 
-    private function completeTask(int $id): ?array
+    private function completeTask(int $id): array
     {
         $db = DBConnection::instance();
         $compl = (int)($this->req->jsonBody['compl'] ?? 0);
@@ -515,7 +515,7 @@ class TasksController extends ApiController {
         return $t;
     }
 
-    private function editNote(int $id): ?array
+    private function editNote(int $id): array
     {
         $db = DBConnection::instance();
         $note = $this->req->jsonBody['note'] ?? '';
@@ -534,7 +534,7 @@ class TasksController extends ApiController {
         return $t;
     }
 
-    private function priorityTask(int $id): ?array
+    private function priorityTask(int $id): array
     {
         $db = DBConnection::instance();
         $prio = (int)($this->req->jsonBody['prio'] ?? 0);
@@ -555,7 +555,7 @@ class TasksController extends ApiController {
     }
 
 
-    private function changeTaskOrder(): ?array
+    private function changeTaskOrder(): array
     {
         $db = DBConnection::instance();
         $order = $this->req->jsonBody['order'] ?? null;
@@ -619,7 +619,7 @@ class TasksController extends ApiController {
         return $a;
     }
 
-    private function getTaskRowById(int $id, bool $getListName = false): ?array
+    private function getTaskRowById(int $id, bool $getListName = false): array
     {
         $r = DBCore::default()->getTaskById($id);
         if (!$r) {

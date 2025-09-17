@@ -193,7 +193,7 @@ class ListsController extends ApiController {
         );
     }
 
-    private function createList(): ?array
+    private function createList(): array
     {
         $t = array();
         $t['total'] = 0;
@@ -210,7 +210,7 @@ class ListsController extends ApiController {
         return $t;
     }
 
-    private function renameList(int $id): ?array
+    private function renameList(int $id): array
     {
         $db = DBConnection::instance();
         $t = array();
@@ -225,7 +225,7 @@ class ListsController extends ApiController {
         return $t;
     }
 
-    private function sortList(int $listId): ?array
+    private function sortList(int $listId): array
     {
         $sort = (int)($this->req->jsonBody['sort'] ?? 0);
         self::setListSortingById($listId, $sort);
@@ -262,7 +262,7 @@ class ListsController extends ApiController {
         }
     }
 
-    private function publishList(int $listId): ?array
+    private function publishList(int $listId): array
     {
         $db = DBConnection::instance();
         $publish = (int)($this->req->jsonBody['publish'] ?? 0);
@@ -270,7 +270,7 @@ class ListsController extends ApiController {
         return ['total'=>1];
     }
 
-    private function enableFeedKey(int $listId): ?array
+    private function enableFeedKey(int $listId): array
     {
         $db = DBConnection::instance();
         $flag = (int)($this->req->jsonBody['enable'] ?? 0);
@@ -297,7 +297,7 @@ class ListsController extends ApiController {
         ];
     }
 
-    private function showNotes(int $listId): ?array
+    private function showNotes(int $listId): array
     {
         $db = DBConnection::instance();
         $flag = (int)($this->req->jsonBody['shownotes'] ?? 0);
@@ -306,7 +306,7 @@ class ListsController extends ApiController {
         return ['total'=>1];
     }
 
-    private function hideList(int $listId): ?array
+    private function hideList(int $listId): array
     {
         $db = DBConnection::instance();
         $flag = (int)($this->req->jsonBody['hide'] ?? 0);
@@ -322,7 +322,7 @@ class ListsController extends ApiController {
         return ['total'=>1];
     }
 
-    private function clearCompleted(int $listId): ?array
+    private function clearCompleted(int $listId): array
     {
         $db = DBConnection::instance();
         $t = array();
@@ -342,7 +342,7 @@ class ListsController extends ApiController {
         return $t;
     }
 
-    private function changeListOrder(): ?array
+    private function changeListOrder(): array
     {
         $t = array();
         $t['total'] = 0;
