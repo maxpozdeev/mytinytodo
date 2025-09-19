@@ -11,10 +11,10 @@
 
 class DBCore
 {
-    /** @var Database_Abstract $db */
+    /** @var Database_Abstract|null $db */
     protected $db;
 
-    /** @var DBCore $defaultdb */
+    /** @var DBCore|null $defaultdb */
     protected static $defaultInstance;
 
     /**
@@ -31,7 +31,7 @@ class DBCore
      * @return Database_Abstract
      * @throws Exception
      */
-    public function connection()
+    public function connection() : Database_Abstract
     {
         if (!isset($this->db)) {
             throw new Exception("DBConnection is not set");
