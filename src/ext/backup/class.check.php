@@ -21,31 +21,31 @@ class Check
         $msg = [];
 
         // Task without list
-        $count = $db->sq("SELECT COUNT(*) FROM {$db->prefix}todolist WHERE list_id NOT IN (SELECT id FROM {$db->prefix}lists)");
+        $count = $db->sq("SELECT COUNT(*) FROM {$db->getPrefix()}todolist WHERE list_id NOT IN (SELECT id FROM {$db->getPrefix()}lists)");
         if ($count) {
             $msg[] = "Tasks without list: $count";
         }
 
         // Tag without task (not a broblem)
-        $count = $db->sq("SELECT COUNT(*) FROM {$db->prefix}tags WHERE id NOT IN (SELECT tag_id FROM {$db->prefix}tag2task)");
+        $count = $db->sq("SELECT COUNT(*) FROM {$db->getPrefix()}tags WHERE id NOT IN (SELECT tag_id FROM {$db->getPrefix()}tag2task)");
         if ($count) {
             $msg[] = "Tags without task: $count";
         }
 
         // tag2task no list
-        $count = $db->sq("SELECT COUNT(*) FROM {$db->prefix}tag2task WHERE list_id NOT IN (SELECT id FROM {$db->prefix}lists)");
+        $count = $db->sq("SELECT COUNT(*) FROM {$db->getPrefix()}tag2task WHERE list_id NOT IN (SELECT id FROM {$db->getPrefix()}lists)");
         if ($count) {
             $msg[] = "tag2task no list: $count";
         }
 
         // tag2task no tag
-        $count = $db->sq("SELECT COUNT(*) FROM {$db->prefix}tag2task WHERE tag_id NOT IN (SELECT id FROM {$db->prefix}tags)");
+        $count = $db->sq("SELECT COUNT(*) FROM {$db->getPrefix()}tag2task WHERE tag_id NOT IN (SELECT id FROM {$db->getPrefix()}tags)");
         if ($count) {
             $msg[] = "tag2task no tag: $count";
         }
 
         // tag2task no task
-        $count = $db->sq("SELECT COUNT(*) FROM {$db->prefix}tag2task WHERE task_id NOT IN (SELECT id FROM {$db->prefix}todolist)");
+        $count = $db->sq("SELECT COUNT(*) FROM {$db->getPrefix()}tag2task WHERE task_id NOT IN (SELECT id FROM {$db->getPrefix()}todolist)");
         if ($count) {
             $msg[] = "tag2task no task: $count";
         }
@@ -53,7 +53,7 @@ class Check
         $count = 0;
         $uniqTag = []; // lowerTag => [id, tag]
         $nonuniqTag = []; // id => [tag, lowerTag, uniqId, uniqTag, taskCount]
-        $q = $db->dq("SELECT id,name,COUNT(task_id) c FROM {$db->prefix}tags t LEFT JOIN {$db->prefix}tag2task tt ON t.id=tt.tag_id GROUP BY id ORDER BY id");
+        $q = $db->dq("SELECT id,name,COUNT(task_id) c FROM {$db->getPrefix()}tags t LEFT JOIN {$db->getPrefix()}tag2task tt ON t.id=tt.tag_id GROUP BY id ORDER BY id");
         while ($r = $q->fetchAssoc()) {
             $v = mb_strtolower((string)$r['name'], 'UTF-8');
             if (!isset($uniqTag[$v])) {
@@ -86,22 +86,22 @@ class Check
         $db->ex("BEGIN");
 
         // Task without list
-        $count = (int)$db->sq("SELECT COUNT(*) FROM {$db->prefix}todolist WHERE list_id NOT IN (SELECT id FROM {$db->prefix}lists)");
+        $count = (int)$db->sq("SELECT COUNT(*) FROM {$db->getPrefix()}todolist WHERE list_id NOT IN (SELECT id FROM {$db->getPrefix()}lists)");
         if ($count > 0) {
             // Move to new list
             $listID = \DBCore::default()->createListWithName("Restored tasks");
-            $db->ex("UPDATE {$db->prefix}todolist SET list_id=? WHERE list_id NOT IN (SELECT id FROM {$db->prefix}lists)", [$listID]);
+            $db->ex("UPDATE {$db->getPrefix()}todolist SET list_id=? WHERE list_id NOT IN (SELECT id FROM {$db->getPrefix()}lists)", [$listID]);
         }
 
         //Tags
-        $db->ex("DELETE FROM {$db->prefix}tags WHERE id NOT IN (SELECT tag_id FROM {$db->prefix}tag2task)");
-        $db->ex("DELETE FROM {$db->prefix}tag2task WHERE task_id NOT IN (SELECT id FROM {$db->prefix}todolist)");
-        $db->ex("DELETE FROM {$db->prefix}tag2task WHERE tag_id NOT IN (SELECT id FROM {$db->prefix}tags)");
+        $db->ex("DELETE FROM {$db->getPrefix()}tags WHERE id NOT IN (SELECT tag_id FROM {$db->getPrefix()}tag2task)");
+        $db->ex("DELETE FROM {$db->getPrefix()}tag2task WHERE task_id NOT IN (SELECT id FROM {$db->getPrefix()}todolist)");
+        $db->ex("DELETE FROM {$db->getPrefix()}tag2task WHERE tag_id NOT IN (SELECT id FROM {$db->getPrefix()}tags)");
 
         //Non-unique tags replace with first unique
         $uniqTag = [];
         $replace = [];
-        $q = $db->dq("SELECT id,name FROM {$db->prefix}tags t LEFT JOIN {$db->prefix}tag2task tt ON t.id=tt.tag_id GROUP BY id ORDER BY id");
+        $q = $db->dq("SELECT id,name FROM {$db->getPrefix()}tags t LEFT JOIN {$db->getPrefix()}tag2task tt ON t.id=tt.tag_id GROUP BY id ORDER BY id");
         while ($r = $q->fetchAssoc()) {
             $v = mb_strtolower((string)$r['name'], 'UTF-8');
             if (!isset($uniqTag[$v])) {
@@ -112,9 +112,9 @@ class Check
             }
         }
         foreach ($replace as $id => $newId) {
-            $db->ex("UPDATE {$db->prefix}tag2task SET tag_id=? WHERE tag_id=?", [$newId, $id]);
+            $db->ex("UPDATE {$db->getPrefix()}tag2task SET tag_id=? WHERE tag_id=?", [$newId, $id]);
         }
-        $db->ex("DELETE FROM {$db->prefix}tags WHERE id NOT IN (SELECT tag_id FROM {$db->prefix}tag2task)");
+        $db->ex("DELETE FROM {$db->getPrefix()}tags WHERE id NOT IN (SELECT tag_id FROM {$db->getPrefix()}tag2task)");
 
 
         // TODO: tag2task no list ?

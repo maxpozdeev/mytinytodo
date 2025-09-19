@@ -12,7 +12,7 @@ class MTTSmartSyntax implements MTTSmartSyntaxInterface
     protected $duedatePrefix = '@!';
     protected $weekdays = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat']; //3-letter not present in lang
 
-    /** @var MTTSmartSyntaxInterface */
+    /** @var MTTSmartSyntaxInterface|null */
     protected static $instance;
 
     public static function instance(): MTTSmartSyntaxInterface

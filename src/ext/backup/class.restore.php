@@ -197,11 +197,11 @@ class Restore
         $subsStr = implode(',', array_fill(0, count($fields), '?')); // ?,?,? ...
         $db = DBConnection::instance();
         try {
-            $db->ex("INSERT INTO {$db->prefix}{$table} ($fieldsStr) VALUES ($subsStr)", $values);
+            $db->ex("INSERT INTO {$db->getPrefix()}{$table} ($fieldsStr) VALUES ($subsStr)", $values);
         }
         catch (Exception $e) {
-            error_log("Failed query: {$db->lastQuery}");
-            $this->lastErrorString = "Failed to add data to table '{$db->prefix}$table'. Database error (see query in error log): ". $e->getMessage();
+            error_log("Failed query: {$db->getLastQuery()}");
+            $this->lastErrorString = "Failed to add data to table '{$db->getPrefix()}$table'. Database error (see query in error log): ". $e->getMessage();
             return false;
         }
         return true;
@@ -212,13 +212,13 @@ class Restore
         $db = DBConnection::instance();
         switch ($db::DBTYPE) {
             case DBConnection::DBTYPE_MYSQL:
-                $db->ex("ALTER TABLE {$db->prefix}$table AUTO_INCREMENT = ". (int)$autoinc);
+                $db->ex("ALTER TABLE {$db->getPrefix()}$table AUTO_INCREMENT = ". (int)$autoinc);
                 break;
             case DBConnection::DBTYPE_POSTGRES:
-                $db->ex("ALTER TABLE {$db->prefix}$table ALTER COLUMN id RESTART WITH ". (int)$autoinc);
+                $db->ex("ALTER TABLE {$db->getPrefix()}$table ALTER COLUMN id RESTART WITH ". (int)$autoinc);
                 break;
             case DBConnection::DBTYPE_SQLITE:
-                $db->ex("UPDATE sqlite_sequence SET seq=? WHERE name=?", [$autoinc, $db->prefix. $table]);
+                $db->ex("UPDATE sqlite_sequence SET seq=? WHERE name=?", [$autoinc, $db->getTableWithPrefix($table)]);
                 break;
             default:
                 break;
@@ -230,7 +230,7 @@ class Restore
         $db = DBConnection::instance();
         $db->ex("BEGIN");
         foreach ($this->tableItem as $a) {
-            $table = $db->prefix. $a[0];
+            $table = $db->getTableWithPrefix($a[0]);
             if ($db::DBTYPE == DBConnection::DBTYPE_POSTGRES) {
                 $db->ex("TRUNCATE TABLE $table RESTART IDENTITY");
             }
@@ -241,7 +241,7 @@ class Restore
                 $db->ex("DELETE FROM $table");
             }
         }
-        $db->ex("DELETE FROM {$db->prefix}sessions");
+        $db->ex("DELETE FROM {$db->getPrefix()}sessions");
     }
 
     private function endRestore()
