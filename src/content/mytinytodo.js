@@ -107,7 +107,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
             this.__lang = lang;
             this.daysMin = this.__lang.daysMin;
             this.daysLong = this.__lang.daysLong;
-            this.monthsShort =this.__lang.monthsLong; //this.__lang.monthsShort;
+            this.monthsShort = this.__lang.monthsShort;
             this.monthsLong = this.__lang.monthsLong;
         },
 
@@ -902,16 +902,19 @@ var mytinytodo = window.mytinytodo = _mtt = {
 
     duedatepickerformat: function()
     {
-        if(!this.options.duedatepickerformat) return 'yy-mm-dd';
+        if (!this.options.duedatepickerformat)
+            return 'yy-mm-dd';
 
-        var s = this.options.duedatepickerformat.replace(/(.)/g, function(t,s) {
+        const s = this.options.duedatepickerformat.replace(/(.)/g, function(t,s) {
             switch(t) {
                 case 'Y': return 'yy';
                 case 'y': return 'yy';
                 case 'd': return 'dd';
                 case 'j': return 'd';
                 case 'm': return 'mm';
+                case 'M': return 'M';
                 case 'n': return 'm';
+                case ' ':
                 case '/':
                 case '.':
                 case '-': return t;
@@ -919,7 +922,8 @@ var mytinytodo = window.mytinytodo = _mtt = {
             }
         });
 
-        if(s == '') return 'yy-mm-dd';
+        if (s == '')
+            return 'yy-mm-dd';
         return s;
     },
 
