@@ -154,8 +154,14 @@ class DBCore
             $sqlLimit = "LIMIT $limit";
         }
 
+        if ($db::DBTYPE == DBConnection::DBTYPE_POSTGRES) {
+            $groupConcat =  "array_to_string(array_agg(tags.id), ',') AS tags_ids, string_agg(tags.name, ',') AS tags";
+        }
+        else {
+            $groupConcat = "GROUP_CONCAT(tags.id) AS tags_ids, GROUP_CONCAT(tags.name) AS tags";
+        }
         $q = $db->dq("
-            SELECT todo.*, todo.duedate IS NULL AS ddn, GROUP_CONCAT(tags.id) AS tags_ids, GROUP_CONCAT(tags.name) AS tags
+            SELECT todo.*, todo.duedate IS NULL AS ddn, $groupConcat
             FROM {$db->prefix}todolist AS todo
             LEFT JOIN {$db->prefix}tag2task AS t2t ON todo.id = t2t.task_id
             LEFT JOIN {$db->prefix}tags AS tags ON t2t.tag_id = tags.id
