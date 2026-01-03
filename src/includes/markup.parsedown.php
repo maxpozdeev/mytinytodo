@@ -40,6 +40,9 @@ class MTTParsedown extends Parsedown
 
         $this->InlineTypes['#'][]= 'TaskId';
         $this->inlineMarkerList .= '#';
+
+        // Allow RFC2392 Message-ID URI scheme in links
+        $this->safeLinksWhitelist[] = 'mid:';
     }
 
     public function setToExternal(bool $v)
