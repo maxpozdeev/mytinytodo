@@ -82,7 +82,7 @@ class Database_Sqlite3 extends Database_Abstract
         $options = array(
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
         );
-        if (PHP_VERSION_ID < 70500) {
+        if (PHP_VERSION_ID < 80500) {
             $this->dbh = new PDO("sqlite:$filename", null, null, $options); //throws PDOException
             # Deprecated since PHP 8.5
             $this->dbh->sqliteCreateFunction('utf8_lower', [$this, 'utf8_lower'], 1);
