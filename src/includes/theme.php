@@ -10,6 +10,7 @@
   <title><?php mttinfo('title'); ?></title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/gif" href="<?php mttinfo('theme_url'); ?>images/logo.gif">
+  <link rel="apple-touch-icon" href="<?php mttinfo('theme_url'); ?>images/apple-touch-icon.png" sizes="180x180">
   <link rel="stylesheet" type="text/css" href="<?php mttinfo('theme_url'); ?>style.css?v=<?php filever('theme', 'style.css'); ?>" media="all">
   <link rel="stylesheet" type="text/css" href="<?php mttinfo('theme_url'); ?>markdown.css?v=<?php filever('theme', 'markdown.css'); ?>" media="all">
   <?php if (get_mttinfo('appearance') == 'system'): ?>
