@@ -989,6 +989,12 @@ var mytinytodo = window.mytinytodo = _mtt = {
 
         addTag(tagId, tag, exclude)
         {
+            //Catch 'any tag' filter
+            if (tagId == -2) {
+                tagId = -1;
+                tag = '^';
+                exclude = true
+            }
             for (const filter of this._filters) {
                 if (filter.tagId && filter.tagId == tagId)
                     return false;
@@ -2043,7 +2049,8 @@ function setTagcloudContent(tags, isFiltered = false)
         cloud = _mtt.lang.get('noTags');
     }
     else if (!isFiltered) {
-        cloud = `<span class="tag" data-tag="^" data-tag-id="-1">${_mtt.lang.get('withoutTags')}</span>` + cloud;
+        cloud = `<span class="tag special-no-tags" data-tag="^"  data-tag-id="-1">${_mtt.lang.get('withoutTags')}</span>` +
+                `<span class="tag special-any-tag" data-tag="^^" data-tag-id="-2">${_mtt.lang.get('withAnyTag')}</span>` + cloud;
     }
     $('#tagcloudcontent').html(cloud)
 }
