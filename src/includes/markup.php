@@ -2,7 +2,7 @@
 
 /*
     This file is a part of myTinyTodo.
-    (C) Copyright 2021-2025 Max Pozdeev <maxpozdeev@gmail.com>
+    (C) Copyright 2021-2026 Max Pozdeev <maxpozdeev@gmail.com>
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
@@ -42,10 +42,66 @@ final class MTTMarkdown
         return self::$instance;
     }
 
-    public static function setInstanceClass(string $class)
+    public static function setInstanceClass(string $class): void
     {
         if (!is_a($class, MTTMarkdownInterface::class, true)) {
             throw new Exception("Class '$class' is not a MTTMarkdownInterface");
+        }
+        self::$instanceClass = $class;
+        self::$instance = null;
+    }
+}
+
+interface MTTTitleMarkupInterface
+{
+    public function convert(string $title): string;
+}
+
+class MTTTitleMarkupConverter implements MTTTitleMarkupInterface
+{
+    public function convert(string $title): string
+    {
+        //escape all unsafe
+        $title = htmlspecialchars($title, ENT_QUOTES);
+
+        // make links from text starting with 'www.'
+        $title = preg_replace(
+            "/(^|\s|>)(www\.([\w\#$%&~\/.\-\+;:=,\?\[\]@]+?))(,|\.|:|)?(?=\s|&quot;|&lt;|&gt;|\"|<|>|$)/iu" ,
+            '$1<a href="http://$2" target="_blank">$2</a>$4' ,
+            $title
+            );
+
+        // make link from text starting with protocol like 'http://'
+        $title = preg_replace(
+            "/(^|\s|>)([a-z]+:\/\/([\w\#$%&~\/.\-\+;:=,\?\[\]@]+?))(,|\.|:|)?(?=\s|&quot;|&lt;|&gt;|\"|<|>|$)/iu" ,
+            '$1<a href="$2" target="_blank">$2</a>$4' ,
+            $title
+        );
+        return $title;
+    }
+}
+
+final class MTTTitleMarkup
+{
+    /** @var MTTTitleMarkupInterface */
+    private static $instance;
+
+    /** @var string */
+    private static $instanceClass = MTTTitleMarkupConverter::class;
+
+    public static function instance() : MTTTitleMarkupInterface
+    {
+        if (isset(self::$instance))
+            return self::$instance;
+
+        self::$instance = new self::$instanceClass();
+        return self::$instance;
+    }
+
+    public static function setInstanceClass(string $class): void
+    {
+        if (!is_a($class, MTTTitleMarkupInterface::class, true)) {
+            throw new Exception("Class '$class' is not a MTTTitleMarkupInterface");
         }
         self::$instanceClass = $class;
         self::$instance = null;
@@ -129,22 +185,6 @@ function mttMarkup_v1(string $s): string
  */
 function titleMarkup(string $title): string
 {
-    //escape all unsafe
-    $title = htmlspecialchars($title, ENT_QUOTES);
-
-    // make links from text starting with 'www.'
-    $title = preg_replace(
-        "/(^|\s|>)(www\.([\w\#$%&~\/.\-\+;:=,\?\[\]@]+?))(,|\.|:|)?(?=\s|&quot;|&lt;|&gt;|\"|<|>|$)/iu" ,
-        '$1<a href="http://$2" target="_blank">$2</a>$4' ,
-         $title
-        );
-
-    // make link from text starting with protocol like 'http://'
-    $title = preg_replace(
-        "/(^|\s|>)([a-z]+:\/\/([\w\#$%&~\/.\-\+;:=,\?\[\]@]+?))(,|\.|:|)?(?=\s|&quot;|&lt;|&gt;|\"|<|>|$)/iu" ,
-        '$1<a href="$2" target="_blank">$2</a>$4' ,
-        $title
-    );
-    return (string)$title;
+    return MTTTitleMarkup::instance()->convert($title);
 }
 
