@@ -50,6 +50,62 @@ final class MTTMarkdown
     }
 }
 
+interface MTTTitleMarkupInterface
+{
+    public function convert(string $title): string;
+}
+
+class MTTTitleMarkupConverter implements MTTTitleMarkupInterface
+{
+    public function convert(string $title): string
+    {
+        //escape all unsafe
+        $title = htmlspecialchars($title, ENT_QUOTES);
+
+        // make links from text starting with 'www.'
+        $title = preg_replace(
+            "/(^|\s|>)(www\.([\w\#$%&~\/.\-\+;:=,\?\[\]@]+?))(,|\.|:|)?(?=\s|&quot;|&lt;|&gt;|\"|<|>|$)/iu" ,
+            '$1<a href="http://$2" target="_blank">$2</a>$4' ,
+            $title
+            );
+
+        // make link from text starting with protocol like 'http://'
+        $title = preg_replace(
+            "/(^|\s|>)([a-z]+:\/\/([\w\#$%&~\/.\-\+;:=,\?\[\]@]+?))(,|\.|:|)?(?=\s|&quot;|&lt;|&gt;|\"|<|>|$)/iu" ,
+            '$1<a href="$2" target="_blank">$2</a>$4' ,
+            $title
+        );
+        return $title;
+    }
+}
+
+final class MTTTitleMarkup
+{
+    /** @var MTTTitleMarkupInterface */
+    private static $instance;
+
+    /** @var string */
+    private static $instanceClass = MTTTitleMarkupConverter::class;
+
+    public static function instance() : MTTTitleMarkupInterface
+    {
+        if (isset(self::$instance))
+            return self::$instance;
+
+        self::$instance = new self::$instanceClass();
+        return self::$instance;
+    }
+
+    public static function setInstanceClass(string $class)
+    {
+        if (!is_a($class, MTTTitleMarkupInterface::class, true)) {
+            throw new Exception("Class '$class' is not a MTTTitleMarkupInterface");
+        }
+        self::$instanceClass = $class;
+        self::$instance = null;
+    }
+}
+
 function noteMarkup($note, $toExternal = false)
 {
     if ($note === null) {
@@ -101,22 +157,6 @@ function mttMarkup_v1($s)
 // Convert raw title to html with allowed urls
 function titleMarkup($title)
 {
-    //escape all unsafe
-    $title = htmlspecialchars($title, ENT_QUOTES);
-
-    // make links from text starting with 'www.'
-    $title = preg_replace(
-        "/(^|\s|>)(www\.([\w\#$%&~\/.\-\+;:=,\?\[\]@]+?))(,|\.|:|)?(?=\s|&quot;|&lt;|&gt;|\"|<|>|$)/iu" ,
-        '$1<a href="http://$2" target="_blank">$2</a>$4' ,
-         $title
-        );
-
-    // make link from text starting with protocol like 'http://'
-    $title = preg_replace(
-        "/(^|\s|>)([a-z]+:\/\/([\w\#$%&~\/.\-\+;:=,\?\[\]@]+?))(,|\.|:|)?(?=\s|&quot;|&lt;|&gt;|\"|<|>|$)/iu" ,
-        '$1<a href="$2" target="_blank">$2</a>$4' ,
-        $title
-    );
-    return $title;
+    return MTTTitleMarkup::instance()->convert($title);
 }
 
