@@ -2033,6 +2033,7 @@ function loadTags(listId, callback)
         if (!parseInt(json.total)) tagsList = [];
         else tagsList = json.items;
         flag.tagsChanged = false;
+        _mtt.doAction('tagsLoaded', tagsList);
         setTagcloudContent(tagsList);
         callback();
     });
