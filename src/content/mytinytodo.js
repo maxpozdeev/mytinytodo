@@ -2093,9 +2093,13 @@ function saveTask(form)
         return submitFullTask(form);
 
     const oldItem = taskList[form.id.value];
+    let duedate = $("#duedate").datepicker('getDate');
+    if (duedate) {
+        duedate = duedate.getFullYear() + '-' + (duedate.getMonth() + 1) + '-' + duedate.getDate();
+    }
 
     mtt.db.request('editTask', {id:form.id.value, title: form.task.value, note:form.note.value,
-        prio:form.prio.value, tags:form.tags.value, duedate:form.duedate.value},
+        prio:form.prio.value, tags:form.tags.value, duedate:duedate},
         function(json) {
             if (!parseInt(json.total))
                 return;
@@ -2268,7 +2272,12 @@ function searchTasks(force)
 
 function submitFullTask(form)
 {
-    if(flag.readOnly) return false;
+    if (flag.readOnly) return false;
+
+    let duedate = $("#duedate").datepicker('getDate');
+    if (duedate) {
+        duedate = duedate.getFullYear() + '-' + (duedate.getMonth() + 1) + '-' + duedate.getDate();
+    }
 
     mtt.db.request( 'fullNewTask',
         {
@@ -2278,7 +2287,7 @@ function submitFullTask(form)
             note: form.note.value,
             prio: form.prio.value,
             tags: form.tags.value,
-            duedate: form.duedate.value
+            duedate: duedate
         },
         function(json) {
             if (!parseInt(json.total)) return;
