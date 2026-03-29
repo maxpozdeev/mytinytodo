@@ -171,17 +171,6 @@ fieldset:disabled {
 .mtt-hidden {
   display: none;
 }
-.topblock h2 {
-  margin:0;
-  font-size:1.5rem;
-  padding-left: 30px;
-  padding-right: 10px;
-  background: url(images/logo.gif) no-repeat top left;
-  background-size: 24px 24px;
-}
-#mtt.ajax-loading .topblock h2 {
-  background-image: url(images/logo-loading.gif);
-}
 
 /* preload images */
 body::after {
@@ -205,7 +194,28 @@ h3.page-title .page-title-right {
   margin-left: auto;
 }
 
-.topblock { display:flex; align-items:flex-start; margin-bottom:1rem; }
+#topblock {
+  display:flex;
+  align-items:center;
+  margin-bottom:1rem;
+}
+#topblock a.logo {
+  display:block;
+  width:24px;
+  min-width:24px;
+  height:24px;
+  margin-right:6px;
+  background: url(images/logo.gif) no-repeat top left;
+  background-size: 24px 24px;
+}
+#topblock h2 {
+  margin:0;
+  font-size:1.5rem;
+}
+#mtt.ajax-loading a.logo {
+  background-image: url(images/logo-loading.gif);
+}
+
 #footer {
   flex-shrink:0;
   width:100%;
@@ -225,12 +235,12 @@ h3.page-title .page-title-right {
 }
 #footer_content a.powered-by-link { font-weight:bold; }
 
-.topblock-title {
+
+.topblock-bar {
+  flex-grow:1;
   display:flex;
-  align-items:center;
-  min-width: 0; /* required for h2 ellipsis */
+  justify-content:flex-start;
 }
-.topblock-bar { flex-grow:1; display:flex; justify-content:flex-start; border-bottom:1px solid var(--color-content-delimiter); padding-bottom:5px; }
 .bar-menu {
   flex-grow:1;
   display:flex;
@@ -1428,11 +1438,11 @@ li.mtt-item-hidden { display:none; }
 @media only screen and (max-width: 600px) {
 
   #mtt { padding: 15px 8px 0px; }
-  #mtt.page-ajax .topblock { display: none; } /* hide topmost block if settings pages is opened */
-  #mtt.page-taskedit .topblock { display: none; } /* hide topmost block if edit/add task  page is opened */
+  #mtt.page-ajax #topblock { display: none; } /* hide topmost block if settings pages is opened */
+  #mtt.page-taskedit #topblock { display: none; } /* hide topmost block if edit/add task  page is opened */
 
   h2 { font-size:1rem; }
-  .topblock h2 {
+  #topblock h2 {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis; /* min-width of parent flex is required for this */

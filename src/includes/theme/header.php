@@ -45,21 +45,24 @@ $().ready(function(){
 <div id="mtt">
 
 <!-- Top block -->
-<div class="topblock">
+<div id="topblock">
 
-  <div class="topblock-title">
-    <h2><?php mttinfo('title'); ?></h2>
-  </div>
+  <a class="logo" href="<?php mttinfo('url'); ?>"></a>
+
+  <h2><?php mttinfo('title'); ?></h2>
 
   <div class="topblock-bar">
-  <div id="msg"><span class="msg-text"></span><div class="msg-details"></div></div>
-  <div class="bar-menu">
-    <a href="#settings" class="mtt-only-authorized" data-settings-link="index"><?php _e('a_settings');?></a>
-    <span id="bar_public" style="display:none" class="mtt-need-auth-enabled"><?php _e('public_tasks');?></span>
-    <a href="<?php router_url('login'); ?>" id="login_btn" class="mtt-need-auth-enabled"><?php _e('a_login');?></a>
-    <a href="#logout" id="logout_btn" class="mtt-need-auth-enabled" style="display:none" ><?php _e('a_logout');?></a>
-    <a href="<?php mttinfo('tasks_uri'); ?>" id="bar_username"  class="mtt-only-authorized"><?php mttinfo('username') ?></a>
-  </div>
+    <div id="msg"><span class="msg-text"></span><div class="msg-details"></div></div>
+    <div class="bar-menu">
+      <span id="bar_public" style="display:none" class="mtt-need-auth-enabled"><?php _e('public_tasks');?></span>
+    <?php if (is_logged()): ?>
+      <a href="#settings" class="mtt-only-authorized" data-settings-link="index"><?php _e('a_settings');?></a>
+      <a href="#logout" id="logout_btn" class="mtt-need-auth-enabled" style="display:none" ><?php _e('a_logout');?></a>
+      <a href="<?php mttinfo('tasks_uri'); ?>" id="bar_username"  class="mtt-only-authorized"><?php mttinfo('username') ?></a>
+    <?php else: ?>
+      <a href="<?php router_url('login'); ?>"  id="login_btn"  class="mtt-need-auth-enabled"><?php _e('a_login');?></a>
+    <?php endif; ?>
+    </div>
   </div>
 
 </div>
