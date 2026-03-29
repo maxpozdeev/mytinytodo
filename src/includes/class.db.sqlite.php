@@ -58,7 +58,7 @@ class SqliteDatabase extends AbstractDatabase
 {
     const DBTYPE = 'sqlite';
 
-    /** @var PDO */
+    /** @var PDO|\Pdo\Sqlite */
     protected $dbh;
 
     /** @var int */
@@ -82,11 +82,22 @@ class SqliteDatabase extends AbstractDatabase
         $options = array(
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
         );
-        $this->dbh = new PDO("sqlite:$filename", null, null, $options); //throws PDOException
-        $this->dbh->sqliteCreateFunction('utf8_lower', [$this, 'utf8_lower'], 1);
-        $this->dbh->sqliteCreateFunction('utf8_normalized_lower', [$this, 'utf8_normalized_lower'], 1);
-        $this->dbh->sqliteCreateCollation('UTF8CI', [$this, 'collate_utf8ci']);
-        $this->dbh->sqliteCreateCollation('UTF8CI_NORMALIZED', [$this, 'collate_utf8ci_normalized']);
+        if (PHP_VERSION_ID < 80500) {
+            $this->dbh = new PDO("sqlite:$filename", null, null, $options); //throws PDOException
+            # Deprecated since PHP 8.5
+            $this->dbh->sqliteCreateFunction('utf8_lower', [$this, 'utf8_lower'], 1);
+            $this->dbh->sqliteCreateFunction('utf8_normalized_lower', [$this, 'utf8_normalized_lower'], 1);
+            $this->dbh->sqliteCreateCollation('UTF8CI', [$this, 'collate_utf8ci']);
+            $this->dbh->sqliteCreateCollation('UTF8CI_NORMALIZED', [$this, 'collate_utf8ci_normalized']);
+        }
+        else {
+            /** @disregard P1009 available in php 8.5 */
+            $this->dbh = new \Pdo\Sqlite("sqlite:$filename", null, null, $options); //throws PDOException
+            $this->dbh->createFunction('utf8_lower', [$this, 'utf8_lower'], 1);
+            $this->dbh->createFunction('utf8_normalized_lower', [$this, 'utf8_normalized_lower'], 1);
+            $this->dbh->createCollation('UTF8CI', [$this, 'collate_utf8ci']);
+            $this->dbh->createCollation('UTF8CI_NORMALIZED', [$this, 'collate_utf8ci_normalized']);
+        }
     }
 
     /*
