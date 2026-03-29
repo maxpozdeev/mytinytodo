@@ -20,7 +20,7 @@ $value = $argc > 3 ? $argv[3] : null;
 
 
 switch ($cmd) {
-    case 'read': cmd_read($param, $value); break;
+    case 'read': cmd_read($param); break;
     case 'write': cmd_write($param, $value); break;
     case 'password': cmd_password($param); break;
     default: die("Unknown command: $cmd\n");

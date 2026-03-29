@@ -29,7 +29,7 @@ class ListsController extends ApiController {
             $t['total'] = 1;
         }
         $t['time'] = time();
-        $q = $db->dq("SELECT * FROM {$db->prefix}lists $sqlWhere ORDER BY ow ASC, id ASC");
+        $q = $db->dq("SELECT * FROM {$db->getPrefix()}lists $sqlWhere ORDER BY ow ASC, id ASC");
         while ($r = $q->fetchAssoc())
         {
             $t['total']++;
@@ -84,7 +84,7 @@ class ListsController extends ApiController {
     {
         checkReadAccess($id);
         $db = DBConnection::instance();
-        $r = $db->sqa( "SELECT * FROM {$db->prefix}lists WHERE id=?", array($id) );
+        $r = $db->sqa( "SELECT * FROM {$db->getPrefix()}lists WHERE id=?", array($id) );
         if (!$r) {
             $this->response->data = null;
             return;
@@ -193,7 +193,7 @@ class ListsController extends ApiController {
         );
     }
 
-    private function createList(): ?array
+    private function createList(): array
     {
         $t = array();
         $t['total'] = 0;
@@ -203,14 +203,14 @@ class ListsController extends ApiController {
         }
         $db = DBConnection::instance();
         $t['total'] = 1;
-        $r = $db->sqa("SELECT * FROM {$db->prefix}lists WHERE id=$id");
+        $r = $db->sqa("SELECT * FROM {$db->getPrefix()}lists WHERE id=$id");
         $oo = $this->prepareList($r, true);
         MTTNotificationCenter::postNotification(MTTNotification::didCreateList, $oo);
         $t['list'][] = $oo;
         return $t;
     }
 
-    private function renameList(int $id): ?array
+    private function renameList(int $id): array
     {
         $db = DBConnection::instance();
         $t = array();
@@ -218,14 +218,14 @@ class ListsController extends ApiController {
         $name = trim($this->req->jsonBody['name'] ?? '');
         if ($name == '')
             return $t;
-        $db->dq("UPDATE {$db->prefix}lists SET name=?,d_edited=? WHERE id=$id", array($name, time()) );
+        $db->dq("UPDATE {$db->getPrefix()}lists SET name=?,d_edited=? WHERE id=$id", array($name, time()) );
         $t['total'] = $db->affected();
-        $r = $db->sqa("SELECT * FROM {$db->prefix}lists WHERE id=$id");
+        $r = $db->sqa("SELECT * FROM {$db->getPrefix()}lists WHERE id=$id");
         $t['list'][] = $this->prepareList($r, true);
         return $t;
     }
 
-    private function sortList(int $listId): ?array
+    private function sortList(int $listId): array
     {
         $sort = (int)($this->req->jsonBody['sort'] ?? 0);
         self::setListSortingById($listId, $sort);
@@ -244,7 +244,7 @@ class ListsController extends ApiController {
             Config::saveDomain('alltasks.json', $opts);
         }
         else {
-            $db->ex("UPDATE {$db->prefix}lists SET sorting=$sort,d_edited=? WHERE id=$listId", array(time()));
+            $db->ex("UPDATE {$db->getPrefix()}lists SET sorting=$sort,d_edited=? WHERE id=$listId", array(time()));
         }
     }
 
@@ -258,23 +258,23 @@ class ListsController extends ApiController {
         }
         else {
             $bitwise = $showCompleted ? 'taskview | 1' : 'taskview & ~1';
-            $db->dq("UPDATE {$db->prefix}lists SET taskview=$bitwise WHERE id=?", [$listId]);
+            $db->dq("UPDATE {$db->getPrefix()}lists SET taskview=$bitwise WHERE id=?", [$listId]);
         }
     }
 
-    private function publishList(int $listId): ?array
+    private function publishList(int $listId): array
     {
         $db = DBConnection::instance();
         $publish = (int)($this->req->jsonBody['publish'] ?? 0);
-        $db->ex("UPDATE {$db->prefix}lists SET published=?,d_edited=? WHERE id=$listId", array($publish ? 1 : 0, time()));
+        $db->ex("UPDATE {$db->getPrefix()}lists SET published=?,d_edited=? WHERE id=$listId", array($publish ? 1 : 0, time()));
         return ['total'=>1];
     }
 
-    private function enableFeedKey(int $listId): ?array
+    private function enableFeedKey(int $listId): array
     {
         $db = DBConnection::instance();
         $flag = (int)($this->req->jsonBody['enable'] ?? 0);
-        $json = $db->sq("SELECT extra FROM {$db->prefix}lists WHERE id=$listId") ?? '';
+        $json = $db->sq("SELECT extra FROM {$db->getPrefix()}lists WHERE id=$listId") ?? '';
         $extra = strlen($json) > 0 ? json_decode($json, true, 10, JSON_INVALID_UTF8_SUBSTITUTE) : [];
         if ($extra === false) {
             error_log("Failed to decodes JSON data of list extra listId=$listId: " . json_last_error_msg());
@@ -287,7 +287,7 @@ class ListsController extends ApiController {
             $extra['feedKey'] = randomString();
         }
         $json = json_encode($extra, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-        $db->ex("UPDATE {$db->prefix}lists SET extra=?,d_edited=? WHERE id=$listId", array($json, time()));
+        $db->ex("UPDATE {$db->getPrefix()}lists SET extra=?,d_edited=? WHERE id=$listId", array($json, time()));
         return [
             'total' => 1,
             'list' => [[
@@ -297,16 +297,16 @@ class ListsController extends ApiController {
         ];
     }
 
-    private function showNotes(int $listId): ?array
+    private function showNotes(int $listId): array
     {
         $db = DBConnection::instance();
         $flag = (int)($this->req->jsonBody['shownotes'] ?? 0);
         $bitwise = ($flag == 0) ? 'taskview & ~2' : 'taskview | 2';
-        $db->dq("UPDATE {$db->prefix}lists SET taskview=$bitwise WHERE id=$listId");
+        $db->dq("UPDATE {$db->getPrefix()}lists SET taskview=$bitwise WHERE id=$listId");
         return ['total'=>1];
     }
 
-    private function hideList(int $listId): ?array
+    private function hideList(int $listId): array
     {
         $db = DBConnection::instance();
         $flag = (int)($this->req->jsonBody['hide'] ?? 0);
@@ -317,19 +317,19 @@ class ListsController extends ApiController {
         }
         else {
             $bitwise = ($flag == 0) ? 'taskview & ~4' : 'taskview | 4';
-            $db->dq("UPDATE {$db->prefix}lists SET taskview=$bitwise WHERE id=$listId");
+            $db->dq("UPDATE {$db->getPrefix()}lists SET taskview=$bitwise WHERE id=$listId");
         }
         return ['total'=>1];
     }
 
-    private function clearCompleted(int $listId): ?array
+    private function clearCompleted(int $listId): array
     {
         $db = DBConnection::instance();
         $t = array();
         $t['total'] = 0;
         $db->ex("BEGIN");
-        $db->ex("DELETE FROM {$db->prefix}tag2task WHERE task_id IN (SELECT id FROM {$db->prefix}todolist WHERE list_id=? and compl=1)", array($listId));
-        $db->ex("DELETE FROM {$db->prefix}todolist WHERE list_id=$listId and compl=1");
+        $db->ex("DELETE FROM {$db->getPrefix()}tag2task WHERE task_id IN (SELECT id FROM {$db->getPrefix()}todolist WHERE list_id=? and compl=1)", array($listId));
+        $db->ex("DELETE FROM {$db->getPrefix()}todolist WHERE list_id=$listId and compl=1");
         $t['total'] = $db->affected();
         $db->ex("COMMIT");
         if (MTTNotificationCenter::hasObserversForNotification(MTTNotification::didDeleteCompletedInList)) {
@@ -342,7 +342,7 @@ class ListsController extends ApiController {
         return $t;
     }
 
-    private function changeListOrder(): ?array
+    private function changeListOrder(): array
     {
         $t = array();
         $t['total'] = 0;
@@ -360,7 +360,7 @@ class ListsController extends ApiController {
             $setCase .= "WHEN id=$id THEN $i\n";
         }
         $ids = implode(',', $a);
-        $db->dq("UPDATE {$db->prefix}lists SET d_edited=?, ow = CASE\n $setCase END WHERE id IN ($ids)",
+        $db->dq("UPDATE {$db->getPrefix()}lists SET d_edited=?, ow = CASE\n $setCase END WHERE id IN ($ids)",
                     array(time()) );
         $t['total'] = 1;
         return $t;
@@ -377,11 +377,11 @@ class ListsController extends ApiController {
             $list = $this->getListRowById($id);
         }
         $db->ex("BEGIN");
-        $db->ex("DELETE FROM {$db->prefix}lists WHERE id=$id");
+        $db->ex("DELETE FROM {$db->getPrefix()}lists WHERE id=$id");
         $t['total'] = $db->affected();
         if ($t['total']) {
-            $db->ex("DELETE FROM {$db->prefix}tag2task WHERE list_id=$id");
-            $db->ex("DELETE FROM {$db->prefix}todolist WHERE list_id=$id");
+            $db->ex("DELETE FROM {$db->getPrefix()}tag2task WHERE list_id=$id");
+            $db->ex("DELETE FROM {$db->getPrefix()}todolist WHERE list_id=$id");
         }
         $db->ex("COMMIT");
         if ($t['total'] && MTTNotificationCenter::hasObserversForNotification(MTTNotification::didDeleteList)) {

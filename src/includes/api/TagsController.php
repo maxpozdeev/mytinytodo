@@ -21,7 +21,7 @@ class TagsController extends ApiController {
 
         $sqlWhere = ($listId == -1) ? "" : "WHERE list_id = $listId";
         $q = $db->dq("SELECT name, tag_id, COUNT(tag_id) AS tags_count
-                      FROM {$db->prefix}tag2task INNER JOIN {$db->prefix}tags ON tag_id = id
+                      FROM {$db->getPrefix()}tag2task INNER JOIN {$db->getPrefix()}tags ON tag_id = id
                       $sqlWhere
                       GROUP BY tag_id, name
                       ORDER BY tags_count DESC");
@@ -73,8 +73,8 @@ class TagsController extends ApiController {
         $db = DBConnection::instance();
         $begin = trim(_get('q'));
         $limit = 8;
-        $q = $db->dq("SELECT name, tag_id AS id FROM {$db->prefix}tags
-                      INNER JOIN {$db->prefix}tag2task ON id=tag_id
+        $q = $db->dq("SELECT name, tag_id AS id FROM {$db->getPrefix()}tags
+                      INNER JOIN {$db->getPrefix()}tag2task ON id=tag_id
                       WHERE list_id=$listId AND ". $db->like('name', '%s%%', $begin). "
                       GROUP BY tag_id, name
                       ORDER BY name
