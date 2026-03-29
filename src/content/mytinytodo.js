@@ -294,7 +294,7 @@ const mtt = window.mytinytodo = {
             else $('#search_close').show();
             if (mtt.options.instantSearch) {
                 clearTimeout(searchTimer);
-                searchTimer = setTimeout(function(){searchTasks()}, 400);
+                searchTimer = setTimeout(function(){searchTasks()}, 300);
             }
         })
         .keydown(function(event){
