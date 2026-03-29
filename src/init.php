@@ -1,7 +1,7 @@
 <?php
 /*
     This file is a part of myTinyTodo.
-    (C) Copyright 2009-2011,2019-2025 Max Pozdeev <maxpozdeev@gmail.com>
+    (C) Copyright 2009-2011,2019-2026 Max Pozdeev <maxpozdeev@gmail.com>
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
@@ -466,11 +466,8 @@ function get_unsafe_mttinfo($v)
             $_mttinfo['username'] = username() ?? '';
             return $_mttinfo['username'];
         case 'tasks_uri':
-            //$_mttinfo['tasks_uri'] = get_unsafe_mttinfo('uri'). 'u/'. (username() ?? '');
-            if (need_auth()) {
-                $u = username();
-                $_mttinfo['tasks_uri'] = is_null($u) ? '' : get_unsafe_mttinfo('uri'). "?user=$u";
-            }
+            if (need_auth())
+                $_mttinfo['tasks_uri'] = get_user_router_url();
             else
                 $_mttinfo['tasks_uri'] = get_unsafe_mttinfo('uri');
             return $_mttinfo['tasks_uri'];
@@ -512,6 +509,50 @@ function set_nocache_headers()
 function jsonExit(array $data)
 {
     (new JsonApiResponse($data))->exit();
+}
+
+function redirectExit(string $url)
+{
+    $url = str_replace(["\r","\n"], "", $url);
+    header("Location: ". $url, true, 302);
+    exit;
+}
+
+function get_router_url(string $path): string
+{
+    $prefix = get_unsafe_mttinfo('uri');
+    if (!defined('MTT_USE_REWRITE') || !MTT_USE_REWRITE) {
+        return $prefix. '?_path=/'. $path;
+    }
+    else {
+        return $prefix. $path;
+    }
+}
+
+function router_url(string $path)
+{
+    echo htmlspecialchars(get_router_url($path));
+}
+
+function get_user_router_url(string $path = '', string $user = ''): string
+{
+    $prefix = get_router_url('');
+    if ($path !== '' && $path[0] !== '/')
+        $path = '/'. $path;
+    if ($user == '')
+        $user = username();
+    return $prefix . 'u/'. $user. $path;
+}
+
+function get_go_prefix()
+{
+    $prefix = get_unsafe_mttinfo('uri');
+    if (!defined('MTT_USE_REWRITE') || !MTT_USE_REWRITE) {
+        return $prefix. '?';
+    }
+    else {
+        return $prefix .= 'go?';
+    }
 }
 
 function logAndDie($userText, $errText = null)

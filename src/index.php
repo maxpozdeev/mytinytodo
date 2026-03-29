@@ -1,12 +1,12 @@
 <?php
 /*
     This file is a part of myTinyTodo.
-    (C) Copyright 2009-2010,2020-2025 Max Pozdeev <maxpozdeev@gmail.com>
+    (C) Copyright 2009-2010,2020-2026 Max Pozdeev <maxpozdeev@gmail.com>
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
 
-$checkDbExists = true;
+$checkDbExists = true; #TODO: only index page?
 require_once('./init.php');
 
 if ( access_token() == '' ) {
@@ -16,29 +16,26 @@ if ( access_token() == '' ) {
 $path = getIndexPath();
 
 if ($path === '/') {
+    // if (is_logged()) {
+    //     # redirect to /u/<username> ?
+    //     redirectExit(get_user_router_url(''));
+    // }
     page_tasks();
 }
 else if ($path === '/go' ) {
-    if ( isset($_SERVER['QUERY_STRING']) && $_SERVER['QUERY_STRING'] != '' ) {
-        parseGoRoute($_SERVER['QUERY_STRING']);
-    }
-    else {
-        header("Location: ". get_unsafe_mttinfo('url'));
-        exit;
-    }
-}
-else if ($path == '/u/') {
+    handleGoRoute($_SERVER['QUERY_STRING'] ?? '');
 }
 else if ($path === '/login') {
     if (is_logged()) {
-        header("Location: ". get_unsafe_mttinfo('url'));
-        exit;
+        redirectExit( get_user_router_url() );
     }
     page_login();
 }
+else if (preg_match("#^/u/([^/]+)(.*)#", $path, $m)) {
+    handleUser($m[1], $m[2]);
+}
 else {
-    http_response_code(404);
-    print "<h1>Page Not Found</h1>";
+    page_404();
 }
 
 MTTNotificationCenter::postDidFinishRequestNotification();
@@ -82,11 +79,18 @@ function getIndexPath(): string
     return $path;
 }
 
-function parseGoRoute($queryString)
+function handleGoRoute(?string $queryString = null)
 {
+    if ($queryString === null)
+        $queryString = $_SERVER['QUERY_STRING'] ?? '';
+
+    if ($queryString == '')
+        redirectExit(get_unsafe_mttinfo('url'));
+
     parse_str($queryString, $q);
     unset($q['_path']);
 
+/*
     if (isset($q['user'])) {
         $q['user'] = trim($q['user']);
         if ($q['user'] == '') {
@@ -107,6 +111,7 @@ function parseGoRoute($queryString)
             // Request for login?
         }
     }
+*/
 
     if (isset($q['list'])) {
         $hash = ($q['list'] == 'alltasks') ? ['alltasks'] : ['list', (int)$q['list']];
@@ -144,8 +149,7 @@ function redirectWithHashRoute(array $hash, array $q = [])
         $encodedHash = implode("/", array_map("rawurlencode", $hash));
         $url .= "#$encodedHash";
     }
-    header("Location: ". $url);
-    exit;
+    redirectExit($url);
 }
 
 function js_options()
@@ -158,7 +162,7 @@ function js_options()
     $a = array(
         "token" => htmlspecialchars(access_token()),
         "me" => username() ?? '',
-        "username" => trim(_get('user')),
+        "username" => MTTVars::$requestedUsername,
         "title" => get_unsafe_mttinfo('title'),
         "mttUrl" => get_mttinfo('mtt_uri'),
         "homeUrl" => $homeUrl,
@@ -207,32 +211,25 @@ function htmlExit(int $code = 200, string $msg = '')
 }
 
 
-function get_router_url(string $path): string
+function handleUser(string $username, string $path = '')
 {
-    $prefix = get_unsafe_mttinfo('uri');
-    if (!defined('MTT_USE_REWRITE') || !MTT_USE_REWRITE) {
-        return $prefix. '?_path=/'. $path;
-    }
-    else {
-        return $prefix. $path;
-    }
+    MTTVars::$requestedUsername = trim($username);
+    if (MTTVars::$requestedUsername === '')
+        return page_404();
+
+    MTTVars::$requestedUserId = (int) (new UserRepo(DBConnection::instance()))->findUserIdByUsername(MTTVars::$requestedUsername);
+    if (!MTTVars::$requestedUserId)
+        return page_404();
+
+    page_tasks();
 }
 
-function router_url(string $path)
+function page_404()
 {
-    echo htmlspecialchars(get_router_url($path));
+    http_response_code(404);
+    print "<h1>Page Not Found</h1>";
 }
 
-function get_go_prefix()
-{
-    $prefix = get_unsafe_mttinfo('uri');
-    if (!defined('MTT_USE_REWRITE') || !MTT_USE_REWRITE) {
-        return $prefix. '?';
-    }
-    else {
-        return $prefix .= 'go?';
-    }
-}
 
 function page_login()
 {
@@ -247,3 +244,9 @@ function page_tasks()
     require_once(MTT_THEME_PATH. 'tasks.php');
     require_once(MTT_THEME_PATH. 'footer.php');
 }
+
+class MTTVars {
+    static string $requestedUsername = '';
+    static int $requestedUserId = 0;
+}
+
