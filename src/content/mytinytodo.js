@@ -3188,7 +3188,7 @@ function updateAccessStatus()
     else {
         $('#mtt').addClass('no-need-auth');
     }
-    if(flag.needAuth && !flag.isLogged) {
+    if (flag.needAuth && (!flag.isLogged || (mtt.options.username != '' && mtt.options.username != mtt.options.me))) {
         flag.readOnly = true;
         if (mtt.options.username != '')
             $("#bar_public").show();
