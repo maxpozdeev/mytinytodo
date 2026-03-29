@@ -45,7 +45,6 @@ require_once(MTTINC. 'common.php');
 require_once(MTTINC. 'classes.php');
 require_once(MTTINC. 'version.php');
 require_once(MTTINC. 'class.dbconnection.php');
-require_once(MTTINC. 'class.dbcore.php');
 require_once(MTTINC. 'class.config.php');
 require_once(MTTINC. 'notifications.php');
 require_once(MTTINC. 'filters.php');
@@ -174,7 +173,6 @@ function configureDbConnection()
     }
 
     DBConnection::setTablePrefix(MTT_DB_PREFIX);
-    DBCore::setDefaultInstance(new DBCore($db));
 
     if (MTT_DEBUG && defined('MTT_DEBUG_QUERY_FILE')) {
         if (!$db->setLogQueryToFile(MTT_DEBUG_QUERY_FILE)) {
