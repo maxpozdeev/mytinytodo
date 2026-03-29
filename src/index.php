@@ -27,7 +27,7 @@ else if ($path === '/go' ) {
 }
 else if ($path === '/login') {
     if (is_logged()) {
-        redirectExit( get_user_router_url() );
+        redirectExit( routerMakeUserUrl() );
     }
     page_login();
 }
@@ -167,8 +167,8 @@ function js_options()
         "mttUrl" => get_mttinfo('mtt_uri'),
         "homeUrl" => $homeUrl,
         "apiUrl" => get_mttinfo('api_url'),
-        "goPrefix" => htmlspecialchars(get_go_prefix()),
-        "routerPrefix" => htmlspecialchars(get_router_url('')),
+        "goPrefix" => htmlspecialchars(routerGetGoPrefix()),
+        "routerPrefix" => htmlspecialchars(routerMakeUrl('')),
         "tasksUrl" => get_mttinfo('tasks_uri'),
         "needAuth" => need_auth() ? true : false,
         "isLogged" => is_logged() ? true : false,

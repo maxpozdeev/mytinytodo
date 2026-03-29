@@ -394,6 +394,7 @@ function get_mttinfo($v)
  */
 function get_unsafe_mttinfo($v)
 {
+    //TODO: put to MTTVars.info
     global $_mttinfo;
     if (isset($_mttinfo[$v])) {
         return $_mttinfo[$v];
@@ -465,7 +466,7 @@ function get_unsafe_mttinfo($v)
             return $_mttinfo['username'];
         case 'tasks_uri':
             if (need_auth())
-                $_mttinfo['tasks_uri'] = get_user_router_url();
+                $_mttinfo['tasks_uri'] = routerMakeUserUrl();
             else
                 $_mttinfo['tasks_uri'] = get_unsafe_mttinfo('uri');
             return $_mttinfo['tasks_uri'];
@@ -516,10 +517,10 @@ function redirectExit(string $url)
     exit;
 }
 
-function get_router_url(string $path): string
+function routerMakeUrl(string $path): string
 {
     $prefix = get_unsafe_mttinfo('uri');
-    if (!defined('MTT_USE_REWRITE') || !MTT_USE_REWRITE) {
+    if (!MTT_USE_REWRITE) {
         return $prefix. '?_path=/'. $path;
     }
     else {
@@ -527,14 +528,14 @@ function get_router_url(string $path): string
     }
 }
 
-function router_url(string $path)
+function mtturl(string $path)
 {
-    echo htmlspecialchars(get_router_url($path));
+    echo htmlspecialchars(routerMakeUrl($path));
 }
 
-function get_user_router_url(string $path = '', string $user = ''): string
+function routerMakeUserUrl(string $path = '', string $user = ''): string
 {
-    $prefix = get_router_url('');
+    $prefix = routerMakeUrl('');
     if ($path !== '' && $path[0] !== '/')
         $path = '/'. $path;
     if ($user == '')
@@ -542,10 +543,10 @@ function get_user_router_url(string $path = '', string $user = ''): string
     return $prefix . 'u/'. $user. $path;
 }
 
-function get_go_prefix()
+function routerGetGoPrefix()
 {
     $prefix = get_unsafe_mttinfo('uri');
-    if (!defined('MTT_USE_REWRITE') || !MTT_USE_REWRITE) {
+    if (!MTT_USE_REWRITE) {
         return $prefix. '?';
     }
     else {
