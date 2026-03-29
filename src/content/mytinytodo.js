@@ -1957,8 +1957,13 @@ function saveTask(form)
     if (form.isadd.value != 0)
         return submitFullTask(form);
 
+    let duedate = $("#duedate").datepicker('getDate');
+    if (duedate) {
+        duedate = duedate.getFullYear() + '-' + (duedate.getMonth() + 1) + '-' + duedate.getDate();
+    }
+
     _mtt.db.request('editTask', {id:form.id.value, title: form.task.value, note:form.note.value,
-        prio:form.prio.value, tags:form.tags.value, duedate:form.duedate.value},
+        prio:form.prio.value, tags:form.tags.value, duedate:duedate},
         function(json) {
             if (!parseInt(json.total))
                 return;
@@ -2126,6 +2131,11 @@ function submitFullTask(form)
 {
     if(flag.readOnly) return false;
 
+    let duedate = $("#duedate").datepicker('getDate');
+    if (duedate) {
+        duedate = duedate.getFullYear() + '-' + (duedate.getMonth() + 1) + '-' + duedate.getDate();
+    }
+
     _mtt.db.request( 'fullNewTask',
         {
             list: curList.id,
@@ -2134,7 +2144,7 @@ function submitFullTask(form)
             note: form.note.value,
             prio: form.prio.value,
             tags: form.tags.value,
-            duedate: form.duedate.value
+            duedate: duedate
         },
         function(json) {
             if (!parseInt(json.total)) return;
