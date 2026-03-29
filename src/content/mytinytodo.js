@@ -107,7 +107,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
             this.__lang = lang;
             this.daysMin = this.__lang.daysMin;
             this.daysLong = this.__lang.daysLong;
-            this.monthsShort =this.__lang.monthsLong; //this.__lang.monthsShort;
+            this.monthsShort = this.__lang.monthsShort;
             this.monthsLong = this.__lang.monthsLong;
         },
 
@@ -244,7 +244,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
             else $('#search_close').show();
             if (_mtt.options.instantSearch) {
                 clearTimeout(searchTimer);
-                searchTimer = setTimeout(function(){searchTasks()}, 400);
+                searchTimer = setTimeout(function(){searchTasks()}, 300);
             }
         })
         .keydown(function(event){
@@ -902,16 +902,19 @@ var mytinytodo = window.mytinytodo = _mtt = {
 
     duedatepickerformat: function()
     {
-        if(!this.options.duedatepickerformat) return 'yy-mm-dd';
+        if (!this.options.duedatepickerformat)
+            return 'yy-mm-dd';
 
-        var s = this.options.duedatepickerformat.replace(/(.)/g, function(t,s) {
+        const s = this.options.duedatepickerformat.replace(/(.)/g, function(t,s) {
             switch(t) {
                 case 'Y': return 'yy';
                 case 'y': return 'yy';
                 case 'd': return 'dd';
                 case 'j': return 'd';
                 case 'm': return 'mm';
+                case 'M': return 'M';
                 case 'n': return 'm';
+                case ' ':
                 case '/':
                 case '.':
                 case '-': return t;
@@ -919,7 +922,8 @@ var mytinytodo = window.mytinytodo = _mtt = {
             }
         });
 
-        if(s == '') return 'yy-mm-dd';
+        if (s == '')
+            return 'yy-mm-dd';
         return s;
     },
 
@@ -985,6 +989,12 @@ var mytinytodo = window.mytinytodo = _mtt = {
 
         addTag(tagId, tag, exclude)
         {
+            //Catch 'any tag' filter
+            if (tagId == -2) {
+                tagId = -1;
+                tag = '^';
+                exclude = true
+            }
             for (const filter of this._filters) {
                 if (filter.tagId && filter.tagId == tagId)
                     return false;
@@ -1947,8 +1957,13 @@ function saveTask(form)
     if (form.isadd.value != 0)
         return submitFullTask(form);
 
+    let duedate = $("#duedate").datepicker('getDate');
+    if (duedate) {
+        duedate = duedate.getFullYear() + '-' + (duedate.getMonth() + 1) + '-' + duedate.getDate();
+    }
+
     _mtt.db.request('editTask', {id:form.id.value, title: form.task.value, note:form.note.value,
-        prio:form.prio.value, tags:form.tags.value, duedate:form.duedate.value},
+        prio:form.prio.value, tags:form.tags.value, duedate:duedate},
         function(json) {
             if (!parseInt(json.total))
                 return;
@@ -2023,6 +2038,7 @@ function loadTags(listId, callback)
         if (!parseInt(json.total)) tagsList = [];
         else tagsList = json.items;
         flag.tagsChanged = false;
+        _mtt.doAction('tagsLoaded', tagsList);
         setTagcloudContent(tagsList);
         callback();
     });
@@ -2039,7 +2055,8 @@ function setTagcloudContent(tags, isFiltered = false)
         cloud = _mtt.lang.get('noTags');
     }
     else if (!isFiltered) {
-        cloud = `<span class="tag" data-tag="^" data-tag-id="-1">${_mtt.lang.get('withoutTags')}</span>` + cloud;
+        cloud = `<span class="tag special-no-tags" data-tag="^"  data-tag-id="-1">${_mtt.lang.get('withoutTags')}</span>` +
+                `<span class="tag special-any-tag" data-tag="^^" data-tag-id="-2">${_mtt.lang.get('withAnyTag')}</span>` + cloud;
     }
     $('#tagcloudcontent').html(cloud)
 }
@@ -2114,6 +2131,11 @@ function submitFullTask(form)
 {
     if(flag.readOnly) return false;
 
+    let duedate = $("#duedate").datepicker('getDate');
+    if (duedate) {
+        duedate = duedate.getFullYear() + '-' + (duedate.getMonth() + 1) + '-' + duedate.getDate();
+    }
+
     _mtt.db.request( 'fullNewTask',
         {
             list: curList.id,
@@ -2122,7 +2144,7 @@ function submitFullTask(form)
             note: form.note.value,
             prio: form.prio.value,
             tags: form.tags.value,
-            duedate: form.duedate.value
+            duedate: duedate
         },
         function(json) {
             if (!parseInt(json.total)) return;
