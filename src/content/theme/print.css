@@ -50,7 +50,7 @@
   #footer_content { border-top:1px solid #777777; background:none; }
   #footer_content a { text-decoration:none; color:#000000; }
 
-  #tagcloudbtn { display:none; }
+  .page-title-right { display: none; }
   .mtt-notes-showhide { display:none; }
   #taskview img { display:none; }
 
