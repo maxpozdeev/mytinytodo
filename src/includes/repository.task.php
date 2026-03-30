@@ -372,6 +372,7 @@ class TaskRepo
                     $a['compl'], $task->d_completed, $a['ow'], $a['extra']] );
 
             $task->id = (int) $this->db->lastInsertId();
+            $task->ow = $a['ow'];
 
             if ($task->tagNames)
             {

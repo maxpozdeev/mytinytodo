@@ -310,7 +310,7 @@ class Task extends AbstractTask
     public ?string $duedate = null;
     public ?array $extra = null;
 
-    protected int $ow = 0;
+    public int $ow = 0;
     protected ?array $tagIds;
     public ?array $tagNames;
 
