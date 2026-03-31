@@ -10,7 +10,7 @@
       <div><input name="username" id="username" class="form-input" autocapitalize="off" autocorrect="off" required autofocus autocomplete="username"></div>
       <div class="h"><?php _e('password');?></div>
       <div><input type="password" name="password" id="password" class="form-input" autocomplete="current-password"></div>
-      <div><a href="reset">Forgot password?</a></div>
+      <div><a href="<?php mtturl('reset');?>">Forgot password?</a></div>
     </div>
     <div class="form-bottom-buttons">
       <button type="submit"><?php _e('btn_login'); ?></button>
@@ -50,7 +50,7 @@ document.getElementById('login_form').onsubmit = function(e) {
             window.location = mytinytodo.mttUrl;
         }
         else {
-            authmsg.textContent = mytinytodo.lang.get('invalidUsernameOrPassword');
+            authmsg.textContent = json.error;
             authmsg.classList.add('show');
         }
     });

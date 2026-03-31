@@ -37,6 +37,11 @@ class AuthController extends ApiController {
             updateSessionLogged(true, $u);
             $t['token'] = update_token();
             $t['logged'] = 1;
+            $t['ok'] = true;
+        }
+        else {
+            $t['ok'] = false;
+            $t['error'] = __('invalidUsernameOrPassword', true);
         }
         return $t;
     }

@@ -130,7 +130,6 @@ class Lang
             'noTags',
             'withoutTags',
             'withAnyTag',
-            'invalidUsernameOrPassword',
             'addList',
             'addListDefault',
             'renameList',

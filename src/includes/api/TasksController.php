@@ -260,10 +260,10 @@ class TasksController extends ApiController {
         }
 
         # remove lists without access granted
+        /** @var array<int,int> */
+        $listsLater = [];
         if ($lists)
         {
-            /** @var array<int,int> */
-            $listsLater = [];
             foreach ($lists as $item) {
                 $id = (int)($item['listId'] ?? 0);
                 $later = (int) ($item['later'] ?? 0);

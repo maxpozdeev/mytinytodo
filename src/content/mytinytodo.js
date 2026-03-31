@@ -3219,8 +3219,12 @@ function logout()
 {
     mtt.db.request( 'logout', {}, function(json) {
         flag.isLogged = false;
-        window.location.hash = '';
-        window.location.reload();
+        if (window.location == mtt.homeUrl) {
+            window.location.reload();
+        }
+        else {
+            window.location.assign(mtt.homeUrl);
+        }
     });
     return false;
 }
