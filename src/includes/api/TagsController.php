@@ -2,7 +2,7 @@
 
 /*
     This file is a part of myTinyTodo.
-    (C) Copyright 2022-2025 Max Pozdeev <maxpozdeev@gmail.com>
+    (C) Copyright 2022-2026 Max Pozdeev <maxpozdeev@gmail.com>
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
@@ -23,42 +23,32 @@ class TagsController extends ApiController {
         if ($listId != -1)
             $sqlWhere .= " AND t2t.list_id = $listId";
 
-        $q = $db->dq("SELECT name, tag_id, COUNT(tag_id) AS tags_count
+        $q = $db->dq("SELECT DISTINCT tag_id, name
                       FROM {$db->prefix}tag2task AS t2t INNER JOIN {$db->prefix}tags AS tags ON tag_id = id
                       $sqlWhere
-                      GROUP BY tag_id, name
-                      ORDER BY tags_count DESC");
-        $at = array();
-        $ac = array();
+                      ORDER BY name ASC");
+        $aTags = array();
         while ($r = $q->fetchAssoc()) {
-            $at[] = array(
+            $aTags[] = array(
                 'name' => $r['name'],
                 'id' => $r['tag_id']
             );
-            $ac[] = (int) $r['tags_count'];
         }
 
         $t = array();
         $t['total'] = 0;
-        $count = count($at);
+        $count = count($aTags);
         if (!$count) {
             $this->response->data = $t;
             return;
         }
 
-        $qmax = max($ac);
-        $qmin = min($ac);
-        if ($count >= 10) $grades = 10;
-        else $grades = $count;
-        $step = ($qmax - $qmin)/$grades;
-        foreach ($at as $i => $tag)
+        foreach ($aTags as $tag)
         {
             $t['items'][] = array(
                 'tag' => htmlspecialchars($tag['name']),
                 'tagText' => (string)$tag['name'],
                 'id' => (int)$tag['id'],
-                'count' => $ac[$i],
-                'w' => $this->tagWeight($qmin, $ac[$i], $step)
             );
         }
         $t['total'] = $count;
@@ -88,14 +78,5 @@ class TagsController extends ApiController {
         }
         $this->response->data = $t;
     }
-
-    private function tagWeight(int $qmin, int $q, float $step): float
-    {
-        if ($step == 0) return 1.0;
-        $v = ceil(($q - $qmin)/$step);
-        if ($v == 0) return 0.0;
-        else return $v - 1.0;
-    }
-
 
 }

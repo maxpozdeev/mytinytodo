@@ -2177,7 +2177,8 @@ function addEditTag(tag)
 
 function loadTags(listId, callback)
 {
-    if (flag.showTagsFromAllLists) listId = -1;
+    if (flag.showTagsFromAllLists)
+        listId = -1;
     mtt.db.request('tagCloud', {list:listId}, function(json){
         if (!parseInt(json.total)) tagsList = [];
         else tagsList = json.items;
