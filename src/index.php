@@ -20,6 +20,9 @@ if ($path === '/') {
     //     # redirect to /u/<username> ?
     //     redirectExit(get_user_router_url(''));
     // }
+    if (!is_logged()) {
+        redirectExit(routerMakeUrl('login', 'ret=home'));
+    }
     page_tasks();
 }
 else if ($path === '/go' ) {
@@ -59,9 +62,12 @@ foreach ($endpoints as $search => $methods) {
 
 function getIndexPath(): string
 {
-    if (!defined('MTT_USE_REWRITE') || !MTT_USE_REWRITE) {
-        if (isset($_GET['_path'])) {
-            return $_GET['_path'];
+    if (!MTT_USE_REWRITE) {
+        if (isset($_GET['p'])) {
+            $path = $_GET['p'];
+            if ($path == '' || $path[0] != '/')
+                return '/'. $path;
+            return $path;
         }
         else if ('' !== ($_SERVER['QUERY_STRING'] ?? '')) {
             return '/go'; #hack
@@ -88,7 +94,7 @@ function handleGoRoute(?string $queryString = null)
         redirectExit(get_unsafe_mttinfo('url'));
 
     parse_str($queryString, $q);
-    unset($q['_path']);
+    unset($q['p']);
 
 /*
     if (isset($q['user'])) {

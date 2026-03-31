@@ -517,14 +517,14 @@ function redirectExit(string $url)
     exit;
 }
 
-function routerMakeUrl(string $path): string
+function routerMakeUrl(string $path, ?string $qs = null): string
 {
     $prefix = get_unsafe_mttinfo('uri');
     if (!MTT_USE_REWRITE) {
-        return $prefix. '?_path=/'. $path;
+        return $prefix. '?p='. $path. ($qs !== null ? '&'. $qs : '');
     }
     else {
-        return $prefix. $path;
+        return $prefix. $path. ($qs !== null ? '?'. $qs : '');
     }
 }
 
