@@ -731,26 +731,20 @@ const mtt = window.mytinytodo = {
 
 
         // Settings
-        $(document).on('click', 'a[data-settings-link]', function(event) {
-            var settingsPage = this.dataset.settingsLink;
-            if (settingsPage == 'index') {
-                showSettings( (event.metaKey || event.ctrlKey) ? 1 : 0 );
-            }
-            else if (settingsPage == 'ext-activate' || settingsPage == 'ext-deactivate') {
-                activateExtension(settingsPage == 'ext-activate' ? true : false, this.dataset.ext);
-            }
-            else if (settingsPage == 'ext-index') {
-                showExtensionSettings(this.dataset.ext);
+        $(document).on('click', 'a[data-settings-action]', function(event) {
+            const action = this.dataset.settingsAction;
+            if (action == 'ext-activate' || action == 'ext-deactivate') {
+                activateExtension(action == 'ext-activate' ? true : false, this.dataset.ext);
             }
             return false;
         });
 
-        $("#page_ajax").on('submit', '#settings_form', function() {
+        $("#settings_container").on('submit', 'form', function() {
             saveSettings(this);
             return false;
         });
 
-        $("#page_ajax").on('submit', '#ext_settings_form', function() {
+        $("#settings_container").on('submit', '#ext_settings_form', function() {
             saveExtensionSettings(this);
             return false;
         });
@@ -767,7 +761,7 @@ const mtt = window.mytinytodo = {
             }
         });
 
-        $("#page_ajax").on('click', 'a[data-ext-settings-action],button[data-ext-settings-action]', function() {
+        $("#page_settings").on('click', 'a[data-ext-settings-action],button[data-ext-settings-action]', function() {
             extensionSettingsAction(this.dataset.extSettingsAction, this.dataset.ext);
             return false;
         });
@@ -1193,8 +1187,8 @@ const mtt = window.mytinytodo = {
 
     urlForSettings: function(json = 0)
     {
-        if (json == 1) return '#settings.json';
-        return '#settings';
+        if (json == 1) return mtt.routerPrefix + 'settings/general'; // + .json
+        return mtt.routerPrefix + 'settings/general';
     },
 
     urlForExtSettings: function(ext)
@@ -3185,16 +3179,7 @@ function hideAlert()
 function updateAccessStatus()
 {
     // flag.needAuth is not changed after pageload
-    if(flag.needAuth)
-    {
-        if (flag.isLogged) {
-            showhide( $("#logout_btn"), $("#login_btn") );
-        }
-        else {
-            showhide( $("#login_btn"), $("#logout_btn") );
-        }
-    }
-    else {
+    if (!flag.needAuth) {
         $('#mtt').addClass('no-need-auth');
     }
     if (flag.needAuth && (!flag.isLogged || (mtt.options.username != '' && mtt.options.username != mtt.options.me))) {
@@ -3237,71 +3222,60 @@ function logout()
 
 function showSettings(json = 0)
 {
-    let reload = false;
-    if (mtt.pages.current && mtt.pages.current.page == 'ajax' && mtt.pages.current.pageClass == 'settings') {
-        reload = true;
-    }
-    const jsonParam = (json == 1) ? '&json=1' : '';
-    $('#page_ajax').load(mtt.mttUrl + 'settings.php?ajax=yes' + jsonParam, null, function(){
-        if (!reload) {
-            mtt.pageSet('ajax','settings');
-            const newTitle = mtt.lang.get('set_header') + ' - ' + mtt.options.title;
-            updateHistoryState( { settings:1, settingsJson:json }, mtt.urlForSettings(json), newTitle );
-            mtt.doAction('settingsLoaded');
-        }
-    })
+    window.location.assign(mtt.urlForSettings(json));
 }
 
 function saveSettings(frm)
 {
-    if(!frm) return false;
-    var params = { save:'ajax' };
-    $(frm).find("input:hidden,input:text,input:password,input:checked,select,textarea").filter(":enabled").each(function() { params[this.name || '__'] = this.value; });
+    if (!frm)
+        return false;
+    const params = { save:'ajax' };
+    if (frm.dataset.ext)
+        params['ext'] = frm.dataset.ext;
+    $(frm).find("input:hidden,input:text,input:password,input:checked,select,textarea").filter(":enabled").each(function() {
+        params[this.name || '__'] = this.value;
+    });
     $(frm).find(":submit").attr('disabled','disabled').blur();
-    $.post(mtt.mttUrl+'settings.php', params, function(json){
-        if(json.saved) {
-            flashInfo(mtt.lang.get('settingsSaved'));
-            setTimeout( function(){
-                window.location.assign(mtt.homeUrl); //window.location.reload();
-            }, 1000);
+    $.post(frm.action, params, function(json){
+        $(frm).find(":submit").removeAttr('disabled');
+        if (json.msg) {
+            flashInfo(json.msg);
         }
     }, 'json');
 }
 
 function activateExtension(activate, ext)
 {
-    var params = {
+    const params = {
         'activate': activate ? 1 : 0,
         'ext': ext
     }
-    $.post(mtt.mttUrl+'settings.php', params, function(json){
-        if(json.saved) {
-            flashInfo(mtt.lang.get('settingsSaved'));
-            showSettings(0);
-        }
+    $.post(mtt.routerPrefix+'settings/extensions', params, function(json){
+        window.location.reload();
     }, 'json');
 }
 
 function showExtensionSettings(ext, callback, reload)
 {
-    if (mtt.pages.current && mtt.pages.current.page == 'ajax' && mtt.pages.current.pageClass == 'settings') {
-        $('#page_ajax').load(mtt.apiUrl + 'ext-settings/' + ext, null, function() {
-            if (callback) callback();
-            if (!reload) {
-                mtt.pageSet('ajax','settings');
-                const newTitle = `${ext} - ${mtt.lang.get('set_header')} - ${mtt.options.title}`;
-                replaceHistoryState('extSettings', { extSettings:true, ext:ext }, mtt.urlForExtSettings(ext), newTitle );
-            }
-        });
-    }
+    $('#settings_content').load(mtt.apiUrl + 'ext-settings/' + ext, null, function() {
+        if (callback) callback();
+        if (!reload) {
+            mtt.pageSet('ajax','settings');
+            const newTitle = `${ext} - ${mtt.lang.get('set_header')} - ${mtt.options.title}`;
+            replaceHistoryState('extSettings', { extSettings:true, ext:ext }, mtt.urlForExtSettings(ext), newTitle );
+        }
+    });
 }
 
 function saveExtensionSettings(frm)
 {
-    if (!frm) return false;
-    var ext = frm.dataset.ext;
-    var params = {};
-    $(frm).find("input:hidden,input:text,input:password,input:checked,select,textarea").filter(":enabled").each(function() { params[this.name || '__'] = this.value; });
+    if (!frm)
+        return false;
+    const ext = frm.dataset.ext;
+    const params = {};
+    $(frm).find("input:hidden,input:text,input:password,input:checked,select,textarea").filter(":enabled").each(function() {
+        params[this.name || '__'] = this.value;
+    });
     $.ajax({
         url: mtt.apiUrl + 'ext-settings/' + ext,
         method: 'PUT',
@@ -3334,7 +3308,7 @@ function extensionSettingsAction(actionString, ext, formData)
                 return;
             }
             if (json.html) {
-                $('#page_ajax .mtt-settings-table').html(json.html); //FIXME: maybe whole page?
+                $('#settings_content .mtt-settings-table').html(json.html); //FIXME: maybe whole page?
                 return;
             }
             if (json.alertText) {

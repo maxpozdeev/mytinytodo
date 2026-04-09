@@ -241,6 +241,11 @@ function username(): ?string
     return (string)$_SESSION['username'];
 }
 
+function is_admin(): bool
+{
+    return (userId() === 1);
+}
+
 function updateSessionLogged( bool $logged,
     #[\SensitiveParameter]
     ?array $user = null )
@@ -530,7 +535,12 @@ function routerMakeUrl(string $path, ?string $qs = null): string
 
 function mtturl(string $path)
 {
-    echo htmlspecialchars(routerMakeUrl($path));
+    echo get_mtturl($path);
+}
+
+function get_mtturl(string $path, ?string $qs = null): string
+{
+    return htmlspecialchars(routerMakeUrl($path, $qs));
 }
 
 function routerMakeUserUrl(string $path = '', string $user = ''): string

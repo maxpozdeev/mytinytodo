@@ -13,33 +13,7 @@ if ( access_token() == '' ) {
     update_token();
 }
 
-$path = getIndexPath();
-
-if ($path === '/') {
-    // if (is_logged()) {
-    //     # redirect to /u/<username> ?
-    //     redirectExit(get_user_router_url(''));
-    // }
-    if (!is_logged()) {
-        redirectExit(routerMakeUrl('login', 'ret=home'));
-    }
-    page_tasks();
-}
-else if ($path === '/go' ) {
-    handleGoRoute($_SERVER['QUERY_STRING'] ?? '');
-}
-else if ($path === '/login') {
-    if (is_logged()) {
-        redirectExit( routerMakeUserUrl() );
-    }
-    page_login();
-}
-else if (preg_match("#^/u/([^/]+)(.*)#", $path, $m)) {
-    handleUser($m[1], $m[2]);
-}
-else {
-    page_404();
-}
+parseRoute( getIndexPath() );
 
 MTTNotificationCenter::postDidFinishRequestNotification();
 
@@ -59,6 +33,37 @@ foreach ($endpoints as $search => $methods) {
 
 // end
 
+function parseRoute(string $path)
+{
+    if ($path === '/') {
+        // if (is_logged()) {
+        //     # redirect to /u/<username> ?
+        //     redirectExit(get_user_router_url(''));
+        // }
+        if (!is_logged()) {
+            redirectExit(routerMakeUrl('login', 'ret=home'));
+        }
+        page_tasks();
+    }
+    else if ($path === '/login') {
+        if (is_logged()) {
+            redirectExit( routerMakeUserUrl() );
+        }
+        page_login();
+    }
+    else if (preg_match("#^/settings/([^/]+)$#", $path, $m)) {
+        handleSettings($m[1]);
+    }
+    else if ($path === '/go' ) {
+        handleGoRoute($_SERVER['QUERY_STRING'] ?? '');
+    }
+    else if (preg_match("#^/u/([^/]+)(.*)#", $path, $m)) {
+        handleUser($m[1], $m[2]);
+    }
+    else {
+        page_404();
+    }
+}
 
 function getIndexPath(): string
 {
@@ -236,6 +241,17 @@ function page_404()
     print "<h1>Page Not Found</h1>";
 }
 
+function page_403()
+{
+    http_response_code(403);
+    print "<h1>Forbidden</h1>";
+}
+
+function page_500()
+{
+    http_response_code(500);
+    print "<h1>Error. See details in logs.</h1>";
+}
 
 function page_login()
 {
@@ -251,8 +267,60 @@ function page_tasks()
     require_once(MTT_THEME_PATH. 'footer.php');
 }
 
+
+function mtt_settings_page_url()
+{
+    echo get_mtturl(MTTVars::$settingsPage);
+}
+
+function mtt_get_settings_page_url(): string
+{
+    return get_mtturl(MTTVars::$settingsPage);
+}
+
+function handleSettings(string $page)
+{
+    if (!is_logged()) {
+        return page_403();
+    }
+    if (!is_admin()) {
+        return page_403();
+    }
+
+    static $pages = [
+        'general' => 'general.php',
+        'extensions' => 'extensions.php',
+        'ext-settings' => 'ext-settings.php',
+    ];
+    if (!isset($pages[$page])) {
+        return page_404();
+    }
+    MTTVars::$settingsPage = 'settings/'. $page;
+    MTTVars::$settingsPageFile = MTTINC. 'settings/'. $pages[$page];
+    define('MTT_PAGE', MTTVars::$settingsPageFile);
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        require_once(MTTVars::$settingsPageFile);
+        exit();
+    }
+    require_once(MTT_THEME_PATH. 'header.php');
+    require_once(MTTINC. 'settings/settings.php');
+    require_once(MTT_THEME_PATH. 'footer.php');
+}
+
 class MTTVars {
     static string $requestedUsername = '';
     static int $requestedUserId = 0;
+    static string $settingsPage;
+    static string $settingsPageFile;
 }
 
+function isLoggedUserArea() : bool
+{
+    if (!is_logged())
+        return false;
+    if (MTTVars::$requestedUserId == 0)
+        return true;
+    if (MTTVars::$requestedUserId == userId())
+        return true;
+    return false;
+}

@@ -57,8 +57,8 @@ $().ready(function(){
     <div class="bar-menu">
       <span id="bar_public" style="display:none" class="mtt-need-auth-enabled"><?php _e('public_tasks');?></span>
     <?php if (is_logged()): ?>
-      <a href="#settings" class="mtt-only-authorized" data-settings-link="index"><?php _e('a_settings');?></a>
-      <a href="#logout" id="logout_btn" class="mtt-need-auth-enabled" style="display:none" ><?php _e('a_logout');?></a>
+      <a href="<?php mtturl('settings/general'); ?>" class="mtt-only-authorized"><?php _e('a_settings');?></a>
+      <a href="#logout" id="logout_btn" class="mtt-need-auth-enabled" ><?php _e('a_logout');?></a>
       <a href="<?php mttinfo('tasks_uri'); ?>" id="bar_username"  class="mtt-only-authorized"><?php mttinfo('username') ?></a>
     <?php else: ?>
       <a href="<?php mtturl('login'); ?>"  id="login_btn"  class="mtt-need-auth-enabled"><?php _e('a_login');?></a>

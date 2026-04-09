@@ -1265,6 +1265,25 @@ li.mtt-item-hidden { display:none; }
   font-family: ui-monospace,Consolas,"SF Mono",Menlo,"Liberation Mono",monospace;
 }
 
+#page_settings h4 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 1rem 0;
+}
+#settings_container {
+  display: flex;
+}
+
+#settings_menu {
+  flex-grow:1;
+  min-width: 100px;
+}
+
+#settings_content {
+  flex-grow:5;
+  max-width:850px;
+}
+
 .mtt-settings-table {
   width:100%;
 }
@@ -1550,6 +1569,10 @@ li.mtt-item-hidden { display:none; }
     border-bottom: 2px solid var(--color-tasklist-row-expanded-border);
   }
 
+  #settings_container {
+    flex-wrap: wrap;
+    flex-direction: column;
+  }
   .mtt-settings-table .tr:not(.form-bottom-buttons) {
     display: block;
     background-color:var(--color-settings-row);
