@@ -428,7 +428,7 @@ function get_unsafe_mttinfo($v)
             $_mttinfo['uri'] = url_dir( get_unsafe_mttinfo('url') );
             return $_mttinfo['uri'];
         case 'mtt_url':
-            /* Directory with settings.php. No need to set if you use default directory structure. */
+            /* Directory with api.php. No need to set if you use default directory structure. */
             $_mttinfo['mtt_url'] = Config::getUrl('mtt_url'); // need to have a trailing slash
             if ($_mttinfo['mtt_url'] == '') {
                 $_mttinfo['mtt_url'] = url_dir( get_unsafe_mttinfo('url'), false );
