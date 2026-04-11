@@ -243,6 +243,21 @@ const mtt = window.mytinytodo = {
         }
 
         // handlers
+        $('#usermenu').click(function(){
+            if (!mtt.menus.usermenu) mtt.menus.usermenu = new mttMenu('usermenucontainer', {
+                alignRight: true,
+                onclick: function(el, menu){
+                    if (el.id === 'usermenu--logout') return logout();
+                    const href = $(el).find('a').attr('href');
+                    console.log(href)
+                    if (href) window.location.assign(href); //workaround for edge cases with links in mttMenu
+                    //return true;
+                }
+            });
+            mtt.menus.usermenu.show(this);
+        });
+
+
         $('.mtt-tabs-new-button').click(function(){
             addList();
         });
@@ -720,13 +735,6 @@ const mtt = window.mytinytodo = {
         // Error Message details
         $("#msg>.msg-text").click(function(){
             $("#msg>.msg-details").toggle();
-        });
-
-
-        // Authentication
-        $('#logout_btn').click(function(){
-            logout();
-            return false;
         });
 
 

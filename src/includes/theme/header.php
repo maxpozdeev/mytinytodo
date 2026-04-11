@@ -57,9 +57,7 @@ $().ready(function(){
     <div class="bar-menu">
       <span id="bar_public" style="display:none" class="mtt-need-auth-enabled"><?php _e('public_tasks');?></span>
     <?php if (is_logged()): ?>
-      <a href="<?php mtturl('settings/general'); ?>" class="mtt-only-authorized"><?php _e('a_settings');?></a>
-      <a href="#logout" id="logout_btn" class="mtt-need-auth-enabled" ><?php _e('a_logout');?></a>
-      <a href="<?php mttinfo('tasks_uri'); ?>" id="bar_username"  class="mtt-only-authorized"><?php mttinfo('username') ?></a>
+      <span id="usermenu" class="mtt-menu-button"><?php mttinfo('username') ?> <span class="arrdown2"></span></span>
     <?php else: ?>
       <a href="<?php mtturl('login'); ?>"  id="login_btn"  class="mtt-need-auth-enabled"><?php _e('a_login');?></a>
     <?php endif; ?>
@@ -69,3 +67,14 @@ $().ready(function(){
 </div>
 <!-- End of Top block -->
 
+<div id="usermenucontainer" class="mtt-menu-container" style="display:none">
+<ul>
+  <li><a href="<?php mttinfo('tasks_uri'); ?>"><?php _e('tasks');?></a></li>
+  <?php if (is_admin()) { ?>
+    <li class="mtt-menu-delimiter"></li>
+    <li><a href="<?php mtturl('settings/general'); ?>"><?php _e('a_controlpanel');?></a></li>
+  <?php } ?>
+  <li class="mtt-menu-delimiter"></li>
+  <li id="usermenu--logout"><a href="#logout"><?php _e('a_logout');?></a></li>
+</ul>
+</div>

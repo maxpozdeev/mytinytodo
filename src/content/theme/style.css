@@ -245,7 +245,7 @@ h3.page-title .page-title-right {
   flex-grow:1;
   display:flex;
   justify-content:flex-end;
-  text-align:right;
+  align-items:center;
   white-space: nowrap;
 }
 .bar-menu > * {
