@@ -21,7 +21,7 @@ exit;
 
 /*
 $endpoints = array(
-    '/u/([^/]+)' => [
+    '/@([^/]+)' => [
         'GET' => [] # User tasks
     ]
 );
@@ -37,7 +37,7 @@ function parseRoute(string $path)
 {
     if ($path === '/') {
         // if (is_logged()) {
-        //     # redirect to /u/<username> ?
+        //     # redirect to /@<username> ?
         //     redirectExit(get_user_router_url(''));
         // }
         if (!is_logged()) {
@@ -57,7 +57,7 @@ function parseRoute(string $path)
     else if ($path === '/go' ) {
         handleGoRoute($_SERVER['QUERY_STRING'] ?? '');
     }
-    else if (preg_match("#^/u/([^/]+)(.*)#", $path, $m)) {
+    else if (preg_match("#^/@([^/]+)(.*)#", $path, $m)) {
         handleUser($m[1], $m[2]);
     }
     else {

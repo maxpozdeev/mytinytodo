@@ -550,7 +550,7 @@ function routerMakeUserUrl(string $path = '', string $user = ''): string
         $path = '/'. $path;
     if ($user == '')
         $user = username();
-    return $prefix . 'u/'. $user. $path;
+    return $prefix . '@'. $user. $path;
 }
 
 function routerGetGoPrefix()
