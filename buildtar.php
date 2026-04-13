@@ -7,6 +7,10 @@ if ( !isset($argv) || !isset($argv[1]) ) {
     die("Usage: buildtar.php <path_to_repo> [-o source.tar.gz] [-v VERSION]\n");
 }
 
+if (PHP_OS_FAMILY === 'Darwin') {
+    putenv("COPYFILE_DISABLE=1"); # --no-mac-metadata
+}
+
 $repo = $argv[1];
 $dir = sys_get_temp_dir(). DIRECTORY_SEPARATOR. "mytinytodo.build";
 $curdir = getcwd();
@@ -24,7 +28,7 @@ while ($arg = next($argv))
 }
 
 deleteTreeIfDir($dir);
-$out = `git clone $repo $dir 2>&1`;
+$out = shell_exec("git clone $repo $dir 2>&1");
 if (!is_dir($dir)) {
     die("Error while clone: $out\n");
 }
@@ -36,7 +40,7 @@ if (!$ver) {
     $ver = mytinytodo\Version::VERSION;
 }
 chdir($dir. DIRECTORY_SEPARATOR. 'src');
-$rev = trim(`git show --format=format:%H --summary`);
+$rev = trim(shell_exec("git show --format=format:%H --summary"));
 $rev = substr($rev, 0, 8);
 ##$ver = str_replace('@REV', $rev, $ver);
 print "> Version is $ver\n";
@@ -44,7 +48,7 @@ print "> Version is $ver\n";
 unlink('./docker-config.php');
 unlink('./includes/lang/en-rtl.json');
 unlink('./includes/lang/_percent.php');
-unlink('./mtt-edit-settings.php');
+unlink('./mtt-cmd.php');
 unlink('./mtt-emergency.php');
 unlink('./content/theme/images/svg2base64.php');
 
@@ -56,6 +60,8 @@ $retval = 0;
 if (false === system( "./composer.sh install --no-dev --no-interaction --optimize-autoloader", $retval) || $retval != 0) {
     die("Failed to install composer libs via docker\n");
 }
+
+unlink('./src/includes/vendor/erusev/parsedown/.github');
 
 # ext
 if (is_dir('src/ext')) {
@@ -72,7 +78,7 @@ if (is_dir('src/ext')) {
     }
     chdir('../ext2');
     if ($extCount > 0) {
-        `tar --no-xattrs -czf ../ext/extensions.tar.gz *`;  #OS dep.!!!
+        shell_exec("tar --no-xattrs -czf ../ext/extensions.tar.gz *");  #OS dep.!!!
     }
     chdir('../..');
     deleteTreeIfDir('src/ext2');
@@ -82,7 +88,7 @@ if (is_dir('src/ext')) {
 
 rename('src', 'mytinytodo') or die("Cant rename 'src'\n");
 
-`tar --no-xattrs -czf mytinytodo.tar.gz mytinytodo`;  #OS dep.!!!
+shell_exec("tar --no-xattrs -czf mytinytodo.tar.gz mytinytodo");  #OS dep.!!!
 if (!file_exists('mytinytodo.tar.gz')) {
     die("Failed to pack files (no output tar.gz file)\n");
 }
