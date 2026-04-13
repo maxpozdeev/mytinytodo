@@ -18,7 +18,7 @@ class MTTParsedownWrapper implements MTTMarkdownInterface
     {
         $this->converter = new MTTParsedown();
         $this->converter->setSafeMode(true);
-        //$this->converter->setBreaksEnabled(true);
+        $this->converter->setBreaksEnabled(true);
     }
 
     public function convert(string $s, bool $toExternal = false): string
