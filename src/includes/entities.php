@@ -323,7 +323,7 @@ class Task extends AbstractTask
         $entity->id = (int)$a['id'];
         $entity->uuid = (string)$a['uuid'];
         $entity->listId = (int)$a['list_id'];
-        $entity->parentId = $a['parent_id'];
+        $entity->parentId = (int)$a['parent_id'];
         $entity->title = (string)$a['title'];
         $entity->note = (string)$a['note'];
         $entity->d_created = (int)$a['d_created'];

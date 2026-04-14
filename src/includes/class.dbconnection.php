@@ -122,7 +122,7 @@ abstract class AbstractDatabase
                 }
                 # execution time of last query
                 if ($this->lastQueryFinish)
-                    $time = "+". number_format( ($this->lastQueryFinish - $this->lastQueryStart) / 1_000_000_000, 3, '.'). " ";
+                    $time = "+". number_format( ($this->lastQueryFinish - $this->lastQueryStart) / 1_000_000_000, 3, '.', ''). " ";
                 else
                     $time = 'Error ';
 
