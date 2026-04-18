@@ -729,12 +729,12 @@ function createSqliteTables(AbstractDatabase $db)
     d_completed INTEGER UNSIGNED NOT NULL default 0,
     d_edited INTEGER UNSIGNED NOT NULL default 0,
     compl TINYINT UNSIGNED NOT NULL default 0,
-    title VARCHAR(250) NOT NULL default '' COLLATE UTF8CI,
-    note TEXT COLLATE UTF8CI default NULL,
+    title VARCHAR(250) NOT NULL default '',
+    note TEXT default NULL,
     prio TINYINT NOT NULL default 0,
     ow INTEGER NOT NULL default 0,
     duedate DATE default NULL,
-    extra TEXT
+    extra TEXT default NULL
 ) ");
     $db->ex("CREATE INDEX todo_list_id ON {$db->prefix}todolist (list_id)");
     $db->ex("CREATE UNIQUE INDEX todo_uuid ON {$db->prefix}todolist (uuid)");
@@ -744,9 +744,8 @@ function createSqliteTables(AbstractDatabase $db)
 "CREATE TABLE {$db->prefix}tags (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER UNSIGNED NOT NULL default 0,
-    name VARCHAR(250) NOT NULL DEFAULT '' COLLATE UTF8CI
+    name VARCHAR(250) NOT NULL DEFAULT ''
 ) ");
-    $db->ex("CREATE INDEX tags_name ON {$db->prefix}tags (name)"); //NB: unique in mysql
     $db->ex("CREATE INDEX tags_user_id ON {$db->prefix}tags (user_id)");
 
 
@@ -917,14 +916,48 @@ function update_18_20(AbstractDatabase $db, $dbtype)
     }
     else if ($dbtype == 'sqlite')
     {
-        $db->ex("ALTER TABLE {$db->prefix}todolist ADD parent_id INTEGER UNSIGNED NOT NULL default 0");
-        $db->ex("ALTER TABLE {$db->prefix}todolist ADD extra TEXT");
-
         $db->ex("ALTER TABLE {$db->prefix}lists ADD user_id INTEGER UNSIGNED NOT NULL default 0");
         $db->ex("CREATE INDEX lists_user_id ON {$db->prefix}lists (user_id)");
 
-        $db->ex("ALTER TABLE {$db->prefix}tags ADD user_id INTEGER UNSIGNED NOT NULL default 0");
+        // todolist: remove collation from title and note column; add parent_id and extra columns
+        $db->ex("DROP INDEX todo_list_id");
+        $db->ex("DROP INDEX todo_uuid");
+        $db->ex("ALTER TABLE {$db->prefix}todolist RENAME TO {$db->prefix}todolist_old");
+        $db->ex(
+    "CREATE TABLE {$db->prefix}todolist (
+        id INTEGER PRIMARY KEY,
+        uuid CHAR(36) NOT NULL default '',
+        list_id INTEGER UNSIGNED NOT NULL default 0,
+        parent_id INTEGER UNSIGNED NOT NULL default 0,
+        d_created INTEGER UNSIGNED NOT NULL default 0,
+        d_completed INTEGER UNSIGNED NOT NULL default 0,
+        d_edited INTEGER UNSIGNED NOT NULL default 0,
+        compl TINYINT UNSIGNED NOT NULL default 0,
+        title VARCHAR(250) NOT NULL default '',
+        note TEXT default NULL,
+        prio TINYINT NOT NULL default 0,
+        ow INTEGER NOT NULL default 0,
+        duedate DATE default NULL,
+        extra TEXT default NULL
+    ) ");
+        $db->ex("INSERT INTO {$db->prefix}todolist SELECT id,uuid,list_id,0,d_created,d_completed,d_edited,compl,title,note,prio,ow,duedate,null FROM {$db->prefix}todolist_old");
+        $db->ex("CREATE INDEX todo_list_id ON {$db->prefix}todolist (list_id)");
+        $db->ex("CREATE UNIQUE INDEX todo_uuid ON {$db->prefix}todolist (uuid)");
+        $db->ex("DROP TABLE {$db->prefix}todolist_old");
+
+        // tags: remove collation from name column; add user_id column
+        $db->ex("DROP INDEX tags_name");
+        $db->ex("ALTER TABLE {$db->prefix}tags RENAME TO {$db->prefix}tags_old");
+        $db->ex(
+            "CREATE TABLE {$db->prefix}tags (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER UNSIGNED NOT NULL default 0,
+                name VARCHAR(250) NOT NULL DEFAULT ''
+            ) ");
+        $db->ex("INSERT INTO {$db->prefix}tags SELECT id,0,name FROM {$db->prefix}tags_old");
+        $db->ex("DROP TABLE {$db->prefix}tags_old");
         $db->ex("CREATE INDEX tags_user_id ON {$db->prefix}tags (user_id)");
+
 
         $db->ex(
             "CREATE TABLE {$db->prefix}users (

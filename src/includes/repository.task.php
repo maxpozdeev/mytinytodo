@@ -107,6 +107,7 @@ class TaskRepo
         }
 
         # Sort
+        $collate = ($this->db::DBTYPE === DBConnection::DBTYPE_SQLITE) ? "COLLATE UTF8CI" : "";
         $sqlSort = "ORDER BY compl ASC, ";
         if ($sort == self::SORT_MANUAL)
                                                         $sqlSort .= "ow ASC";
@@ -129,11 +130,12 @@ class TaskRepo
         elseif ($sort == self::SORT_DATE_EDITED_REVERSE)
                                                         $sqlSort .= "d_edited DESC, prio ASC, ow DESC";
         elseif ($sort == self::SORT_TITLE)
-                                                        $sqlSort .= "title ASC, prio DESC, ow ASC";
+                                                        $sqlSort .= "title $collate ASC, prio DESC, ow ASC";
         elseif ($sort == self::SORT_TITLE_REVERSE)
-                                                        $sqlSort .= "title DESC, prio ASC, ow DESC";
+                                                        $sqlSort .= "title $collate DESC, prio ASC, ow DESC";
         elseif ($sort == self::SORT_FIELD_ID)           $sqlSort .= "todo.id DESC";
-        elseif ($sort == self::SORT_FIELD_TITLE)        $sqlSort .= "title ASC";
+        elseif ($sort == self::SORT_FIELD_TITLE)
+                                                        $sqlSort .= "title $collate ASC";
         elseif ($sort == self::SORT_FIELD_CREATED)      $sqlSort .= "d_created DESC";
         elseif ($sort == self::SORT_FIELD_COMPLETED)    $sqlSort .= "d_completed DESC";
         elseif ($sort == self::SORT_FIELD_EDITED)       $sqlSort .= "d_edited DESC";

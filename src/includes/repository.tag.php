@@ -68,7 +68,8 @@ class TagRepo
         $tag = new Tag();
         $tag->name = $name;
         $tag->userId = $userId;
-        $tag->id = (int) $this->db->sq("SELECT id FROM {$this->db->prefix}tags WHERE user_id=? AND name=?", [$userId, $name]);
+        $collate = ($this->db::DBTYPE === DBConnection::DBTYPE_SQLITE) ? "COLLATE UTF8CI" : "";
+        $tag->id = (int) $this->db->sq("SELECT id FROM {$this->db->prefix}tags WHERE user_id=? AND name=? $collate", [$userId, $name]);
         if (!$tag->id) {
             $this->db->ex("INSERT INTO {$this->db->prefix}tags (user_id,name) VALUES (?,?)", [$userId, $name]);
             $tag->id = (int) $this->db->lastInsertId();
