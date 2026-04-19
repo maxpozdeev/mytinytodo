@@ -58,6 +58,8 @@ class SqliteDatabase extends AbstractDatabase
 {
     const DBTYPE = 'sqlite';
 
+    protected static array $readonlyProps = ['prefix', 'lastQuery', 'orderCollation', 'equalCollation'];
+
     /** @var PDO|\Pdo\Sqlite */
     protected $dbh;
 
@@ -65,13 +67,20 @@ class SqliteDatabase extends AbstractDatabase
     protected $affected = 0;
 
     /** @var bool */
-    protected $useNormalizedUtf8 = true;
+    protected $useNormalizedSearch = true;
+
+    protected string $orderCollation = 'UTF8CI';
+    protected string $equalCollation = 'UTF8CI';
+
 
     function __construct(?array $params = null)
     {
         if (is_array($params)) {
-            if (isset($params['useNormalizedUtf8'])) {
-                $this->useNormalizedUtf8 = boolval($params['useNormalizedUtf8']);
+            if (isset($params['useNormalizedSearch'])) {
+                $this->useNormalizedSearch = boolval($params['useNormalizedSearch']);
+            }
+            if ( $params['useNormalizedOrder'] ?? false ) {
+                $this->orderCollation = 'UTF8CI_NORMALIZED';
             }
         }
     }
@@ -200,7 +209,7 @@ class SqliteDatabase extends AbstractDatabase
     function like(string $column, string $format, string $string): string
     {
         $column = str_replace('"', '""', $column);
-        if ($this->useNormalizedUtf8) {
+        if ($this->useNormalizedSearch) {
             return 'utf8_normalized_lower("'. $column. '") LIKE '. $this->quoteForLike($format, $this->utf8_normalized_lower($string));
         }
         return 'utf8_lower("'. $column. '") LIKE '. $this->quoteForLike($format, $this->utf8_lower($string));
@@ -209,7 +218,7 @@ class SqliteDatabase extends AbstractDatabase
     function ciEquals(string $column, string $value): string
     {
         $column = str_replace('"', '""', $column);
-        if ($this->useNormalizedUtf8) {
+        if ($this->useNormalizedSearch) {
             return 'utf8_normalized_lower("'. $column. '") = '. $this->quote($this->utf8_normalized_lower($value));
         }
         return 'utf8_lower("'. $column. '") = '. $this->quote($this->utf8_lower($value));
@@ -261,14 +270,25 @@ class SqliteDatabase extends AbstractDatabase
 
     public function collate_utf8ci(string $str1, string $str2): int
     {
-        return strcmp(mb_strtolower($str1, 'UTF-8'), mb_strtolower($str2, 'UTF-8'));
+        $r = strcmp(mb_strtolower($str1, 'UTF-8'), mb_strtolower($str2, 'UTF-8'));
+        if ($r === 0) {
+            $r = strcmp($str1, $str2);
+        }
+        return $r;
     }
 
     public function collate_utf8ci_normalized(string $str1, string $str2): int
     {
-        $str1 = self::normalizeValue($str1);
-        $str2 = self::normalizeValue($str2);
-        return strcmp(mb_strtolower($str1, 'UTF-8'), mb_strtolower($str2, 'UTF-8'));
+        $s1 = self::normalizeValue($str1);
+        $s2 = self::normalizeValue($str2);
+        $r = strcmp(mb_strtolower($s1, 'UTF-8'), mb_strtolower($s2, 'UTF-8'));
+        if ($r === 0) {
+            $r = strcmp($s1, $s2);
+        }
+        if ($r === 0) {
+            $r = strcmp($str1, $str2);
+        }
+        return $r;
     }
 
     public static function normalizeValue(string $str): string
@@ -332,7 +352,9 @@ class SqliteDatabase extends AbstractDatabase
             'æ' => 'ae',  // "U+00e6"
             'Œ' => 'OE',  // "U+0152"
             'œ' => 'oe',  // "U+0153"
-            'Ł' => 'L', 'ł' => 'L'  //U+141 and U+142
+            'Ł' => 'L', 'ł' => 'L',  // U+0141 and U+0142 (Polish)
+            'Ø' => 'O', 'ø' => 'o',  // U+00D8 and U+00F8 (Danish, Norwegian)
+            //NB: Swedish alphabet has Å, Ä and Ö letters, sorted after Z
         ];
 
         $len = count($chars);

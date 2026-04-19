@@ -42,7 +42,7 @@ class TagRepo
 
     /**
      * Finds all variations of tag by its "normalized" name. Return array of id.
-     * @param string[] $tagNames
+     * @param string $name
      * @return int[]
      */
     public function getTagIdsByName(string $name): array
@@ -68,7 +68,7 @@ class TagRepo
         $tag = new Tag();
         $tag->name = $name;
         $tag->userId = $userId;
-        $collate = ($this->db::DBTYPE === DBConnection::DBTYPE_SQLITE) ? "COLLATE UTF8CI" : "";
+        $collate = ($this->db::DBTYPE === DBConnection::DBTYPE_SQLITE) ? "COLLATE {$this->db->equalCollation}" : "";
         $tag->id = (int) $this->db->sq("SELECT id FROM {$this->db->prefix}tags WHERE user_id=? AND name=? $collate", [$userId, $name]);
         if (!$tag->id) {
             $this->db->ex("INSERT INTO {$this->db->prefix}tags (user_id,name) VALUES (?,?)", [$userId, $name]);

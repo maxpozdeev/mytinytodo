@@ -107,7 +107,7 @@ class TaskRepo
         }
 
         # Sort
-        $collate = ($this->db::DBTYPE === DBConnection::DBTYPE_SQLITE) ? "COLLATE UTF8CI" : "";
+        $collate = ($this->db::DBTYPE === DBConnection::DBTYPE_SQLITE) ? "COLLATE {$this->db->orderCollation}" : "";
         $sqlSort = "ORDER BY compl ASC, ";
         if ($sort == self::SORT_MANUAL)
                                                         $sqlSort .= "ow ASC";

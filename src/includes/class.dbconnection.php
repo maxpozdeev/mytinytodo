@@ -63,7 +63,7 @@ abstract class AbstractDatabase
     abstract function tableFieldExists(string $table, string $field): bool;
 
     function __get(string $propName) {
-        if ( in_array($propName, self::$readonlyProps) ) {
+        if ( in_array($propName, static::$readonlyProps) ) {
             return $this->{$propName};
         }
         throw new Error("Attempt to read undefined property ". get_class($this). "::\$$propName");

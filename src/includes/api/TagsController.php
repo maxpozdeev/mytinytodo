@@ -23,7 +23,7 @@ class TagsController extends ApiController {
         if ($listId != -1)
             $sqlWhere .= " AND t2t.list_id = $listId";
 
-        $collate = ($db::DBTYPE === DBConnection::DBTYPE_SQLITE) ? "COLLATE UTF8CI" : "";
+        $collate = ($db::DBTYPE === DBConnection::DBTYPE_SQLITE) ? "COLLATE {$db->orderCollation}" : "";
 
         $q = $db->dq("SELECT DISTINCT tag_id, name
                       FROM {$db->prefix}tag2task AS t2t INNER JOIN {$db->prefix}tags AS tags ON tag_id = id
@@ -68,7 +68,7 @@ class TagsController extends ApiController {
         $db = DBConnection::instance();
         $begin = trim(_get('q'));
         $limit = 8;
-        $collate = ($db::DBTYPE === DBConnection::DBTYPE_SQLITE) ? "COLLATE UTF8CI" : "";
+        $collate = ($db::DBTYPE === DBConnection::DBTYPE_SQLITE) ? "COLLATE {$db->orderCollation}" : "";
         $q = $db->dq("SELECT name, tag_id AS id FROM {$db->prefix}tags
                       INNER JOIN {$db->prefix}tag2task ON id=tag_id
                       WHERE list_id=$listId AND ". $db->like('name', '%s%%', $begin). "

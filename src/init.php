@@ -163,7 +163,11 @@ function configureDbConnection()
     {
         require_once(MTTINC. 'vendor/autoload.php');
         require_once(MTTINC. 'class.db.sqlite.php');
-        $db = DBConnection::init(new SqliteDatabase());
+        $params = null;
+        if (defined('MTT_SQLITE_NORMALIZE_SEARCH')) {
+            $params = [ 'useNormalizedSearch' => boolval(MTT_SQLITE_NORMALIZE_SEARCH) ];
+        }
+        $db = DBConnection::init(new SqliteDatabase($params));
         $db->connect([
             'filename' => MTTPATH. 'db/todolist.db'
         ]);
