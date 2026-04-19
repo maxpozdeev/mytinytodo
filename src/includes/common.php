@@ -2,65 +2,54 @@
 
 /*
     This file is a part of myTinyTodo.
-    (C) Copyright 2009-2010,2020-2025 Max Pozdeev <maxpozdeev@gmail.com>
+    (C) Copyright 2009-2010,2020-2026 Max Pozdeev <maxpozdeev@gmail.com>
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
-function htmlarray($a, $exclude=null)
+function htmlarray($a, $exclude = null): array
 {
     htmlarray_ref($a, $exclude);
     return $a;
 }
 
-function htmlarray_ref(&$a, $exclude=null)
+function htmlarray_ref(&$a, $exclude = null)
 {
-    if(!$a) return;
-    if(!is_array($a)) {
-        $a = htmlspecialchars($a);
+    if (!$a)
+        return;
+    if (!is_array($a)) {
+        $a = htmlspecialchars((string)$a);
         return;
     }
     reset($a);
-    if($exclude && !is_array($exclude)) $exclude = array($exclude);
-    foreach($a as $k=>$v)
-    {
-        if(is_array($v)) $a[$k] = htmlarray($v, $exclude);
-        elseif(!$exclude) $a[$k] = htmlspecialchars($v ?? '');
-        elseif(!in_array($k, $exclude)) $a[$k] = htmlspecialchars($v ?? '');
+    if ($exclude && !is_array($exclude))
+        $exclude = array($exclude);
+    foreach($a as $k=>$v) {
+        if (is_array($v))
+            $a[$k] = htmlarray($v, $exclude);
+        elseif (!$exclude)
+            $a[$k] = htmlspecialchars($v ?? '');
+        elseif (!in_array($k, $exclude))
+            $a[$k] = htmlspecialchars($v ?? '');
     }
     return;
 }
 
-function _post($param,$defvalue = '')
+function _post(string $param, $defvalue = '')
 {
-    if(!isset($_POST[$param])) {
-        return $defvalue;
-    }
-    else {
-        return $_POST[$param];
-    }
+    return $_POST[$param] ?? $defvalue;
 }
 
-function _get($param, $defvalue = '')
+function _get(string $param, $defvalue = '')
 {
-    if (!isset($_GET[$param])) {
-        return $defvalue;
-    }
-    else {
-        return $_GET[$param];
-    }
+    return $_GET[$param] ?? $defvalue;
 }
 
-function _server($param, $defvalue = '')
+function _server(string $param, $defvalue = '')
 {
-    if ( !isset($_SERVER[$param]) ) {
-        return $defvalue;
-    }
-    else {
-        return $_SERVER[$param];
-    }
+    return $_SERVER[$param] ?? $defvalue;
 }
 
-function formatDate3($format, $ay, $am, $ad, $lang)
+function formatDate3(string $format, int $ay, int $am, int $ad, Lang $lang)
 {
     # F - month long, M - month short
     # m - month 2-digit, n - month 1-digit
@@ -90,14 +79,19 @@ function daysInMonth(int $m, int $y = 0): int
 }
 
 
-function getRequestUri()
+function getRequestUri(): string
 {
     // Do not use HTTP_X_REWRITE_URL due to CVE-2018-14773
     // SCRIPT_NAME or PATH_INFO ?
     if (isset($_SERVER['SCRIPT_NAME'])) {
-        return $_SERVER['SCRIPT_NAME'];
+        return (string)$_SERVER['SCRIPT_NAME'];
     }
+    else {
+        die("SCRIPT_NAME server var is not defined.");
+    }
+/*
     elseif (isset($_SERVER['REQUEST_URI'])) {
+        # may be wrong if rewrite is used
         return $_SERVER['REQUEST_URI'];
     }
     else if (isset($_SERVER['ORIG_PATH_INFO']))  // IIS 5.0 CGI
@@ -106,6 +100,7 @@ function getRequestUri()
         if (!empty($_SERVER['QUERY_STRING'])) $uri .= '?'. $_SERVER['QUERY_STRING'];
         return $uri;
     }
+*/
 }
 
 function url_dir(string $url, bool $onlyPath = true)

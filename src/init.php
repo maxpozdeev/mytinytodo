@@ -345,7 +345,7 @@ function setup_and_start_session()
     session_start();
 }
 
-function timestampToDatetime($timestamp, $forceTime = false) : string
+function timestampToDatetime(int $timestamp, bool $forceTime = false) : string
 {
     $format = Config::get('dateformat');
     if ($forceTime || Config::get('showtime')) {
@@ -354,7 +354,7 @@ function timestampToDatetime($timestamp, $forceTime = false) : string
     return formatTime($format, $timestamp);
 }
 
-function formatTime($format, $timestamp=0) : string
+function formatTime(string $format, int $timestamp = 0) : string
 {
     $lang = Lang::instance();
     if($timestamp == 0) $timestamp = time();
@@ -387,12 +387,12 @@ function __(string $s, bool $escape = false, ?string $arg = null)
     return $escape ? htmlspecialchars($v) : $v;
 }
 
-function mttinfo($v)
+function mttinfo(string $v)
 {
     echo get_mttinfo($v);
 }
 
-function get_mttinfo($v)
+function get_mttinfo(string $v)
 {
     return htmlspecialchars( get_unsafe_mttinfo($v) );
 }
@@ -401,7 +401,7 @@ function get_mttinfo($v)
  * Returned values from get_unsafe_mttinfo() can be unsafe for html.
  * But '\r' and '\n' in URLs taken from config are removed.
  */
-function get_unsafe_mttinfo($v)
+function get_unsafe_mttinfo(string $v)
 {
     //TODO: put to MTTVars.info
     global $_mttinfo;
@@ -485,7 +485,7 @@ function get_unsafe_mttinfo($v)
     }
 }
 
-function reset_mttinfo($key)
+function reset_mttinfo(string $key)
 {
     global $_mttinfo;
     unset( $_mttinfo[$key] );
@@ -568,7 +568,7 @@ function routerGetGoPrefix()
     }
 }
 
-function logAndDie($userText, $errText = null)
+function logAndDie(string $userText, ?string $errText = null)
 {
     $errText === null ? error_log($userText) : error_log($errText);
     if (ini_get('display_errors')) {
