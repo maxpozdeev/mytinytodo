@@ -337,7 +337,7 @@ function hasMysqlUnicode520(AbstractDatabase $db): bool
     return $r ? true : false;
 }
 
-function exitMessage($s)
+function exitMessage(string $s)
 {
     echo $s;
     printFooter();
@@ -365,7 +365,7 @@ function tryToSaveDbConfig()
     SetupDbConfig::saveDbConfig();
 }
 
-function testConnect(&$error)
+function testConnect(string &$error): ?AbstractDatabase
 {
     $db = null;
     try
@@ -508,7 +508,7 @@ function myExceptionHandler(Throwable $e)
     exit;
 }
 
-function databaseTypeName(AbstractDatabase $db)
+function databaseTypeName(AbstractDatabase $db): string
 {
     switch ($db::DBTYPE) {
         case DBConnection::DBTYPE_MYSQL: return "MySQL";
@@ -520,7 +520,7 @@ function databaseTypeName(AbstractDatabase $db)
 
 
 
-function createAllTables($db, $dbtype)
+function createAllTables(AbstractDatabase $db, string $dbtype): void
 {
     if ($dbtype == 'mysql') {
         createMysqlTables($db);
@@ -806,7 +806,7 @@ function createSqliteTables(AbstractDatabase $db)
 
 
 ### update v1.7 to v1.8 ##########
-function update_17_18(AbstractDatabase $db, $dbtype)
+function update_17_18(AbstractDatabase $db, string $dbtype)
 {
     $db->ex("BEGIN");
 
@@ -884,7 +884,7 @@ function update_17_18(AbstractDatabase $db, $dbtype)
 
 
 
-function update_18_20(AbstractDatabase $db, $dbtype)
+function update_18_20(AbstractDatabase $db, string $dbtype)
 {
     $db->ex("BEGIN");
 
@@ -924,22 +924,22 @@ function update_18_20(AbstractDatabase $db, $dbtype)
         $db->ex("DROP INDEX todo_uuid");
         $db->ex("ALTER TABLE {$db->prefix}todolist RENAME TO {$db->prefix}todolist_old");
         $db->ex(
-    "CREATE TABLE {$db->prefix}todolist (
-        id INTEGER PRIMARY KEY,
-        uuid CHAR(36) NOT NULL default '',
-        list_id INTEGER UNSIGNED NOT NULL default 0,
-        parent_id INTEGER UNSIGNED NOT NULL default 0,
-        d_created INTEGER UNSIGNED NOT NULL default 0,
-        d_completed INTEGER UNSIGNED NOT NULL default 0,
-        d_edited INTEGER UNSIGNED NOT NULL default 0,
-        compl TINYINT UNSIGNED NOT NULL default 0,
-        title VARCHAR(250) NOT NULL default '',
-        note TEXT default NULL,
-        prio TINYINT NOT NULL default 0,
-        ow INTEGER NOT NULL default 0,
-        duedate DATE default NULL,
-        extra TEXT default NULL
-    ) ");
+            "CREATE TABLE {$db->prefix}todolist (
+                id INTEGER PRIMARY KEY,
+                uuid CHAR(36) NOT NULL default '',
+                list_id INTEGER UNSIGNED NOT NULL default 0,
+                parent_id INTEGER UNSIGNED NOT NULL default 0,
+                d_created INTEGER UNSIGNED NOT NULL default 0,
+                d_completed INTEGER UNSIGNED NOT NULL default 0,
+                d_edited INTEGER UNSIGNED NOT NULL default 0,
+                compl TINYINT UNSIGNED NOT NULL default 0,
+                title VARCHAR(250) NOT NULL default '',
+                note TEXT default NULL,
+                prio TINYINT NOT NULL default 0,
+                ow INTEGER NOT NULL default 0,
+                duedate DATE default NULL,
+                extra TEXT default NULL
+        ) ");
         $db->ex("INSERT INTO {$db->prefix}todolist SELECT id,uuid,list_id,0,d_created,d_completed,d_edited,compl,title,note,prio,ow,duedate,null FROM {$db->prefix}todolist_old");
         $db->ex("CREATE INDEX todo_list_id ON {$db->prefix}todolist (list_id)");
         $db->ex("CREATE UNIQUE INDEX todo_uuid ON {$db->prefix}todolist (uuid)");
@@ -953,7 +953,7 @@ function update_18_20(AbstractDatabase $db, $dbtype)
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 user_id INTEGER UNSIGNED NOT NULL default 0,
                 name VARCHAR(250) NOT NULL DEFAULT ''
-            ) ");
+        ) ");
         $db->ex("INSERT INTO {$db->prefix}tags SELECT id,0,name FROM {$db->prefix}tags_old");
         $db->ex("DROP TABLE {$db->prefix}tags_old");
         $db->ex("CREATE INDEX tags_user_id ON {$db->prefix}tags (user_id)");
@@ -961,14 +961,14 @@ function update_18_20(AbstractDatabase $db, $dbtype)
 
         $db->ex(
             "CREATE TABLE {$db->prefix}users (
-            id         INTEGER PRIMARY KEY AUTOINCREMENT,
-            username   VARCHAR(250) NOT NULL DEFAULT '',
-            email      VARCHAR(250) NOT NULL DEFAULT '',
-            name       VARCHAR(250) NOT NULL DEFAULT '',
-            pwhash     VARCHAR(250) NOT NULL DEFAULT '',
-            last_visit DATE default NULL,
-            settings   TEXT NOT NULL DEFAULT '',
-            extra      TEXT default NULL
+                id         INTEGER PRIMARY KEY AUTOINCREMENT,
+                username   VARCHAR(250) NOT NULL DEFAULT '',
+                email      VARCHAR(250) NOT NULL DEFAULT '',
+                name       VARCHAR(250) NOT NULL DEFAULT '',
+                pwhash     VARCHAR(250) NOT NULL DEFAULT '',
+                last_visit DATE default NULL,
+                settings   TEXT NOT NULL DEFAULT '',
+                extra      TEXT default NULL
         ) ");
         $db->ex("CREATE UNIQUE INDEX users_username ON {$db->prefix}users (username COLLATE NOCASE)");
         $db->ex("CREATE UNIQUE INDEX users_email ON {$db->prefix}users (email COLLATE NOCASE)");
