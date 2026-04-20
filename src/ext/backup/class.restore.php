@@ -14,11 +14,15 @@ use Exception;
 
 class Restore
 {
+    const supportedDbVersions = ['1.8', '2.0'];
+
     public $lastErrorString = null;
     private $filename;
-    /** @var XMLReader */
-    private $reader;
-    private $tableItem;
+    private XMLReader $reader;
+    private array $tableItem;
+    private array $tableDefaults;
+    private string $dbVersion;
+    private int $userId;
 
     function __construct()
     {
@@ -29,6 +33,8 @@ class Restore
             'tags' => ['tags', 'tag'],
             'tag2task' => ['tag2task', 'item'],
             'settings' => ['settings', 'item'],
+            'users' => ['users', 'user'],
+            'usersettings' => ['usersettings', 'item'],
         ];
     }
 
@@ -49,6 +55,12 @@ class Restore
 
     function restore(): bool
     {
+        if (\mytinytodo\Version::DB_VERSION !== '2.0') {
+            $this->lastErrorString = "Running on unsupported version";
+            return false;
+        }
+        $this->userId = userId() ?: 1;
+
         $this->reader = $reader = new XMLReader();
         $reader->open($this->filename);
 
@@ -57,6 +69,18 @@ class Restore
         if ($reader->name != 'mttdb') {
             $this->lastErrorString = "Incorrect format: missing 'mttdb'.";
             return false;
+        }
+
+        $this->dbVersion = $this->reader->getAttribute("dbversion");
+        if (!in_array($this->dbVersion, static::supportedDbVersions)) {
+            $this->lastErrorString = "Unsupported database version in backup file";
+            return false;
+        }
+
+        if ($this->dbVersion === '1.8') {
+            // dont touch tables not available in old version
+            unset($this->tableItem['users']);
+            unset($this->tableItem['usersettings']);
         }
 
         if (!$this->moveNextElement()) {
@@ -88,6 +112,10 @@ class Restore
             }
 
         } while ($this->moveNextElementSameLevel());
+
+        if ($this->dbVersion === '1.8') {
+            $this->update18to20();
+        }
 
         $this->endRestore();
 
@@ -251,5 +279,14 @@ class Restore
         // vacuum?
     }
 
+    private function update18to20()
+    {
+        $db = DBConnection::instance();
+        $db->ex("UPDATE {$db->prefix}lists SET user_id = ?", [$this->userId]);
+        $db->ex("UPDATE {$db->prefix}tags SET user_id = ?", [$this->userId]);
+        // $db->ex("INSERT INTO {$db->prefix}usersettings (user_id,param_key,param_value)
+        //         SELECT ?,param_key,param_value FROM {$db->prefix}settings WHERE param_key='alltasks.json' ", [$this->userId]);
+        $db->ex("DELETE FROM {$db->prefix}settings WHERE param_key='alltasks.json'");
+    }
 
 }

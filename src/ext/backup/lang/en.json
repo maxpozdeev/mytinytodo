@@ -1,7 +1,7 @@
 {
     "ext.backup.name": "Backup",
     "backup.h_make": "Make backup",
-    "backup.d_make": "Will create backup file in '%s' folder.",
+    "backup.d_make": "Will create a backup file in '%s' folder.",
     "backup.make": "Make",
     "backup.download": "Download",
     "backup.done": "Done",

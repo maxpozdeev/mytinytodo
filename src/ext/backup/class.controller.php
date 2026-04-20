@@ -92,7 +92,9 @@ class Controller extends \ApiController
 
         if (!$restore->restore()) {
             $this->response->data = [
-                'total' => 0,
+                'total' => 1,
+                'ok' => true,
+                'alertText' => $restore->lastErrorString ?? 'Unknown error',
                 'msg' => __("error"),
                 'details' => $restore->lastErrorString ?? '',
             ];
@@ -129,6 +131,7 @@ class Controller extends \ApiController
         }
         else {
             $this->response->data['html'] = "<pre>". htmlspecialchars($check->report). "</pre>";
+            //$this->response->data['alertText'] = $check->report;
         }
     }
 

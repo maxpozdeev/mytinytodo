@@ -86,7 +86,7 @@ function onBackupFileChange(el) {
     </div>
     <div class="td">
         <button type=button data-ext-settings-action="post:makeBackup" data-ext="$ext"> {$e('backup.make')} </button> <br>
-        <br> $lastBackup &nbsp;
+        <br> $lastBackup
         <button type=button data-ext-settings-action="post:download" data-ext="$ext" $downloadDisabled> {$e('backup.download')} </button>
     </div>
 </div>

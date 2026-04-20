@@ -66,6 +66,8 @@ class Backup
         $this->writeTable($db->prefix.'tags', 'tags', 'tag');
         $this->writeTable($db->prefix.'tag2task', 'tag2task', 'item');
         $this->writeTable($db->prefix.'settings', 'settings', 'item');
+        $this->writeTable($db->prefix.'users', 'users', 'user');
+        $this->writeTable($db->prefix.'usersettings', 'usersettings', 'item');
 
 
         $this->writeClosingTag('mttdb');

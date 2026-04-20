@@ -21,6 +21,12 @@ class Check
         $db = DBConnection::instance();
         $msg = [];
 
+        // List without user
+        $count = $db->sq("SELECT COUNT(*) FROM {$db->prefix}lists WHERE user_id NOT IN (SELECT id FROM {$db->prefix}users)");
+        if ($count) {
+            $msg[] = "Lists without user: $count";
+        }
+
         // Task without list
         $count = $db->sq("SELECT COUNT(*) FROM {$db->prefix}todolist WHERE list_id NOT IN (SELECT id FROM {$db->prefix}lists)");
         if ($count) {
