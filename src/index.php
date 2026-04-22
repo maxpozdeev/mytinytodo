@@ -19,19 +19,6 @@ MTTNotificationCenter::postDidFinishRequestNotification();
 
 exit;
 
-/*
-$endpoints = array(
-    '/@([^/]+)' => [
-        'GET' => [] # User tasks
-    ]
-);
-
-foreach ($endpoints as $search => $methods) {
-}
-*/
-
-
-// end
 
 function parseRoute(string $path)
 {
@@ -51,14 +38,17 @@ function parseRoute(string $path)
         }
         page_login();
     }
-    else if (preg_match("#^/settings/([^/]+)$#", $path, $m)) {
-        handleSettings($m[1]);
-    }
     else if ($path === '/go' ) {
         handleGoRoute($_SERVER['QUERY_STRING'] ?? '');
     }
     else if (preg_match("#^/@([^/]+)(.*)#", $path, $m)) {
         handleUser($m[1], $m[2]);
+    }
+    else if (preg_match("#^/settings/([^/]+)$#", $path, $m)) {
+        handleUserSettings($m[1]);
+    }
+    else if (preg_match("#^/controlpanel/([^/]+)$#", $path, $m)) {
+        handleControlPanel($m[1]);
     }
     else {
         page_404();
@@ -278,7 +268,7 @@ function mtt_get_settings_page_url(): string
     return get_mtturl(MTTVars::$settingsPage);
 }
 
-function handleSettings(string $page)
+function handleControlPanel(string $page)
 {
     if (!is_logged()) {
         return page_403();
@@ -295,24 +285,44 @@ function handleSettings(string $page)
     if (!isset($pages[$page])) {
         return page_404();
     }
-    MTTVars::$settingsPage = 'settings/'. $page;
+    MTTVars::$settingsPage = 'controlpanel/'. $page;
     MTTVars::$settingsPageFile = MTTINC. 'settings/'. $pages[$page];
     define('MTT_PAGE', MTTVars::$settingsPageFile);
+    require_once(MTTINC. 'settings/procs.php');
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         require_once(MTTVars::$settingsPageFile);
         exit();
     }
     require_once(MTT_THEME_PATH. 'header.php');
-    require_once(MTTINC. 'settings/settings.php');
+    require_once(MTTINC. 'settings/controlpanel.php');
     require_once(MTT_THEME_PATH. 'footer.php');
 }
 
-class MTTVars {
-    static string $requestedUsername = '';
-    static int $requestedUserId = 0;
-    static string $settingsPage;
-    static string $settingsPageFile;
+function handleUserSettings(string $page)
+{
+    if (!is_logged()) {
+        return page_403();
+    }
+    static $pages = [
+        'general' => 'user-general.php',
+    ];
+    if (!isset($pages[$page])) {
+        return page_404();
+    }
+    MTTVars::$settingsPage = 'settings/'. $page;
+    MTTVars::$settingsPageFile = MTTINC. 'settings/'. $pages[$page];
+    define('MTT_PAGE', MTTVars::$settingsPageFile);
+    require_once(MTTINC. 'settings/procs.php');
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        check_token();
+        require_once(MTTVars::$settingsPageFile);
+        exit();
+    }
+    require_once(MTT_THEME_PATH. 'header.php');
+    require_once(MTTINC. 'settings/user-settings.php');
+    require_once(MTT_THEME_PATH. 'footer.php');
 }
+
 
 function isLoggedUserArea() : bool
 {

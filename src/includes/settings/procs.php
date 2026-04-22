@@ -1,20 +1,5 @@
 <?php
 
-/*
-    This file is a part of myTinyTodo.
-    (C) Copyright 2009-2011,2020-2026 Max Pozdeev <maxpozdeev@gmail.com>
-    Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
-*/
-
-if (!defined('MTT_PAGE')) {
-    die("Unexpected usage");
-}
-
-function _c($key)
-{
-    return Config::get($key);
-}
-
 function selectOptions($a, $value, $default=null)
 {
     if(!$a) return '';
@@ -51,32 +36,49 @@ function selectOptionsA($a, $key, $default=null)
     return $s;
 }
 
-?>
-
-<div id="page_settings">
-
-<h3 class="page-title"><?php _e('set_header');?></h3>
-
-<div id="settings_msg" style="display:none"></div>
-
-<div id="settings_container">
-
-<div id="settings_menu">
-   <p><a href="<?php mtturl('settings/general'); ?>"><?php _e('set_general');?><a></p>
-   <p><a href="<?php mtturl('settings/extensions'); ?>"><?php _e('set_extensions');?></a></p>
-  </div>
-
-  <div id="settings_content">
-<?php
-    if (isset(MTTVars::$settingsPageFile)) {
-        require_once(MTTVars::$settingsPageFile);
+function getLangs()
+{
+    $langDir = Lang::instance()->langDir();
+    if ( ! $h = opendir($langDir) ) {
+            return false;
     }
-    else {
-        echo "Content not found";
+    $a = array();
+    while ( false !== ($file = readdir($h)) )
+    {
+        if ( preg_match('/(.+)\.json$/', $file, $m) ) {
+            $jsonText = file_get_contents($langDir. $file);
+            if (false === $jsonText) {
+                continue;
+            }
+            $a[$m[1]] = $m[1];
+
+            $j = json_decode($jsonText, true);
+            if ( isset($j['_header']['language']) && isset($j['_header']['original_name']) ) {
+                $a[$m[1]]= [
+                    'name' => $j['_header']['original_name'],
+                    'title' => $j['_header']['language']
+                ];
+            }
+        }
     }
-?>
-  </div>
+    closedir($h);
+    uasort($a, 'cmpLangs');
+    return $a;
+}
 
-</div>
+function cmpLangs($a, $b) : int
+{
+    //return strcmp( mb_strtoupper($a['name']), mb_strtoupper($b['name']) );
+    return strcasecmp($a['title'], $b['title']);
+}
 
-</div>
+function timezoneIdentifiers()
+{
+    $zones = DateTimeZone::listIdentifiers();
+    $a = array();
+    foreach($zones as $v) {
+        $a[$v] = $v;
+    }
+    return $a;
+}
+

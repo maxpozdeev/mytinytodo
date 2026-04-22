@@ -3258,7 +3258,7 @@ function activateExtension(activate, ext)
         'activate': activate ? 1 : 0,
         'ext': ext
     }
-    $.post(mtt.routerPrefix+'settings/extensions', params, function(json){
+    $.post(mtt.routerPrefix+'controlpanel/extensions', params, function(json){
         window.location.reload();
     }, 'json');
 }

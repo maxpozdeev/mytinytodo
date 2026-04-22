@@ -21,7 +21,9 @@ if (isset($_POST['activate']))
 
     $extBundles = MTTExtensionLoader::bundles();
     $exts = array_keys($extBundles);
-    $a = Config::getList('extensions') ?? [];
+
+    $config = AppConfig::requestDictionary(Config::appDomain, Config::$appSchema);
+    $a = $config->getList('extensions') ?? [];
 
     if (in_array($ext, $exts)) {
         if ($activate) {
@@ -35,13 +37,13 @@ if (isset($_POST['activate']))
             }
         }
         else $a = array_values(array_diff($a, [$ext]));
-        Config::set('extensions', $a);
-        Config::save();
+        $config->set('extensions', $a);
+        AppConfig::saveDictionary(Config::appDomain, $config);
     }
     else if (!$activate && in_array($ext, $a)) {
         $a = array_values(array_diff($a, [$ext]));
-        Config::set('extensions', $a);
-        Config::save();
+        $config->set('extensions', $a);
+        AppConfig::saveDictionary(Config::appDomain, $config);
     }
     $t['saved'] = 1;
     jsonExit($t);
@@ -50,7 +52,7 @@ if (isset($_POST['activate']))
 function listExtensions()
 {
     $extBundles = MTTExtensionLoader::bundles();
-    $activatedExts = Config::getList('extensions') ?? [];
+    $activatedExts = Config::getConfig()->getList('extensions') ?? [];
     $a = [];
     foreach ($extBundles as $ext => $meta) {
         $h = $d = $v = '';
@@ -59,7 +61,7 @@ function listExtensions()
         $isCompatible = MTTExtensionLoader::isBundleCompatible($meta);
         $isActive = true;
         if (!$isCompatible) {
-            $v .= " &lt;not compatible&gt; ";
+            $v .= " <span style='color:red'>&lt;Not compatible&gt;</span> ";
         }
         if (in_array($ext, $activatedExts)) {
             $activatedExts = array_diff($activatedExts, [$ext]);
@@ -67,7 +69,7 @@ function listExtensions()
             if ($isCompatible) {
                 $instance = MTTExtensionLoader::extensionInstance($ext);
                 if ($instance instanceof MTTExtensionSettingsInterface) {
-                    $d .= " &nbsp; <a href='". get_mtturl('settings/ext-settings','ext='.$ext). "' data-ext='". htmlspecialchars($ext). "'>". __('a_settings', true). "</a>";
+                    $d .= " &nbsp; <a href='". get_mtturl('controlpanel/ext-settings','ext='.$ext). "' data-ext='". htmlspecialchars($ext). "'>". __('a_settings', true). "</a>";
                 }
             }
         }

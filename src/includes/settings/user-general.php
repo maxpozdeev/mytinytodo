@@ -4,21 +4,18 @@ if (!defined('MTT_PAGE')) {
     die("Unexpected usage");
 }
 
-
-function _c($key)
+function _c(string $key)
 {
-    return Config::getConfig()->get($key);
+    return Config::get($key);
 }
 
 if (isset($_POST['save']))
 {
-    check_token();
-
     $langs = getLangs();
-    Config::$appSchema['lang']['options'] = array_keys($langs);
-
+    Config::$userSchema['lang']['options'] = array_keys($langs);
     $t = array();
-    $config = AppConfig::requestDictionary(Config::appDomain, Config::$appSchema);
+    $j = UserConfig::requestDomain(Config::userDomain) ?? [];
+    $config = ConfigDictionary::dictionary($j, Config::$userSchema) ;
 
     $config->set('lang', _post('lang'));
 
@@ -29,7 +26,6 @@ if (isset($_POST['save']))
         jsonExit($t);
     }
 
-    $config->set('smartsyntax', (int)_post('smartsyntax'));
     // Do not set invalid timezone
     try {
         $tz = trim(_post('timezone'));
@@ -38,28 +34,24 @@ if (isset($_POST['save']))
     }
     catch (Exception $e) {
     }
-    $config->set('title', removeNewLines(trim(_post('title'))) );
-    $config->set('autotag', (int)_post('autotag'));
-    $config->set('markup', (int)_post('markdown') == 0 ? 'v1' : 'markdown');
     $config->set('firstdayofweek', (int)_post('firstdayofweek'));
-    $config->set('clock', (int)_post('clock'));
     $config->set('dateformat', removeNewLines(_post('dateformat')) );
     $config->set('dateformat2', removeNewLines(_post('dateformat2')) );
     $config->set('dateformatshort', removeNewLines(_post('dateformatshort')) );
+    $config->set('clock', (int)_post('clock'));
     $config->set('showdate', (int)_post('showdate'));
-    $config->set('showtime', (int)_post('showtime'));
     $config->set('showdateInline', (int)_post('showdateInline'));
+    $config->set('showtime', (int)_post('showtime'));
     $config->set('exactduedate', (int)_post('exactduedate'));
     $config->set('appearance', removeNewLines(trim(_post('appearance'))) );
+    $config->set('autotag', (int)_post('autotag'));
     $config->set('newTaskCounter', (int)_post('newTaskCounter'));
     $config->set('newTaskCounterIcon', (int)_post('newTaskCounterIcon'));
 
-    AppConfig::saveDomain(Config::appDomain, $config->asArray());
-
+    UserConfig::saveDomain(Config::userDomain, $config->asArray());
     $t['saved'] = 1;
     jsonExit($t);
 }
-
 
 ?>
 
@@ -69,47 +61,9 @@ if (isset($_POST['save']))
 <div class="mtt-settings-table">
 
 <div class="tr">
-  <div class="th"> <?php _e('set_title');?>: <div class="descr"><?php _e('set_title_descr');?></div></div>
-  <div class="td"> <input name="title" value="<?php echo htmlspecialchars(_c('title'));?>" class="in350" autocomplete="off" /> </div>
-</div>
-
-<div class="tr">
   <div class="th"><?php _e('set_language');?>:</div>
   <div class="td"> <select name="lang"><?php echo selectOptionsA(getLangs(), _c('lang')); ?></select> </div>
 </div>
-
-<div class="tr">
-<div class="th"><?php _e('set_protection');?>:</div>
-<div class="td">
- <label><input type="radio" name="allowpassword" value="1" <?php if(_c('password')!='') echo 'checked="checked"'; ?> onclick='$(this.form).find("input[name=password]").attr("disabled",false)' /> <?php _e('set_enabled');?></label> <br/>
- <label><input type="radio" name="allowpassword" value="0" <?php if(_c('password')=='') echo 'checked="checked"'; ?> onclick='$(this.form).find("input[name=password]").attr("disabled","disabled")' /> <?php _e('set_disabled');?></label> <br/>
-</div></div>
-
-<div class="tr">
-<div class="th"><?php _e('set_newpass');?>: <div class="descr"><?php _e('set_newpass_descr');?></div></div>
-<div class="td"><input type="password" name="password" autocomplete="new-password" <?php if(_c('password')=='') echo "disabled"; ?> /> </div>
-</div>
-
-<div class="tr">
-<div class="th"><?php _e('set_smartsyntax');?>: <div class="descr"><?php _e('set_smartsyntax3_descr');?></div></div>
-<div class="td">
- <label><input type="radio" name="smartsyntax" value="1" <?php if(_c('smartsyntax')) echo 'checked="checked"'; ?> /> <?php _e('set_enabled');?></label> <br/>
- <label><input type="radio" name="smartsyntax" value="0" <?php if(!_c('smartsyntax')) echo 'checked="checked"'; ?> /> <?php _e('set_disabled');?></label>
-</div></div>
-
-<div class="tr">
-<div class="th"><?php _e('set_autotag');?>: <div class="descr"><?php _e('set_autotag_descr');?></div></div>
-<div class="td">
- <label><input type="radio" name="autotag" value="1" <?php if(_c('autotag')) echo 'checked="checked"'; ?> /> <?php _e('set_enabled');?></label> <br/>
- <label><input type="radio" name="autotag" value="0" <?php if(!_c('autotag')) echo 'checked="checked"'; ?> /> <?php _e('set_disabled');?></label>
-</div></div>
-
-<div class="tr">
-<div class="th"><?php _e('set_markdown');?>: <div class="descr"><?php _e('set_markdown_descr');?></div></div>
-<div class="td">
- <label><input type="radio" name="markdown" value="1" <?php if (_c('markup') != 'v1') echo 'checked="checked"'; ?> /> <?php _e('set_enabled');?></label> <br/>
- <label><input type="radio" name="markdown" value="0" <?php if (_c('markup') == 'v1') echo 'checked="checked"'; ?> /> <?php _e('set_disabled');?></label>
-</div></div>
 
 <div class="tr">
 <div class="th"><?php _e('set_timezone');?>:</div>
@@ -203,6 +157,13 @@ if (isset($_POST['save']))
  <label><input type="radio" name="appearance" value="dark"  <?php if(_c('appearance') == 'dark')  echo 'checked="checked"'; ?> /> <?php _e('set_appearance_dark');?></label>
 </div>
 </div>
+
+<div class="tr">
+<div class="th"><?php _e('set_autotag');?>: <div class="descr"><?php _e('set_autotag_descr');?></div></div>
+<div class="td">
+ <label><input type="radio" name="autotag" value="1" <?php if(_c('autotag')) echo 'checked="checked"'; ?> /> <?php _e('set_enabled');?></label> <br/>
+ <label><input type="radio" name="autotag" value="0" <?php if(!_c('autotag')) echo 'checked="checked"'; ?> /> <?php _e('set_disabled');?></label>
+</div></div>
 
 <div class="tr">
   <div class="th"><?php _e('set_newtaskcounter_h');?>:</div>

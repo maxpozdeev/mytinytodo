@@ -70,9 +70,10 @@ $().ready(function(){
 <div id="usermenucontainer" class="mtt-menu-container" style="display:none">
 <ul>
   <li><a href="<?php mttinfo('tasks_uri'); ?>"><?php _e('tasks');?></a></li>
+  <li><a href="<?php mtturl('settings/general'); ?>"><?php _e('a_settings');?></a></li>
   <?php if (is_admin()) { ?>
     <li class="mtt-menu-delimiter"></li>
-    <li><a href="<?php mtturl('settings/general'); ?>"><?php _e('a_controlpanel');?></a></li>
+    <li><a href="<?php mtturl('controlpanel/general'); ?>"><?php _e('a_controlpanel');?></a></li>
   <?php } ?>
   <li class="mtt-menu-delimiter"></li>
   <li id="usermenu--logout"><a href="#logout"><?php _e('a_logout');?></a></li>

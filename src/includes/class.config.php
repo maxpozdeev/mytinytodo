@@ -2,17 +2,21 @@
 
 /*
     This file is a part of myTinyTodo.
-    (C) Copyright 2021-2025 Max Pozdeev <maxpozdeev@gmail.com>
+    (C) Copyright 2021-2026 Max Pozdeev <maxpozdeev@gmail.com>
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
 class Config
 {
-    /** @var bool */
-    public static $noDatabase = false;
+    public static bool $noDatabase = false;
 
-    /** @var array[] */
-    public static $params = array(
+    const appDomain = 'config.json';
+    const userDomain = 'config.json';
+
+    protected static ?ConfigDictionary $config;
+    protected static ?ConfigDictionary $userConfig;
+
+    public static array $appSchema = array(
         # These two parameters are used when mytinytodo index.php called not from installation directory
         # 'url' - URL where index.php is called from (ex.: http://site.com/todo.php)
         # 'mtt_url' - directory URL where mytinytodo is installed (with trailing slash) (ex.: http://site.com/lib/mytinytodo/)
@@ -24,10 +28,6 @@ class Config
 
         # Language pack
         'lang' => array('default'=>'en', 'type'=>'s'),
-
-        # Password to protect your tasks from modification,
-        # leave empty that everyone could read/write todolist
-        'password' => array('default'=>'', 'type'=>'s'),
 
         # Smart Syntax enabled flag
         'smartsyntax' => array('default'=>1, 'type'=>'i'),
@@ -70,75 +70,95 @@ class Config
         'extensions' => array('default'=>[], 'type'=>'a')
     );
 
-    /** @var mixed[] */
-    private static $config = array();
+    public static array $userSchema = array(
+        # Language
+        'lang' => array('default'=>'en', 'type'=>'s'),
 
+        # Default Time zone
+        'timezone' => array('default'=>'UTC', 'type'=>'s'),
 
+        # To disable auto adding selected tag set value to 0
+        'autotag' => array('default'=>1, 'type'=>'i'),
 
-    /**
-     *
-     * @return void
-     * @throws Exception
-     */
-    public static function load()
+        # duedate calendar format: 1 => y-m-d (default), 2 => m/d/y, 3 => d.m.y
+        'duedateformat' => array('default'=>1, 'type'=>'i'),
+
+        # First day of week: 0-Sunday, 1-Monday, 2-Tuesday, .. 6-Saturday
+        'firstdayofweek' => array('default'=>1, 'type'=>'i', 'options'=>array(0,1,2,3,4,5,6)),
+
+        # Date/time formats
+        'clock' => array('default'=>24, 'type'=>'i', 'options'=>array(12,24)),
+        'dateformat' => array('default'=>'j M Y', 'type'=>'s'),
+        'dateformat2' => array('default'=>'n/j/y', 'type'=>'s'),
+        'dateformatshort' => array('default'=>'j M', 'type'=>'s'),
+
+        # Show task date in list
+        'showdate' => array('default'=>0, 'type'=>'i'),
+        'showtime' => array('default'=>0, 'type'=>'i'),
+        'showdateInline' => array('default'=>0, 'type'=>'i'),
+        'exactduedate' => array('default'=>0, 'type'=>'i'),
+
+        # Appearance: system default or always light
+        'appearance' => array('default'=>'system', 'type'=>'s', 'options'=>array('system','light','dark')),
+
+        # New tasks counter
+        'newTaskCounter'     => array('default' => 0, 'type'=>'i'),
+        'newTaskCounterIcon' => array('default' => 0, 'type'=>'i'),
+    );
+
+    public static function load(): void
     {
         if (self::$noDatabase) {
             return;
         }
-        $j = self::requestDefaultDomain();
-        foreach ($j as $key=>$val) {
-            # ignore if not valid, default value will be used on ::get()
-            if (self::isValidConfigParam($key, $val)) {
-                self::$config[$key] = $val;
-            }
-        }
+        $j = AppConfig::requestDomain(static::appDomain);
+        if (isset($j['password']))
+            unset($j['password']);
+        static::$config = ConfigDictionary::dictionary($j, static::$appSchema);
     }
 
-    public static function isValidConfigParam(string $key, $value): bool
+
+    public static function loadUserConfig(): void
     {
-        # Ignore User-defined parameters
-        if (!isset(self::$params[$key]))
-            return true;
-
-        # Check type
-        switch (self::$params[$key]['type']) {
-            case 's': if (!is_string($value)) return false; break;
-            case 'i': if (!is_int($value)) return false; break;
-            case 'a': if (!is_array($value)) return false; break;
+        if (self::$noDatabase) {
+            return;
         }
+        $userId = userId();
+        if (!$userId)
+            return;
 
-        # values
-        $options = self::$params[$key]['options'] ?? false;
-        if ($options && !in_array($value, $options))
-            return false;
-
-        return true;
+        $j = UserConfig::requestUserDomain($userId, static::userDomain);
+        if (is_null($j))
+            return;
+        $dict = ConfigDictionary::dictionary($j, Config::$userSchema);
+        # validate signature?
+        static::$userConfig = $dict;
     }
 
-    /**
-     *
-     * @param string $key
-     * @return mixed
-     */
+    public static function getConfig(): ?ConfigDictionary
+    {
+        return static::$config;
+    }
+
     public static function get(string $key)
     {
-        if (isset(self::$config[$key])) return self::$config[$key];
-        elseif (isset(self::$params[$key])) return self::$params[$key]['default'];
-        else return null;
+        if (isset(static::$userConfig)) {
+            $v = static::$userConfig->get($key);
+            if (!is_null($v))
+                return $v;
+        }
+        return static::$config->get($key);
     }
 
-    /**
-     *
-     * @param string $key
-     * @return string|null
-     */
+
     public static function getUrl(string $key)
     {
-        $url = '';
-        if ( isset(self::$config[$key]) ) $url = self::$config[$key];
-        else if( isset(self::$params[$key]) ) $url = self::$params[$key]['default'];
-        else return null;
-        return str_replace( ["\r","\n"], '', $url );
+        if (isset(static::$userConfig)) {
+            $v = static::$userConfig->getUrl($key);
+            if (! is_null($v))
+                return $v;
+        }
+        static::$config->getUrl($key);
     }
 
     public static function getList(string $key): ?array
@@ -257,6 +277,8 @@ class Config
 
 }
 
+
+
 class SetupDbConfig
 {
     /** @var array[] */
@@ -355,24 +377,85 @@ class SetupDbConfig
     }
 }
 
-class UserConfig
+
+
+class AppConfig
 {
-    public static function requestDomain(string $key): array
+    public static function requestDictionary(string $key, ?array $schema = null): ?ConfigDictionary
     {
-        $userId = userId();
-        return static::requestUserDomain($userId, $key);
+        $j = static::requestDomain($key) ?? [];
+        return ConfigDictionary::dictionary($j, $schema);
     }
 
-    public static function requestUserDomain(int $userId, string $key): array
+    /**
+     *
+     * @param string $key
+     * @return array
+     * @throws Exception
+     */
+    public static function requestDomain(string $key): array
     {
         $db = DBConnection::instance();
-        $json = $db->sq("SELECT param_value FROM {$db->prefix}usersettings WHERE user_id = ? AND param_key = ?",  [$userId, $key]);
+        $json = $db->sq("SELECT param_value FROM {$db->prefix}settings WHERE param_key = ?", array($key));
         if (!$json)
             return array();
         $j = json_decode($json, true, 100, JSON_INVALID_UTF8_SUBSTITUTE);
         if ($j === null) {
             error_log("MTT Error: Failed to decode JSON object with settings. Code: ". (int)json_last_error());
             return array();
+        }
+        return $j;
+    }
+
+    /**
+     *
+     * @param string $key
+     * @param array $array
+     * @return void
+     * @throws Exception
+     */
+    public static function saveDomain(string $key, array $array)
+    {
+        $json = json_encode($array, JSON_PRETTY_PRINT /*| JSON_INVALID_UTF8_SUBSTITUTE*/);
+        if ($json === false) {
+            throw new Exception("Failed to create JSON object with settings. Code: ". (int)json_last_error());
+        }
+        $db = DBConnection::instance();
+        $keyExists = $db->sq("SELECT COUNT(param_key) FROM {$db->prefix}settings WHERE param_key = ?", array($key) );
+        if ($keyExists) {
+            $db->ex("UPDATE {$db->prefix}settings SET param_value = ? WHERE param_key = ?", array($json,$key) );
+        }
+        else {
+            $db->ex("INSERT INTO {$db->prefix}settings (param_key,param_value) VALUES (?,?)", array($key,$json) );
+        }
+    }
+
+    public static function saveDictionary(string $domain, ConfigDictionary $dict)
+    {
+        static::saveDomain($domain, $dict->asArray());
+    }
+}
+
+
+
+class UserConfig
+{
+    public static function requestDomain(string $key): ?array
+    {
+        $userId = userId();
+        return static::requestUserDomain($userId, $key);
+    }
+
+    public static function requestUserDomain(int $userId, string $key): ?array
+    {
+        $db = DBConnection::instance();
+        $json = $db->sq("SELECT param_value FROM {$db->prefix}usersettings WHERE user_id = ? AND param_key = ?",  [$userId, $key]);
+        if (!$json)
+            return null;
+        $j = json_decode($json, true, 100, JSON_INVALID_UTF8_SUBSTITUTE);
+        if ($j === null) {
+            error_log("MTT Error: Failed to decode JSON object with settings. Code: ". (int)json_last_error());
+            return null;
         }
         return $j;
     }
@@ -399,4 +482,130 @@ class UserConfig
         }
     }
 
+    public static function saveDictionary(string $key, ConfigDictionary $dict)
+    {
+        static::saveDomain($key, $dict->asArray());
+    }
+
+}
+
+
+
+class ConfigDictionary
+{
+    protected array $config;
+    protected ?array $schema;
+
+    function __construct(array $schema = null)
+    {
+        $this->schema = $schema;
+    }
+
+    public static function dictionary(array $array, array $schema = null): ConfigDictionary
+    {
+        $dict = new static($schema);
+        $dict->setValues($array);
+        return $dict;
+    }
+
+    public function setValues(array $array)
+    {
+        foreach ($array as $key => $val) {
+            if ($this->isValidConfigParam($key, $val)) {
+                $this->config[$key] = $val;
+            }
+        }
+    }
+
+    protected function isValidConfigParam(string $key, $value): bool
+    {
+        # Ignore user defined params
+        if (!isset($this->schema[$key])) {
+            return true;
+        }
+
+        # Check type
+        switch ($this->schema[$key]['type']) {
+            case 's': if (!is_string($value)) return false; break;
+            case 'i': if (!is_int($value)) return false; break;
+            case 'a': if (!is_array($value)) return false; break;
+        }
+
+        # values
+        $options = $this->schema[$key]['options'] ?? false;
+        if ($options && !in_array($value, $options))
+            return false;
+
+        return true;
+    }
+
+    public function set(string $key, $value): void
+    {
+        if ($this->isValidConfigParam($key, $value))
+            $this->config[$key] = $value;
+    }
+
+    public function get(string $key)
+    {
+        if (isset($this->config[$key]))
+            return $this->config[$key];
+        elseif (isset($this->schema) && isset($this->schema[$key]))
+            return $this->schema[$key]['default'];
+        else
+            return null;
+    }
+
+    public function getUrl(string $key)
+    {
+        $url = '';
+        if ( isset($this->config[$key]) )
+            $url = $this->config[$key];
+        else if ( isset($this->schema) && isset($this->schema[$key]) )
+            $url = $this->schema[$key]['default'];
+        else return null;
+        return str_replace( ["\r","\n"], '', $url );
+    }
+
+    public function getList(string $key): ?array
+    {
+        $a = $this->get($key);
+        if (is_null($a)) {
+            return null;
+        }
+        else if (!is_array($a)) {
+            error_log("Unexpected type in ConfigDictionary for key '$key' (array expected)");
+            return null;
+        }
+        else if (!array_is_list($a)) {
+            return array_values($a);
+        }
+        return $a;
+    }
+
+    public function asArray(bool $strictSchema = true): array
+    {
+        if (!$this->schema || !$strictSchema)
+            return $this->config;
+
+        $j = array();
+        foreach ($this->schema as $param => $v)
+        {
+            if ( !isset($this->config[$param]) ) $val = $v['default'];
+            elseif ( isset($v['options']) && !in_array($this->config[$param], $v['options'])) $val = $v['default'];
+            else $val = $this->config[$param];
+
+            if ($v['type'] == 'i') {
+                $val = (int)$val;
+            }
+            else if ($v['type'] == 'a') {
+                if (!is_array($val)) $val = [];
+            }
+            else {
+                $val = strval($val);
+            }
+
+            $j[$param] = $val;
+        }
+        return $j;
+    }
 }

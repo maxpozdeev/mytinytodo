@@ -55,12 +55,22 @@ require_once(MTTINC. 'repository.tag.php');
 require_once(MTTINC. 'repository.task.php');
 require_once(MTTINC. 'repository.user.php');
 
+$_mttinfo = array();
+
 configureDbConnection();
 
 Config::load();
 
-
 date_default_timezone_set(Config::get('timezone'));
+
+if (need_auth() && !isset($dontStartSession) && !Config::$noDatabase) {
+    setup_and_start_session();
+}
+if (!isset($dontStartSession)) {
+    Config::loadUserConfig();
+}
+set_nocache_headers();
+
 
 //User can override language setting by cookies or query
 $forceLang = '';
@@ -76,13 +86,6 @@ Lang::loadLang( Config::get('lang') );
 if (Lang::instance()->rtl()) {
     Config::set('rtl', 1); #runtime only
 }
-
-$_mttinfo = array();
-
-if (need_auth() && !isset($dontStartSession) && !Config::$noDatabase) {
-    setup_and_start_session();
-}
-set_nocache_headers();
 
 if (!defined('MTT_DISABLE_EXT')) {
     define('MTT_EXT', MTTPATH . 'ext/');
@@ -200,12 +203,12 @@ function configureDbConnection()
 // - no sessions are used
 function need_auth(): bool
 {
-    // TODO: not needed
-    //return (Config::get('password') != '') ? true : false;
+    // TODO: use constant
+    //return MTT_**** ? true : false
     return true;
 }
 
-function is_logged(): bool
+function is_logged(bool $validateSignature = true): bool
 {
     if ( !need_auth() )
         return true;
@@ -215,7 +218,23 @@ function is_logged(): bool
 
     if ( !(int)$_SESSION['logged'] )
         return false;
-    return isValidSignature($_SESSION['sign'], session_id(), Config::get('password'), defined('MTT_SALT') ? MTT_SALT : '');
+
+    if ($validateSignature) {
+        if (!isset(MTTVars::$userPassword)) {
+            $id = (int)$_SESSION['userId'];
+            if (!$id)
+                return false;
+
+            $db = DBConnection::instance();
+            $r = $db->sqa("SELECT pwhash FROM {$db->prefix}users WHERE id=?", [$id]);
+            if (!$r)
+                return false;
+            MTTVars::$userPassword = $r['pwhash'];
+        }
+        return isValidSignature($_SESSION['sign'], session_id(), MTTVars::$userPassword, defined('MTT_SALT') ? MTT_SALT : '');
+    }
+
+    return true;
 }
 
 /**
@@ -224,11 +243,11 @@ function is_logged(): bool
  * Does not return 0
  * @return null|int
  */
-function userId(): ?int
+function userId(bool $validateSignature = true): ?int
 {
     if (!need_auth())
         return 1;
-    if (!is_logged())
+    if (!is_logged($validateSignature))
         return null;
     $userId = (int)$_SESSION['userId'];
     if ($userId <= 0)
@@ -261,7 +280,7 @@ function updateSessionLogged( bool $logged,
         $_SESSION['logged'] = 1;
         $_SESSION['userId'] = (int)$user['id'];
         $_SESSION['username'] = $user['username']; # TODO: handle username changes
-        $_SESSION['sign'] = idSignature(session_id(), Config::get('password'), defined('MTT_SALT') ? MTT_SALT : '');
+        $_SESSION['sign'] = idSignature(session_id(), $user['pwhash'], defined('MTT_SALT') ? MTT_SALT : '');
     }
     else {
         unset($_SESSION['logged']);
@@ -658,4 +677,14 @@ function canReadList(TaskList $list, string $inFeedKey = '') : bool
 function canWriteToList(AbstractTaskList $list) : bool
 {
     return (is_logged() && userId() === $list->userId);
+}
+
+
+
+class MTTVars {
+    static string $requestedUsername = '';
+    static int $requestedUserId = 0;
+    static string $userPassword;
+    static string $settingsPage;
+    static string $settingsPageFile;
 }
