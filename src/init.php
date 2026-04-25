@@ -73,18 +73,15 @@ set_nocache_headers();
 
 
 //User can override language setting by cookies or query
-$forceLang = '';
-if (isset($_COOKIE['lang'])) $forceLang = (string) $_COOKIE['lang'];
-//else if (isset($_GET['lang'])) $forceLang = (string) $_GET['lang'];
-
-if ( $forceLang !== '' && preg_match("/^[a-z-]+$/i", $forceLang) ) {
-    Config::set('lang', $forceLang); //TODO: special for demo, do not change config
+if (isset($_COOKIE['lang']) && preg_match("/^[a-z-]+$/i", $_COOKIE['lang'])) {
+    if (Lang::langExists($_COOKIE['lang']))
+        MTTVars::$forcedLang = $_COOKIE['lang'];
 }
 
 require_once(MTTINC. 'class.lang.php');
-Lang::loadLang( Config::get('lang') );
+Lang::loadLang( MTTVars::$forcedLang ?: Config::get('lang') );
 if (Lang::instance()->rtl()) {
-    Config::set('rtl', 1); #runtime only
+    MTTVars::$isRtl = true;
 }
 
 if (!defined('MTT_DISABLE_EXT')) {
@@ -687,4 +684,6 @@ class MTTVars {
     static string $userPassword;
     static string $settingsPage;
     static string $settingsPageFile;
+    static bool $isRtl = false;
+    static ?string $forcedLang = null;
 }

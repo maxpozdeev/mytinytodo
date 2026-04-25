@@ -6,6 +6,9 @@ if (!defined('MTT_PAGE')) {
 
 function _c(string $key)
 {
+    if (defined('MTT_DEMO') && $key === 'lang' && MTTVars::$forcedLang !== null) {
+        return MTTVars::$forcedLang;
+    }
     return Config::get($key);
 }
 

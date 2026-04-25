@@ -14,21 +14,19 @@ if (isset($_POST['save']))
 {
     check_token();
 
-    $langs = getLangs();
-    Config::$appSchema['lang']['options'] = array_keys($langs);
-
     $t = array();
-    $config = AppConfig::requestDictionary(Config::appDomain, Config::$appSchema);
 
-    $config->set('lang', _post('lang'));
-
-    // in Demo mode we can set only language by cookies
     if (defined('MTT_DEMO')) {
-        setcookie('lang', $config->get('lang'), 0, url_dir(get_unsafe_mttinfo('url')));
         $t['saved'] = 1;
         jsonExit($t);
     }
 
+    $langs = getLangs();
+    Config::$appSchema['lang']['options'] = array_keys($langs);
+
+    $config = AppConfig::requestDictionary(Config::appDomain, Config::$appSchema);
+
+    $config->set('lang', _post('lang'));
     $config->set('smartsyntax', (int)_post('smartsyntax'));
     // Do not set invalid timezone
     try {

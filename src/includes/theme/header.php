@@ -19,7 +19,7 @@
   <link id="link_css_dark" rel="stylesheet" type="text/css" href="<?php mttinfo('theme_url'); ?>dark.css?v=<?php filever('theme', 'dark.css'); ?>" media="screen">
   <?php endif; ?>
   <link rel="stylesheet" type="text/css" href="<?php mttinfo('theme_url'); ?>print.css?v=<?php filever('theme', 'print.css'); ?>" media="print">
-  <?php if(Config::get('rtl')): ?>
+  <?php if (MTTVars::$isRtl): ?>
   <link rel="stylesheet" type="text/css" href="<?php mttinfo('theme_url'); ?>style_rtl.css?v=<?php filever('theme', 'style_rtl.css'); ?>" media="all">
   <?php endif; ?>
   <?php do_action('theme_head_end'); ?>
