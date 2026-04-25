@@ -45,8 +45,9 @@ function cmd_write(string $param, ?string $value) {
         die("Can not write '$param': value is not specified\n");
     }
     print ("Set '$param' to '$value'\n");
-    Config::set($param, $value);
-    Config::save();
+    $config = Config::getConfig();
+    $config->set($param, $value);
+    AppConfig::saveDomain(Config::appDomain, $config->asArray());
     print ("Done!\n");
 }
 
@@ -72,6 +73,9 @@ function cmd_deluser(string $user)
     $userId = (int) $db->sq("SELECT id FROM {$db->prefix}users WHERE username = ?", [$user]);
     if (!$userId) {
         die("Error: user does not exists\n");
+    }
+    if ($userId == 1) {
+        die("Error: can not delete administrator\n");
     }
     $db->ex("BEGIN");
     $db->ex("DELETE FROM {$db->prefix}todolist WHERE list_id IN (SELECT id FROM {$db->prefix}lists WHERE user_id=?)", [$userId]);

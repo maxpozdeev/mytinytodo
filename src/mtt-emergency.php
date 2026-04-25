@@ -10,12 +10,12 @@ if (!need_auth()) {
 if (isset($_POST['reset'])) {
     $pass = _post('pass');
     $hash = passwordHash($pass);
-    Config::set('password', $hash);
-    Config::save();
+    $db = DBConnection::instance();
+    $db->ex("UPDATE {$db->prefix}users SET pwhash = ? WHERE id = 1", [$hash]);
     exitmsg("Done");
 }
 else {
-    exitmsg("<form method=post><label>Enter new password:<br><input name=pass type=password> <input name=reset type=submit></label></form>");
+    exitmsg("<form method=post><label>Enter new password of adminstrator:<br><input name=pass type=password> <input name=reset type=submit></label></form>");
 }
 
 
