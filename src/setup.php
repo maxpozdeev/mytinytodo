@@ -169,8 +169,6 @@ if ($ver == '')
         # create default list
         $db->ex( "INSERT INTO {$db->prefix}lists (user_id,uuid,name,d_created,taskview) VALUES (?,?,?,?,?)",
             array(1, generateUUID(), 'Todo', time(), 1) );
-
-        Config::save();
     }
     else {
         exitMessage("Unknown action");

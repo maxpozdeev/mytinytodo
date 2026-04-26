@@ -109,6 +109,8 @@ class Config
     public static function load(): void
     {
         if (self::$noDatabase) {
+            # default config
+            static::$config = ConfigDictionary::dictionary([], static::$appSchema);
             return;
         }
         $j = AppConfig::requestDomain(static::appDomain);
@@ -190,35 +192,6 @@ class Config
             self::$config[$key] = $value;
     }
 
-
-    /**
-     *
-     * @return void
-     * @throws Exception
-     */
-    public static function save()
-    {
-        $j = array();
-        foreach (self::$params as $param => $v)
-        {
-            if ( !isset(self::$config[$param]) ) $val = $v['default'];
-            elseif ( isset($v['options']) && !in_array(self::$config[$param], $v['options'])) $val = $v['default'];
-            else $val = self::$config[$param];
-
-            if ($v['type'] == 'i') {
-                $val = (int)$val;
-            }
-            else if ($v['type'] == 'a') {
-                if (!is_array($val)) $val = [];
-            }
-            else {
-                $val = strval($val);
-            }
-
-            $j[$param] = $val;
-        }
-        self::saveDomain('config.json', $j);
-    }
 
     /**
      *

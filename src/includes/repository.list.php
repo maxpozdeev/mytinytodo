@@ -78,7 +78,7 @@ class ListRepo
      */
     public function alltasksListByUserId(int $userId): AlltasksList
     {
-        $opts = UserConfig::requestUserDomain($userId, 'alltasks.json');
+        $opts = UserConfig::requestUserDomain($userId, 'alltasks.json') ?? [];
         $list = AlltasksList::fromArray($opts);
         $list->userId = $userId;
         return $list;
