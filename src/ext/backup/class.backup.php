@@ -53,8 +53,8 @@ class Backup
         fwrite($this->fh, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
         $this->writeOpeningTag('mttdb', [
             'version' => 1,
-            'appversion' => \mytinytodo\Version::VERSION,
-            'dbversion' => \mytinytodo\Version::DB_VERSION,
+            'appversion' => MTTVersion::VERSION,
+            'dbversion' => MTTVersion::DB_VERSION,
             'dbtype' => $db::DBTYPE,
             'created' => date(DATE_ATOM)
         ]);

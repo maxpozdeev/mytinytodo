@@ -36,8 +36,8 @@ print "> Repository was cloned to temp dir: $dir\n";
 
 #get current version number if not specified
 if (!$ver) {
-    require_once(__DIR__ . '/src/includes/version.php');
-    $ver = mytinytodo\Version::VERSION;
+    require_once(__DIR__ . '/src/includes/vars.php');
+    $ver = MTTVersion::VERSION;
 }
 chdir($dir. DIRECTORY_SEPARATOR. 'src');
 $rev = trim(shell_exec("git show --format=format:%H --summary"));

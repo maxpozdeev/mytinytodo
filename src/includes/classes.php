@@ -319,9 +319,9 @@ class MTTExtensionLoader
         if (!isset($vmin) || !isset($vmax))
             return false;
 
-        if (version_compare(mytinytodo\Version::VERSION, $vmin) < 0)
+        if (version_compare(MTTVersion::VERSION, $vmin) < 0)
             return false;
-        if (version_compare(mytinytodo\Version::VERSION, $vmax) > 0)
+        if (version_compare(MTTVersion::VERSION, $vmax) > 0)
             return false;
         return true;
     }

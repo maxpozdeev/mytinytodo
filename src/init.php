@@ -41,9 +41,9 @@ else {
     if (!defined('MTT_DEBUG')) define('MTT_DEBUG', false);
 }
 
+require_once(MTTINC. 'vars.php');
 require_once(MTTINC. 'common.php');
 require_once(MTTINC. 'classes.php');
-require_once(MTTINC. 'version.php');
 require_once(MTTINC. 'class.dbconnection.php');
 require_once(MTTINC. 'class.config.php');
 require_once(MTTINC. 'notifications.php');
@@ -481,7 +481,7 @@ function get_unsafe_mttinfo(string $v)
             $_mttinfo['title'] = (Config::get('title') != '') ? Config::get('title') : __('My Tiny Todolist');
             return $_mttinfo['title'];
         case 'version':
-            $_mttinfo['version'] = mytinytodo\Version::VERSION;
+            $_mttinfo['version'] = MTTVersion::VERSION;
             return $_mttinfo['version'];
         case 'appearance':
             $_mttinfo['appearance'] = Config::get('appearance');
@@ -676,14 +676,3 @@ function canWriteToList(AbstractTaskList $list) : bool
     return (is_logged() && userId() === $list->userId);
 }
 
-
-
-class MTTVars {
-    static string $requestedUsername = '';
-    static int $requestedUserId = 0;
-    static string $userPassword;
-    static string $settingsPage;
-    static string $settingsPageFile;
-    static bool $isRtl = false;
-    static ?string $forcedLang = null;
-}

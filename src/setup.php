@@ -25,10 +25,10 @@ else {
 
 if (!defined('MTTPATH')) define('MTTPATH', dirname(__FILE__) .'/');
 if (!defined('MTTINC'))  define('MTTINC', MTTPATH. 'includes/');
+require_once(MTTINC. 'vars.php');
 require_once(MTTINC. 'common.php');
 require_once(MTTINC. 'class.dbconnection.php');
 require_once(MTTINC. 'class.config.php');
-require_once(MTTINC. 'version.php');
 
 $db = null;
 $ver = '';
@@ -40,7 +40,7 @@ if ($csrfToken == '' || strlen($csrfToken) != 48) {
 }
 $csrfToken = htmlspecialchars($csrfToken);
 
-$mttVersion = htmlspecialchars(mytinytodo\Version::VERSION);
+$mttVersion = htmlspecialchars(MTTVersion::VERSION);
 
 echo <<<EOD
 <html>

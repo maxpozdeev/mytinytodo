@@ -54,7 +54,7 @@ class UpdaterExtension extends MTTExtension implements MTTExtensionSettingsInter
         $lastCheck = $prefs['lastCheck'] ?? 0;
         $version =  $prefs['version'] ?? '';
         $updateStr = '';
-        $curVersion = htmlspecialchars(mytinytodo\Version::VERSION);
+        $curVersion = htmlspecialchars(MTTVersion::VERSION);
         $err = null;
         if (time() - $lastCheck > 86400*7) {
             $updater = new Updater;
@@ -71,7 +71,7 @@ class UpdaterExtension extends MTTExtension implements MTTExtensionSettingsInter
         }
         $warning = '';
         if ($version != '') {
-            if ( version_compare($version, mytinytodo\Version::VERSION) > 0 ) {
+            if ( version_compare($version, MTTVersion::VERSION) > 0 ) {
                 $updateStr = "<br> {$e('updater.new_version_available')}: ". htmlspecialchars($version);
                 # allow update to v1.7.x and 1.8.x only
                 if ( in_array(substr($version, 0, 4), ["1.7.", "1.8."]) ) {
