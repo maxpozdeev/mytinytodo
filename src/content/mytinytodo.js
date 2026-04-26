@@ -3235,19 +3235,27 @@ function showSettings(json = 0)
 
 function saveSettings(frm)
 {
-    if (!frm)
+    if (!frm) {
         return false;
+    }
     const params = { save:'ajax' };
-    if (frm.dataset.ext)
+    if (frm.dataset.ext) {
         params['ext'] = frm.dataset.ext;
+    }
     $(frm).find("input:hidden,input:text,input:password,input:checked,select,textarea").filter(":enabled").each(function() {
         params[this.name || '__'] = this.value;
     });
     $(frm).find(":submit").attr('disabled','disabled').blur();
     $.post(frm.action, params, function(json){
         $(frm).find(":submit").removeAttr('disabled');
-        if (json.msg) {
-            flashInfo(json.msg);
+        if (json.error) {
+            mttErrorAlert(json.error);
+        }
+        else if (json.msg) {
+            mttAlert(json.msg);
+        }
+        else {
+            mttAlert("OK");
         }
     }, 'json');
 }
@@ -3385,11 +3393,17 @@ function mttAlert(msg, callbackOk)
     mttModalDialog().ok(callbackOk).message(msg).show();
 }
 
+function mttErrorAlert(msg, callbackOk)
+{
+    mttModalDialog().ok(callbackOk).header("Error").message(msg).show();
+}
+
 function mttModalDialog(dialogType = 'alert')
 {
     if ( ! (this instanceof mttModalDialog) ) return new mttModalDialog(dialogType);
     let dialog = this;
     this.type = dialogType;
+    this.showHeader = false;
     let lastScrollTop = 0;
 
     this.close = function() {
@@ -3432,6 +3446,14 @@ function mttModalDialog(dialogType = 'alert')
         return dialog;
     };
 
+    this.header = function(msg = '') {
+        if (msg != '') {
+            dialog.showHeader = true;
+        }
+        $("#modalHeader").text(msg);
+        return dialog;
+    };
+
     this.default = function(value = '') {
         $("#modalTextInput").val(value);
         return dialog;
@@ -3445,6 +3467,9 @@ function mttModalDialog(dialogType = 'alert')
             modalOverlay.style.cssText = "position: fixed; z-index: 999; left: 0; top: 0; width: 100%; height: 100%; background-color: black; opacity: 0.6; display:none;";
             document.getElementsByTagName('body')[0].appendChild(modalOverlay);
         }
+
+        document.getElementById('modal').dataset.dialog = dialog.type;
+        dialog.showHeader ? $("#modalHeader").show() : $("#modalHeader").hide();
 
         if (dialog.type === 'confirm') {
             $("#btnModalCancel").show();

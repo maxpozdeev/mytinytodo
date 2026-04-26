@@ -281,6 +281,7 @@ function handleControlPanel(string $page)
         'general' => 'general.php',
         'extensions' => 'extensions.php',
         'ext-settings' => 'ext-settings.php',
+        'css' => 'css.php',
     ];
     if (!isset($pages[$page])) {
         return page_404();

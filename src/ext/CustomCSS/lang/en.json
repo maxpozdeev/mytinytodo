@@ -1,7 +1,0 @@
-{
-    "ext.CustomCSS.name": "Custom CSS",
-    "customcss.h_css": "CSS",
-    "customcss.d_css": "Write you own CSS rules",
-    "customcss.not_writable": "CSS file is not writable, check permissions for custom.css",
-    "customcss.saved": "Saved"
-}

@@ -23,6 +23,7 @@ if (!defined('MTT_PAGE')) {
 <div id="settings_menu">
    <p><a href="<?php mtturl('controlpanel/general'); ?>"><?php _e('set_general');?></a></p>
    <p><a href="<?php mtturl('controlpanel/extensions'); ?>"><?php _e('set_extensions');?></a></p>
+   <p><a href="<?php mtturl('controlpanel/css'); ?>"><?php _e('set_customcss');?></a></p>
   </div>
 
   <div id="settings_content">

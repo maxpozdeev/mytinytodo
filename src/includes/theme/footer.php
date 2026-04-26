@@ -2,6 +2,7 @@
 <div id="modal" style="display:none">
   <div class="modal-box">
     <div class="modal-content">
+      <div id="modalHeader"></div>
       <div id="modalMessage"></div>
       <input id="modalTextInput" type="text">
     </div>

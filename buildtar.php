@@ -51,6 +51,7 @@ unlink('./includes/lang/_percent.php');
 unlink('./mtt-cmd.php');
 unlink('./mtt-emergency.php');
 unlink('./content/theme/images/svg2base64.php');
+touch('./content/theme/custom.css'); #create empty file
 
 chdir('..'); # to the root of repo
 
