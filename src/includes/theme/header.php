@@ -22,6 +22,7 @@
   <?php if (MTTVars::$isRtl): ?>
   <link rel="stylesheet" type="text/css" href="<?php mttinfo('theme_url'); ?>style_rtl.css?v=<?php filever('theme', 'style_rtl.css'); ?>" media="all">
   <?php endif; ?>
+  <link rel="stylesheet" type="text/css" href="<?php mttinfo('theme_url'); ?>custom.css?v=<?php filever('theme', 'custom.css'); ?>" media="all">
   <?php do_action('theme_head_end'); ?>
 </head>
 
