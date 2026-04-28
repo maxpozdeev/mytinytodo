@@ -28,7 +28,6 @@ if (!defined('MTT_USE_REWRITE')) {
     define('MTT_USE_REWRITE', false);
 }
 
-
 if (getenv('MTT_ENABLE_DEBUG') == 'YES' || (defined('MTT_DEBUG') && MTT_DEBUG) ) {
     if (!defined('MTT_DEBUG')) define('MTT_DEBUG', true);
     error_reporting(E_ALL);
@@ -39,6 +38,10 @@ else {
     //ini_set('display_errors', '0');
     //ini_set('log_errors', '1');
     if (!defined('MTT_DEBUG')) define('MTT_DEBUG', false);
+}
+
+if (!defined('MTT_MULTIUSER')) {
+    define('MTT_MULTIUSER', 1);
 }
 
 require_once(MTTINC. 'vars.php');
@@ -200,15 +203,15 @@ function configureDbConnection()
 // - no sessions are used
 function need_auth(): bool
 {
-    // TODO: use constant
-    //return MTT_**** ? true : false
-    return true;
+    return MTT_MULTIUSER ? true : false;
 }
 
 function is_logged(bool $validateSignature = true): bool
 {
     if ( !need_auth() )
         return true;
+    if (session_status() !== PHP_SESSION_ACTIVE)
+        return false;
     if ( !isset($_SESSION['logged'])   || !isset($_SESSION['sign'])
         || !isset($_SESSION['userId']) || !isset($_SESSION['username']) )
             return false;
@@ -308,7 +311,7 @@ function access_token(): string
 function check_token()
 {
     $token = access_token();
-    if ($token == '' || !isset($_SERVER['HTTP_MTT_TOKEN']) || $_SERVER['HTTP_MTT_TOKEN'] != $token) {
+    if ($token == '' || !isset($_SERVER['HTTP_MTT_TOKEN']) || $_SERVER['HTTP_MTT_TOKEN'] !== $token) {
         http_response_code(403);
         die("Access denied! Authentication is required.\n");
     }
@@ -657,6 +660,9 @@ function filever(string $dir, string $filename)
 
 function canReadList(TaskList $list, string $inFeedKey = '') : bool
 {
+    if (!need_auth() && userId(false) !== $list->userId)
+        return false;
+
     if ($list->isPublished)
         return true;
 

@@ -222,6 +222,9 @@ function handleUser(string $username, string $path = '')
     if (!MTTVars::$requestedUserId)
         return page_404();
 
+    if (!need_auth() && MTTVars::$requestedUserId !== userId(false))
+        return page_404();
+
     page_tasks();
 }
 

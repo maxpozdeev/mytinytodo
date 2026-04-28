@@ -76,7 +76,9 @@ $().ready(function(){
     <li class="mtt-menu-delimiter"></li>
     <li><a href="<?php mtturl('controlpanel/general'); ?>"><?php _e('a_controlpanel');?></a></li>
   <?php } ?>
-  <li class="mtt-menu-delimiter"></li>
-  <li id="usermenu--logout"><a href="#logout"><?php _e('a_logout');?></a></li>
+  <?php if (need_auth()) { ?>
+    <li class="mtt-menu-delimiter"></li>
+    <li id="usermenu--logout"><a href="#logout"><?php _e('a_logout');?></a></li>
+  <?php } ?>
 </ul>
 </div>

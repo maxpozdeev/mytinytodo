@@ -18,6 +18,7 @@ if (isset($_POST['save']))
 
     if (defined('MTT_DEMO')) {
         $t['saved'] = 1;
+        $t['msg'] = __('set_saved', true);
         jsonExit($t);
     }
 
@@ -55,6 +56,7 @@ if (isset($_POST['save']))
     AppConfig::saveDomain(Config::appDomain, $config->asArray());
 
     $t['saved'] = 1;
+    $t['msg'] = __('set_saved', true);
     jsonExit($t);
 }
 

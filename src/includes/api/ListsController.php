@@ -21,6 +21,9 @@ class ListsController extends ApiController {
             if (!$userId) {
                 return $this->response->errorJsonContent("User not found", 404);
             }
+            if (!need_auth() && $userId !== userId(false)) {
+                return $this->response->errorJsonContent("User not found", 404);
+            }
             $this->req->setUserId($userId); //set before haveWriteAccess
         }
 

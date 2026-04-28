@@ -48,6 +48,10 @@ class AuthController extends ApiController {
 
     private function logout(): ?array
     {
+        if (!need_auth()) {
+            $t['disabled'] = 1;
+            return $t;
+        }
         updateSessionLogged(false);
         update_token();
         session_regenerate_id(true);
