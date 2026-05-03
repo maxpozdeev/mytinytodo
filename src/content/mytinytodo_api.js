@@ -465,6 +465,21 @@ MytinytodoAjaxApi.prototype = {
             success: callback,
             dataType: 'json'
         });
-    }
+    },
+
+    resetPassword(params, callback, errorCallback) {
+        this.jsonRequest(mytinytodo.apiUrl + 'resetPassword', 'POST', {
+            email: params.email
+        }, callback, errorCallback);
+    },
+
+    newPassword(params, callback, errorCallback) {
+        this.jsonRequest(mytinytodo.apiUrl + 'newPassword', 'POST', {
+            email: params.email,
+            code: params.code,
+            newpassword: params.newpassword,
+            newpassword2: params.newpassword2,
+        }, callback, errorCallback);
+    },
 
 };

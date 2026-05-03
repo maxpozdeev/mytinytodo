@@ -14,6 +14,8 @@ class AuthController extends ApiController {
             case 'login':   $this->response->data = $this->login();         break;
             case 'logout':  $this->response->data = $this->logout();        break;
             case 'session': $this->response->data = $this->createSession(); break;
+            case 'resetPassword': $this->response->data = $this->resetPassword(); break;
+            case 'newPassword':   $this->response->data = $this->newPassword(); break;
             default:        $this->response->data = ['total' => 0]; // error 400 ?
         }
     }
@@ -71,6 +73,57 @@ class AuthController extends ApiController {
         }
         $t['token'] = access_token();
         $t['session'] = session_id();
+        return $t;
+    }
+
+    private function resetPassword(): ?array
+    {
+        $t = array('ok' => false);
+        if (!need_auth()) {
+            $t['disabled'] = 1;
+            return $t;
+        }
+
+        $t['ok'] = true;
+        $t['msg'] = __("resetSentIfEmailExists", true);
+
+        $email = (string)($this->req->jsonBody['email'] ?? '');
+
+        $db = DBConnection::instance();
+        $userId = (int) (new UserRepo($db))->findUserIdByEmail($email);
+
+        //TODO: write the code
+
+        return $t;
+    }
+
+    private function newPassword(): ?array
+    {
+        $t = array('ok' => false);
+        if (!need_auth()) {
+            $t['disabled'] = 1;
+            return $t;
+        }
+
+        $email = (string)($this->req->jsonBody['email'] ?? '');
+        $code = (string)($this->req->jsonBody['code'] ?? '');
+        $pw1 = (string)($this->req->jsonBody['newpassword'] ?? '');
+        $pw2 = (string)($this->req->jsonBody['newpassword2'] ?? '');
+
+        if ($email === '' || $code === '' || $pw1 === '' || $pw2 === '') {
+            $t['ok'] = false;
+            $t['error'] = "No arguments";
+        }
+
+        $t['ok'] = true;
+        $t['msg'] = __("new_password_set", true);
+
+
+        $db = DBConnection::instance();
+
+
+        //TODO: write the code
+
         return $t;
     }
 

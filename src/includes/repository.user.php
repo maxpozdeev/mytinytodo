@@ -28,4 +28,18 @@ class UserRepo
             return null;
         return (int)$r;
     }
+
+    /**
+     * Search user id by its e-mail.
+     * Return null if user does not exists.
+     * @param string $email
+     * @return null|int
+     */
+    public function findUserIdByEmail(string $email): ?int
+    {
+        $r = $this->db->sq("SELECT id FROM {$this->db->prefix}users WHERE email=?", [$email]);
+        if (is_null($r))
+            return null;
+        return (int)$r;
+    }
 }

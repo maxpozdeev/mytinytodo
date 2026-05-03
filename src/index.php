@@ -41,6 +41,12 @@ function parseRoute(string $path)
     else if ($path === '/go' ) {
         handleGoRoute($_SERVER['QUERY_STRING'] ?? '');
     }
+    else if ($path === '/reset') {
+        page_reset();
+    }
+    else if ($path === '/new-password') {
+        page_new_password();
+    }
     else if (preg_match("#^/@([^/]+)(.*)#", $path, $m)) {
         handleUser($m[1], $m[2]);
     }
@@ -257,6 +263,20 @@ function page_tasks()
 {
     require_once(MTT_THEME_PATH. 'header.php');
     require_once(MTT_THEME_PATH. 'tasks.php');
+    require_once(MTT_THEME_PATH. 'footer.php');
+}
+
+function page_reset()
+{
+    require_once(MTT_THEME_PATH. 'header.php');
+    require_once(MTT_THEME_PATH. 'reset.php');
+    require_once(MTT_THEME_PATH. 'footer.php');
+}
+
+function page_new_password()
+{
+    require_once(MTT_THEME_PATH. 'header.php');
+    require_once(MTT_THEME_PATH. 'new-password.php');
     require_once(MTT_THEME_PATH. 'footer.php');
 }
 

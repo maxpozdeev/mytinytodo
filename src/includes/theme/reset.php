@@ -1,19 +1,20 @@
 
-<!-- Page: Login -->
-<div id="page_login">
+<!-- Page: Reset -->
+<div id="page_auth">
+  <div class="auth-header">
+    <h3><?php _e('resetpassword_h'); ?></h3>
+    <div><?php _e('resetpassword_d'); ?></div>
+  </div>
   <div id="authmsg">&nbsp;</div>
   <div id="authform">
     <form id="login_form" onsubmit="return false">
     <fieldset>
     <div class="auth-content">
-      <div class="h"><?php _e('username');?></div>
-      <div><input name="username" id="username" class="form-input" autocapitalize="off" autocorrect="off" required autofocus autocomplete="username"></div>
-      <div class="h"><?php _e('password');?></div>
-      <div><input type="password" name="password" id="password" class="form-input" autocomplete="current-password"></div>
-      <div><a href="<?php mtturl('reset');?>"><?php _e('a_forgotpassword'); ?></a></div>
+      <div class="h"><?php _e('email');?></div>
+      <div><input name="email" class="form-input" autocapitalize="off" autocorrect="off" required autofocus autocomplete="email"></div>
     </div>
     <div class="form-bottom-buttons">
-      <button type="submit"><?php _e('btn_login'); ?></button>
+      <button type="submit"><?php _e('btn_send_reset'); ?></button>
     </div>
     </fieldset>
     <div class="overlay mtt-hidden"></div>
@@ -23,7 +24,7 @@
 <!-- End of Page: Login -->
 
 <script type="text/javascript">
-document.getElementById('mtt').classList.add('page-login');
+document.getElementById('mtt').classList.add('page-reset');
 document.getElementById('login_form').onsubmit = function(e) {
     e.preventDefault();
     const form = this;
@@ -32,26 +33,26 @@ document.getElementById('login_form').onsubmit = function(e) {
     mytinytodo.db.errorCallback = function(msg) {
         fieldset.removeAttribute('disabled');
         form.classList.remove('mtt-overlay');
-        form.password.focus();
         authmsg.textContent = msg;
         authmsg.classList.add('show');
     }
     authmsg.classList.remove('show');
     fieldset.setAttribute('disabled', '');
     form.classList.add('mtt-overlay');
-    mytinytodo.db.request( 'login', {
-        username: form.username.value,
-        password: form.password.value
+    mytinytodo.db.request( 'resetPassword', {
+        email: form.email.value,
     }, function(json, isError) {
         fieldset.removeAttribute('disabled');
         form.classList.remove('mtt-overlay');
-        form.password.focus();
-        if (json.logged) {
-            window.location = mytinytodo.mttUrl;
+        if (json.ok) {
+          authmsg.textContent = json.msg;
+          authmsg.classList.add('show', 'info');
+          document.getElementById('authform').style.display = 'none';
+          document.querySelector('#page_auth .auth-header').style.visibility = 'hidden';
         }
         else {
             authmsg.textContent = json.error;
-            authmsg.classList.add('show');
+            authmsg.classList.add('show', 'error');
         }
     });
 };

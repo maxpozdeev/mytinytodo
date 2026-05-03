@@ -2,7 +2,7 @@
 
 /*
     This file is a part of myTinyTodo.
-    (C) Copyright 2022-2025 Max Pozdeev <maxpozdeev@gmail.com>
+    (C) Copyright 2022-2026 Max Pozdeev <maxpozdeev@gmail.com>
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
@@ -59,7 +59,7 @@ $endpoints = array(
     '/suggestTags' => [
         'GET'  => [ TagsController::class , 'getSuggestions' ],
     ],
-    '/(login|logout|session)' => [
+    '/(login|logout|session|resetPassword|newPassword)' => [
         'POST' => [ AuthController::class , 'postAction' ],
     ],
     '/ext-settings/(.+)' => [
