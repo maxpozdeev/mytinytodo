@@ -152,6 +152,11 @@ function passwordHash(string $p): string
     return 'sha256:'. hash('sha256', $p);
 }
 
+function randomToken(int $bytes = 16): string
+{
+    return base64_encode(random_bytes($bytes));
+}
+
 /**
  * Compares raw (not hashed) password with password hash. Return true if equals.
  * @param string $password Raw password

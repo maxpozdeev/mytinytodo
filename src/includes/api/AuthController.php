@@ -31,7 +31,7 @@ class AuthController extends ApiController {
         $password = $this->req->jsonBody['password'] ?? '';
 
         $db = DBConnection::instance();
-        $u = $db->sqa("SELECT id,username,pwhash FROM {$db->prefix}users WHERE username=?", [$username]);
+        $u = $db->sqa("SELECT id,username,pwhash,pwtoken FROM {$db->prefix}users WHERE username=?", [$username]);
         if (!$u)
             return $t;
 

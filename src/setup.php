@@ -765,6 +765,7 @@ function createSqliteTables(AbstractDatabase $db)
         email      VARCHAR(250) NOT NULL DEFAULT '',
         name       VARCHAR(250) NOT NULL DEFAULT '',
         pwhash     VARCHAR(250) NOT NULL DEFAULT '',
+        pwtoken    VARCHAR(250) NOT NULL DEFAULT '',
         last_visit DATE default NULL,
         settings   TEXT NOT NULL DEFAULT '',
         extra      TEXT default NULL
@@ -964,6 +965,7 @@ function update_18_20(AbstractDatabase $db, string $dbtype)
                 email      VARCHAR(250) NOT NULL DEFAULT '',
                 name       VARCHAR(250) NOT NULL DEFAULT '',
                 pwhash     VARCHAR(250) NOT NULL DEFAULT '',
+                pwtoken    VARCHAR(250) NOT NULL DEFAULT '',
                 last_visit DATE default NULL,
                 settings   TEXT NOT NULL DEFAULT '',
                 extra      TEXT default NULL
@@ -982,8 +984,9 @@ function update_18_20(AbstractDatabase $db, string $dbtype)
     }
 
     $pwhash = (string)Config::get('password');
-    $db->ex("INSERT INTO {$db->prefix}users (id,username,email,name,pwhash) VALUES (1,?,?,?,?)", [
-        "admin", "admin", "admin", $pwhash
+    $pwtoken = randomToken();
+    $db->ex("INSERT INTO {$db->prefix}users (id,username,email,name,pwhash,pwtoken) VALUES (1,?,?,?,?,?)", [
+        "admin", "admin", "admin", $pwhash, $pwtoken
     ]);
 
     $db->ex("UPDATE {$db->prefix}lists SET user_id = 1");

@@ -109,7 +109,8 @@ function cmd_password(
         die("Error: user does not exist\n");
     }
     $hash = passwordHash($pass);
-    $db->ex("UPDATE {$db->prefix}users SET pwhash = ? WHERE username = ?", [$hash, $user]);
+    $pwtoken = randomToken();
+    $db->ex("UPDATE {$db->prefix}users SET pwhash = ?, pwtoken = ? WHERE username = ?", [$hash, $pwtoken, $user]);
     // delete sessions?
     print "New password set!\n";
 }

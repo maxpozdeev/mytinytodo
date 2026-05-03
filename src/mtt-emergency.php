@@ -10,8 +10,9 @@ if (!need_auth()) {
 if (isset($_POST['reset'])) {
     $pass = _post('pass');
     $hash = passwordHash($pass);
+    $pwtoken = randomToken();
     $db = DBConnection::instance();
-    $db->ex("UPDATE {$db->prefix}users SET pwhash = ? WHERE id = 1", [$hash]);
+    $db->ex("UPDATE {$db->prefix}users SET pwhash = ?, pwtoken = ? WHERE id = 1", [$hash, $pwtoken]);
     exitmsg("Done");
 }
 else {

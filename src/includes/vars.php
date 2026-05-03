@@ -3,7 +3,7 @@
 class MTTVars {
     static string $requestedUsername = '';
     static int $requestedUserId = 0;
-    static string $userPassword;
+    static string $userPwToken;
     static string $settingsPage;
     static string $settingsPageFile;
     static bool $isRtl = false;

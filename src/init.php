@@ -220,18 +220,18 @@ function is_logged(bool $validateSignature = true): bool
         return false;
 
     if ($validateSignature) {
-        if (!isset(MTTVars::$userPassword)) {
+        if (!isset(MTTVars::$userPwToken)) {
             $id = (int)$_SESSION['userId'];
             if (!$id)
                 return false;
 
             $db = DBConnection::instance();
-            $r = $db->sqa("SELECT pwhash FROM {$db->prefix}users WHERE id=?", [$id]);
+            $r = $db->sqa("SELECT pwtoken FROM {$db->prefix}users WHERE id=?", [$id]);
             if (!$r)
                 return false;
-            MTTVars::$userPassword = $r['pwhash'];
+            MTTVars::$userPwToken = $r['pwtoken'];
         }
-        return isValidSignature($_SESSION['sign'], session_id(), MTTVars::$userPassword, defined('MTT_SALT') ? MTT_SALT : '');
+        return isValidSignature($_SESSION['sign'], session_id(), MTTVars::$userPwToken, defined('MTT_SALT') ? MTT_SALT : '');
     }
 
     return true;
@@ -280,7 +280,7 @@ function updateSessionLogged( bool $logged,
         $_SESSION['logged'] = 1;
         $_SESSION['userId'] = (int)$user['id'];
         $_SESSION['username'] = $user['username']; # TODO: handle username changes
-        $_SESSION['sign'] = idSignature(session_id(), $user['pwhash'], defined('MTT_SALT') ? MTT_SALT : '');
+        $_SESSION['sign'] = idSignature(session_id(), $user['pwtoken'], defined('MTT_SALT') ? MTT_SALT : '');
     }
     else {
         unset($_SESSION['logged']);
