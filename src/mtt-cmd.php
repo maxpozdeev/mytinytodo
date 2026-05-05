@@ -9,9 +9,10 @@ if ( $argc < 3 ) {
     die("Usage:\n".
         "  mtt-cmd.php read <parameter> \n".
         "  mtt-cmd.php write <parameter> <value>\n".
-        "  mtt-cmd.php password <username> [password]\n".
         "  mtt-cmd.php adduser <username> [email]\n".
-        "  mtt-cmd.php deluser <username> \n"
+        "  mtt-cmd.php deluser <username> \n".
+        "  mtt-cmd.php password <username> [password]\n".
+        "  mtt-cmd.php email <username> <email>\n"
     );
 }
 
@@ -31,6 +32,7 @@ switch ($cmd) {
     case 'write': cmd_write($arg1, $arg2); break;
     case 'adduser': cmd_adduser((string)$arg1, (string)$arg2); break;
     case 'password': cmd_password((string)$arg1, (string)$arg2); break;
+    case 'email': cmd_email((string)$arg1, (string)$arg2); break;
     case 'deluser': cmd_deluser((string)$arg1); break;
     default: die("Unknown command: $cmd\n");
 }
@@ -113,4 +115,21 @@ function cmd_password(
     $db->ex("UPDATE {$db->prefix}users SET pwhash = ?, pwtoken = ? WHERE username = ?", [$hash, $pwtoken, $user]);
     // delete sessions?
     print "New password set!\n";
+}
+
+
+function cmd_email(string $user, string $email): void {
+    print "Set e-mail address for user '$user'\n";
+    if ($email == '') {
+        die("Error: cant set empty e-mail\n");
+    }
+    if (!preg_match("/^[a-zA-Z0-9\\._+-]+@[a-zA-Z0-9\\.-]+$/", $email)) {
+        die("Error: incorrect e-mail\n");
+    }
+    $db = DBConnection::instance();
+    if (!$db->sq("SELECT 1 FROM {$db->prefix}users WHERE username = ?", [$user])) {
+        die("Error: user does not exist\n");
+    }
+    $db->ex("UPDATE {$db->prefix}users SET email = ? WHERE username = ?", [$email, $user]);
+    print "New e-mail set!\n";
 }
