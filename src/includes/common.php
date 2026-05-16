@@ -219,6 +219,12 @@ function randomString2(int $len = 16, string $chars = '0123456789abcdefghijklmno
     return implode('', $a);
 }
 
+
+function isValidEmail(string $email): bool
+{
+    return preg_match("/^[a-zA-Z0-9\\._+-]+@[a-zA-Z0-9\\.-]+$/", $email) ? true : false;
+}
+
 if (!function_exists('array_is_list')) {
     /**
      * Checks whether a given array is a list

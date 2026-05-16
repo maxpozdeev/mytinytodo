@@ -280,7 +280,7 @@ function updateSessionLogged( bool $logged,
         $_SESSION['logged'] = 1;
         $_SESSION['userId'] = (int)$user['id'];
         $_SESSION['username'] = $user['username']; # TODO: handle username changes
-        $_SESSION['sign'] = idSignature(session_id(), $user['pwtoken'], defined('MTT_SALT') ? MTT_SALT : '');
+        $_SESSION['sign'] = sessionSignature($user['pwtoken']);
     }
     else {
         unset($_SESSION['logged']);
@@ -288,6 +288,14 @@ function updateSessionLogged( bool $logged,
         unset($_SESSION['username']);
         unset($_SESSION['sign']);
     }
+}
+
+function sessionSignature(
+    #[SensitiveParameter]
+    string $pwtoken
+): string
+{
+    return idSignature(session_id(), $pwtoken, defined('MTT_SALT') ? MTT_SALT : '');
 }
 
 function access_token(): string

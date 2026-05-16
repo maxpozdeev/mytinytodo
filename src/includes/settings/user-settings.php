@@ -20,6 +20,7 @@ if (!defined('MTT_PAGE')) {
 
   <div id="settings_menu">
     <p><a href="<?php mtturl('settings/general'); ?>"><?php _e('set_general');?></a></p>
+    <p><a href="<?php mtturl('settings/account'); ?>"><?php _e('set_account');?></a></p>
   </div>
 
   <div id="settings_content">

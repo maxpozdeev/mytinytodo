@@ -3242,7 +3242,7 @@ function saveSettings(frm)
     if (frm.dataset.ext) {
         params['ext'] = frm.dataset.ext;
     }
-    $(frm).find("input:hidden,input:text,input:password,input:checked,select,textarea").filter(":enabled").each(function() {
+    $(frm).find('input:not([type=submit],[type=reset],[type=button],[type=image],[type=file]),input:checked,select,textarea').filter(":enabled").each(function() {
         params[this.name || '__'] = this.value;
     });
     $(frm).find(":submit").attr('disabled','disabled').blur();
@@ -3254,8 +3254,12 @@ function saveSettings(frm)
         else if (json.msg) {
             mttAlert(json.msg);
         }
+        else if (json.ok) {
+            const cb = frm.dataset.okReload ? function(){window.location.reload();} : undefined;
+            mttAlert("OK", cb);
+        }
         else {
-            mttAlert("OK");
+            mttAlert("Not OK");
         }
     }, 'json');
 }

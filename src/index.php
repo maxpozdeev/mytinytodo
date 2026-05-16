@@ -329,6 +329,7 @@ function handleUserSettings(string $page)
     }
     static $pages = [
         'general' => 'user-general.php',
+        'account' => 'user-account.php',
     ];
     if (!isset($pages[$page])) {
         return page_404();
