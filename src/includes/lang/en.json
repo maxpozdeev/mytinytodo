@@ -201,6 +201,7 @@
     "set_12hour": "12-hour",
     "set_24hour": "24-hour",
     "set_submit": "Submit changes",
+    "set_save": "Save",
     "set_cancel": "Cancel",
     "set_showdate": "Show task date in list",
     "set_showtime": "Show time",
@@ -214,6 +215,7 @@
     "set_newtaskcounter": "Check for new tasks",
     "set_newtaskcountericon": "Show counter in favicon",
     "set_general": "General",
+    "set_account": "Account",
     "set_extensions": "Extensions",
     "set_customcss": "Custom CSS",
     "set_activate": "Activate",
@@ -243,5 +245,11 @@
     "renameList": "Rename list",
     "deleteList": "This will delete current list with all tasks in it.\nAre you sure?",
     "clearCompleted": "This will delete all completed tasks in the list.\nAre you sure?",
-    "settingsSaved": "Settings saved. Reloading..."
+    "settingsSaved": "Settings saved. Reloading...",
+    "cantChange": "Can not change %s.",
+    "emptyValue": "Empty value",
+    "incorrectFormat": "Incorrect format",
+    "alreadyInUseByAccount": "Already in use with another account.",
+    "wrongConfirmPassword": "Passwords do not match",
+    "invalidPassword": "Invalid password"
 }

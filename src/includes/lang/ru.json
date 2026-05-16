@@ -201,6 +201,7 @@
     "set_12hour": "12-часовой",
     "set_24hour": "24-часовой",
     "set_submit": "Сохранить изменения",
+    "set_save": "Сохранить",
     "set_cancel": "Отмена",
     "set_showdate": "Показывать дату создания задачи",
     "set_showtime": "Показывать время",
@@ -214,6 +215,7 @@
     "set_newtaskcounter": "Проверять наличие новых задач",
     "set_newtaskcountericon": "Показывать счетчик в favicon",
     "set_general": "Основные",
+    "set_account": "Учетная запись",
     "set_extensions": "Дополнения",
     "set_customcss": "Настройка таблицы стилей (CSS)",
     "set_activate": "Активировать",
@@ -243,5 +245,10 @@
     "renameList": "Переименовать список",
     "deleteList": "Вы действительно хотите удалить этот список со всеми задачами?",
     "clearCompleted": "Удалить все выполненные задачи из списка?",
-    "settingsSaved": "Настройки сохранены. Перезагрузка..."
+    "settingsSaved": "Настройки сохранены. Перезагрузка...",
+    "cantChange": "Невозможно изменить %s.",
+    "emptyValue": "Пустое значение",
+    "incorrectFormat": "Неверный формат",
+    "wrongConfirmPassword": "Пароли не совпадают",
+    "invalidPassword": "Неверный пароль"
 }
