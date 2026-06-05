@@ -1,0 +1,7 @@
+{
+    "ext.CustomCSS.name": "Custom CSS",
+    "customcss.h_css": "CSS",
+    "customcss.d_css": "Notiere deine eigenen CSS-Regeln",
+    "customcss.not_writable": "Die CSS-Datei ist nicht beschreibbar; überprüfe die Berechtigungen für custom.css.",
+    "customcss.saved": "Gespeichert"
+}
