@@ -2,7 +2,7 @@
 
 /*
     This file is a part of myTinyTodo.
-    (C) Copyright 2023-2025 Max Pozdeev <maxpozdeev@gmail.com>
+    (C) Copyright 2023-2026 Max Pozdeev <maxpozdeev@gmail.com>
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
@@ -14,13 +14,15 @@ class Backup
 {
     public $lastErrorString = null;
     public $filename;
+    private $tempFilename = null;
     private $fh;
     private $level = 0;
     private $tagClosed = true;
 
-    function __construct(?string $filename)
+    function __construct(?string $filename, ?string $tempFilename = null)
     {
         $this->filename = is_null($filename) ?  MTTPATH. 'db/backup.xml' : $filename;
+        $this->tempFilename = $tempFilename;
     }
 
     function isFileWritable()
@@ -30,6 +32,16 @@ class Backup
         }
         if (!is_writable($this->filename)) {
             return false;
+        }
+        if ($this->tempFilename) {
+            if (!file_exists($this->tempFilename)) {
+                @touch($this->tempFilename);
+            }
+            if (!is_writable($this->tempFilename)) {
+                error_log("Backup temp file is not writebale");
+                return false;
+            }
+            @unlink($this->filename);
         }
         return true;
     }
@@ -41,7 +53,7 @@ class Backup
             return false;
         }
 
-        $this->fh = fopen($this->filename, 'w');
+        $this->fh = fopen($this->tempFilename ? $this->tempFilename : $this->filename, 'w');
         if ($this->fh === false) {
             $ea = error_get_last();
             $this->lastErrorString = $ea['message'] ?? "Failed to open file for writing";
@@ -76,6 +88,17 @@ class Backup
             $this->lastErrorString = $ea['message'] ?? "Failed to close file";
             return false;
         }
+
+        if ($this->tempFilename) {
+            if (!@rename($this->tempFilename, $this->filename)) {
+                $ea = error_get_last();
+                $this->lastErrorString = $ea['message'] ?? "Failed to move file";
+                @unlink($this->tempFilename);
+                return false;
+            }
+        }
+
+
         return true;
     }
 

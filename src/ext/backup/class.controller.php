@@ -2,7 +2,7 @@
 
 /*
     This file is a part of myTinyTodo.
-    (C) Copyright 2023 Max Pozdeev <maxpozdeev@gmail.com>
+    (C) Copyright 2023-2026 Max Pozdeev <maxpozdeev@gmail.com>
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
@@ -19,7 +19,11 @@ class Controller extends \ApiController
     {
         require_once('class.backup.php');
         $filename = BackupExtension::backupFilePath();
-        $backup = new Backup($filename);
+        $tmpFile = null;
+        if (file_exists('/run/.containerenv') || file_exists('/.dockerenv')) {
+            $tmpFile = '/tmp/mtt-backup.xml';
+        }
+        $backup = new Backup($filename, $tmpFile);
 
         if (!$backup->makeBackup()) {
             $this->response->data = [
