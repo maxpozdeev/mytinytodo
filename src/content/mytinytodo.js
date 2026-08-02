@@ -249,8 +249,8 @@ const mtt = window.mytinytodo = {
                 onclick: function(el, menu){
                     if (el.id === 'usermenu--logout') return logout();
                     const href = $(el).find('a').attr('href');
-                    console.log(href)
-                    if (href) window.location.assign(href); //workaround for edge cases with links in mttMenu
+                    if (href)
+                        window.location.assign(href); //workaround for edge cases with links in mttMenu
                     //return true;
                 }
             });
@@ -2236,7 +2236,7 @@ function searchTags()
     }
     const filtered = [];
     tagsList.forEach( item => {
-        if (item.tagText.toLocaleLowerCase().search(filter) === -1)
+        if (item.tagText.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase().search(filter) === -1)
             return;
         filtered.push(item);
     });
