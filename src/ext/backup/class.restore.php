@@ -55,7 +55,7 @@ class Restore
 
     function restore(): bool
     {
-        if (MTTVersion::DB_VERSION !== '2.0') {
+        if (\MTTVersion::DB_VERSION !== '2.0') {
             $this->lastErrorString = "Running on unsupported version";
             return false;
         }
