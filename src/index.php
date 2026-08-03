@@ -28,7 +28,7 @@ function parseRoute(string $path)
         //     redirectExit(get_user_router_url(''));
         // }
         if (!is_logged()) {
-            redirectExit(routerMakeUrl('login', 'ret=home'));
+            redirectExit(routerMakeUrl('login', ['ret'=>'home']));
         }
         page_tasks();
     }
