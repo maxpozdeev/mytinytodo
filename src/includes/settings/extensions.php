@@ -69,7 +69,7 @@ function listExtensions()
             if ($isCompatible) {
                 $instance = MTTExtensionLoader::extensionInstance($ext);
                 if ($instance instanceof MTTExtensionSettingsInterface) {
-                    $d .= " &nbsp; <a href='". get_mtturl('controlpanel/ext-settings','ext='.$ext). "' data-ext='". htmlspecialchars($ext). "'>". __('a_settings', true). "</a>";
+                    $d .= " &nbsp; <a href='". get_mtturl('controlpanel/ext-settings', ['ext'=>$ext]). "' data-ext='". htmlspecialchars($ext). "'>". __('a_settings', true). "</a>";
                 }
             }
         }

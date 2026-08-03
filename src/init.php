@@ -553,14 +553,14 @@ function redirectExit(string $url)
     exit;
 }
 
-function routerMakeUrl(string $path, ?string $qs = null): string
+function routerMakeUrl(string $path = '', ?array $qsa = null, bool $fullUrl = false): string
 {
-    $prefix = get_unsafe_mttinfo('uri');
+    $prefix = $fullUrl ? get_unsafe_mttinfo('url') : get_unsafe_mttinfo('uri');
     if (!MTT_USE_REWRITE) {
-        return $prefix. '?p='. $path. ($qs !== null ? '&'. $qs : '');
+        return $prefix. '?p='. $path. ($qsa !== null ? '&'. http_build_query($qsa) : '');
     }
     else {
-        return $prefix. $path. ($qs !== null ? '?'. $qs : '');
+        return $prefix. $path. ($qsa !== null ? '?'. http_build_query($qsa) : '');
     }
 }
 
@@ -569,9 +569,9 @@ function mtturl(string $path)
     echo get_mtturl($path);
 }
 
-function get_mtturl(string $path, ?string $qs = null): string
+function get_mtturl(string $path, ?array $qsa = null): string
 {
-    return htmlspecialchars(routerMakeUrl($path, $qs));
+    return htmlspecialchars(routerMakeUrl($path, $qsa));
 }
 
 function routerMakeUserUrl(string $path = '', string $user = ''): string
