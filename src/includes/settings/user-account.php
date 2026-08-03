@@ -82,7 +82,7 @@ final class UserAccountSettings {
             static::exitError($errPrefix. " ". __("alreadyInUseByAccount"));
         }
         $db->ex("UPDATE {$db->prefix}users SET email=? WHERE id=?", [$email, userId()]);
-        static::exitOk("<bold>1</bold>");
+        static::exitOk();
     }
 
     static function editPassword(
