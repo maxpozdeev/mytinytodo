@@ -15,7 +15,7 @@ final class UserAccountSettings {
     static function load()
     {
         $db = DBConnection::instance();
-        $r = $db->sqa("SELECT id,username,email,pwhash FROM {$db->prefix}users WHERE id=?", [userId()]);
+        $r = $db->sqa("SELECT id,name,username,email,pwhash FROM {$db->prefix}users WHERE id=?", [userId()]);
         if (!$r) {
             die("User not found");
         }
@@ -42,6 +42,23 @@ final class UserAccountSettings {
         (new JsonApiResponse($data))->exit();
     }
 
+    static function editName(string $name)
+    {
+        $errPrefix = __("cantChange", false, __("name"));
+        if ($name === '') {
+            static::exitError($errPrefix. " ". __("emptyValue"));
+        }
+        if ($name === static::$data['name']) {
+            static::exitOk(false, __("nothingToChange"));
+        }
+        if (preg_match("/[<>]$/", $name)) {
+            static::exitError($errPrefix. " ". __("incorrectFormat"));
+        }
+        $db = DBConnection::instance();
+        $db->ex("UPDATE {$db->prefix}users SET name=? WHERE id=?", [$name, userId()]);
+        static::exitOk();
+    }
+
     static function editUsername(string $username)
     {
         $errPrefix = __("cantChange", false, __("username"));
@@ -49,7 +66,7 @@ final class UserAccountSettings {
             static::exitError($errPrefix. " ". __("emptyValue"));
         }
         if ($username === static::$data['username']) {
-            static::exitOk(false, "Nothing to change");
+            static::exitOk(false, __("nothingToChange"));
         }
         if (!preg_match("/^[a-zA-Z0-9_]+$/", $username)) {
             static::exitError($errPrefix. " ". __("incorrectFormat"));
@@ -71,7 +88,7 @@ final class UserAccountSettings {
             static::exitError($errPrefix. " ". __("emptyValue"));
         }
         if ($email === static::$data['email']) {
-            static::exitOk(false, "Nothing to change");
+            static::exitOk(false, __("nothingToChange"));
         }
         if ( ! isValidEmail($email) ) {
             static::exitError($errPrefix. " ". __("incorrectFormat"));
@@ -128,7 +145,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && defined('MTT_DEMO')) {
     ]);
 }
 
-if (isset($_POST['edit_username'])) {
+if (isset($_POST['edit_name'])) {
+    UserAccountSettings::editName( _post('name') );
+}
+else if (isset($_POST['edit_username'])) {
     UserAccountSettings::editUsername( _post('username') );
 }
 else if (isset($_POST['edit_email'])) {
@@ -144,6 +164,17 @@ else if (isset($_POST['edit_password'])) {
 <h4> <?php _e('set_account');?> </h4>
 
 <div class="mtt-settings-table">
+
+<div class="tr">
+  <div class="th"><?php _e('name');?></div>
+  <div class="td">
+    <form action="<?php mtt_settings_page_url(); ?>" method="post" data-ok-reload="yes">
+    <input type="hidden" name="edit_name" value="1">
+    <input name="name" value="<?php _c('name'); ?>" class="in350"> <br>
+    <div class="form-row-buttons"><button type="submit"><?php _e('set_save'); ?></button></div>
+    </form>
+  </div>
+</div>
 
 <div class="tr">
   <div class="th"><?php _e('username');?></div>

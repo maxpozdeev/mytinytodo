@@ -35,6 +35,7 @@
     "save": "Сохранить",
     "cancel": "Отмена",
     "close": "Закрыть",
+    "name": "Имя",
     "email": "E-Mail",
     "username": "Пользователь",
     "password": "Пароль",
@@ -251,6 +252,7 @@
     "settingsSaved": "Настройки сохранены. Перезагрузка...",
     "cantChange": "Невозможно изменить %s.",
     "emptyValue": "Пустое значение",
+    "nothingToChange": "Значение не изменилось",
     "incorrectFormat": "Неверный формат",
     "wrongConfirmPassword": "Пароли не совпадают",
     "invalidPassword": "Неверный пароль"
