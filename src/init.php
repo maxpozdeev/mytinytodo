@@ -695,10 +695,21 @@ function mtt_mail(string $to, string $subject, string $message)
 {
     require_once(MTTINC. 'vendor/phpmailer/phpmailer/src/PHPMailer.php');
 
+    function suggestedMailFrom(): string
+    {
+        $host = parse_url(get_unsafe_mttinfo('url'), PHP_URL_HOST);
+        $host = preg_replace('/^(www\.)/', '', $host);
+        if (function_exists('posix_getpwuid') && false !== ($userinfo = posix_getpwuid(posix_getuid())) ) {
+            return $userinfo['name']. '@'. $host;
+        }
+        return "mytinytodo@$host";
+    }
+
     $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
     try {
         $mail->XMailer = "myTinyTodo Mailer";
-        //$mail->setFrom();
+        $mail->CharSet = "UTF-8";
+        $mail->setFrom(suggestedMailFrom());
         $mail->addAddress($to);
         $mail->isHTML(true);
         $mail->Subject = $subject;
