@@ -1,3 +1,49 @@
+<?php declare(strict_types=1);
+
+$email = _get('email');
+$code = _get('code');
+
+$msg = htmlspecialchars(checkArguments($email, $code));
+
+function checkArguments(string $email, string $code): string
+{
+    if ($email === '' || $code === '') {
+        if (MTT_DEBUG) {
+            error_log("Link has empty code or email");
+        }
+        return __('invalidOrExpiredResetLink');
+    }
+    $data = [];
+    $db = DBConnection::instance();
+    $r = $db->sqa("SELECT pwtoken FROM {$db->prefix}users WHERE email=?", [$email]);
+    if (!$r || !validateWebToken($code, $r['pwtoken'], $data, false)) {
+        if (MTT_DEBUG) {
+            error_log("User has no pwtoken or webtoken is invalid");
+        }
+        return __('invalidOrExpiredResetLink');
+    }
+    if (time() > $data['exp']) {
+        if (MTT_DEBUG) {
+            error_log("Link has expired webtoken");
+        }
+        return __('invalidOrExpiredResetLink');
+    }
+    return '';
+}
+
+if ($msg !== '') {
+    echo <<<EOD
+<div id="page_auth">
+  <div id="authmsg" class="show info">$msg</div>
+</div>
+EOD;
+    return;
+}
+
+$email = htmlspecialchars($email);
+$code = htmlspecialchars($code);
+
+?>
 
 <!-- Page: Reset Password Link-->
 <div id="page_auth">
@@ -8,6 +54,8 @@
   <div id="authmsg">&nbsp;</div>
   <div id="authform">
     <form id="login_form" onsubmit="return false">
+    <input type="hidden" name="email" value="<?php echo $email; ?>">
+    <input type="hidden" name="code" value="<?php echo $code; ?>">
     <fieldset>
     <div class="auth-content">
       <div class="h"><?php _e('new_password');?></div>
@@ -55,8 +103,8 @@ document.getElementById('login_form').onsubmit = function(e) {
     fieldset.setAttribute('disabled', '');
     form.classList.add('mtt-overlay');
     mytinytodo.db.request( 'newPassword', {
-        email: 'email here',
-        code: 'code here',
+        email: form.email.value,
+        code: form.code.value,
         newpassword: form.newpassword.value,
         newpassword2: form.newpassword2.value,
     }, function(json, isError) {

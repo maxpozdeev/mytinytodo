@@ -90,12 +90,45 @@ class AuthController extends ApiController {
         $email = (string)($this->req->jsonBody['email'] ?? '');
 
         $db = DBConnection::instance();
-        $userId = (int) (new UserRepo($db))->findUserIdByEmail($email);
+        $r = $db->sqa("SELECT id,pwtoken FROM {$db->prefix}users WHERE email=?", [$email]);
+        if (!$r) {
+            if (MTT_DEBUG) {
+                $t['ok'] = false;
+                $t['error'] = "E-mail ($email) not found";
+            }
+            return $t;
+        }
+        if ($r['pwtoken'] == '') {
+            if (MTT_DEBUG) {
+                $t['ok'] = false;
+                $t['error'] = "pwtoken of user ($email) is empty";
+            }
+            return $t;
+        }
 
-        //TODO: write the code
+        $code = generateWebToken([
+            'sub' => $email,
+            'exp' => time() + 15*60   # 15 min lifetime
+        ], $r['pwtoken']);
+        $qsa = [
+            'email' => $email,
+            'code' => $code,
+        ];
+        $url = htmlspecialchars(routerMakeUrl('new-password', $qsa, true));
+        $msg = __('resetLinkMailText', true). "\n<br><br><a href='$url'>".__('btn_reset_password', true)."</a>";
+
+        if (!mtt_mail($email, __('resetLinkMailSubject', false), $msg)) {
+            $t['ok'] = false;
+            if (MTT_DEBUG)
+                $t['error'] = "Mail Error - ". MTTVars::$mailerLastError;
+            else
+                $t['error'] = "Mail Error";
+            error_log("resetPassword: failed to send email");
+        }
 
         return $t;
     }
+
 
     private function newPassword(): ?array
     {
@@ -111,19 +144,62 @@ class AuthController extends ApiController {
         $pw2 = (string)($this->req->jsonBody['newpassword2'] ?? '');
 
         if ($email === '' || $code === '' || $pw1 === '' || $pw2 === '') {
-            $t['ok'] = false;
-            $t['error'] = "No arguments";
+            $t['error'] = __('invalidOrExpiredResetLink', true);
+            return $t;
         }
+
+        if ($pw1 !== $pw2) {
+            $t['error'] = __('wrongConfirmPassword', true);
+            return $t;
+        }
+
+        $db = DBConnection::instance();
+        $r = $db->sqa("SELECT id, pwtoken FROM {$db->prefix}users WHERE email=?", [$email]);
+        if (!$r) {
+            if (MTT_DEBUG)
+                $t['error'] = "E-mail ($email) not found";
+            else
+                $t['error'] = __('invalidOrExpiredResetLink', true);
+            return $t;
+        }
+        $pwtoken = (string) $r['pwtoken'];
+        if ($pwtoken === '') {
+            if (MTT_DEBUG)
+                $t['error'] = "pwtoken of user ($email) is empty";
+            else
+                $t['error'] = __('invalidOrExpiredResetLink', true);
+            return $t;
+        }
+
+        $data = [];
+        if (!validateWebToken($code, $pwtoken, $data, false)) {
+            if (MTT_DEBUG)
+                $t['error'] = "Invalid code";
+            else
+                $t['error'] = __('invalidOrExpiredResetLink', true);
+            return $t;
+        }
+        if (!isset($data['sub']) || $data['sub'] !== $email) {
+            if (MTT_DEBUG)
+                $t['error'] = "Invalid code - incorrect sub field";
+            else
+                $t['error'] = __('invalidOrExpiredResetLink', true);
+            return $t;
+        }
+        if (time() > $data['exp'] ?? 0) {
+            if (MTT_DEBUG)
+                $t['error'] = "Invalid code - expired";
+            else
+                $t['error'] = __('invalidOrExpiredResetLink', true);
+            return $t;
+        }
+
+        $hash = passwordHash($pw1);
+        $newPwToken = randomToken();
+        $db->ex("UPDATE {$db->prefix}users SET pwhash = ?, pwtoken = ? WHERE id = ?", [$hash, $newPwToken, $r['id']]);
 
         $t['ok'] = true;
         $t['msg'] = __("new_password_set", true);
-
-
-        $db = DBConnection::instance();
-
-
-        //TODO: write the code
-
         return $t;
     }
 
