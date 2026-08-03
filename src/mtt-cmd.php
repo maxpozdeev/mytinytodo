@@ -123,7 +123,7 @@ function cmd_email(string $user, string $email): void {
     if ($email == '') {
         die("Error: cant set empty e-mail\n");
     }
-    if (!preg_match("/^[a-zA-Z0-9\\._+-]+@[a-zA-Z0-9\\.-]+$/", $email)) {
+    if (!isValidEmail($email)) {
         die("Error: incorrect e-mail\n");
     }
     $db = DBConnection::instance();
