@@ -31,7 +31,7 @@ final class UserAccountSettings {
     static function exitError(string $error) {
         ErrorApiResponse::exitWithMessage($error, 200);
     }
-    static function exitOk(bool $saved = true, string $message = null) {
+    static function exitOk(bool $saved = true, ?string $message = null) {
         $data = [
             'ok' => true,
             'saved' => $saved ? 1 : 0,

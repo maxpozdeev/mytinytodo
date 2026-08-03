@@ -469,12 +469,12 @@ class ConfigDictionary
     protected array $config;
     protected ?array $schema;
 
-    function __construct(array $schema = null)
+    function __construct(?array $schema = null)
     {
         $this->schema = $schema;
     }
 
-    public static function dictionary(array $array, array $schema = null): ConfigDictionary
+    public static function dictionary(array $array, ?array $schema = null): ConfigDictionary
     {
         $dict = new static($schema);
         $dict->setValues($array);

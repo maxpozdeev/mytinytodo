@@ -162,7 +162,7 @@ function redirectWithHashRoute(array $hash, array $q = [])
 function js_options()
 {
     // Here we can use URIs instead of full URLs.
-    $homeUrl = htmlspecialchars(Config::getUrl('url'));
+    $homeUrl = htmlspecialchars(Config::getUrl('url') ?? '');
     if ($homeUrl == '') {
         $homeUrl = get_mttinfo('mtt_uri');
     }

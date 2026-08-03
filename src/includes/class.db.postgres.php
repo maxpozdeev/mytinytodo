@@ -80,12 +80,20 @@ class PostgresDatabase extends AbstractDatabase
         $user = $params['user'];
         $pass = $params['password'];
         $db = $params['db'];
-        $options = array(
-            PDO::PGSQL_ATTR_DISABLE_PREPARES => 1,
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
-        );
         $this->dbname = $db;
-        $this->dbh = new PDO("pgsql:host=$host;dbname=$db", $user, $pass, $options);
+        if (PHP_VERSION_ID < 80500) {
+            $this->dbh = new PDO("pgsql:host=$host;dbname=$db", $user, $pass, [
+                PDO::PGSQL_ATTR_DISABLE_PREPARES => 1,
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+            ]);
+        }
+        else {
+            /** @disregard P1009 available in php 8.5 */
+            $this->dbh = new \Pdo\Pgsql("pgsql:host=$host;dbname=$db", $user, $pass, [
+                \Pdo\Pgsql::ATTR_DISABLE_PREPARES => 1,
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+            ]);
+        }
     }
 
 
