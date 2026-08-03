@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 class MTTVars {
     static string $requestedUsername = '';
@@ -8,6 +8,7 @@ class MTTVars {
     static string $settingsPageFile;
     static bool $isRtl = false;
     static ?string $forcedLang = null;
+    static string $mailerLastError = '';
 }
 
 

@@ -16,7 +16,8 @@
         "php": ">=7.4",
         "ext-mbstring": "*",
         "erusev/parsedown": "1.8.*",
-        "symfony/polyfill-intl-normalizer": "^1.34"
+        "symfony/polyfill-intl-normalizer": "^1.34",
+        "phpmailer/phpmailer": "^7.0"
     },
     "require-dev": {
         "php": ">=8.2",

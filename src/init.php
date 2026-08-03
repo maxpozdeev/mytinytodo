@@ -690,3 +690,26 @@ function canWriteToList(AbstractTaskList $list) : bool
     return (is_logged() && userId() === $list->userId);
 }
 
+
+function mtt_mail(string $to, string $subject, string $message)
+{
+    require_once(MTTINC. 'vendor/phpmailer/phpmailer/src/PHPMailer.php');
+
+    $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
+    try {
+        $mail->XMailer = "myTinyTodo Mailer";
+        //$mail->setFrom();
+        $mail->addAddress($to);
+        $mail->isHTML(true);
+        $mail->Subject = $subject;
+        $mail->Body = $message;
+        $mail->send();
+    }
+    catch (Exception $e) {
+        MTTVars::$mailerLastError = $e->getMessage();
+        error_log("PHPMailer exception: ". $e->getMessage());
+        return false;
+    }
+    MTTVars::$mailerLastError = '';
+    return true;
+}
