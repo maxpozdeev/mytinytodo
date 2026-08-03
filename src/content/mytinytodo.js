@@ -1363,8 +1363,9 @@ function prepareListHtml(list, isSelected)
 {
     const classSelected = isSelected ? 'mtt-tab-selected' : '';
     const classHidden = list.hidden ? 'mtt-tab-hidden' : '';
+    const classPublished = list.published ? 'mtt-list-published' : '';
     const liId = list.id == -1 ? 'list_all' : 'list_' + list.id;
-    return `<li id="${liId}" class="mtt-tab ${classSelected} ${classHidden}" data-id="${list.id}">` +
+    return `<li id="${liId}" class="mtt-tab ${classSelected} ${classHidden} ${classPublished}" data-id="${list.id}">` +
            '<a href="' + mtt.urlForList(list) + '" title="' + list.name + '">'+
              '<div class="title-block"><span class="counter hidden"></span>'+
              '<span class="title">' + list.name + '</span></div>' +
