@@ -219,7 +219,8 @@ function is_logged(bool $validateSignature = true): bool
     if ( !(int)$_SESSION['logged'] )
         return false;
 
-    if ($validateSignature) {
+    static $validated = false;
+    if ($validateSignature && !$validated) {
         if (!isset(MTTVars::$userPwToken)) {
             $id = (int)$_SESSION['userId'];
             if (!$id)
@@ -330,6 +331,15 @@ function update_token(): string
     $token = generateUUID();
     if ( need_auth() ) {
         $_SESSION['token'] = $token;
+        if (isset($_COOKIE['mtt-token'])) {
+             //clear mtt-token cookie
+             setcookie('mtt-token', '', [
+                'path' => url_dir(get_unsafe_mttinfo('mtt_url')),
+                'httponly' => true,
+                'samesite' => 'lax',
+                'expires' => time() - 3600,
+            ]);
+        }
     }
     else {
         setcookie('mtt-token', $token, [
