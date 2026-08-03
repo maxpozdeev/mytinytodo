@@ -220,6 +220,45 @@ function randomString2(int $len = 16, string $chars = '0123456789abcdefghijklmno
 }
 
 
+function generateWebToken(
+    array $data,
+    #[SensitiveParameter]
+    string $key): string
+{
+    $payload = base64_encode(json_encode($data));
+    return $payload. '.'. base64_encode(hash_hmac('sha256', $payload, $key, true));
+}
+
+
+function validateWebToken(
+    string $token,
+    #[SensitiveParameter]
+    string $key,
+    array &$data,
+    bool $checkExpire = true): bool
+{
+    $parts = explode('.', $token);
+    if (count($parts) != 2) {
+        return false;
+    }
+    $signature = base64_decode($parts[1]); //binary
+    if ($signature === false) {
+        return false;
+    }
+    if ( !hash_equals($signature, hash_hmac('sha256', $parts[0], $key, true)) ) {
+        return false;
+    }
+    $data = json_decode(base64_decode($parts[0]), true);
+    if (!isset($data['exp'])) {
+        return false;
+    }
+    if ($checkExpire && time() > $data['exp']) {
+        return false;
+    }
+    return true;
+}
+
+
 function isValidEmail(string $email): bool
 {
     return preg_match("/^[a-zA-Z0-9\\._+-]+@[a-zA-Z0-9\\.-]+$/", $email) ? true : false;
