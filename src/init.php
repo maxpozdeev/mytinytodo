@@ -500,6 +500,9 @@ function get_unsafe_mttinfo(string $v)
         case 'username':
             $_mttinfo['username'] = username() ?? '';
             return $_mttinfo['username'];
+        case 'user':
+            $_mttinfo['user'] = MTTVars::$user ?? '';
+            return $_mttinfo['user'];
         case 'tasks_uri':
             if (need_auth())
                 $_mttinfo['tasks_uri'] = routerMakeUserUrl();

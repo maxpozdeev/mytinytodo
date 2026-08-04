@@ -58,7 +58,7 @@ $().ready(function(){
     <div class="bar-menu">
       <span id="bar_public" style="display:none" class="mtt-need-auth-enabled"><?php _e('public_tasks');?></span>
     <?php if (is_logged()): ?>
-      <span id="usermenu" class="mtt-menu-button"><?php mttinfo('username') ?> <span class="arrdown2"></span></span>
+      <span id="usermenu" class="mtt-menu-button"><?php mttinfo('user') ?> <span class="arrdown2"></span></span>
     <?php else: ?>
       <a href="<?php mtturl('login'); ?>"  id="login_btn"  class="mtt-need-auth-enabled"><?php _e('a_login');?></a>
     <?php endif; ?>
