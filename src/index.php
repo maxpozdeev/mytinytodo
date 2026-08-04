@@ -224,7 +224,13 @@ function handleUser(string $username, string $path = '')
     if (MTTVars::$requestedUsername === '')
         return page_404();
 
-    MTTVars::$requestedUserId = (int) (new UserRepo(DBConnection::instance()))->findUserIdByUsername(MTTVars::$requestedUsername);
+    if (isset(MTTVars::$username) && MTTVars::$requestedUsername === MTTVars::$username) {
+        MTTVars::$requestedUserId = userId();
+    }
+    else {
+        MTTVars::$requestedUserId = (int) (new UserRepo(DBConnection::instance()))->findUserIdByUsername(MTTVars::$requestedUsername);
+    }
+
     if (!MTTVars::$requestedUserId)
         return page_404();
 

@@ -16,8 +16,11 @@ class ListsController extends ApiController {
     function get($username = null)
     {
         $db = DBConnection::instance();
-        if (!is_null($username) && $username != '') {
-            $userId = (new UserRepo($db))->findUserIdByUsername($username);
+        if (!is_null($username) && $username !== '') {
+            if (isset(MTTVars::$username) && $username === MTTVars::$username)
+                $userId = userId();
+            else
+                $userId = (new UserRepo($db))->findUserIdByUsername($username);
             if (!$userId) {
                 return $this->response->errorJsonContent("User not found", 404);
             }

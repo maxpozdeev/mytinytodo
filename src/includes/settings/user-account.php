@@ -72,7 +72,7 @@ final class UserAccountSettings {
             static::exitError($errPrefix. " ". __("incorrectFormat"));
         }
         $db = DBConnection::instance();
-        $id = (int)$db->sq("SELECT id FROM {$db->prefix}users WHERE username = ?", [$username]);
+        $id = (int) (new UserRepo($db))->findUserIdByUsername($username);
         if ($id && $id !== userId()) {
             static::exitError($errPrefix. " ". __("alreadyInUseByAccount"));
         }
@@ -94,7 +94,7 @@ final class UserAccountSettings {
             static::exitError($errPrefix. " ". __("incorrectFormat"));
         }
         $db = DBConnection::instance();
-        $id = (int)$db->sq("SELECT id FROM {$db->prefix}users WHERE email = ?", [$email]);
+        $id = (int) (new UserRepo($db))->findUserIdByEmail($email);
         if ($id && $id !== userId()) {
             static::exitError($errPrefix. " ". __("alreadyInUseByAccount"));
         }
