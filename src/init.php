@@ -219,20 +219,10 @@ function is_logged(bool $validateSignature = true): bool
     if ( !(int)$_SESSION['logged'] )
         return false;
 
-    static $validated = false;
-    if ($validateSignature && !$validated) {
-        if (!isset(MTTVars::$userPwToken)) {
-            $id = (int)$_SESSION['userId'];
-            if (!$id)
-                return false;
-
-            $db = DBConnection::instance();
-            $r = $db->sqa("SELECT pwtoken FROM {$db->prefix}users WHERE id=?", [$id]);
-            if (!$r)
-                return false;
-            MTTVars::$userPwToken = $r['pwtoken'];
-        }
-        return isValidSignature($_SESSION['sign'], session_id(), MTTVars::$userPwToken, defined('MTT_SALT') ? MTT_SALT : '');
+    if ($validateSignature) {
+        // actual validation is in loadUserConfig()
+        if (isset(MTTVars::$isSessionInvalid))
+            return false;
     }
 
     return true;

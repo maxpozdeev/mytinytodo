@@ -125,15 +125,32 @@ class Config
         if (self::$noDatabase) {
             return;
         }
-        $userId = userId();
+        $userId = userId(false);
         if (!$userId)
             return;
+
+        $db = DBConnection::instance();
+        $r = $db->sqa("SELECT pwtoken,username,name FROM {$db->prefix}users WHERE id=?", [$userId]);
+        if (!$r) {
+            return;
+        }
+        # validate session signature
+        # all sessions of a user will be invalid if password changed
+        if (!isValidSignature($_SESSION['sign'], session_id(), $r['pwtoken'], defined('MTT_SALT') ? MTT_SALT : '')) {
+            MTTVars::$isSessionInvalid = true; //used like readonly flag (if set any value)
+            return;
+        }
+
+        MTTVars::$userPwToken = $r['pwtoken'];
+        MTTVars::$user = $r['name'];
+        MTTVars::$username = $r['username'];
+
 
         $j = UserConfig::requestUserDomain($userId, static::userDomain);
         if (is_null($j))
             return;
         $dict = ConfigDictionary::dictionary($j, Config::$userSchema);
-        # validate signature?
+
         static::$userConfig = $dict;
     }
 
@@ -177,19 +194,6 @@ class Config
             return array_values($a);
         }
         return $a;
-    }
-
-    /**
-     *
-     * @param string $key
-     * @param mixed $value
-     * @return void
-     * @throws Exception
-     */
-    public static function set(string $key, $value)
-    {
-        if (self::isValidConfigParam($key, $value))
-            self::$config[$key] = $value;
     }
 
 
