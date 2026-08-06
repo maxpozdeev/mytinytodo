@@ -24,7 +24,7 @@ class TagsController extends ApiController {
                       FROM {$db->prefix}tag2task INNER JOIN {$db->prefix}tags ON tag_id = id
                       $sqlWhere
                       GROUP BY tag_id, name
-                      ORDER BY tags_count DESC");
+                      ORDER BY name ASC");
         $at = array();
         $ac = array();
         while ($r = $q->fetchAssoc()) {
