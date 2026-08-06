@@ -18,7 +18,7 @@ class AuthController extends ApiController {
         }
     }
 
-    private function login(): ?array
+    private function login(): array
     {
         check_token();
         $t = array('logged' => 0);
@@ -35,7 +35,7 @@ class AuthController extends ApiController {
         return $t;
     }
 
-    private function logout(): ?array
+    private function logout(): array
     {
         check_token();
         updateSessionLogged(false);
@@ -45,7 +45,7 @@ class AuthController extends ApiController {
         return $t;
     }
 
-    private function createSession(): ?array
+    private function createSession(): array
     {
         $t = array();
         if (!need_auth()) {

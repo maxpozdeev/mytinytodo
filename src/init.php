@@ -163,7 +163,7 @@ function configureDbConnection()
     # Check tables created
     global $checkDbExists;
     if (!Config::$noDatabase && isset($checkDbExists) && $checkDbExists) {
-        $exists = $db->tableExists($db->prefix.'settings');
+        $exists = $db->tableExists($db->getTableWithPrefix('settings'));
         if (!$exists) {
             die("Need to create or update the database. Run <a href=setup.php>setup.php</a> first.");
         }

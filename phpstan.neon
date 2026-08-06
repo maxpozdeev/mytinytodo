@@ -1,0 +1,14 @@
+includes:
+	- src/includes/vendor/phpstan/phpstan-deprecation-rules/rules.neon
+
+parameters:
+	level: 4
+	paths:
+		- src
+	excludePaths:
+		analyse:
+			- src/includes/vendor
+	bootstrapFiles:
+		- src/config-sample.php
+	fileExtensions:
+		- php

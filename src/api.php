@@ -197,7 +197,7 @@ function checkReadAccess(?int $listId = null)
     if (is_logged()) return true;
     if ($listId !== null)
     {
-        $id = $db->sq("SELECT id FROM {$db->prefix}lists WHERE id=? AND published=1", array($listId));
+        $id = $db->sq("SELECT id FROM {$db->getPrefix()}lists WHERE id=? AND published=1", array($listId));
         if ($id) return;
     }
     http_response_code(403);
@@ -221,7 +221,7 @@ function haveWriteAccess(?int $listId = null) : bool
     if ($listId !== null && $listId != -1)
     {
         $db = DBConnection::instance();
-        $count = $db->sq("SELECT COUNT(*) FROM {$db->prefix}lists WHERE id=?", array($listId));
+        $count = $db->sq("SELECT COUNT(*) FROM {$db->getPrefix()}lists WHERE id=?", array($listId));
         if (!$count) return false;
     }
     return true;

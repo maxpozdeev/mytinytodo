@@ -14,7 +14,7 @@ $lang = Lang::instance();
 
 $listId = (int)_get('list');
 $db = DBConnection::instance();
-$listData = $db->sqa("SELECT * FROM {$db->prefix}lists WHERE id=$listId");
+$listData = $db->sqa("SELECT * FROM {$db->getPrefix()}lists WHERE id=$listId");
 if ( $listData && need_auth() && !$listData['published'] ) {
     $extra = json_decode($listData['extra'] ?? '', true, 10, JSON_INVALID_UTF8_SUBSTITUTE);
     $feedKey = (string) ($extra['feedKey'] ?? '');

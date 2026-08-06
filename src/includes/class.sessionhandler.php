@@ -45,7 +45,7 @@ class MTTSessionHandler implements SessionHandlerInterface, SessionUpdateTimesta
     {
         // read session data if not expired
         $time = time();
-        $r = $this->db->sq("SELECT data,last_access,expires FROM {$this->db->prefix}sessions WHERE id = ?", [$id]);
+        $r = $this->db->sq("SELECT data,last_access,expires FROM {$this->db->getPrefix()}sessions WHERE id = ?", [$id]);
         if ( is_null($r) ) {
             // We return '' instead of false to avoid warning
             return '';
@@ -59,7 +59,7 @@ class MTTSessionHandler implements SessionHandlerInterface, SessionUpdateTimesta
         // refresh every 8 hours
         if ( $r[1] + 28800 < $time ) {
             $expire = $time + 14 * 86400;
-            $this->db->ex("UPDATE {$this->db->prefix}sessions SET last_access=?,expires=? WHERE id = ?",
+            $this->db->ex("UPDATE {$this->db->getPrefix()}sessions SET last_access=?,expires=? WHERE id = ?",
                 array($time, $expire, $id) );
         }
 
@@ -84,15 +84,15 @@ class MTTSessionHandler implements SessionHandlerInterface, SessionUpdateTimesta
         $time = time();
         $expire = $time + 14 * 86400;
 
-        $exists = $this->db->sq("SELECT COUNT(*) FROM {$this->db->prefix}sessions WHERE id = ?", [$id]);
+        $exists = $this->db->sq("SELECT COUNT(*) FROM {$this->db->getPrefix()}sessions WHERE id = ?", [$id]);
         if (!$exists) {
             // Create new session with 14 days lifetime
-            $this->db->ex("INSERT INTO {$this->db->prefix}sessions (id,data,last_access,expires) VALUES (?,?,?,?)",
+            $this->db->ex("INSERT INTO {$this->db->getPrefix()}sessions (id,data,last_access,expires) VALUES (?,?,?,?)",
                 array($id, $data, $time, $expire) );
         }
         else {
             // Update existing session
-            $this->db->ex("UPDATE {$this->db->prefix}sessions SET data = ?, last_access=?, expires=? WHERE id = ?",
+            $this->db->ex("UPDATE {$this->db->getPrefix()}sessions SET data = ?, last_access=?, expires=? WHERE id = ?",
                 array($data, $time, $expire, $id) );
         }
         return true;
@@ -105,7 +105,7 @@ class MTTSessionHandler implements SessionHandlerInterface, SessionUpdateTimesta
      */
     public function destroy($id): bool
     {
-        $this->db->ex("DELETE FROM {$this->db->prefix}sessions WHERE id = ?", [$id]);
+        $this->db->ex("DELETE FROM {$this->db->getPrefix()}sessions WHERE id = ?", [$id]);
         return true;
     }
 
@@ -118,7 +118,7 @@ class MTTSessionHandler implements SessionHandlerInterface, SessionUpdateTimesta
     {
         // We ignore php runtime 'session.gc_maxlifetime'
         $expire = time();
-        $this->db->ex("DELETE FROM {$this->db->prefix}sessions WHERE expires < $expire");
+        $this->db->ex("DELETE FROM {$this->db->getPrefix()}sessions WHERE expires < $expire");
         return $this->db->affected();
     }
 
@@ -130,7 +130,7 @@ class MTTSessionHandler implements SessionHandlerInterface, SessionUpdateTimesta
      */
     public function validateId($id): bool
     {
-        $r = $this->db->sq("SELECT COUNT(*) FROM {$this->db->prefix}sessions WHERE id = ?", [$id]);
+        $r = $this->db->sq("SELECT COUNT(*) FROM {$this->db->getPrefix()}sessions WHERE id = ?", [$id]);
         if ($r)
             return true;
         return false;

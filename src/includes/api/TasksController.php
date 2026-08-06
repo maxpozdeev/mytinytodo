@@ -75,15 +75,15 @@ class TasksController extends ApiController {
             if (count($tagIds) > 0) {
                 $tagAnd = [];
                 foreach ($tagIds as $ids) {
-                    $tagAnd[] = "task_id IN (SELECT task_id FROM {$db->prefix}tag2task WHERE tag_id IN (". implode(',', $ids). "))";
+                    $tagAnd[] = "task_id IN (SELECT task_id FROM {$db->getPrefix()}tag2task WHERE tag_id IN (". implode(',', $ids). "))";
                 }
                 $sqlWhere .= "\n AND todo.id IN (".
-                             "SELECT DISTINCT task_id FROM {$db->prefix}tag2task WHERE ". implode(' AND ', $tagAnd). ")";
+                             "SELECT DISTINCT task_id FROM {$db->getPrefix()}tag2task WHERE ". implode(' AND ', $tagAnd). ")";
             }
 
             // Exclude tags
             if (count($tagExIds) > 0) {
-                $sqlWhere .= "\n AND todo.id NOT IN (SELECT DISTINCT task_id FROM {$db->prefix}tag2task ".
+                $sqlWhere .= "\n AND todo.id NOT IN (SELECT DISTINCT task_id FROM {$db->getPrefix()}tag2task ".
                             "WHERE tag_id IN (". implode(',', $tagExIds). "))";
             }
         }
@@ -132,9 +132,9 @@ class TasksController extends ApiController {
 
         $q = $db->dq("
             SELECT todo.*, todo.duedate IS NULL AS ddn, $groupConcat
-            FROM {$db->prefix}todolist AS todo
-            LEFT JOIN {$db->prefix}tag2task AS t2t ON todo.id = t2t.task_id
-            LEFT JOIN {$db->prefix}tags AS tags ON t2t.tag_id = tags.id
+            FROM {$db->getPrefix()}todolist AS todo
+            LEFT JOIN {$db->getPrefix()}tag2task AS t2t ON todo.id = t2t.task_id
+            LEFT JOIN {$db->getPrefix()}tags AS tags ON t2t.tag_id = tags.id
             WHERE $sqlWhereListId $sqlWhere
             GROUP BY todo.id   $sqlHaving
             $sqlSort
@@ -295,7 +295,7 @@ class TasksController extends ApiController {
 
         if ($sqlWhereList) {
             $sqlWhere = implode(' OR ', $sqlWhereList);
-            $q = $db->dq("SELECT list_id, COUNT(id) c FROM {$db->prefix}todolist
+            $q = $db->dq("SELECT list_id, COUNT(id) c FROM {$db->getPrefix()}todolist
                           WHERE $sqlWhere GROUP BY list_id");
             while ($r = $q->fetchAssoc()) {
                 $a[] = [
@@ -309,7 +309,7 @@ class TasksController extends ApiController {
         $list = (int) ($this->req->jsonBody['list'] ?? 0);
         $later = (int) ($this->req->jsonBody['later'] ?? 0);
         if ($list > 0 && $later > 0 && (!$userLists || in_array((string)$list, $userLists))) {
-            $q = $db->dq("SELECT id FROM {$db->prefix}todolist
+            $q = $db->dq("SELECT id FROM {$db->getPrefix()}todolist
                           WHERE list_id = $list AND compl=0 AND d_created > $later");
             while ($r = $q->fetchAssoc()) {
                 $b[] = (int)$r['id'];
@@ -327,7 +327,7 @@ class TasksController extends ApiController {
 
     /* Private Functions */
 
-    private function newTaskInList(int $listId): ?array
+    private function newTaskInList(int $listId): array
     {
         $db = DBConnection::instance();
         $t = array();
@@ -355,10 +355,10 @@ class TasksController extends ApiController {
         if (Config::get('autotag')) {
             $tags .= ',' . ($this->req->jsonBody['tag'] ?? '');
         }
-        $ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->prefix}todolist WHERE list_id=$listId AND compl=0");
+        $ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->getPrefix()}todolist WHERE list_id=$listId AND compl=0");
         $date = time();
         $db->ex("BEGIN");
-        $db->dq("INSERT INTO {$db->prefix}todolist (uuid,list_id,title,d_created,d_edited,ow,prio,duedate) VALUES (?,?,?,?,?,?,?,?)",
+        $db->dq("INSERT INTO {$db->getPrefix()}todolist (uuid,list_id,title,d_created,d_edited,ow,prio,duedate) VALUES (?,?,?,?,?,?,?,?)",
                     array(generateUUID(), $listId, $title, $date, $date, $ow, $prio, $duedate) );
         $id = (int) $db->lastInsertId();
         if ($tags != '')
@@ -376,7 +376,7 @@ class TasksController extends ApiController {
         return $t;
     }
 
-    private function fullNewTaskInList(int $listId): ?array
+    private function fullNewTaskInList(int $listId): array
     {
         $db = DBConnection::instance();
         $title = trim($this->req->jsonBody['title'] ?? '');
@@ -393,10 +393,10 @@ class TasksController extends ApiController {
         $tags = $this->req->jsonBody['tags'] ?? '';
         if (Config::get('autotag'))
             $tags .= ',' . ($this->req->jsonBody['tag'] ?? '');
-        $ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->prefix}todolist WHERE list_id=$listId AND compl=0");
+        $ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->getPrefix()}todolist WHERE list_id=$listId AND compl=0");
         $date = time();
         $db->ex("BEGIN");
-        $db->dq("INSERT INTO {$db->prefix}todolist (uuid,list_id,title,d_created,d_edited,ow,prio,note,duedate) VALUES (?,?,?,?,?,?,?,?,?)",
+        $db->dq("INSERT INTO {$db->getPrefix()}todolist (uuid,list_id,title,d_created,d_edited,ow,prio,note,duedate) VALUES (?,?,?,?,?,?,?,?,?)",
                     array(generateUUID(), $listId, $title, $date, $date, $ow, $prio, $note, $duedate) );
         $id = (int) $db->lastInsertId();
         if ($tags != '')
@@ -414,7 +414,7 @@ class TasksController extends ApiController {
         return $t;
     }
 
-    private function editTask(int $id): ?array
+    private function editTask(int $id): array
     {
         $db = DBConnection::instance();
         $title = trim($this->req->jsonBody['title'] ?? '');
@@ -428,15 +428,15 @@ class TasksController extends ApiController {
         if ($title == '') {
             return $t;
         }
-        $listId = (int) $db->sq("SELECT list_id FROM {$db->prefix}todolist WHERE id=$id");
+        $listId = (int) $db->sq("SELECT list_id FROM {$db->getPrefix()}todolist WHERE id=$id");
         $tags = trim( $this->req->jsonBody['tags'] ?? '' );
         $db->ex("BEGIN");
-        $db->ex("DELETE FROM {$db->prefix}tag2task WHERE task_id=$id");
+        $db->ex("DELETE FROM {$db->getPrefix()}tag2task WHERE task_id=$id");
         $aTags = $this->prepareTags($tags);
         if ($aTags) {
             $this->addTaskTags($id, $aTags['ids'], $listId);
         }
-        $db->dq("UPDATE {$db->prefix}todolist SET title=?,note=?,prio=?,duedate=?,d_edited=? WHERE id=$id",
+        $db->dq("UPDATE {$db->getPrefix()}todolist SET title=?,note=?,prio=?,duedate=?,d_edited=? WHERE id=$id",
                 array($title, $note, $prio, $duedate, time()) );
         $db->ex("COMMIT");
         $task = $this->getTaskRowById($id, true);
@@ -446,7 +446,7 @@ class TasksController extends ApiController {
         return $t;
     }
 
-    private function moveTask(int $id): ?array
+    private function moveTask(int $id): array
     {
         $fromId = (int)($this->req->jsonBody['from'] ?? 0);
         $toId = (int)($this->req->jsonBody['to'] ?? 0);
@@ -477,35 +477,35 @@ class TasksController extends ApiController {
         $db = DBConnection::instance();
 
         // Check task exists and not in target list
-        $r = $db->sqa("SELECT * FROM {$db->prefix}todolist WHERE id=?", array($id));
+        $r = $db->sqa("SELECT * FROM {$db->getPrefix()}todolist WHERE id=?", array($id));
         if (!$r || $listId == $r['list_id'])
             return false;
 
         // Check target list exists
-        $l = $db->sqa("SELECT id,name FROM {$db->prefix}lists WHERE id=?", [$listId]);
+        $l = $db->sqa("SELECT id,name FROM {$db->getPrefix()}lists WHERE id=?", [$listId]);
         if (!$l)
             return false;
         $listName = $l['name'];
 
-        $ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->prefix}todolist WHERE list_id=? AND compl=?", array($listId, $r['compl']?1:0));
+        $ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->getPrefix()}todolist WHERE list_id=? AND compl=?", array($listId, $r['compl']?1:0));
 
         $db->ex("BEGIN");
-        $db->ex("UPDATE {$db->prefix}tag2task SET list_id=? WHERE task_id=?", array($listId, $id));
-        $db->dq("UPDATE {$db->prefix}todolist SET list_id=?, ow=?, d_edited=? WHERE id=?", array($listId, $ow, time(), $id));
+        $db->ex("UPDATE {$db->getPrefix()}tag2task SET list_id=? WHERE task_id=?", array($listId, $id));
+        $db->dq("UPDATE {$db->getPrefix()}todolist SET list_id=?, ow=?, d_edited=? WHERE id=?", array($listId, $ow, time(), $id));
         $db->ex("COMMIT");
         return true;
     }
 
-    private function completeTask(int $id): ?array
+    private function completeTask(int $id): array
     {
         $db = DBConnection::instance();
         $compl = (int)($this->req->jsonBody['compl'] ?? 0);
-        $listId = (int)$db->sq("SELECT list_id FROM {$db->prefix}todolist WHERE id=$id");
-        if ($compl) $ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->prefix}todolist WHERE list_id=$listId AND compl=1");
-        else $ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->prefix}todolist WHERE list_id=$listId AND compl=0");
+        $listId = (int)$db->sq("SELECT list_id FROM {$db->getPrefix()}todolist WHERE id=$id");
+        if ($compl) $ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->getPrefix()}todolist WHERE list_id=$listId AND compl=1");
+        else $ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->getPrefix()}todolist WHERE list_id=$listId AND compl=0");
         $date = time();
         $dateCompleted = $compl ? $date : 0;
-        $db->dq("UPDATE {$db->prefix}todolist SET compl=$compl,ow=$ow,d_completed=?,d_edited=? WHERE id=$id",
+        $db->dq("UPDATE {$db->getPrefix()}todolist SET compl=$compl,ow=$ow,d_completed=?,d_edited=? WHERE id=$id",
                     array($dateCompleted, $date) );
         $task = $this->getTaskRowById($id);
         MTTNotificationCenter::postNotification(MTTNotification::didCompleteTask, $task);
@@ -515,12 +515,12 @@ class TasksController extends ApiController {
         return $t;
     }
 
-    private function editNote(int $id): ?array
+    private function editNote(int $id): array
     {
         $db = DBConnection::instance();
         $note = $this->req->jsonBody['note'] ?? '';
         $note = str_replace("\r\n", "\n", $note);
-        $db->dq("UPDATE {$db->prefix}todolist SET note=?,d_edited=? WHERE id=$id", array($note, time()) );
+        $db->dq("UPDATE {$db->getPrefix()}todolist SET note=?,d_edited=? WHERE id=$id", array($note, time()) );
         if (MTTNotificationCenter::hasObserversForNotification(MTTNotification::didEditTask)) {
             $task = $this->getTaskRowById($id);
             MTTNotificationCenter::postNotification(MTTNotification::didEditTask, [
@@ -534,13 +534,13 @@ class TasksController extends ApiController {
         return $t;
     }
 
-    private function priorityTask(int $id): ?array
+    private function priorityTask(int $id): array
     {
         $db = DBConnection::instance();
         $prio = (int)($this->req->jsonBody['prio'] ?? 0);
         if ($prio < -1) $prio = -1;
         elseif ($prio > 2) $prio = 2;
-        $db->ex("UPDATE {$db->prefix}todolist SET prio=$prio,d_edited=? WHERE id=$id", array(time()) );
+        $db->ex("UPDATE {$db->getPrefix()}todolist SET prio=$prio,d_edited=? WHERE id=$id", array(time()) );
         if (MTTNotificationCenter::hasObserversForNotification(MTTNotification::didEditTask)) {
             $task = $this->getTaskRowById($id);
             MTTNotificationCenter::postNotification(MTTNotification::didEditTask, [
@@ -555,7 +555,7 @@ class TasksController extends ApiController {
     }
 
 
-    private function changeTaskOrder(): ?array
+    private function changeTaskOrder(): array
     {
         $db = DBConnection::instance();
         $order = $this->req->jsonBody['order'] ?? null;
@@ -573,7 +573,7 @@ class TasksController extends ApiController {
             foreach ($ad as $diff=>$ids) {
                 if ($diff >=0) $set = "ow=ow+".$diff;
                 else $set = "ow=ow-".abs($diff);
-                $db->dq("UPDATE {$db->prefix}todolist SET $set,d_edited=? WHERE id IN (".implode(',',$ids).")", array(time()) );
+                $db->dq("UPDATE {$db->getPrefix()}todolist SET $set,d_edited=? WHERE id IN (".implode(',',$ids).")", array(time()) );
             }
             $db->ex("COMMIT");
             $t['total'] = 1;
@@ -590,9 +590,9 @@ class TasksController extends ApiController {
         }
         $db = DBConnection::instance();
         $db->ex("BEGIN");
-        $db->ex("DELETE FROM {$db->prefix}tag2task WHERE task_id=$id");
+        $db->ex("DELETE FROM {$db->getPrefix()}tag2task WHERE task_id=$id");
         //TODO: delete unused tags?
-        $db->dq("DELETE FROM {$db->prefix}todolist WHERE id=$id");
+        $db->dq("DELETE FROM {$db->getPrefix()}todolist WHERE id=$id");
         $deleted = $db->affected();
         $db->ex("COMMIT");
         if ($deleted && MTTNotificationCenter::hasObserversForNotification(MTTNotification::didDeleteTask)) {
@@ -612,14 +612,14 @@ class TasksController extends ApiController {
             $sqlWhere = "WHERE published=1";
         }
         $a = array();
-        $q = $db->dq("SELECT id,name FROM {$db->prefix}lists $sqlWhere ORDER BY id ASC");
+        $q = $db->dq("SELECT id,name FROM {$db->getPrefix()}lists $sqlWhere ORDER BY id ASC");
         while($r = $q->fetchRow()) {
             $a[ (string)$r[0] ] = (string)$r[1];
         }
         return $a;
     }
 
-    private function getTaskRowById(int $id, bool $getListName = false): ?array
+    private function getTaskRowById(int $id, bool $getListName = false): array
     {
         $r = DBCore::default()->getTaskById($id);
         if (!$r) {
@@ -770,18 +770,18 @@ class TasksController extends ApiController {
     private function getTagId($tag)
     {
         $db = DBConnection::instance();
-        $id = $db->sq("SELECT id FROM {$db->prefix}tags WHERE name=?", array($tag));
+        $id = $db->sq("SELECT id FROM {$db->getPrefix()}tags WHERE name=?", array($tag));
         return $id ? $id : 0;
     }
 
     private function getOrCreateTag($name): array
     {
         $db = DBConnection::instance();
-        $tagId = $db->sq("SELECT id FROM {$db->prefix}tags WHERE name=?", array($name));
+        $tagId = $db->sq("SELECT id FROM {$db->getPrefix()}tags WHERE name=?", array($name));
         if ($tagId)
             return array('id'=>$tagId, 'name'=>$name);
 
-        $db->ex("INSERT INTO {$db->prefix}tags (name) VALUES (?)", array($name));
+        $db->ex("INSERT INTO {$db->getPrefix()}tags (name) VALUES (?)", array($name));
         return array(
             'id' => $db->lastInsertId(),
             'name' => $name
@@ -814,7 +814,7 @@ class TasksController extends ApiController {
         if (!$tagIds) return;
         foreach ($tagIds as $tagId) {
             $db->ex(
-                "INSERT INTO {$db->prefix}tag2task (task_id,tag_id,list_id) VALUES (?,?,?)",
+                "INSERT INTO {$db->getPrefix()}tag2task (task_id,tag_id,list_id) VALUES (?,?,?)",
                 array($taskId, $tagId, $listId)
             );
         }

@@ -21,22 +21,22 @@ class TelegramApi
         $this->token = $token;
     }
 
-    function getMe(): ?array
+    function getMe(): array
     {
         return $this->makeGetRequest('getMe');
     }
 
-    function getUpdates(?array $params = null): ?array
+    function getUpdates(?array $params = null): array
     {
         return $this->makePostRequest('getUpdates', $params ?? []);
     }
 
-    function sendMessage(array $params): ?array
+    function sendMessage(array $params): array
     {
         return $this->makePostRequest('sendMessage', $params);
     }
 
-    private function makeGetRequest(string $method): ?array
+    private function makeGetRequest(string $method): array
     {
         $options = array(
             'http' => array(
@@ -67,7 +67,7 @@ class TelegramApi
         return $decodedBody['result'] ?? [];
     }
 
-    private function makePostRequest(string $method, array $params): ?array
+    private function makePostRequest(string $method, array $params): array
     {
         $json = json_encode($params, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_INVALID_UTF8_SUBSTITUTE);
         $options = array(

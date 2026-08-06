@@ -11,7 +11,7 @@ require_once('./init.php');
 
 $listId = (int)_get('list');
 $db = DBConnection::instance();
-$listData = $db->sqa("SELECT * FROM {$db->prefix}lists WHERE id=$listId");
+$listData = $db->sqa("SELECT * FROM {$db->getPrefix()}lists WHERE id=$listId");
 if ( $listData && !is_logged() && !$listData['published'] ) {
     $extra = json_decode($listData['extra'] ?? '', true, 10, JSON_INVALID_UTF8_SUBSTITUTE);
     $feedKey = (string) ($extra['feedKey'] ?? '');

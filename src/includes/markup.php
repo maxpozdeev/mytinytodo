@@ -16,7 +16,7 @@ interface MTTMarkdownInterface
 
 final class MTTMarkdown
 {
-    /** @var MTTMarkdownInterface */
+    /** @var MTTMarkdownInterface|null */
     private static $instance;
 
     /** @var string */
