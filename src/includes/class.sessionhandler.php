@@ -59,8 +59,15 @@ class MTTSessionHandler implements SessionHandlerInterface, SessionUpdateTimesta
         // refresh every 8 hours
         if ( $r[1] + 28800 < $time ) {
             $expire = $time + 14 * 86400;
-            $this->db->ex("UPDATE {$this->db->prefix}sessions SET last_access=?,expires=? WHERE id = ?",
-                array($time, $expire, $id) );
+            if ((int)$r[2] < $time) {
+                // also clear data in expired session
+                $this->db->ex("UPDATE {$this->db->prefix}sessions SET data='',last_access=?,expires=? WHERE id = ?",
+                    array($time, $expire, $id) );
+            }
+            else {
+                $this->db->ex("UPDATE {$this->db->prefix}sessions SET last_access=?,expires=? WHERE id = ?",
+                    array($time, $expire, $id) );
+            }
         }
 
         if ($r[0] === '') {
