@@ -56,6 +56,7 @@ final class UserAccountSettings {
         }
         $db = DBConnection::instance();
         $db->ex("UPDATE {$db->prefix}users SET name=? WHERE id=?", [$name, userId()]);
+        MTTVars::$user = $name;
         static::exitOk();
     }
 
@@ -77,7 +78,7 @@ final class UserAccountSettings {
             static::exitError($errPrefix. " ". __("alreadyInUseByAccount"));
         }
         $db->ex("UPDATE {$db->prefix}users SET username=? WHERE id=?", [$username, userId()]);
-        $_SESSION['username'] = $username;
+        MTTVars::$username = $username;
         static::exitOk();
     }
 

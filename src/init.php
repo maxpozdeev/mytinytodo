@@ -212,9 +212,8 @@ function is_logged(bool $validateSignature = true): bool
         return true;
     if (session_status() !== PHP_SESSION_ACTIVE)
         return false;
-    if ( !isset($_SESSION['logged'])   || !isset($_SESSION['sign'])
-        || !isset($_SESSION['userId']) || !isset($_SESSION['username']) )
-            return false;
+    if ( !isset($_SESSION['logged'])   ||  !isset($_SESSION['sign'])  ||  !isset($_SESSION['userId']) )
+        return false;
 
     if ( !(int)$_SESSION['logged'] )
         return false;
@@ -252,7 +251,7 @@ function username(): ?string
         return 'admin';
      if (!is_logged())
         return null;
-    return (string)$_SESSION['username'];
+    return MTTVars::$username ?? null;
 }
 
 function is_admin(): bool
@@ -270,13 +269,13 @@ function updateSessionLogged( bool $logged,
         }
         $_SESSION['logged'] = 1;
         $_SESSION['userId'] = (int)$user['id'];
-        $_SESSION['username'] = $user['username']; # TODO: handle username changes
+        MTTVars::$username = $user['username'];
+        MTTVars::$userPwToken = $user['pwtoken'];
         $_SESSION['sign'] = sessionSignature($user['pwtoken']);
     }
     else {
         unset($_SESSION['logged']);
         unset($_SESSION['userId']);
-        unset($_SESSION['username']);
         unset($_SESSION['sign']);
     }
 }
