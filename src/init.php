@@ -212,10 +212,10 @@ function is_logged(bool $validateSignature = true): bool
         return true;
     if (session_status() !== PHP_SESSION_ACTIVE)
         return false;
-    if ( !isset($_SESSION['logged'])   ||  !isset($_SESSION['sign'])  ||  !isset($_SESSION['userId']) )
+    if ( !isset($_SESSION['sign'])  ||  !isset($_SESSION['userId']) )
         return false;
 
-    if ( !(int)$_SESSION['logged'] )
+    if ( !(int)$_SESSION['userId'] )
         return false;
 
     if ($validateSignature) {
@@ -267,17 +267,18 @@ function updateSessionLogged( bool $logged,
         if (is_null($user) || !isset($user['id']) || $user['id'] == 0 || !isset($user['username'])) {
             throw new Exception("Unexpected user data");
         }
-        $_SESSION['logged'] = 1;
         $_SESSION['userId'] = (int)$user['id'];
         MTTVars::$username = $user['username'];
         MTTVars::$userPwToken = $user['pwtoken'];
         $_SESSION['sign'] = sessionSignature($user['pwtoken']);
     }
     else {
-        unset($_SESSION['logged']);
         unset($_SESSION['userId']);
         unset($_SESSION['sign']);
     }
+    // remove unused session vars since 2.0
+    unset($_SESSION['logged']);
+    unset($_SESSION['username']);
 }
 
 function sessionSignature(
