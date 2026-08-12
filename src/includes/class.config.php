@@ -238,7 +238,7 @@ class Config
      */
     public static function saveDomain(string $key, array $array)
     {
-        $json = json_encode($array, JSON_PRETTY_PRINT /*| JSON_INVALID_UTF8_SUBSTITUTE*/);
+        $json = json_encode($array);
         if ($json === false) {
             throw new Exception("Failed to create JSON object with settings. Code: ". (int)json_last_error());
         }
@@ -393,7 +393,7 @@ class AppConfig
      */
     public static function saveDomain(string $key, array $array)
     {
-        $json = json_encode($array, JSON_PRETTY_PRINT /*| JSON_INVALID_UTF8_SUBSTITUTE*/);
+        $json = json_encode($array);
         if ($json === false) {
             throw new Exception("Failed to create JSON object with settings. Code: ". (int)json_last_error());
         }
@@ -445,7 +445,7 @@ class UserConfig
 
     public static function saveUserDomain(int $userId, string $key, array $array)
     {
-        $json = json_encode($array, JSON_PRETTY_PRINT /*| JSON_INVALID_UTF8_SUBSTITUTE*/);
+        $json = json_encode($array);
         if ($json === false) {
             throw new Exception("Failed to create JSON object with settings. Code: ". (int)json_last_error());
         }
