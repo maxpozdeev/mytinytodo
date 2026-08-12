@@ -106,7 +106,7 @@ class Config
         'newTaskCounterIcon' => array('default' => 0, 'type'=>'i'),
     );
 
-    public static function load(): void
+    public static function loadAppConfig(): void
     {
         if (self::$noDatabase) {
             # default config
@@ -205,27 +205,8 @@ class Config
      */
     public static function requestDomain(string $key): array
     {
-        $db = DBConnection::instance();
-        $json = $db->sq("SELECT param_value FROM {$db->prefix}settings WHERE param_key = ?", array($key));
-        if (!$json)
-            return array();
-        $j = json_decode($json, true, 100, JSON_INVALID_UTF8_SUBSTITUTE);
-        if ($j === null) {
-            error_log("MTT Error: Failed to decode JSON object with settings. Code: ". (int)json_last_error());
-            return array();
-        }
-        return $j;
-    }
-
-
-    /**
-     *
-     * @return array
-     * @throws Exception
-     */
-    public static function requestDefaultDomain(): array
-    {
-        return self::requestDomain('config.json');
+        //TODO: remove this proc
+        return AppConfig::requestDomain($key);
     }
 
 
@@ -238,18 +219,8 @@ class Config
      */
     public static function saveDomain(string $key, array $array)
     {
-        $json = json_encode($array);
-        if ($json === false) {
-            throw new Exception("Failed to create JSON object with settings. Code: ". (int)json_last_error());
-        }
-        $db = DBConnection::instance();
-        $keyExists = $db->sq("SELECT COUNT(param_key) FROM {$db->prefix}settings WHERE param_key = ?", array($key) );
-        if ($keyExists) {
-            $db->ex("UPDATE {$db->prefix}settings SET param_value = ? WHERE param_key = ?", array($json,$key) );
-        }
-        else {
-            $db->ex("INSERT INTO {$db->prefix}settings (param_key,param_value) VALUES (?,?)", array($key,$json) );
-        }
+        //TODO: remove this proc
+        return AppConfig::saveDomain($key, $array);
     }
 
 }

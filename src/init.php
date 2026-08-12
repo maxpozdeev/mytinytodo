@@ -62,7 +62,7 @@ $_mttinfo = array();
 
 configureDbConnection();
 
-Config::load();
+Config::loadAppConfig();
 
 date_default_timezone_set(Config::get('timezone'));
 
