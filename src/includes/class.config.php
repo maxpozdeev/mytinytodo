@@ -130,7 +130,7 @@ class Config
             return;
 
         $db = DBConnection::instance();
-        $r = $db->sqa("SELECT pwtoken,username,name FROM {$db->prefix}users WHERE id=?", [$userId]);
+        $r = $db->sqa("SELECT pwtoken,username,name,last_visit FROM {$db->prefix}users WHERE id=?", [$userId]);
         if (!$r) {
             return;
         }
@@ -145,6 +145,10 @@ class Config
         MTTVars::$user = $r['name'];
         MTTVars::$username = $r['username'];
 
+        $today = date("Y-m-d");
+        if ($today !== $r['last_visit']) {
+            $db->ex("UPDATE {$db->prefix}users SET last_visit = ? WHERE id=?", [$today, $userId]);
+        }
 
         $j = UserConfig::requestUserDomain($userId, static::userDomain);
         if (is_null($j))
