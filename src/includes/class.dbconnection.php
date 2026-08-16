@@ -118,7 +118,8 @@ abstract class AbstractDatabase
             if ($f) {
                 if ($this->isFirstLog) {
                     $this->isFirstLog = false;
-                    fwrite($f, "====== ". ($_SERVER['REQUEST_TIME_FLOAT'] ?? ""). " (". static::DBTYPE. ") ======\n");
+                    $dt = (new DateTime())->format('Y-m-d H:i:s.v');
+                    fwrite($f, "====== $dt (". static::DBTYPE. ") ======\n");
                 }
                 # execution time of last query
                 if ($this->lastQueryFinish)
