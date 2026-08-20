@@ -435,13 +435,13 @@ class Task extends AbstractTask
 
             'dateCompleted' => htmlspecialchars($dCompleted),
             'dateCompletedFull' => htmlspecialchars($dCompletedFull),
-            'dateCompletedInlineTitle' => htmlspecialchars(sprintf($lang->get('taskdate_inline_completed'), $dCompleted)),
+            'dateCompletedInlineTitle' => $dCompleted !== '' ? htmlspecialchars(sprintf($lang->get('taskdate_inline_completed'), $dCompleted)) : '',
 
             'duedate' => htmlspecialchars($dueA['formatted']),
             'dueClass' => htmlspecialchars($dueA['class']),
             'dueStr' => htmlspecialchars($dueA['str']),
             'dueInt' => $dueA['int'],                           //int
-            'dueTitle' => htmlspecialchars(sprintf($lang->get('taskdate_inline_duedate'), $dueA['formattedlong'])),
+            'dueTitle' => $dueA['formattedlong'] !== '' ? htmlspecialchars(sprintf($lang->get('taskdate_inline_duedate'), $dueA['formattedlong'])) : '',
 
             'tags' => htmlspecialchars( implode(',', $this->tagNames) ),
             'tags_ids' => htmlspecialchars( implode(',', $this->tagIds) ),
