@@ -63,8 +63,11 @@ class UserRepo
      * Return null if user does not exists.
      * @return null|array
      */
-    public function userDataById(int $id): ?array
+    public function userDataById(?int $id): ?array
     {
+        if (!$id) {
+            return null;
+        }
         $r = $this->db->sqa("SELECT * FROM {$this->db->prefix}users WHERE id=?", [$id]);
         if ($r) {
             return $r;

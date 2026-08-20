@@ -14,8 +14,8 @@ final class UserAccountSettings {
     private static array $data;
     static function load()
     {
-        $db = DBConnection::instance();
-        $r = $db->sqa("SELECT id,name,username,email,pwhash,extra FROM {$db->prefix}users WHERE id=?", [userId()]);
+        $userRepo = new UserRepo(DBConnection::instance());
+        $r = $userRepo->userDataById(userId());
         if (!$r) {
             die("User not found");
         }
