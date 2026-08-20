@@ -3252,12 +3252,18 @@ function saveSettings(frm)
         if (json.error) {
             mttErrorAlert(json.error);
         }
+        else if (json.ok) {
+            const msg = json.msg ? json.msg : "OK";
+            const cb = frm.dataset.okReload ? function(){window.location.reload();} : undefined;
+            if (json.isHtmlMsg) {
+                mttHtmlAlert(msg, cb);
+            }
+            else {
+                mttAlert(msg, cb);
+            }
+        }
         else if (json.msg) {
             mttAlert(json.msg);
-        }
-        else if (json.ok) {
-            const cb = frm.dataset.okReload ? function(){window.location.reload();} : undefined;
-            mttAlert("OK", cb);
         }
         else {
             mttAlert("Not OK");
@@ -3398,6 +3404,11 @@ function mttAlert(msg, callbackOk)
     mttModalDialog().ok(callbackOk).message(msg).show();
 }
 
+function mttHtmlAlert(msg, callbackOk)
+{
+    mttModalDialog().ok(callbackOk).htmlMessage(msg).show();
+}
+
 function mttErrorAlert(msg, callbackOk)
 {
     mttModalDialog().ok(callbackOk).header("Error").message(msg).show();
@@ -3448,6 +3459,11 @@ function mttModalDialog(dialogType = 'alert')
 
     this.message = function(msg = '') {
         $("#modalMessage").text(msg);
+        return dialog;
+    };
+
+    this.htmlMessage = function(msg = '') {
+        $("#modalMessage").html(msg);
         return dialog;
     };
 
