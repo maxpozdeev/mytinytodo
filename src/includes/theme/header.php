@@ -51,7 +51,7 @@ $().ready(function(){
 
   <a class="logo" href="<?php mttinfo('url'); ?>"></a>
 
-  <h2><?php mttinfo('title'); ?></h2>
+  <div id="mtt_title"><?php mttinfo('title'); ?></div>
 
   <div class="topblock-bar">
     <div id="msg"><span class="msg-text"></span><div class="msg-details"></div></div>

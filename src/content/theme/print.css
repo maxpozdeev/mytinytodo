@@ -1,7 +1,7 @@
 @media print {
 
   html,body { height:auto; }
-  h2 { display: none; }
+  #mtt_title { display: none; }
   h3 { border-bottom:2px solid #777777; }
   #toolbar { display: none; }
 

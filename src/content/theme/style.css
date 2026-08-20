@@ -208,9 +208,10 @@ h3.page-title .page-title-right {
   background: url(images/logo.gif) no-repeat top left;
   background-size: 24px 24px;
 }
-#topblock h2 {
+#topblock #mtt_title {
   margin:0;
   font-size:1.5rem;
+  font-weight: bold;
 }
 #mtt.ajax-loading a.logo {
   background-image: url(images/logo-loading.gif);
@@ -1504,8 +1505,8 @@ li.mtt-item-hidden { display:none; }
   #mtt.page-ajax #topblock { display: none; } /* hide topmost block if settings pages is opened */
   #mtt.page-taskedit #topblock { display: none; } /* hide topmost block if edit/add task  page is opened */
 
-  h2 { font-size:1rem; }
-  #topblock h2 {
+  #topblock #mtt_title {
+    font-size: 1rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis; /* min-width of parent flex is required for this */
