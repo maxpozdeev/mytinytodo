@@ -42,4 +42,33 @@ class UserRepo
             return null;
         return (int)$r;
     }
+
+    /**
+     * Get array with raw user data by its username.
+     * Return null if user does not exists.
+     * @return null|array
+     */
+    public function userDataByUsername(string $username): ?array
+    {
+        $r = $this->db->sqa("SELECT * FROM {$this->db->prefix}users WHERE username=?", [$username]);
+        if ($r) {
+            return $r;
+        }
+        return null;
+    }
+
+
+    /**
+     * Get array with raw user data by its id.
+     * Return null if user does not exists.
+     * @return null|array
+     */
+    public function userDataById(int $id): ?array
+    {
+        $r = $this->db->sqa("SELECT * FROM {$this->db->prefix}users WHERE id=?", [$id]);
+        if ($r) {
+            return $r;
+        }
+        return null;
+    }
 }

@@ -129,25 +129,29 @@ class Config
         if (!$userId)
             return;
 
-        $db = DBConnection::instance();
-        $r = $db->sqa("SELECT pwtoken,username,name,last_visit FROM {$db->prefix}users WHERE id=?", [$userId]);
-        if (!$r) {
-            return;
-        }
-        # validate session signature
-        # all sessions of a user will be invalid if password changed
-        if (!isValidSignature($_SESSION['sign'], session_id(), $r['pwtoken'], defined('MTT_SALT') ? MTT_SALT : '')) {
-            MTTVars::$isSessionInvalid = true; //used like readonly flag (if set any value)
-            return;
-        }
+        if (!MTTVars::$isStateless)
+        {
+            $db = DBConnection::instance();
+            $userRepo = new UserRepo($db);
+            $r = $userRepo->userDataById($userId);
+            if (!$r) {
+                return;
+            }
+            # validate session signature
+            # all sessions of a user will be invalid if password changed
+            if (!isValidSignature($_SESSION['sign'], session_id(), $r['pwtoken'], defined('MTT_SALT') ? MTT_SALT : '')) {
+                MTTVars::$isSessionInvalid = true; //used like readonly flag (if set any value)
+                return;
+            }
 
-        MTTVars::$userPwToken = $r['pwtoken'];
-        MTTVars::$user = $r['name'];
-        MTTVars::$username = $r['username'];
+            MTTVars::$userPwToken = $r['pwtoken'];
+            MTTVars::$user = $r['name'];
+            MTTVars::$username = $r['username'];
 
-        $today = date("Y-m-d");
-        if ($today !== $r['last_visit']) {
-            $db->ex("UPDATE {$db->prefix}users SET last_visit = ? WHERE id=?", [$today, $userId]);
+            $today = date("Y-m-d");
+            if ($today !== $r['last_visit']) {
+                $db->ex("UPDATE {$db->prefix}users SET last_visit = ? WHERE id=?", [$today, $userId]);
+            }
         }
 
         $j = UserConfig::requestUserDomain($userId, static::userDomain);

@@ -67,7 +67,14 @@ Config::loadAppConfig();
 date_default_timezone_set(Config::get('timezone'));
 
 if (need_auth() && !isset($dontStartSession) && !Config::$noDatabase) {
-    setup_and_start_session();
+    if ( !isset(MTTVars::$isStateless) && isset($_SERVER['HTTP_AUTHORIZATION']) ) {
+        MTTVars::$isStateless = true;
+        checkBasicAuth();
+    }
+    else {
+        MTTVars::$isStateless = false;
+        setup_and_start_session();
+    }
 }
 if (!isset($dontStartSession)) {
     Config::loadUserConfig();
@@ -210,6 +217,17 @@ function is_logged(bool $validateSignature = true): bool
 {
     if ( !need_auth() )
         return true;
+
+    if ( !isset(MTTVars::$isStateless) )
+        return false;
+
+    if (MTTVars::$isStateless) {
+        if (MTTVars::$userId) {
+            return true;
+        }
+        return false;
+    }
+
     if (session_status() !== PHP_SESSION_ACTIVE)
         return false;
     if ( !isset($_SESSION['sign'])  ||  !isset($_SESSION['userId']) )
@@ -239,7 +257,7 @@ function userId(bool $validateSignature = true): ?int
         return 1;
     if (!is_logged($validateSignature))
         return null;
-    $userId = (int)$_SESSION['userId'];
+    $userId = MTTVars::$isStateless ? MTTVars::$userId : (int)$_SESSION['userId'];
     if ($userId <= 0)
         throw new Exception("Unexpected user id (0)");
     return $userId;
@@ -309,6 +327,13 @@ function access_token(): string
  */
 function check_token()
 {
+    if (MTTVars::$isStateless) {
+        if (MTTVars::$userId) {
+            return;
+        }
+        http_response_code(500);
+        die("Access denied! Unexpected stateless data.\n");
+    }
     $token = access_token();
     if ($token == '' || !isset($_SERVER['HTTP_MTT_TOKEN']) || $_SERVER['HTTP_MTT_TOKEN'] !== $token) {
         http_response_code(403);
@@ -370,6 +395,53 @@ function setup_and_start_session()
     ]);
     session_name('mtt-session');
     session_start();
+}
+
+
+function userDataByBasicAuth(): ?array
+{
+    $header = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+    if (stripos($header, 'basic') !== 0) {
+        return null;
+    }
+    $base64 = substr($header, 6) ?: '';
+    $payload = base64_decode($base64) ?: '';
+    if (strpos($payload, ':') === false) {
+        return null;
+    }
+    list($username, $password) = explode(':', $payload, 2);
+
+    $repo = new UserRepo(DBConnection::instance());
+    $userdata = $repo->userDataByUsername($username);
+    if (!$userdata) {
+        return null;
+    }
+    $extra = json_decode($userdata['extra'] ?? '', true);
+    if (!$extra) {
+        return null;
+    }
+    if (!isset($extra['apppasswords']) || !is_array($extra['apppasswords'])) {
+        return null;
+    }
+    foreach ($extra['apppasswords'] as $row) {
+        if (isPasswordEqualsToHash($password, $row['hash'] ?? '')) {
+            return $userdata;
+        }
+    }
+    return null;
+}
+
+function checkBasicAuth()
+{
+    $data = userDataByBasicAuth();
+    if (!$data) {
+        http_response_code(401);
+        die("Authorization required\n");
+    }
+    MTTVars::$user = $data['name'];
+    MTTVars::$username = $data['username'];
+    MTTVars::$userId = (int)$data['id'];
+    MTTVars::$userPwToken = $data['pwtoken'];
 }
 
 function timestampToDatetime(int $timestamp, bool $forceTime = false) : string

@@ -9,6 +9,11 @@
 $checkDbExists = true; #TODO: only index page?
 require_once('./init.php');
 
+if (MTTVars::$isStateless) {
+    page_403();
+    exit;
+}
+
 if ( access_token() == '' ) {
     update_token();
 }

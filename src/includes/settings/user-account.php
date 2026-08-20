@@ -15,7 +15,7 @@ final class UserAccountSettings {
     static function load()
     {
         $db = DBConnection::instance();
-        $r = $db->sqa("SELECT id,name,username,email,pwhash FROM {$db->prefix}users WHERE id=?", [userId()]);
+        $r = $db->sqa("SELECT id,name,username,email,pwhash,extra FROM {$db->prefix}users WHERE id=?", [userId()]);
         if (!$r) {
             die("User not found");
         }
@@ -28,16 +28,40 @@ final class UserAccountSettings {
         return (string) (static::$data[$key] ?? '');
     }
 
+    static function getExtra(): ?array
+    {
+        $extra = json_decode(static::$data['extra'] ?? '', true);
+        if (!$extra) {
+            return null;
+        }
+        return $extra;
+    }
+
+    static function getAppPasswords(): ?array
+    {
+        $extra = static::getExtra() ?? [];
+        if (!isset($extra['apppasswords']) || !is_array($extra['apppasswords'])) {
+            return null;
+        }
+        return $extra['apppasswords'];
+    }
+
     static function exitError(string $error) {
         ErrorApiResponse::exitWithMessage($error, 200);
     }
-    static function exitOk(bool $saved = true, ?string $message = null) {
+
+    static function exitOk(bool $saved = true, ?string $message = null, ?array $additional = null) {
         $data = [
             'ok' => true,
             'saved' => $saved ? 1 : 0,
         ];
         if (!is_null($message)) {
             $data['msg'] = $message;
+        }
+        if ($additional) {
+            foreach ($additional as $k => $v) {
+                $data[$k] = $v;
+            }
         }
         (new JsonApiResponse($data))->exit();
     }
@@ -129,6 +153,59 @@ final class UserAccountSettings {
         $_SESSION['sign'] = sessionSignature($pwtoken);
         static::exitOk();
     }
+
+    static function createAppPassword(string $name)
+    {
+        if ($name === '') {
+            $name = "New password";
+        }
+
+        $extra = static::getExtra() ?? [];
+        $newPass = randomString2(24);
+        $newHash = passwordHash($newPass);
+
+        $passwords = static::getAppPasswords() ?? [];
+        $passwords[] = [
+            "hash" => $newHash,
+            "name" => $name,
+            "created" => time(),
+            "uuid" => generateUUID(),
+        ];
+        $extra['apppasswords'] = $passwords;
+        $json = json_encode($extra, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+        $db = DBConnection::instance();
+        $db->ex("UPDATE {$db->prefix}users SET extra=? WHERE id=?", [$json, userId()]);
+
+        $msg = __('apppassword_created', true);
+        $msg = sprintf($msg, "<b>". htmlspecialchars($newPass). "</b>");
+        static::exitOk(true, $msg, ['isHtmlMsg'=>true]);
+    }
+
+    static function revokeAppPassword(string $uuid)
+    {
+        $errPrefix = __("cantChange", false, __("appPassword"));
+        if ($uuid === '') {
+            static::exitError($errPrefix. " ". __("emptyValue"));
+        }
+        $extra = static::getExtra() ?? [];
+        $passwords = static::getAppPasswords() ?? [];
+        $count = count($passwords);
+        $passwords = array_filter($passwords, function ($row) use ($uuid) {
+            if (isset($row['uuid']) && $row['uuid'] === $uuid) {
+                return false;
+            }
+            return true;
+        });
+        if (count($passwords) === $count) {
+            static::exitError($errPrefix. " ". __("nothingToChange"));
+        }
+        $extra['apppasswords'] = $passwords;
+        $json = json_encode($extra, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        $db = DBConnection::instance();
+        $db->ex("UPDATE {$db->prefix}users SET extra=? WHERE id=?", [$json, userId()]);
+        static::exitOk();
+    }
 }
 
 UserAccountSettings::load();
@@ -158,7 +235,40 @@ else if (isset($_POST['edit_email'])) {
 else if (isset($_POST['edit_password'])) {
     UserAccountSettings::editPassword(_post('password'), _post('newpassword'), _post('newpassword2'));
 }
+else if (isset($_POST['new_ap'])) {
+    UserAccountSettings::createAppPassword(_post('ap_name'));
+}
+else if (isset($_POST['revoke_ap'])) {
+    UserAccountSettings::revokeAppPassword(_post('revoke_ap'));
+}
+else if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    jsonExit([
+        'ok' => false
+    ]);
+}
 
+
+function printAppPasswordsTable()
+{
+    $passwords = UserAccountSettings::getAppPasswords() ?? [];
+    if (!$passwords) {
+        return;
+    }
+    print "<table style='margin-top:1rem;'><tr><th style='min-width:150px;'>".__('th_name', true).
+        "</th><th>".__('th_created', true)."</th><th></th></tr>";
+
+    foreach ($passwords as $row) {
+        $name = htmlspecialchars($row['name']);
+        $created = htmlspecialchars(timestampToDatetime( (int)$row['created'] ?? 0));
+        $uuid = htmlspecialchars($row['uuid'] ?? '');
+        print "<tr><td>$name</td><td>$created</td><td>".
+            '<form action="'. mtt_get_settings_page_url(). '" method="post" data-ok-reload="yes">'.
+            '<input type="hidden" name="revoke_ap" value="'. $uuid. '">'.
+            "<button>". __('btn_revoke', true). "</button></form></td></tr>";
+    }
+
+    print "</table>";
+}
 
 ?>
 
@@ -212,6 +322,18 @@ else if (isset($_POST['edit_password'])) {
     <input type="password" name="newpassword2" value="" class="in350" autocomplete="new-password">
     <div class="form-row-buttons"><button type="submit"><?php _e('set_save'); ?></button></div>
      </form>
+  </div>
+</div>
+
+<div class="tr">
+  <div class="th"><?php _e('set_apppasswords_h');?></div>
+  <div class="td">
+    <form action="<?php mtt_settings_page_url(); ?>" method="post" data-ok-reload="yes">
+    <input type="hidden" name="new_ap" value="1">
+    <input type="text" name="ap_name" value="" class="in350" placeholder="<?php _e('set_apppassword_placeholder'); ?>">
+    <div class="form-row-buttons"><button type="submit"><?php _e('btn_add'); ?></button></div>
+    </form>
+    <?php printAppPasswordsTable(); ?>
   </div>
 </div>
 

@@ -290,6 +290,9 @@ select.form-input {
 .form-bottom-buttons > *:hover {
   background-color: var(--color-submit-hover);
 }
+.form-row-buttons {
+  padding-top: 0.5rem;
+}
 
 
 #page_login {
@@ -1408,17 +1411,35 @@ li.mtt-item-hidden { display:none; }
 .mtt-settings-upload-button:hover {
   background-color: var(--color-btn-hover);
 }
-.mtt-settings-table .form-bottom-buttons button {
+.mtt-settings-table .form-bottom-buttons button,
+.mtt-settings-table .form-row-buttons button {
   min-width: 4rem;
   padding: 4px 6px;
-  margin: 0 6px;
   background-color: var(--color-submit);
   border: 1px solid var(--color-border-default);
   border-radius: 3px;
 }
-.mtt-settings-table .form-bottom-buttons button:hover {
+.mtt-settings-table .form-bottom-buttons button:hover,
+.mtt-settings-table .form-row-buttons button:hover {
   background-color: var(--color-submit-hover);
 }
+.mtt-settings-table .form-bottom-buttons button {
+  margin: 0 6px;
+}
+
+.mtt-settings-table table {
+  border-collapse: collapse;
+  text-align: left;
+}
+.mtt-settings-table table tr:not(:last-child) {
+  border-bottom:1px solid var(--color-row-underlinig);
+}
+.mtt-settings-table table th,
+.mtt-settings-table table td {
+  padding: 5px;
+}
+
+
 
 #modal {
   position: fixed;
