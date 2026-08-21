@@ -3243,7 +3243,7 @@ function saveSettings(frm)
     if (frm.dataset.ext) {
         params['ext'] = frm.dataset.ext;
     }
-    $(frm).find('input:not([type=submit],[type=reset],[type=button],[type=image],[type=file]),input:checked,select,textarea').filter(":enabled").each(function() {
+    $(frm).find('input:not([type=submit],[type=reset],[type=button],[type=image],[type=file],[type=checkbox],[type=radio]),input:checked,select,textarea').filter(":enabled").each(function() {
         params[this.name || '__'] = this.value;
     });
     $(frm).find(":submit").attr('disabled','disabled').blur();
