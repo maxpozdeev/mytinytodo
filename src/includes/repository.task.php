@@ -15,7 +15,7 @@ class TaskRepo
     const SORT_PRIORITY = 1;
     const SORT_PRIORITY_REVERSE = 101;
     const SORT_DUEDATE = 2;
-    const SORT_DUEDATE_REVERSE = 101;
+    const SORT_DUEDATE_REVERSE = 102;
     const SORT_DATE_CREATED = 3;
     const SORT_DATE_CREATED_REVERSE = 103;
     const SORT_DATE_EDITED = 4;
