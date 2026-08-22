@@ -65,18 +65,12 @@ class TaskRepo
         # tags
         if (isset($tags['excludeAll']) && $tags['excludeAll']) {
             # No Tags
-            if ($this->db::DBTYPE == DBConnection::DBTYPE_POSTGRES)
-                $sqlHaving = "string_agg(tags.name, ',') IS NULL"; // catches if tag name is ''
-            else
-                $sqlHaving = "tags_ids IS NULL OR tags_ids = ''";
+            $sqlWhere = " AND NOT EXISTS (SELECT 1 FROM {$this->db->prefix}tag2task t2t WHERE todo.id = t2t.task_id)";
         }
         else {
             if ($tags['includeAny'] ?? false) {
                 # Having any tag
-                if ($this->db::DBTYPE == DBConnection::DBTYPE_POSTGRES)
-                    $sqlHaving = "string_agg(tags.name, ',') != ''";
-                else
-                    $sqlHaving = "tags_ids != ''";
+                $sqlWhere = " AND EXISTS (SELECT 1 FROM {$this->db->prefix}tag2task t2t WHERE todo.id = t2t.task_id)";
             }
             if ($tags['include'] ?? 0) {
                 # Include tags
@@ -114,13 +108,13 @@ class TaskRepo
         elseif ($sort == self::SORT_MANUAL_REVERSE)
                                                         $sqlSort .= "ow DESC";
         elseif ($sort == self::SORT_PRIORITY)
-                                                        $sqlSort .= "prio DESC, ddn ASC, duedate ASC, ow ASC";
+                                                        $sqlSort .= "prio DESC, duedate IS NULL ASC, duedate ASC, ow ASC";
         elseif ($sort == self::SORT_PRIORITY_REVERSE)
-                                                        $sqlSort .= "prio ASC, ddn DESC, duedate DESC, ow DESC";
+                                                        $sqlSort .= "prio ASC, duedate IS NULL DESC, duedate DESC, ow DESC";
         elseif ($sort == self::SORT_DUEDATE)
-                                                        $sqlSort .= "ddn ASC, duedate ASC, prio DESC, ow ASC";
+                                                        $sqlSort .= "duedate IS NULL ASC, duedate ASC, prio DESC, ow ASC";
         elseif ($sort == self::SORT_DUEDATE_REVERSE)
-                                                        $sqlSort .= "ddn DESC, duedate DESC, prio ASC, ow DESC";
+                                                        $sqlSort .= "duedate IS NULL DESC, duedate DESC, prio ASC, ow DESC";
         elseif ($sort == self::SORT_DATE_CREATED)
                                                         $sqlSort .= "d_created ASC, prio DESC, ow ASC";
         elseif ($sort == self::SORT_DATE_CREATED_REVERSE)
@@ -153,32 +147,28 @@ class TaskRepo
             $groupConcat = "GROUP_CONCAT(tags.id) AS tags_ids, GROUP_CONCAT(tags.name) AS tags";
         }
 
-        if ($sqlHaving != '')
-            $sqlHaving = "HAVING $sqlHaving";
-
         if     ($filter == self::FILTER_OPEN)             $sqlWhere .= " AND compl=0";
         elseif ($filter == self::FILTER_COMPLETED)        $sqlWhere .= " AND compl=1";
         elseif ($filter == self::FILTER_EDITED)           $sqlWhere .= " AND d_edited > d_created";
         elseif ($filter == self::FILTER_OPEN_AND_EDITED)  $sqlWhere .= " AND compl=0 AND d_edited > d_created";
 
-        if ($limit > 0)
+        if ($limit > 0) {
             $sqlLimit = "LIMIT $limit";
+        }
 
         $q = $this->db->dq("
-            SELECT todo.*, lists.name list_name, todo.duedate IS NULL AS ddn, $groupConcat
+            SELECT todo.*, lists.name list_name, $groupConcat
             FROM {$this->db->prefix}todolist AS todo
             INNER JOIN {$this->db->prefix}lists AS lists ON todo.list_id = lists.id
             LEFT JOIN {$this->db->prefix}tag2task AS t2t ON todo.id = t2t.task_id
             LEFT JOIN {$this->db->prefix}tags AS tags ON t2t.tag_id = tags.id
             WHERE $sqlWhereListId $sqlWhere
-            GROUP BY todo.id   $sqlHaving
+            GROUP BY todo.id
             $sqlSort   $sqlLimit
         ");
 
         $a = [];
-        while ($r = $q->fetchAssoc())
-        {
-            unset($r['ddn']); # used only for ORDER BY
+        while ($r = $q->fetchAssoc()) {
              $a[] = Task::fromArray($r);
         }
 
