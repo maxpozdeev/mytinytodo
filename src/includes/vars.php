@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 
 class MTTVars {
+    static array $info = [];
     static string $requestedUsername = '';
     static int $requestedUserId = 0;
     static bool $isSessionInvalid; //readonly

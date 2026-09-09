@@ -58,8 +58,6 @@ require_once(MTTINC. 'repository.tag.php');
 require_once(MTTINC. 'repository.task.php');
 require_once(MTTINC. 'repository.user.php');
 
-$_mttinfo = array();
-
 configureDbConnection();
 
 Config::loadAppConfig();
@@ -502,96 +500,91 @@ function get_mttinfo(string $v)
  */
 function get_unsafe_mttinfo(string $v)
 {
-    //TODO: put to MTTVars.info
-    global $_mttinfo;
-    if (isset($_mttinfo[$v])) {
-        return $_mttinfo[$v];
+    $info = &MTTVars::$info;
+
+    if (isset($info[$v])) {
+        return $info[$v];
     }
     switch($v)
     {
         case 'theme_url':
-            $_mttinfo['theme_url'] = get_unsafe_mttinfo('mtt_uri'). 'content/'. MTT_THEME. '/';
-            return $_mttinfo['theme_url'];
+            $info['theme_url'] = get_unsafe_mttinfo('mtt_uri'). 'content/'. MTT_THEME. '/';
+            return $info['theme_url'];
         case 'content_url':
-            $_mttinfo['content_url'] = get_unsafe_mttinfo('mtt_uri'). 'content/';
-            return $_mttinfo['content_url'];
+            $info['content_url'] = get_unsafe_mttinfo('mtt_uri'). 'content/';
+            return $info['content_url'];
         case 'url':
             /* full url to homepage: directory with root index.php  */
             /* ex: http://my.site/  or  http://my.site/mytinytodo/  */
             /* Should not contain a query string. Have to be set in config if custom port is used or wrong detection. */
-            $_mttinfo['url'] = Config::getUrl('url');
-            if ($_mttinfo['url'] == '') {
+            $info['url'] = Config::getUrl('url');
+            if ($info['url'] == '') {
                 $is_https = is_https();
-                $_mttinfo['url'] = ($is_https ? 'https://' : 'http://'). $_SERVER['HTTP_HOST']. url_dir(getRequestUri());
+                $info['url'] = ($is_https ? 'https://' : 'http://'). $_SERVER['HTTP_HOST']. url_dir(getRequestUri());
             }
-            if ($_mttinfo['url'] == '' || $_mttinfo['url'][-1] != '/')
-                $_mttinfo['url'] .= '/';
-            return $_mttinfo['url'];
+            if ($info['url'] == '' || $info['url'][-1] != '/')
+                $info['url'] .= '/';
+            return $info['url'];
         case 'uri':
-            $_mttinfo['uri'] = url_dir( get_unsafe_mttinfo('url') );
-            return $_mttinfo['uri'];
+            $info['uri'] = url_dir( get_unsafe_mttinfo('url') );
+            return $info['uri'];
         case 'mtt_url':
             /* Directory with api.php. No need to set if you use default directory structure. */
-            $_mttinfo['mtt_url'] = Config::getUrl('mtt_url'); // need to have a trailing slash
-            if ($_mttinfo['mtt_url'] == '') {
-                $_mttinfo['mtt_url'] = url_dir( get_unsafe_mttinfo('url'), false );
+            $info['mtt_url'] = Config::getUrl('mtt_url'); // need to have a trailing slash
+            if ($info['mtt_url'] == '') {
+                $info['mtt_url'] = url_dir( get_unsafe_mttinfo('url'), false );
             }
-            return $_mttinfo['mtt_url'];
+            return $info['mtt_url'];
         case 'mtt_uri':
-            $_mttinfo['mtt_uri'] = Config::getUrl('mtt_url'); // need to have a trailing slash
-            if ($_mttinfo['mtt_uri'] == '') {
+            $info['mtt_uri'] = Config::getUrl('mtt_url'); // need to have a trailing slash
+            if ($info['mtt_uri'] == '') {
                 if ( ''  !=  $url = Config::getUrl('url') ) {
-                    $_mttinfo['mtt_uri'] = url_dir($url);
+                    $info['mtt_uri'] = url_dir($url);
                 }
                 else {
-                    $_mttinfo['mtt_uri'] = url_dir(getRequestUri());
+                    $info['mtt_uri'] = url_dir(getRequestUri());
                 }
             }
-            return $_mttinfo['mtt_uri'];
+            return $info['mtt_uri'];
         case 'api_url':
             /* URL for API, like http://localhost/mytinytodo/api/. No need to set by default. */
-            $_mttinfo['api_url'] = Config::getUrl('api_url'); // need to have a trailing slash
-            if ($_mttinfo['api_url'] == '') {
+            $info['api_url'] = Config::getUrl('api_url'); // need to have a trailing slash
+            if ($info['api_url'] == '') {
                 if (defined('MTT_API_USE_PATH_INFO')) {
-                    $_mttinfo['api_url'] = get_unsafe_mttinfo('mtt_uri'). 'api/';
+                    $info['api_url'] = get_unsafe_mttinfo('mtt_uri'). 'api/';
                 }
                 else {
-                    $_mttinfo['api_url'] = get_unsafe_mttinfo('mtt_uri'). 'api.php?_path=/';
+                    $info['api_url'] = get_unsafe_mttinfo('mtt_uri'). 'api.php?_path=/';
                 }
             }
-            return $_mttinfo['api_url'];
+            return $info['api_url'];
         case 'title':
-            $_mttinfo['title'] = (Config::get('title') != '') ? Config::get('title') : __('My Tiny Todolist');
-            return $_mttinfo['title'];
+            $info['title'] = (Config::get('title') != '') ? Config::get('title') : __('My Tiny Todolist');
+            return $info['title'];
         case 'version':
-            $_mttinfo['version'] = MTTVersion::VERSION;
-            return $_mttinfo['version'];
+            $info['version'] = MTTVersion::VERSION;
+            return $info['version'];
         case 'appearance':
-            $_mttinfo['appearance'] = Config::get('appearance');
-            return $_mttinfo['appearance'];
+            $info['appearance'] = Config::get('appearance');
+            return $info['appearance'];
         case 'username':
-            $_mttinfo['username'] = username() ?? '';
-            return $_mttinfo['username'];
+            $info['username'] = username() ?? '';
+            return $info['username'];
         case 'user':
-            $_mttinfo['user'] = MTTVars::$user ?? '';
-            return $_mttinfo['user'];
+            $info['user'] = MTTVars::$user ?? '';
+            return $info['user'];
         case 'tasks_uri':
             if (need_auth())
-                $_mttinfo['tasks_uri'] = routerMakeUserUrl();
+                $info['tasks_uri'] = routerMakeUserUrl();
             else
-                $_mttinfo['tasks_uri'] = get_unsafe_mttinfo('uri');
-            return $_mttinfo['tasks_uri'];
+                $info['tasks_uri'] = get_unsafe_mttinfo('uri');
+            return $info['tasks_uri'];
         default:
             error_log("Unknown mttinfo key: $v");
             return '';
     }
 }
 
-function reset_mttinfo(string $key)
-{
-    global $_mttinfo;
-    unset( $_mttinfo[$key] );
-}
 
 function is_https(): bool
 {
