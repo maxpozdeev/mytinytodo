@@ -72,6 +72,11 @@ $().ready(function(){
 
 <ol id="tasklist" class="sortable"></ol>
 
+<div id="pagination">
+  <ul></ul>
+  <select></select>
+</div>
+
 </div>
 <!-- End of page_tasks -->
 

@@ -1,6 +1,6 @@
 /*
     This file is a part of myTinyTodo.
-    (C) Copyright 2009-2010,2020-2025 Max Pozdeev <maxpozdeev@gmail.com>
+    (C) Copyright 2009-2010,2020-2026 Max Pozdeev <maxpozdeev@gmail.com>
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
@@ -77,6 +77,10 @@ const tabLists = {
 };
 var curList = 0;
 var tagsList = [];
+var pagination = {
+  limit: 20,
+  page: 1
+};
 
 const mtt = window.mytinytodo = {
 
@@ -701,6 +705,17 @@ const mtt = window.mytinytodo = {
             $("#mtt").addClass("touch-device");
         }
 
+        $("#pagination>ul").on("click", "li", function(){
+            pagination.page = this.dataset.page;
+            loadTasks({isPagination:1});
+        });
+        $("#pagination>select").on("change", function(){
+            pagination.limit = this.value;
+            setLocalStorageItem('paginationLimit', pagination.limit);
+            this.blur();
+            loadTasks();
+        });
+
 
         // AJAX Errors
         $(document).ajaxSend(function(r,s){
@@ -958,6 +973,8 @@ const mtt = window.mytinytodo = {
                 $('#tasks_info').show();
             }
 
+            const limit = getLocalStorageItem('paginationLimit');
+            if (limit) pagination.limit = limit;
             mtt.options.openList = 0;
             $('#lists .mtt-tab-selected').removeClass('mtt-tab-selected');
             $('#mtt').addClass('no-list-selected');
@@ -1328,6 +1345,9 @@ function loadTasks(opts)
         $('#tasklist').html('');
         $('#total').html('0');
     }
+    if (!opts.isPagination) {
+        pagination.page = 1;
+    }
 
     mtt.db.request('loadTasks', {
         list: curList.id,
@@ -1336,7 +1356,9 @@ function loadTasks(opts)
         search: filter.search,
         tag: mtt.filter.getTags(true),
         saveCompl: opts.saveCompl,
-        saveSort: opts.saveSort
+        saveSort: opts.saveSort,
+        limit: pagination.limit,
+        page: pagination.page
     }, function(json){
         taskList.length = 0;
         taskOrder.length = 0;
@@ -1354,6 +1376,7 @@ function loadTasks(opts)
         if(opts.beforeShow && opts.beforeShow.call) {
             opts.beforeShow();
         }
+        refreshPagination(json);
         refreshTaskCnt();
         $('#tasklist').html(tasks);
     });
@@ -1499,6 +1522,86 @@ function prepareInlineDate(item)
     return '<span class="task-id">#' + item.id + '</span> <span title="' + title +'">' + inlineDate + '</span>';
 }
 mtt.prepareInlineDate = prepareInlineDate;
+
+
+function refreshPagination(json)
+{
+    const totalItems = parseInt(json.pagination_total ?? 0);
+    const limit = parseInt(json.pagination_limit ?? 0);
+    const page = parseInt(json.pagination_page ?? 0);
+    if (totalItems < 1 || limit < 1 || page < 1 /*|| (limit === 20 && totalItems <= limit) */) {
+        $("#pagination>ul").html('');
+        $("#pagination").hide();
+        return;
+    }
+    taskCnt.total = totalItems;
+    const totalPages = Math.ceil(totalItems / limit);
+    const pages = [];
+    if (totalPages <= 9) {
+        for (let i = 1; i <= totalPages; i++) {
+            pages.push(i);
+        }
+    }
+    else {
+        if (page <= 5) {
+            for (let i = 1; i <= 7; i++) {
+                pages.push(i);
+            }
+            pages.push('skip');
+            pages.push(totalPages - 1);
+            pages.push(totalPages);
+        }
+        else if (page >= totalPages - 4) {
+            pages.push(1);
+            pages.push(2);
+            pages.push('skip');
+            for (let i = totalPages - 6; i <= totalPages; i++) {
+                pages.push(i);
+            }
+        }
+        else {
+            pages.push(1);
+            pages.push(2);
+            pages.push('skip');
+            let endCenter = page + 2;
+            for (let i = page - 2; i <= endCenter; i++) {
+                pages.push(i);
+            }
+            pages.push('skip');
+            pages.push(totalPages - 1);
+            pages.push(totalPages);
+        }
+    }
+    let html = '';
+    for (let i of pages) {
+        if (i === 'skip') {
+            html += `<li>...</li>`;
+        }
+        else {
+            const isCurrent = i === page ? 'current' : '';
+            html += `<li class='page ${isCurrent}' data-page='${i}'>${i}</li>`;
+        }
+    }
+    html += '';
+    $('#pagination>ul').html(html);
+    let sel = '';
+    let found = false;
+    for (let i of [2, 5, 10, 20, 30, 50]) {
+        if (limit == i) {
+            found = true;
+            sel += `<option selected="selected">${i}</option>`;
+        }
+        else  {
+            sel += `<option>${i}</option>`;
+        }
+    }
+    if (!found) {
+        sel += `<option selected="selected">${limit}</option>`;
+    }
+    $('#pagination>select').html(sel);
+    $('#pagination').show();
+}
+
 
 function submitNewTask(form)
 {

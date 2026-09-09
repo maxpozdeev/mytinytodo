@@ -42,10 +42,10 @@ class TaskRepo
     }
 
 
-    public function findTasks(array $lists, ?bool $compl, array $tags, string $search, int $sort, int $filter = 0, int $limit = 0)
+    public function findTasks(array $lists, ?bool $compl, array $tags, string $search, int $sort, int $filter = 0, int $limit = 0, ?TaskPaginator $paginator = null)
     {
         $makeInts = function (array &$a) { foreach ($a as &$v) $v = (int)$v; };
-        $sqlWhere = $sqlWhereListId = $sqlHaving = $sqlLimit = '';
+        $sqlWhere = $sqlWhereListId = $sqlLimit = '';
 
         # list ids (make int)
         if (count($lists) == 0) {
@@ -152,7 +152,13 @@ class TaskRepo
         elseif ($filter == self::FILTER_EDITED)           $sqlWhere .= " AND d_edited > d_created";
         elseif ($filter == self::FILTER_OPEN_AND_EDITED)  $sqlWhere .= " AND compl=0 AND d_edited > d_created";
 
-        if ($limit > 0) {
+        if ($paginator) {
+            $limit = 0;
+            $paginatorTotal = (int)$this->db->sq("SELECT COUNT(*) FROM {$this->db->prefix}todolist AS todo WHERE $sqlWhereListId $sqlWhere");
+            $paginator->updateTotal($paginatorTotal);
+            $sqlLimit = $paginator->sql();
+        }
+        else if ($limit > 0) {
             $sqlLimit = "LIMIT $limit";
         }
 
@@ -408,4 +414,52 @@ class TaskRepo
         }
     }
 
+}
+
+
+class TaskPaginator
+{
+    public int $limit = 0;
+    public int $offset = 0; // starts from 0
+    public int $page = 1;   // starts from 1
+
+    public int $total = 0;
+
+    public function __construct(int $limit , int $offset)
+    {
+        if ($limit < 0) $limit = 0;
+        if ($offset < 0) $offset = 0;
+        if (!$limit) throw new InvalidArgumentException("limit can not be zero");
+        $this->limit = $limit;
+        $this->offset = $offset;
+        $this->page = 1 + (int)floor($offset / $limit);
+    }
+
+    public static function paginatorWithPageAndLimit(int $page, int $limit): TaskPaginator
+    {
+        if ($page < 1) $page = 1;
+        if ($limit < 0) $limit = 0;
+        if (!$limit) throw new InvalidArgumentException("limit can not be zero");
+        return new static($limit, ($page-1)*$limit);
+    }
+
+    function sql(): string
+    {
+        $sql = "LIMIT ". $this->limit;
+        if ($this->offset) {
+            $sql .= " OFFSET ". $this->offset;
+        }
+        return $sql;
+    }
+
+    function updateTotal(int $total)
+    {
+        $this->total = $total < 0 ? 0 : $total;
+        $totalPages = (int)ceil($this->total / $this->limit);
+        if ($totalPages < 1) $totalPages = 1;
+        if ($this->page > $totalPages) {
+            $this->page = $totalPages;
+            $this->offset = ($this->page - 1) * $this->limit;
+        }
+    }
 }

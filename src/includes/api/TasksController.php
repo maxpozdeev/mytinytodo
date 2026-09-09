@@ -90,18 +90,29 @@ class TasksController extends ApiController {
         $search = trim(_get('s'));
         $sort = (int)_get('sort');
 
+        $page = (int)_get('page');
+        $limit = (int)_get('limit');
+        $paginator = null;
+        if ($limit > 0 && $page > 0) {
+            $paginator = TaskPaginator::paginatorWithPageAndLimit($page, $limit);
+        }
+
         $t = array();
         $t['total'] = 0;
         $t['time'] = time();
         $t['list'] = [];
 
         $taskRepo = new TaskRepo($db);
-        $tasks = $taskRepo->findTasks($lists, $showCompleted, $tags, $search, $sort);
+        $tasks = $taskRepo->findTasks($lists, $showCompleted, $tags, $search, $sort, 0, 0, $paginator);
         foreach ($tasks as $task) {
             $t['list'][] = $task->toJsonApiArray();
         }
         $t['total'] = count($t['list']);
-
+        if ($paginator->total) {
+            $t['pagination_total'] = $paginator->total;
+            $t['pagination_page'] = $paginator->page;
+            $t['pagination_limit'] = $paginator->limit;
+        }
 
         if ( (_get('saveCompl') || _get('saveSort'))  && haveWriteAccess($listId))
         {

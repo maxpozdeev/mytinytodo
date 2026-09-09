@@ -1190,6 +1190,49 @@ textarea.form-input.inmax {
   border-radius:4px;
 }
 
+#pagination {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#pagination > ul {
+  list-style-type: none;
+  display: flex;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+}
+#pagination > ul li {
+  min-width: 1rem;
+  padding: 5px;
+  margin: 0 0.25rem;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  text-align: center;
+}
+#pagination > ul li.page.current,
+#pagination > ul li.page:hover {
+  background-color: var(--color-btn-hover);
+  cursor: pointer;
+  border: 1px solid var(--color-menu-border);
+}
+#pagination > select {
+  appearance: none;
+  -webkit-appearance: none; -moz-appearance: none;
+  outline: none;
+  margin: 0 0.25rem;
+  padding: 4px;
+  border-radius: 3px;
+  background: var(--color-input-bg) var(--svg-select) no-repeat top 4px right 5px;
+  border: 1px solid var(--color-menu-border);
+  background-size: 1rem 1rem;
+  padding-right: calc(1rem + 6px);
+}
+
+
+
+
 /* Menu */
 
 .mtt-menu-container {
