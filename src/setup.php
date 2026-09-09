@@ -33,6 +33,7 @@ require_once(MTTINC. 'class.config.php');
 $db = null;
 $ver = '';
 $error = '';
+$dbtype = '';
 
 $csrfToken = setupToken();
 if ($csrfToken == '' || strlen($csrfToken) != 48) {
@@ -767,7 +768,6 @@ function createSqliteTables(AbstractDatabase $db)
         pwhash     VARCHAR(250) NOT NULL DEFAULT '',
         pwtoken    VARCHAR(250) NOT NULL DEFAULT '',
         last_visit DATE default NULL,
-        settings   TEXT NOT NULL DEFAULT '',
         extra      TEXT default NULL
     ) ");
     $db->ex("CREATE UNIQUE INDEX users_username ON {$db->prefix}users (username COLLATE NOCASE)");
@@ -967,7 +967,6 @@ function update_18_20(AbstractDatabase $db, string $dbtype)
                 pwhash     VARCHAR(250) NOT NULL DEFAULT '',
                 pwtoken    VARCHAR(250) NOT NULL DEFAULT '',
                 last_visit DATE default NULL,
-                settings   TEXT NOT NULL DEFAULT '',
                 extra      TEXT default NULL
         ) ");
         $db->ex("CREATE UNIQUE INDEX users_username ON {$db->prefix}users (username COLLATE NOCASE)");
