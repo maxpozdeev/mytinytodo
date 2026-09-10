@@ -727,8 +727,8 @@ function createPostgresTables(AbstractDatabase $db)
     last_visit DATE default NULL,
     extra TEXT default NULL
 ) ");
-    $db->ex("CREATE UNIQUE INDEX {$db->prefix}users_lower_username ON {$db->prefix}users ((LOWER(username))");
-    $db->ex("CREATE UNIQUE INDEX {$db->prefix}users_lower_email ON {$db->prefix}users ((LOWER(email))");
+    $db->ex("CREATE UNIQUE INDEX {$db->prefix}users_lower_username ON {$db->prefix}users ((LOWER(username)))");
+    $db->ex("CREATE UNIQUE INDEX {$db->prefix}users_lower_email ON {$db->prefix}users ((LOWER(email)))");
 
 
     $db->ex(
@@ -1010,6 +1010,11 @@ function update_18_20(AbstractDatabase $db, string $dbtype)
         $db->ex("ALTER TABLE {$db->prefix}todolist ADD parent_id INTEGER NOT NULL default 0");
         $db->ex("ALTER TABLE {$db->prefix}todolist ADD extra TEXT default NULL");
 
+        $db->ex("ALTER TABLE {$db->prefix}lists ADD user_id INTEGER NOT NULL default 0");
+        $db->ex("CREATE INDEX {$db->prefix}lists_user_id ON {$db->prefix}lists (user_id)");
+
+        $db->ex("ALTER TABLE {$db->prefix}tags ADD user_id INTEGER NOT NULL default 0");
+        $db->ex("CREATE INDEX {$db->prefix}tags_user_id ON {$db->prefix}tags (user_id)");
 
         $db->ex(
             "CREATE TABLE {$db->prefix}users (
@@ -1022,8 +1027,9 @@ function update_18_20(AbstractDatabase $db, string $dbtype)
                 last_visit DATE default NULL,
                 extra TEXT default NULL
             ) ");
-        $db->ex("CREATE UNIQUE INDEX {$db->prefix}users_lower_username ON {$db->prefix}users ((LOWER(username))");
-        $db->ex("CREATE UNIQUE INDEX {$db->prefix}users_lower_email ON {$db->prefix}users ((LOWER(email))");
+        $db->ex("CREATE UNIQUE INDEX {$db->prefix}users_lower_username ON {$db->prefix}users ((LOWER(username)))");
+        $db->ex("CREATE UNIQUE INDEX {$db->prefix}users_lower_email ON {$db->prefix}users ((LOWER(email)))");
+
         $db->ex(
             "CREATE TABLE {$db->prefix}usersettings (
                 user_id INTEGER NOT NULL default 0,
