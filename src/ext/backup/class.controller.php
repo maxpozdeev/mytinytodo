@@ -12,6 +12,7 @@ use BackupExtension;
 use BackupExtension\Backup;
 use BackupExtension\Download;
 use BackupExtension\Check;
+use BackupExtension\Restore;
 
 class Controller extends \ApiController
 {
@@ -80,12 +81,19 @@ class Controller extends \ApiController
         exit();
     }
 
-    function postRestore()
+    function postRestore(bool $isLocal = false)
     {
         require_once('class.restore.php');
         $restore = new Restore();
 
-        if (!$restore->isUploaded()) {
+        $filePresent = false;
+        if ($isLocal) {
+            $filePresent = $restore->isLocal(BackupExtension::backupFilePath());
+        }
+        else         {
+            $filePresent = $restore->isUploaded();
+        }
+        if (!$filePresent) {
             $this->response->data = [
                 'total' => 0,
                 'msg' => __("error"),
@@ -110,6 +118,11 @@ class Controller extends \ApiController
             'msg' => __("backup.done"),
             'redirect' => get_mttinfo('url'),
         ];
+    }
+
+    function postRestoreLocal()
+    {
+        return $this->postRestore(true);
     }
 
     function postCheckInconsistency()

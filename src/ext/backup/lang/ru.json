@@ -13,5 +13,6 @@
     "backup.repair": "Исправить",
     "backup.h_restore": "Восстановить из резервной копии",
     "backup.d_restore": "Удалит все существующие записи во время восстановления.",
-    "backup.restore": "Восстановить…"
+    "backup.restore_local": "Восстановить",
+    "backup.restore_upload": "Загрузить и восстановить…"
 }

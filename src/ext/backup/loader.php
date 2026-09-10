@@ -44,6 +44,10 @@ class BackupExtension extends MTTExtension implements MTTExtensionSettingsInterf
             '/restore' => [
                 'POST'  => [ Controller::class , 'postRestore' ],
             ],
+            '/restoreLocal' => [
+                'POST'  => [ Controller::class , 'postRestoreLocal' ],
+            ],
+
             '/checkInconsistency' => [
                 'POST' => [ Controller::class , 'postCheckInconsistency' ],
             ],
@@ -104,9 +108,11 @@ function onBackupFileChange(el) {
         <div class="descr"> {$e('backup.d_restore')} </div>
     </div>
     <div class="td">
+        <button type=button data-ext-settings-action="post:restoreLocal" data-ext="$ext"> {$e('backup.restore_local')} </button>
+        &nbsp;
         <label class="mtt-settings-upload-button">
             <input type="file" name="file" onchange="return onBackupFileChange(this)" data-ext-settings-action="post:restore" data-ext="$ext">
-            {$e('backup.restore')}
+            {$e('backup.restore_upload')}
         </label>
     </div>
 </div>

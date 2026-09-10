@@ -53,6 +53,17 @@ class Restore
         return true;
     }
 
+    function isLocal(string $filename): bool
+    {
+        $this->filename = $filename;
+        if (!file_exists($filename)) {
+            $this->lastErrorString = "Backup file does not exists";
+            return false;
+        }
+        return true;
+
+    }
+
     function restore(): bool
     {
         if (\MTTVersion::DB_VERSION !== '2.0') {
@@ -108,6 +119,7 @@ class Restore
                 continue; // Unexpected table, just skip
             }
             if (is_null($result)) {
+                $this->cancelRestore();
                 return false; // Incorrect format, error is set, stop
             }
 
@@ -229,7 +241,8 @@ class Restore
         }
         catch (Exception $e) {
             error_log("Failed query: {$db->lastQuery}");
-            $this->lastErrorString = "Failed to add data to table '{$db->prefix}$table'. Database error (see query in error log): ". $e->getMessage();
+            $idInfo = ($fields[0] === 'id') ? "Record with ID {$values[0]}." : '';
+            $this->lastErrorString = "Failed to add data to table '{$db->prefix}$table'. $idInfo Database error (see query in php error log): ". $e->getMessage();
             return false;
         }
         return true;
@@ -240,6 +253,7 @@ class Restore
         $db = DBConnection::instance();
         switch ($db::DBTYPE) {
             case DBConnection::DBTYPE_MYSQL:
+                //NB: this will autocommit transaction
                 $db->ex("ALTER TABLE {$db->prefix}$table AUTO_INCREMENT = ". (int)$autoinc);
                 break;
             case DBConnection::DBTYPE_POSTGRES:
@@ -277,6 +291,12 @@ class Restore
         $db = DBConnection::instance();
         $db->ex("COMMIT");
         // vacuum?
+    }
+
+    private function cancelRestore()
+    {
+        $db = DBConnection::instance();
+        $db->ex("ROLLBACK");
     }
 
     private function update18to20()

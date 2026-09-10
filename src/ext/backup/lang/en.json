@@ -13,5 +13,6 @@
     "backup.repair": "Repair",
     "backup.h_restore": "Restore from backup",
     "backup.d_restore": "Will delete all records in existing database before restoring.",
-    "backup.restore": "Restore…"
+    "backup.restore_local": "Restore",
+    "backup.restore_upload": "Upload and Restore…"
 }
