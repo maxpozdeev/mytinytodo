@@ -329,7 +329,7 @@ function databaseVersion(AbstractDatabase $db): string
     $v = '1.7';
     if ( $db->tableFieldExists($db->prefix.'todolist', 'tags') ) return $v; # field was removed in v1.8
     $v = '1.8';
-    if ( !$db->tableFieldExists($db->prefix.'todolist', 'extra') ) return $v;
+    if ( !$db->tableExists($db->prefix.'users') ) return $v;
     $v = '2.0';
     return $v;
 }
