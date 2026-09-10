@@ -5,14 +5,16 @@ if ( PHP_SAPI !== 'cli' ) {
     die("Run from command line only!");
 }
 
-if ( $argc < 3 ) {
+if ( $argc < 2 ) {
     die("Usage:\n".
         "  mtt-cmd.php read <parameter> \n".
         "  mtt-cmd.php write <parameter> <value>\n".
         "  mtt-cmd.php adduser <username> [email]\n".
         "  mtt-cmd.php deluser <username> \n".
         "  mtt-cmd.php password <username> [password]\n".
-        "  mtt-cmd.php email <username> <email>\n"
+        "  mtt-cmd.php email <username> <email>\n".
+        "  mtt-cmd.php users \n".
+        "  mtt-cmd.php addadmin \n"
     );
 }
 
@@ -23,7 +25,7 @@ ini_set('display_errors', '0');
 ini_set('log_errors', '1');
 
 $cmd = $argv[1];
-$arg1 = $argv[2];
+$arg1 = $argv[2] ?? '';
 $arg2 = $argc > 3 ? $argv[3] : null;
 
 
@@ -34,6 +36,8 @@ switch ($cmd) {
     case 'password': cmd_password((string)$arg1, (string)$arg2); break;
     case 'email': cmd_email((string)$arg1, (string)$arg2); break;
     case 'deluser': cmd_deluser((string)$arg1); break;
+    case 'users': cmd_users(); break;
+    case 'addadmin': cmd_addadmin(); break;
     default: die("Unknown command: $cmd\n");
 }
 
@@ -132,4 +136,27 @@ function cmd_email(string $user, string $email): void {
     }
     $db->ex("UPDATE {$db->prefix}users SET email = ? WHERE username = ?", [$email, $user]);
     print "New e-mail set!\n";
+}
+
+function cmd_users()
+{
+    $db =  DBConnection::instance();
+    $i = 0;
+    $q = $db->dq("SELECT id,username FROM {$db->prefix}users ORDER BY id");
+    while ($r = $q->fetchAssoc()) {
+        print "{$r['id']}: {$r['username']}\n";
+        $i++;
+    }
+    print "$i user(s) found\n";
+}
+
+function cmd_addadmin()
+{
+    $db = DBConnection::instance();
+    if ((int)$db->sq("SELECT 1 FROM {$db->prefix}users WHERE id=1")) {
+        print "Admin user already exists\n";
+        return;
+    }
+    $db->ex("INSERT INTO {$db->prefix}users (id,username,email,name) VALUES (1,'admin','admin','admin')");
+     print "User admin created\n";
 }
