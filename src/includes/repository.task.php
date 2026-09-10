@@ -163,13 +163,16 @@ class TaskRepo
         }
 
         $q = $this->db->dq("
-            SELECT todo.*, lists.name list_name, $groupConcat
+            SELECT todo.*, lists.name AS list_name, tags_agg.tags_ids as tags_ids, tags_agg.tags as tags
             FROM {$this->db->prefix}todolist AS todo
             INNER JOIN {$this->db->prefix}lists AS lists ON todo.list_id = lists.id
-            LEFT JOIN {$this->db->prefix}tag2task AS t2t ON todo.id = t2t.task_id
-            LEFT JOIN {$this->db->prefix}tags AS tags ON t2t.tag_id = tags.id
+            LEFT JOIN (
+                SELECT t2t.task_id, $groupConcat
+                FROM {$this->db->prefix}tag2task AS t2t
+                INNER JOIN {$this->db->prefix}tags AS tags ON t2t.tag_id = tags.id
+                GROUP BY t2t.task_id
+            ) AS tags_agg ON todo.id = tags_agg.task_id
             WHERE $sqlWhereListId $sqlWhere
-            GROUP BY todo.id
             $sqlSort   $sqlLimit
         ");
 
@@ -206,13 +209,16 @@ class TaskRepo
             $groupConcat = "GROUP_CONCAT(tags.id) AS tags_ids, GROUP_CONCAT(tags.name) AS tags";
         }
         $r = $this->db->sqa("
-            SELECT todo.*, lists.name list_name, $groupConcat
+            SELECT todo.*, lists.name AS list_name, tags_agg.tags_ids as tags_ids, tags_agg.tags as tags
             FROM {$this->db->prefix}todolist AS todo
             INNER JOIN {$this->db->prefix}lists AS lists ON todo.list_id = lists.id
-            LEFT JOIN {$this->db->prefix}tag2task AS t2t ON todo.id = t2t.task_id
-            LEFT JOIN {$this->db->prefix}tags AS tags ON t2t.tag_id = tags.id
+            LEFT JOIN (
+                SELECT t2t.task_id, $groupConcat
+                FROM {$this->db->prefix}tag2task AS t2t
+                INNER JOIN {$this->db->prefix}tags AS tags ON t2t.tag_id = tags.id
+                GROUP BY t2t.task_id
+            ) AS tags_agg ON todo.id = tags_agg.task_id
             WHERE todo.id = $id
-            GROUP BY todo.id
         ");
         if ($r)
             return Task::fromArray($r);
