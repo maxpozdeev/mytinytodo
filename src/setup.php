@@ -576,7 +576,7 @@ function createMysqlTables(AbstractDatabase $db)
     `d_edited` BIGINT UNSIGNED NOT NULL default 0,    /* time() timestamp */
     `compl` TINYINT UNSIGNED NOT NULL default 0,
     `title` VARCHAR(250) NOT NULL,
-    `note` TEXT,
+    `note` MEDIUMTEXT default NULL,
     `prio` TINYINT NOT NULL default 0,          /* priority -,0,+ */
     `ow` INT NOT NULL default 0,                /* order weight */
     `duedate` DATE default NULL,
@@ -958,11 +958,18 @@ function update_18_20(AbstractDatabase $db, string $dbtype)
         $db->ex("ALTER TABLE {$db->prefix}todolist MODIFY `d_created` BIGINT UNSIGNED NOT NULL default 0");
         $db->ex("ALTER TABLE {$db->prefix}todolist MODIFY `d_completed` BIGINT UNSIGNED NOT NULL default 0");
         $db->ex("ALTER TABLE {$db->prefix}todolist MODIFY `d_edited` BIGINT UNSIGNED NOT NULL default 0");
+        $db->ex("ALTER TABLE {$db->prefix}todolist MODIFY `note` MEDIUMTEXT default NULL"); //upto 4mb in utf8mb4
         $db->ex("ALTER TABLE {$db->prefix}sessions MODIFY `last_access` BIGINT UNSIGNED NOT NULL default 0");
         $db->ex("ALTER TABLE {$db->prefix}sessions MODIFY `expires` BIGINT UNSIGNED NOT NULL default 0");
 
+        $db->ex("ALTER TABLE {$db->prefix}lists ADD `user_id` INT UNSIGNED NOT NULL default 0");
+        $db->ex("ALTER TABLE {$db->prefix}lists ADD KEY (`user_id`)");
+
         $db->ex("ALTER TABLE {$db->prefix}todolist ADD `parent_id` INT UNSIGNED NOT NULL default 0");
         $db->ex("ALTER TABLE {$db->prefix}todolist ADD `extra` TEXT default NULL");
+
+        $db->ex("ALTER TABLE {$db->prefix}tags ADD `user_id` INT UNSIGNED NOT NULL default 0");
+        $db->ex("ALTER TABLE {$db->prefix}tags ADD KEY (`user_id`)");
 
         $collation = 'utf8mb4_unicode_520_ci';
 
@@ -977,8 +984,8 @@ function update_18_20(AbstractDatabase $db, string $dbtype)
                 `last_visit` DATE default NULL,
                 `extra` TEXT default NULL,
                 PRIMARY KEY(`id`),
-                UNIQUE KEY `username` (`username`),
-                UNIQUE KEY `email` (`email`)
+                UNIQUE KEY (`username`),
+                UNIQUE KEY (`email`)
             ) CHARSET=utf8mb4 COLLATE $collation ");
 
         $db->ex(
@@ -1028,6 +1035,7 @@ function update_18_20(AbstractDatabase $db, string $dbtype)
     }
     else if ($dbtype == 'sqlite')
     {
+        // lists: add user_id column
         $db->ex("ALTER TABLE {$db->prefix}lists ADD user_id INTEGER UNSIGNED NOT NULL default 0");
         $db->ex("CREATE INDEX lists_user_id ON {$db->prefix}lists (user_id)");
 
