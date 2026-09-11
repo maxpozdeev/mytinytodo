@@ -1586,7 +1586,7 @@ function refreshPagination(json)
     $('#pagination>ul').html(html);
     let sel = '';
     let found = false;
-    for (let i of [2, 5, 10, 20, 30, 50]) {
+    for (let i of [10, 20, 30, 50]) {
         if (limit == i) {
             found = true;
             sel += `<option selected="selected">${i}</option>`;
