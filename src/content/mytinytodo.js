@@ -2434,8 +2434,8 @@ function sortMenuClick(el, menu)
         case 'sortByHand': setSort(curList.sort==0 ? 100 : 0); break;
         case 'sortByPrio': setSort(curList.sort==1 ? 101 : 1); break;
         case 'sortByDueDate': setSort(curList.sort==2 ? 102 : 2); break;
-        case 'sortByDateCreated': setSort(curList.sort==3 ? 103 : 3); break;
-        case 'sortByDateModified': setSort(curList.sort==4 ? 104 : 4); break;
+        case 'sortByDateCreated': setSort(curList.sort==103 ? 3 : 103); break;
+        case 'sortByDateModified': setSort(curList.sort==104 ? 4 : 104); break;
         case 'sortByTitle': setSort(curList.sort==5 ? 105 : 5); break;
     }
     return false;
