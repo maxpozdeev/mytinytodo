@@ -103,40 +103,26 @@ class TaskRepo
         # Sort
         $collate = ($this->db::DBTYPE === DBConnection::DBTYPE_SQLITE) ? "COLLATE {$this->db->orderCollation}" : "";
         $sqlSort = "ORDER BY compl ASC, ";
-        if ($sort == self::SORT_MANUAL)
-                                                        $sqlSort .= "ow ASC";
-        elseif ($sort == self::SORT_MANUAL_REVERSE)
-                                                        $sqlSort .= "ow DESC";
-        elseif ($sort == self::SORT_PRIORITY)
-                                                        $sqlSort .= "prio DESC, duedate IS NULL ASC, duedate ASC, ow ASC";
-        elseif ($sort == self::SORT_PRIORITY_REVERSE)
-                                                        $sqlSort .= "prio ASC, duedate IS NULL DESC, duedate DESC, ow DESC";
-        elseif ($sort == self::SORT_DUEDATE)
-                                                        $sqlSort .= "duedate IS NULL ASC, duedate ASC, prio DESC, ow ASC";
-        elseif ($sort == self::SORT_DUEDATE_REVERSE)
-                                                        $sqlSort .= "duedate IS NULL DESC, duedate DESC, prio ASC, ow DESC";
-        elseif ($sort == self::SORT_DATE_CREATED)
-                                                        $sqlSort .= "d_created ASC, prio DESC, ow ASC";
-        elseif ($sort == self::SORT_DATE_CREATED_REVERSE)
-                                                        $sqlSort .= "d_created DESC, prio ASC, ow DESC";
-        elseif ($sort == self::SORT_DATE_EDITED)
-                                                        $sqlSort .= "d_edited ASC, prio DESC, ow ASC";
-        elseif ($sort == self::SORT_DATE_EDITED_REVERSE)
-                                                        $sqlSort .= "d_edited DESC, prio ASC, ow DESC";
-        elseif ($sort == self::SORT_TITLE)
-                                                        $sqlSort .= "title $collate ASC, prio DESC, ow ASC";
-        elseif ($sort == self::SORT_TITLE_REVERSE)
-                                                        $sqlSort .= "title $collate DESC, prio ASC, ow DESC";
-        elseif ($sort == self::SORT_FIELD_ID)           $sqlSort .= "todo.id DESC";
-        elseif ($sort == self::SORT_FIELD_TITLE)
-                                                        $sqlSort .= "title $collate ASC";
-        elseif ($sort == self::SORT_FIELD_CREATED)      $sqlSort .= "d_created DESC";
-        elseif ($sort == self::SORT_FIELD_COMPLETED)    $sqlSort .= "d_completed DESC";
-        elseif ($sort == self::SORT_FIELD_EDITED)       $sqlSort .= "d_edited DESC";
-        elseif ($sort == self::SORT_FIELD_PRIORITY)     $sqlSort .= "prio DESC";
-        elseif ($sort == self::SORT_FIELD_OW)           $sqlSort .= "ow ASC";
-        else
-            $sqlSort .= "d_created ASC, prio DESC, ow ASC";             // same as byDateCreated
+        if ($sort == self::SORT_MANUAL)                     $sqlSort .= "ow ASC";
+        elseif ($sort == self::SORT_MANUAL_REVERSE)         $sqlSort .= "ow DESC";
+        elseif ($sort == self::SORT_PRIORITY)               $sqlSort .= "prio DESC, duedate IS NULL ASC, duedate ASC, id ASC";
+        elseif ($sort == self::SORT_PRIORITY_REVERSE)       $sqlSort .= "prio ASC, duedate IS NULL DESC, duedate DESC, id DESC";
+        elseif ($sort == self::SORT_DUEDATE)                $sqlSort .= "duedate IS NULL ASC, duedate ASC, prio DESC, id ASC";
+        elseif ($sort == self::SORT_DUEDATE_REVERSE)        $sqlSort .= "duedate IS NULL DESC, duedate DESC, prio ASC, id DESC";
+        elseif ($sort == self::SORT_DATE_CREATED)           $sqlSort .= "d_created ASC, prio DESC, id ASC";
+        elseif ($sort == self::SORT_DATE_CREATED_REVERSE)   $sqlSort .= "d_created DESC, prio ASC, id DESC";
+        elseif ($sort == self::SORT_DATE_EDITED)            $sqlSort .= "d_edited ASC, prio DESC, id ASC";
+        elseif ($sort == self::SORT_DATE_EDITED_REVERSE)    $sqlSort .= "d_edited DESC, prio ASC, id DESC";
+        elseif ($sort == self::SORT_TITLE)                  $sqlSort .= "title $collate ASC, prio DESC, id ASC";
+        elseif ($sort == self::SORT_TITLE_REVERSE)          $sqlSort .= "title $collate DESC, prio ASC, id DESC";
+        elseif ($sort == self::SORT_FIELD_ID)               $sqlSort .= "todo.id DESC";
+        elseif ($sort == self::SORT_FIELD_TITLE)            $sqlSort .= "title $collate ASC";
+        elseif ($sort == self::SORT_FIELD_CREATED)          $sqlSort .= "d_created DESC";
+        elseif ($sort == self::SORT_FIELD_COMPLETED)        $sqlSort .= "d_completed DESC";
+        elseif ($sort == self::SORT_FIELD_EDITED)           $sqlSort .= "d_edited DESC";
+        elseif ($sort == self::SORT_FIELD_PRIORITY)         $sqlSort .= "prio DESC";
+        elseif ($sort == self::SORT_FIELD_OW)               $sqlSort .= "ow ASC";
+        else                                                $sqlSort .= "d_created DESC, prio ASC, id DESC"; // same as by Date Created Desc
 
 
         $groupConcat = '';

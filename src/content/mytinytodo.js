@@ -1658,7 +1658,7 @@ function changeTaskOrder(id)
             taskList[a].compl - taskList[b].compl,
             taskList[b].prio - taskList[a].prio,
             taskList[a].dueInt - taskList[b].dueInt,
-            taskList[a].ow - taskList[b].ow
+            taskList[a].id - taskList[b].id
         ));
     }
     // sortByDueDate and reverse
@@ -1668,7 +1668,7 @@ function changeTaskOrder(id)
             taskList[a].compl - taskList[b].compl,
             taskList[a].dueInt - taskList[b].dueInt,
             taskList[b].prio - taskList[a].prio,
-            taskList[a].ow - taskList[b].ow
+            taskList[a].id - taskList[b].id
         ))
     }
     // sortByDateCreated and reverse
@@ -1678,7 +1678,7 @@ function changeTaskOrder(id)
             taskList[a].compl - taskList[b].compl,
             taskList[a].dateInt - taskList[b].dateInt,
             taskList[b].prio - taskList[a].prio,
-            taskList[a].ow - taskList[b].ow
+            taskList[a].id - taskList[b].id
         ));
     }
     // sortByDateModified and reverse
@@ -1688,7 +1688,7 @@ function changeTaskOrder(id)
             taskList[a].compl - taskList[b].compl,
             taskList[a].dateEditedInt - taskList[b].dateEditedInt,
             taskList[b].prio - taskList[a].prio,
-            taskList[a].ow - taskList[b].ow
+            taskList[a].id - taskList[b].id
         ))
     }
     // sortByTitle and reverse
@@ -1698,7 +1698,7 @@ function changeTaskOrder(id)
             taskList[a].compl - taskList[b].compl,
             taskList[a].title.localeCompare(taskList[b].title, 'en', {sensitivity: 'base'}),
             taskList[b].prio - taskList[a].prio,
-            taskList[a].ow - taskList[b].ow
+            taskList[a].id - taskList[b].id
         ))
     }
     else {
