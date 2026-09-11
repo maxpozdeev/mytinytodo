@@ -1769,30 +1769,30 @@ function setSort(v, init)
 
 function updateSortUI(v)
 {
+    const up = '△'; //↑
+    const down = '▽'; //↓
+    function _updateSortUI(selector, icon, title) {
+        $(selector).addClass('mtt-item-checked').children('.mtt-sort-direction').text(icon);
+        $('#sortmenubtn .title').text(icon + ' ' + title);
+    }
     $('#sortmenucontainer .sort-item').removeClass('mtt-item-checked').children('.mtt-sort-direction').text('');
     if (v == 0 || v == 100) {
-        $('#sortByHand').addClass('mtt-item-checked').children('.mtt-sort-direction').text(v==0 ? '↓' : '↑');
-        $('#sortmenubtn .title').text((v==0 ? '↓' : '↑') + ' ' + mtt.lang.get('sortShortByHand'));
+        _updateSortUI('#sortByHand', v==0 ? down : up, mtt.lang.get('sortShortByHand'));
     }
     else if(v==1 || v==101) {
-        $('#sortByPrio').addClass('mtt-item-checked').children('.mtt-sort-direction').text(v==1 ? '↑' : '↓');
-        $('#sortmenubtn .title').text((v==1 ? '↑' : '↓') + ' ' + mtt.lang.get('sortShortByPriority'));
+        _updateSortUI('#sortByPrio', v==1 ? down : up, mtt.lang.get('sortShortByPriority'));
     }
     else if(v==2 || v==102) {
-        $('#sortByDueDate').addClass('mtt-item-checked').children('.mtt-sort-direction').text(v==2 ? '↑' : '↓');
-        $('#sortmenubtn .title').text((v==2 ? '↑' : '↓') + ' ' + mtt.lang.get('sortShortByDueDate'));
+        _updateSortUI('#sortByDueDate', v==2 ? up : down, mtt.lang.get('sortShortByDueDate'));
     }
     else if(v==3 || v==103) {
-        $('#sortByDateCreated').addClass('mtt-item-checked').children('.mtt-sort-direction').text(v==3 ? '↓' : '↑');
-        $('#sortmenubtn .title').text((v==3 ? '↓' : '↑') + ' ' + mtt.lang.get('sortShortByDateCreated'));
+        _updateSortUI('#sortByDateCreated', v==3 ? up : down, mtt.lang.get('sortShortByDateCreated'));
     }
     else if(v==4 || v==104) {
-        $('#sortByDateModified').addClass('mtt-item-checked').children('.mtt-sort-direction').text(v==4 ? '↓' : '↑');
-        $('#sortmenubtn .title').text((v==4 ? '↓' : '↑') + ' ' + mtt.lang.get('sortShortByDateModified'));
+        _updateSortUI('#sortByDateModified', v==4 ? up : down, mtt.lang.get('sortShortByDateModified'));
     }
     else if(v==5 || v==105) {
-        $('#sortByTitle').addClass('mtt-item-checked').children('.mtt-sort-direction').text(v==5 ? '↓' : '↑');
-        $('#sortmenubtn .title').text((v==5 ? '↓' : '↑') + ' ' + mtt.lang.get('sortShortByTitle'));
+        _updateSortUI('#sortByTitle', v==5 ? up : down, mtt.lang.get('sortShortByTitle'));
     }
     else {
         $('#sortmenubtn .title').text(mtt.lang.get('sortShort'));
