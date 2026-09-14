@@ -1,0 +1,20 @@
+includes:
+	- src/includes/vendor/phpstan/phpstan-deprecation-rules/rules.neon
+
+parameters:
+	level: 4
+	phpVersion: 80500
+	paths:
+		- src
+	excludePaths:
+		analyse:
+			- src/includes/vendor
+	bootstrapFiles:
+		- src/config-sample.php
+	fileExtensions:
+		- php
+	ignoreErrors:
+		- identifier: new.static
+	dynamicConstantNames:
+		- MTT_DEBUG
+		- MTT_DB_TYPE
