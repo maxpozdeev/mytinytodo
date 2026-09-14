@@ -186,7 +186,7 @@ class AuthController extends ApiController {
                 $t['error'] = __('invalidOrExpiredResetLink', true);
             return $t;
         }
-        if (time() > $data['exp'] ?? 0) {
+        if (time() > ($data['exp'] ?? 0)) {
             if (MTT_DEBUG)
                 $t['error'] = "Invalid code - expired";
             else

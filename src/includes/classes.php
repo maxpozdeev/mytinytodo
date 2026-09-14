@@ -284,7 +284,7 @@ class MTTExtensionLoader
     {
         $lang = Lang::instance();
         $a = [];
-        $files = array_diff(scandir(MTT_EXT) ?? [], ['.', '..']);
+        $files = array_diff(scandir(MTT_EXT) ?: [], ['.', '..']);
         foreach ($files as $ext) {
             if ( !is_dir(MTT_EXT. $ext)
                 || !file_exists(MTT_EXT. $ext. '/loader.php') ) {

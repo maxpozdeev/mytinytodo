@@ -339,7 +339,7 @@ class AppConfig
 {
     public static function requestDictionary(string $key, ?array $schema = null): ?ConfigDictionary
     {
-        $j = static::requestDomain($key) ?? [];
+        $j = static::requestDomain($key);
         return ConfigDictionary::dictionary($j, $schema);
     }
 

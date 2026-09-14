@@ -38,7 +38,7 @@ if (isset($_POST['save']))
 
 <?php
 
-$css = @file_get_contents($cssFilename) ?? '';
+$css = @file_get_contents($cssFilename) ?: '';
 $e = function($s) { return __($s, true); };
 
 echo <<<EOD

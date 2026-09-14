@@ -259,7 +259,7 @@ function printAppPasswordsTable()
 
     foreach ($passwords as $row) {
         $name = htmlspecialchars($row['name']);
-        $created = htmlspecialchars(timestampToDatetime( (int)$row['created'] ?? 0));
+        $created = htmlspecialchars(timestampToDatetime( (int)($row['created'] ?? 0) ));
         $uuid = htmlspecialchars($row['uuid'] ?? '');
         print "<tr><td>$name</td><td>$created</td><td>".
             '<form action="'. mtt_get_settings_page_url(). '" method="post" data-ok-reload="yes">'.

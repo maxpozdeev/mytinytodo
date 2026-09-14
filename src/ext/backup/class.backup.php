@@ -148,7 +148,7 @@ class Backup
         $db = \DBConnection::instance();
         if ($db::DBTYPE == \DBConnection::DBTYPE_MYSQL) {
             $r = $db->sqa("SHOW TABLE STATUS WHERE Name=?", [$table]);
-            return (string)$r['Auto_increment'] ?? '';
+            return (string)($r['Auto_increment'] ?? '');
         }
         else if ($db::DBTYPE == \DBConnection::DBTYPE_SQLITE) {
             $seq = (int)$db->sq("SELECT seq FROM sqlite_sequence WHERE name=?", [$table]);
