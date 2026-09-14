@@ -2,7 +2,7 @@
 
 /*
     This file is a part of myTinyTodo.
-    (C) Copyright 2023-2025 Max Pozdeev <maxpozdeev@gmail.com>
+    (C) Copyright 2023-2026 Max Pozdeev <maxpozdeev@gmail.com>
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
@@ -12,6 +12,8 @@ use XMLReader;
 use DBConnection;
 use Exception;
 
+use BackupExtension\Backup;
+
 class Restore
 {
     public $lastErrorString = null;
@@ -19,6 +21,8 @@ class Restore
     /** @var XMLReader */
     private $reader;
     private $tableItem;
+    private $endRestoreQueries = [];
+    private $autoincState = [];
 
     function __construct()
     {
@@ -84,6 +88,7 @@ class Restore
                 continue; // Unexpected table, just skip
             }
             if (is_null($result)) {
+                $this->cancelRestore();
                 return false; // Incorrect format, error is set, stop
             }
 
@@ -212,7 +217,8 @@ class Restore
         $db = DBConnection::instance();
         switch ($db::DBTYPE) {
             case DBConnection::DBTYPE_MYSQL:
-                $db->ex("ALTER TABLE {$db->prefix}$table AUTO_INCREMENT = ". (int)$autoinc);
+                //because mysql will autocommit on alter table
+                $this->endRestoreQueries[] = "ALTER TABLE {$db->prefix}$table AUTO_INCREMENT = ". (int)$autoinc;
                 break;
             case DBConnection::DBTYPE_POSTGRES:
                 $db->ex("ALTER TABLE {$db->prefix}$table ALTER COLUMN id RESTART WITH ". (int)$autoinc);
@@ -235,6 +241,13 @@ class Restore
                 $db->ex("TRUNCATE TABLE $table RESTART IDENTITY");
             }
             else {
+                if ($db::DBTYPE === DBConnection::DBTYPE_MYSQL) {
+                    #save autoincrement for rollback
+                    $autoinc = (int)Backup::getTableAutoIncrement($table);
+                    if ($autoinc > 0) {
+                        $this->autoincState[$table] = $autoinc;
+                    }
+                }
                 # - we do not use TRUNCATE on mysql due to autocommit
                 # - sqlite has truncate optimizer while delete all to make it faster
                 # - no need to reset auto_increment sequence before inserting lower ids
@@ -248,8 +261,20 @@ class Restore
     {
         $db = DBConnection::instance();
         $db->ex("COMMIT");
-        // vacuum?
+        // vacuum? optimize?
+        foreach ($this->endRestoreQueries as $query) {
+            $db->ex($query);
+        }
     }
 
+    private function cancelRestore()
+    {
+        $db = DBConnection::instance();
+        $db->ex("ROLLBACK");
+        foreach ($this->autoincState as $table => $autoinc) {
+            $db->ex("ALTER TABLE $table AUTO_INCREMENT = ". (int)$autoinc);
+        }
+        // vacuum? optimize?
+    }
 
 }

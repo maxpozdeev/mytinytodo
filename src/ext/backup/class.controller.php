@@ -82,6 +82,7 @@ class Controller extends \ApiController
 
     function postRestore()
     {
+        require_once('class.backup.php');
         require_once('class.restore.php');
         $restore = new Restore();
 

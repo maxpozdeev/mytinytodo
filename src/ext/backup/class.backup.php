@@ -109,7 +109,7 @@ class Backup
         }
         $db = \DBConnection::instance();
         $props = null;
-        $autoinc = $this->getTableAutoIncrement($table);
+        $autoinc = static::getTableAutoIncrement($table);
         if ($autoinc != '') {
             $props = ['auto_increment' => $autoinc];
         }
@@ -141,7 +141,7 @@ class Backup
         $this->writeClosingTag($entity);
     }
 
-    function getTableAutoIncrement($table): string
+    static function getTableAutoIncrement($table): string
     {
         $db = \DBConnection::instance();
         if ($db::DBTYPE == \DBConnection::DBTYPE_MYSQL) {
