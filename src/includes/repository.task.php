@@ -25,7 +25,7 @@ class TaskRepo
 
     const SORT_FIELD_ID = 1000;
     const SORT_FIELD_TITLE = 1001;
-    const SORT_FIELD_CREATED = 1004;
+    const SORT_FIELD_CREATED = 1002;
     const SORT_FIELD_COMPLETED = 1003;
     const SORT_FIELD_EDITED = 1004;
     const SORT_FIELD_PRIORITY = 1005;
