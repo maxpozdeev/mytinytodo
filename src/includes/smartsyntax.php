@@ -201,5 +201,8 @@ function parseSmartSyntax(string $title): ?array
 {
     $a = MTTSmartSyntax::instance()->parse($title);
     do_filter('parseSmartSyntax', $title, $a);
+    if (!is_array($a)) {
+        return null;
+    }
     return $a;
 }

@@ -238,7 +238,7 @@ class TasksController extends ApiController {
             'tags' => '',
             'duedate' => '',
         );
-        if (Config::get('smartsyntax') != 0 && (false !== $a = parseSmartSyntax($t['title'])))
+        if (Config::get('smartsyntax') != 0 && (null !== $a = parseSmartSyntax($t['title'])))
         {
             $t['title'] = (string) ($a['title'] ?? '');
             $t['prio'] = (int) ($a['prio'] ?? 0);
@@ -327,7 +327,7 @@ class TasksController extends ApiController {
         if (Config::get('smartsyntax') != 0)
         {
             $a = parseSmartSyntax($title);
-            if ($a === false) {
+            if ($a === null) {
                 return $failedResult;
             }
             $title = (string)$a['title'];

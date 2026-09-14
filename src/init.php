@@ -308,11 +308,9 @@ function sessionSignature(
 function access_token(): string
 {
     if ( need_auth() ) {
-        if (!isset($_SESSION)) return '';
         return $_SESSION['token'] ?? '';
     }
     else {
-        if (!isset($_COOKIE)) return '';
         return $_COOKIE['mtt-token'] ?? '';
     }
 }

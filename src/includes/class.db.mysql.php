@@ -86,7 +86,7 @@ class MysqlDatabase extends AbstractDatabase
         }
         else {
             /** @disregard P1009 available in php 8.5 */
-            $this->dbh = new \PDO\Mysql("mysql:host=$host;dbname=$db", $user, $pass, [
+            $this->dbh = new \Pdo\Mysql("mysql:host=$host;dbname=$db", $user, $pass, [
                 \Pdo\Mysql::ATTR_FOUND_ROWS => true,
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
             ]);

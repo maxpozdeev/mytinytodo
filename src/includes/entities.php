@@ -194,7 +194,7 @@ class TaskList extends AbstractTaskList
         return array(
             'id' => $this->id ?? '',
             'name' => htmlspecialchars($this->name ?? ''),
-            'sort' => $this->sorting ?? self::defaultSort,
+            'sort' => $this->sorting,
             'published' => $this->isPublished ? 1 : 0,
             'showCompl' => $this->isShowCompleted ? 1 : 0,
             'showNotes' => $this->isShowNotes ? 1 : 0,
@@ -447,7 +447,7 @@ class Task extends AbstractTask
             'tags_ids' => htmlspecialchars( implode(',', $this->tagIds) ),
 
             //FIXME: dont use ow
-            'ow' => $this->ow ?? 0,
+            'ow' => $this->ow,
         );
     }
 

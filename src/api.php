@@ -150,7 +150,7 @@ foreach ($endpoints as $search => $methods) {
 
 }
 
-if (!$executed || !$response) {
+if (!$executed) {
     if (MTT_DEBUG) {
         (new ErrorApiResponse("Unknown endpoint: {$req->method} {$req->path}", 404))->exit();
     }

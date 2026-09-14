@@ -60,13 +60,16 @@ class Download
         header('Content-type: application/xml; charset=utf-8');
         header('Content-disposition: attachment; filename=backup.xml');
 
-        $fh = fopen($this->filename, "r") or die("Couldn't open file");
+        $fh = fopen($this->filename, "r");
         if ($fh) {
             while (!feof($fh)) {
                 $buffer = fgets($fh, 4096);
                 print($buffer);
             }
             fclose($fh);
+        }
+        else {
+            die("Couldn't open file");
         }
         exit();
     }

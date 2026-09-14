@@ -313,11 +313,9 @@ class MTTExtensionLoader
     public static function isBundleCompatible(array $meta): bool
     {
         $cpt = $meta['compatibility'] ?? '';
-        if ($cpt === '' || !is_string($cpt))
+        if ($cpt === '' || !is_string($cpt) || strpos($cpt, '-') === false)
             return false;
         list($vmin, $vmax) = explode('-', $cpt, 2);
-        if (!isset($vmin) || !isset($vmax))
-            return false;
 
         if (version_compare(MTTVersion::VERSION, $vmin) < 0)
             return false;

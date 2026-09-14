@@ -18,11 +18,10 @@ class Restore
 {
     const supportedDbVersions = ['1.8', '2.0'];
 
-    public $lastErrorString = null;
-    private $filename;
+    public ?string $lastErrorString = null;
+    private string $filename;
     private XMLReader $reader;
     private array $tableItem;
-    private array $tableDefaults;
     private string $dbVersion;
     private int $userId;
     private array $endRestoreQueries = [];

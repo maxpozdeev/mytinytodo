@@ -312,7 +312,6 @@ function generateTokenV18(
 
 function databaseVersion(AbstractDatabase $db): string
 {
-    if ( !$db ) return '';
     if ( !$db->tableExists($db->prefix.'todolist') ) return '';
     $v = '1.0';
     if ( !$db->tableExists($db->prefix.'tags') ) return $v;
