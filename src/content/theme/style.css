@@ -1093,6 +1093,7 @@ textarea.form-input.inmax {
 
 .mtt-menu-button {
   user-select: none;
+  -webkit-user-select: none;
   cursor:pointer;
   padding:4px;
   transition:background-color 0.1s ease-in;
