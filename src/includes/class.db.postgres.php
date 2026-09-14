@@ -107,7 +107,7 @@ class PostgresDatabase extends AbstractDatabase
         $q = $this->_dq($query, $values);
 
         $res = $q->fetchRow();
-        if ($res === false || !is_array($res)) {
+        if ($res === null) {
             return null;
         }
 
@@ -122,9 +122,6 @@ class PostgresDatabase extends AbstractDatabase
     {
         $q = $this->_dq($query, $values);
         $res = $q->fetchAssoc();
-        if ($res === false || !is_array($res)){
-            return null;
-        }
         return $res;
     }
 

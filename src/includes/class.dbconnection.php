@@ -12,7 +12,7 @@ class DBConnection
     const DBTYPE_MYSQL = "mysql";
     const DBTYPE_POSTGRES = "postgres";
 
-    protected static $instance;
+    protected static AbstractDatabase $instance;
 
     public static function init(AbstractDatabase $instance) : AbstractDatabase
     {
@@ -28,20 +28,29 @@ class DBConnection
         return self::$instance;
     }
 
-    public static function setTablePrefix($prefix)
+    public static function setTablePrefix(string $prefix)
     {
         $db = self::instance();
         $db->setPrefix($prefix);
     }
 }
 
+/**
+ *
+ * @property-read string $prefix
+ * @property-read string $lastQuery
+ * @property-read string $orderCollation
+ * @property-read string $equalCollation
+ */
 abstract class AbstractDatabase
 {
     const DBTYPE = '';
-    protected static array $readonlyProps = ['prefix', 'lastQuery'];
+    protected static array $readonlyProps = ['prefix', 'lastQuery', 'orderCollation', 'equalCollation'];
 
     protected string $prefix = '';
     protected string $lastQuery = '';
+    protected string $orderCollation = '';
+    protected string $equalCollation = '';
 
     protected ?string $logQueryToFile = null;
     protected bool $isFirstLog = true;

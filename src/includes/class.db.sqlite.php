@@ -58,8 +58,6 @@ class SqliteDatabase extends AbstractDatabase
 {
     const DBTYPE = 'sqlite';
 
-    protected static array $readonlyProps = ['prefix', 'lastQuery', 'orderCollation', 'equalCollation'];
-
     /** @var PDO|\Pdo\Sqlite */
     protected $dbh;
 
@@ -117,7 +115,7 @@ class SqliteDatabase extends AbstractDatabase
         $q = $this->_dq($query, $values);
 
         $res = $q->fetchRow();
-        if ($res === false || !is_array($res)) {
+        if ($res === null) {
             return null;
         }
 
@@ -132,9 +130,6 @@ class SqliteDatabase extends AbstractDatabase
     {
         $q = $this->_dq($query, $values);
         $res = $q->fetchAssoc();
-        if ($res === false || !is_array($res)) {
-            return null;
-        }
         return $res;
     }
 
@@ -297,7 +292,7 @@ class SqliteDatabase extends AbstractDatabase
 
         if (false === preg_match_all("/./u", $str, $m)) {
             $ea = error_get_last();
-            $error = ($ea && isset($ea['message'])) ? $ea['message'] : "preg_match_all() failed";
+            $error = $ea ? $ea['message'] : "preg_match_all() failed";
             throw new Exception($error);
         }
         $chars = $m[0];
