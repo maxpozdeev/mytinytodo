@@ -2235,6 +2235,7 @@ function showEditForm(isAdd)
 
     flag.editFormChanged = false;
     mtt.pageSet('taskedit');
+    if (isAdd) form.elements.task.focus();
 };
 
 function saveTask(form)
