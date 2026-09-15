@@ -1,9 +1,10 @@
 includes:
 	- src/includes/vendor/phpstan/phpstan-deprecation-rules/rules.neon
+	- phpstan-conditional.php
 
 parameters:
 	level: 4
-	phpVersion: 80500
+	phpVersion: 70400
 	paths:
 		- src
 	excludePaths:
@@ -13,8 +14,26 @@ parameters:
 		- src/config-sample.php
 	fileExtensions:
 		- php
+	treatPhpDocTypesAsCertain: false
 	ignoreErrors:
 		- identifier: new.static
+		- identifier: return.unusedType
+		-
+			message: '#Variable \$argc might not be defined.#'
+			reportUnmatched: false
+			paths:
+				- src/mtt-cmd.php
+				- src/includes/lang/_percent.php
+		-
+			message: '#Variable \$argv might not be defined.#'
+			reportUnmatched: false
+			paths:
+				- src/mtt-cmd.php
+				- src/includes/lang/_percent.php
 	dynamicConstantNames:
 		- MTT_DEBUG
 		- MTT_DB_TYPE
+		- MTTVersion::DB_VERSION
+		- MTT_MULTIUSER
+		- MTT_USE_HTTPS
+		- MTT_USE_REWRITE

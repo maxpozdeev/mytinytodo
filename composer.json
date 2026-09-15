@@ -22,7 +22,7 @@
     "require-dev": {
         "php": ">=8.2",
         "league/commonmark": "^2.10",
-        "phpstan/phpstan": "*",
-        "phpstan/phpstan-deprecation-rules": "*"
+        "phpstan/phpstan": "^2.0",
+        "phpstan/phpstan-deprecation-rules": "^2.0"
     }
 }
