@@ -18,7 +18,7 @@ interface MTTMarkdownInterface
 
 final class MTTMarkdown
 {
-    /** @var MTTMarkdownInterface */
+    /** @var ?MTTMarkdownInterface */
     private static $instance;
 
     /** @var string */
@@ -83,7 +83,7 @@ class MTTTitleMarkupConverter implements MTTTitleMarkupInterface
 
 final class MTTTitleMarkup
 {
-    /** @var MTTTitleMarkupInterface */
+    /** @var ?MTTTitleMarkupInterface */
     private static $instance;
 
     /** @var string */

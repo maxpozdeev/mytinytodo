@@ -19,7 +19,7 @@ class ListRepo
      *
      * @param int $userId
      * @param bool $includeAlltasks
-     * @return AbstractTasklist[]
+     * @return AbstractTaskList[]
      * @throws Exception
      */
     function findListsByUserId(int $userId, bool $includeAlltasks = false): array
@@ -123,7 +123,7 @@ class ListRepo
 
     /**
      * Set order of lists of specfic user
-     * @param [int|string] $order Ids of Lists in order of appearance
+     * @param (int|string)[] $order Ids of Lists in order of appearance
      * @param int $userId
      * @return void
      * @throws Exception

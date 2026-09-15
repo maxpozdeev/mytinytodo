@@ -11,7 +11,7 @@ class ExtSettingsController extends ApiController {
     {
         checkWriteAccess();
 
-        /** @var MTTExtension|MTTExtensionSettingsInterface $instance */
+        /** @var ?MTTExtensionSettingsInterface $instance */
         $instance = $this->extInstance($ext);
         if (!$instance) {
             return;
@@ -71,7 +71,7 @@ EOD;
     {
         checkWriteAccess();
 
-        /** @var MTTExtension|MTTExtensionSettingsInterface $instance */
+        /** @var ?MTTExtensionSettingsInterface $instance */
         $instance = $this->extInstance($ext);
         if (!$instance) {
             return;
