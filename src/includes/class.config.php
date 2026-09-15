@@ -228,7 +228,7 @@ class Config
     public static function saveDomain(string $key, array $array)
     {
         //TODO: remove this proc
-        return AppConfig::saveDomain($key, $array);
+        AppConfig::saveDomain($key, $array);
     }
 
 }

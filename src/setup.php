@@ -92,7 +92,7 @@ if ($configExists)
 
     require_once('./init.php');
 
-    if ($ver != '' && $dontStartSession) {
+    if ($ver != '' && isset($dontStartSession)) {
         askPasswordV18($csrfToken);
     }
     else if ( !Config::$noDatabase && !is_logged() ) {

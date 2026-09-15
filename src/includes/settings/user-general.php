@@ -16,7 +16,7 @@ if (isset($_POST['save']))
 {
     $langs = getLangs();
     Config::$userSchema['lang']['options'] = array_keys($langs);
-    $t = array();
+    $t = [ 'ok' => true, 'saved' => 1 ];
     $j = UserConfig::requestDomain(Config::userDomain) ?? [];
     $config = ConfigDictionary::dictionary($j, Config::$userSchema) ;
 
@@ -25,7 +25,6 @@ if (isset($_POST['save']))
     // in Demo mode we can set only language by cookies
     if (defined('MTT_DEMO')) {
         setcookie('lang', $config->get('lang'), 0, url_dir(get_unsafe_mttinfo('url')));
-        $t['saved'] = 1;
         jsonExit($t);
     }
 
@@ -52,7 +51,6 @@ if (isset($_POST['save']))
     $config->set('newTaskCounterIcon', (int)_post('newTaskCounterIcon'));
 
     UserConfig::saveDomain(Config::userDomain, $config->asArray());
-    $t['saved'] = 1;
     jsonExit($t);
 }
 

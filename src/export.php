@@ -79,7 +79,7 @@ function escape_csv(string $v)
  */
 function printICal(TaskList $list, array $tasks)
 {
-    $mttToIcalPrio = array(1 => 5, "1" => 5, "2" => 1, 2 => 1, "-1" => 9, -1 => 9);
+    $mttToIcalPrio = array(-1 => 9, 1 => 5, 2 => 1);
     $s = "BEGIN:VCALENDAR\r\n".
          "VERSION:2.0\r\n".
          "METHOD:PUBLISH\r\n". #?

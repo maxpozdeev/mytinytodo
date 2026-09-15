@@ -757,22 +757,32 @@ function canWriteToList(AbstractTaskList $list) : bool
 }
 
 
+function suggestedMailFrom(): string
+{
+    $host = parse_url(get_unsafe_mttinfo('url'), PHP_URL_HOST);
+    $host = preg_replace('/^(www\.)/', '', $host);
+    if (function_exists('posix_getpwuid') && false !== ($userinfo = posix_getpwuid(posix_getuid())) ) {
+        return $userinfo['name']. '@'. $host;
+    }
+    return "mytinytodo@$host";
+}
+
+
 function mtt_mail(string $to, string $subject, string $message)
 {
     require_once(MTTINC. 'vendor/phpmailer/phpmailer/src/PHPMailer.php');
 
-    function suggestedMailFrom(): string
-    {
-        $host = parse_url(get_unsafe_mttinfo('url'), PHP_URL_HOST);
-        $host = preg_replace('/^(www\.)/', '', $host);
-        if (function_exists('posix_getpwuid') && false !== ($userinfo = posix_getpwuid(posix_getuid())) ) {
-            return $userinfo['name']. '@'. $host;
-        }
-        return "mytinytodo@$host";
-    }
-
     $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
     try {
+
+        // $mail->isSMTP();                                      // Set mailer to use SMTP
+        // $mail->Host       = 'smtp.example.com';               // Specify main and backup SMTP servers
+        // $mail->SMTPAuth   = true;                             // Enable SMTP authentication
+        // $mail->Username   = 'your_email@example.com';         // SMTP username
+        // $mail->Password   = 'your_password';                  // SMTP password
+        // $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;   // Enable TLS encryption (or ENCRYPTION_SMTPS for SSL)
+        // $mail->Port       = 587; //587 for STARTTLS, 465 - for SSL (SMTPS)
+
         $mail->XMailer = "myTinyTodo Mailer";
         $mail->CharSet = "UTF-8";
         $mail->setFrom(suggestedMailFrom());
