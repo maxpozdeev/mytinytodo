@@ -13,7 +13,7 @@ class TagsController extends ApiController {
      * @return void
      * @throws Exception
      */
-    function getCloud($listId)
+    function getCloud($listId): void
     {
         $listId = (int)$listId;
         checkReadAccess($listId);
@@ -61,7 +61,7 @@ class TagsController extends ApiController {
      * @return void
      * @throws Exception
      */
-    function getSuggestions($listId)
+    function getSuggestions($listId): void
     {
         $listId = (int)_get('list');
         checkWriteAccess($listId);

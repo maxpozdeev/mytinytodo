@@ -165,13 +165,13 @@ class TasksController extends ApiController {
      * @return void
      * @throws Exception
      */
-    function put()
+    function put(): void
     {
         checkWriteAccess();
         $action = $this->req->jsonBody['action'] ?? '';
         switch ($action) {
             case 'order': $this->response->data = $this->changeTaskOrder(); break;
-            default:      return $this->response->errorJsonContent("Unexpected action", 400);
+            default:      $this->response->errorJsonContent("Unexpected action", 400); return;
         }
     }
 
@@ -182,14 +182,15 @@ class TasksController extends ApiController {
      * @return void
      * @throws Exception
      */
-    function deleteId($id)
+    function deleteId($id): void
     {
         checkWriteAccess();
         $id = (int)$id;
         $repo = new TaskRepo(DBConnection::instance());
         $task = $repo->findTaskById($id);
         if (!$task) {
-            return $this->response->errorJsonContent(__("taskNotFound"), 404);
+            $this->response->errorJsonContent(__("taskNotFound"), 404);
+            return;
         }
         checkWriteAccess($task->listId);
         $this->response->data = $this->deleteTask($task);
@@ -201,13 +202,14 @@ class TasksController extends ApiController {
      * @return void
      * @throws Exception
      */
-    function putId($id)
+    function putId($id): void
     {
         $id = (int)$id;
         $repo = new TaskRepo(DBConnection::instance());
         $task = $repo->findTaskById($id);
         if (!$task) {
-            return $this->response->errorJsonContent(__("taskNotFound"), 404);
+            $this->response->errorJsonContent(__("taskNotFound"), 404);
+            return;
         }
         checkWriteAccess($task->listId);
 
@@ -219,7 +221,7 @@ class TasksController extends ApiController {
             case 'move':     $this->response->data = $this->moveTask($task);     break;
             case 'priority': $this->response->data = $this->priorityTask($task); break;
             case 'delete':   $this->response->data = $this->deleteTask($task);   break; //compatibility
-            default:         return $this->response->errorJsonContent("Unexpected action", 400);
+            default:         $this->response->errorJsonContent("Unexpected action", 400); return;
         }
     }
 
@@ -229,7 +231,7 @@ class TasksController extends ApiController {
      * @return void
      * @throws Exception
      */
-    function postTitleParse()
+    function postTitleParse(): void
     {
         checkWriteAccess();
         $t = array(
@@ -252,7 +254,7 @@ class TasksController extends ApiController {
     }
 
 
-    function postCounterOfNewTasks()
+    function postCounterOfNewTasks(): void
     {
         $curList = (int) ($this->req->jsonBody['list'] ?? 0);
         $curLater = (int) ($this->req->jsonBody['later'] ?? 0);
@@ -264,10 +266,8 @@ class TasksController extends ApiController {
         $lists = $this->req->jsonBody['lists'] ?? [];
 
         if (!is_array($lists)) {
-            return [
-                'ok' => false,
-                'error' => "Invalid argument"
-            ];
+            $this->response->errorJsonContent("Invalid argument", 400);
+            return;
         }
 
         # remove lists without access granted

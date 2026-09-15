@@ -7,7 +7,7 @@ class ExtSettingsController extends ApiController {
      * @return void
      * @throws Exception
      */
-    function get(string $ext)
+    function get(string $ext): void
     {
         checkWriteAccess();
 
@@ -67,7 +67,7 @@ EOD;
      * @return void
      * @throws Exception
      */
-    function put(string $ext)
+    function put(string $ext): void
     {
         checkWriteAccess();
 

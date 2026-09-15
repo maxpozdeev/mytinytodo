@@ -59,23 +59,21 @@ class ApiResponse
     public $code = null;
 
     // deprecated
-    function htmlContent(string $content): self
+    function htmlContent(string $content): void
     {
         $this->contentType = 'text/html; charset=utf-8';
         $this->data = $content;
         $this->code = 200;
-        return $this;
     }
 
     // deprecated, use ErrorApiResponse
-    function errorJsonContent(string $errorMessage, int $code): self
+    function errorJsonContent(string $errorMessage, int $code): void
     {
         $this->data = [
             'ok' => false,
             'error' => htmlspecialchars($errorMessage)
         ];
         $this->code = $code;
-        return $this;
     }
 
     function exit()

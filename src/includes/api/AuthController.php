@@ -8,7 +8,7 @@
 
 class AuthController extends ApiController {
 
-    function postAction($action)
+    function postAction($action): void
     {
         switch ($action) {
             case 'login':   $this->response->data = $this->login();         break;

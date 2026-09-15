@@ -13,7 +13,7 @@ class ListsController extends ApiController {
      * @return void
      * @throws Exception
      */
-    function get($username = null)
+    function get($username = null): void
     {
         $db = DBConnection::instance();
         if (!is_null($username) && $username !== '') {
@@ -21,11 +21,14 @@ class ListsController extends ApiController {
                 $userId = userId();
             else
                 $userId = (new UserRepo($db))->findUserIdByUsername($username);
+
             if (!$userId) {
-                return $this->response->errorJsonContent("User not found", 404);
+                $this->response->errorJsonContent("User not found", 404);
+                return;
             }
             if (!need_auth() && $userId !== userId()) {
-                return $this->response->errorJsonContent("User not found", 404);
+                $this->response->errorJsonContent("User not found", 404);
+                return;
             }
             $this->req->setUserId($userId); //set before haveWriteAccess
         }
@@ -59,7 +62,7 @@ class ListsController extends ApiController {
      * @return void
      * @throws Exception
      */
-    function post()
+    function post(): void
     {
         checkWriteAccess();
         $action = $this->req->jsonBody['action'] ?? '';
@@ -75,7 +78,7 @@ class ListsController extends ApiController {
      * @return void
      * @throws Exception
      */
-    function put()
+    function put(): void
     {
         checkWriteAccess();
         $action = $this->req->jsonBody['action'] ?? '';
@@ -94,13 +97,14 @@ class ListsController extends ApiController {
      * @return void
      * @throws Exception
      */
-    function getId($id)
+    function getId($id): void
     {
         $id = (int)$id;
         $repo = new ListRepo(DBConnection::instance());
         $list = $repo->findRealListById($id);
         if (!$list || !canReadList($list)) {
-            return $this->response->errorJsonContent(__("listNotFound"), 404);
+            $this->response->errorJsonContent(__("listNotFound"), 404);
+            return;
         }
 
         $isOwner = canWriteToList($list);
@@ -116,7 +120,7 @@ class ListsController extends ApiController {
      * @return void
      * @throws Exception
      */
-    function deleteId($id)
+    function deleteId($id): void
     {
         $list = checkAndGetListForWrite((int)$id);
         $this->response->data = $this->deleteList($list);
@@ -130,7 +134,7 @@ class ListsController extends ApiController {
      * @return void
      * @throws Exception
      */
-    function putId($id)
+    function putId($id): void
     {
         $id = (int)$id;
         $list = checkAndGetListForWrite((int)$id);
@@ -145,7 +149,7 @@ class ListsController extends ApiController {
             case 'hide':           $this->response->data = $this->hideList($list);       break;
             case 'clearCompleted': $this->response->data = $this->clearCompleted($list); break;
             case 'delete':         $this->response->data = $this->deleteList($list);     break; //compatibility
-            default:               return $this->response->errorJsonContent("Unexpected action", 400);
+            default:               $this->response->errorJsonContent("Unexpected action", 400); return;
         }
     }
 
