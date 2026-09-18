@@ -41,10 +41,12 @@
     --color-tab-selected: var(--color-toolbar);
     --color-tab-hover: #262626;
     --color-tab-border: #676767;
+    --color-tab-border-hover: var(--color-tab-border);
     --color-tab-text: #ddd;
     --color-btn-tab: #ccc;
     --color-btn-tab-hover: #fff;
     --color-btn-tab-hover-bg: #5a5a5a;
+    --color-tab-published: #5c8e5c;
 
     /* Menu */
     --color-menu: #252525;

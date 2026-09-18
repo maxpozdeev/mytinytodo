@@ -1308,6 +1308,7 @@ function publishCurList()
             $('#btnPublish').removeClass('mtt-item-checked');
             $('#btnRssFeed').addClass('mtt-item-disabled');
         }
+        $('#list_'+curList.id).replaceWith(prepareListHtml(curList, true));
     });
 };
 
