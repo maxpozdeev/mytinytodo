@@ -37,7 +37,7 @@ $().ready(function(){
 </div>
 <div class="searchbox-c">
   <div class="mtt-searchbox">
-    <input type="text" name="search" value="" maxlength="250" id="search" autocomplete="off">
+    <input type="text" name="search" value="" maxlength="250" id="search" autocomplete="off" placeholder="<?php _e('htab_search');?>">
     <div class="mtt-searchbox-icon mtt-icon-search"></div>
     <div id="search_close" class="mtt-searchbox-icon mtt-icon-cancelsearch"></div>
   </div>

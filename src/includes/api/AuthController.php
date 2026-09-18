@@ -91,6 +91,7 @@ class AuthController extends ApiController {
 
         $db = DBConnection::instance();
         $r = $db->sqa("SELECT id,pwtoken FROM {$db->prefix}users WHERE email=?", [$email]);
+        // invalidResetEmail ??
         if (!$r) {
             if (MTT_DEBUG) {
                 $t['ok'] = false;
