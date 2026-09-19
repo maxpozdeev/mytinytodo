@@ -258,5 +258,21 @@
     "incorrectFormat": "Incorrect format",
     "alreadyInUseByAccount": "Already in use with another account.",
     "wrongConfirmPassword": "Passwords do not match",
-    "invalidPassword": "Invalid password"
+    "invalidPassword": "Invalid password",
+    "set_backup": "Backup",
+    "backup.h_make": "Make backup",
+    "backup.d_make": "Will create a backup file in '%s' folder.",
+    "backup.make": "Make",
+    "backup.download": "Download",
+    "backup.done": "Done",
+    "backup.not_writable": "Backup file is not writable, check permissions for db/backup.xml",
+    "backup.last_backup": "Last backup: %s",
+    "backup.h_inconsistency": "Check for inconsistency",
+    "backup.d_inconsistency": "If you want to restore the backup to another database version or type, it's better to fix inconsistency before making backup.",
+    "backup.check": "Check",
+    "backup.repair": "Repair",
+    "backup.h_restore": "Restore from backup",
+    "backup.d_restore": "Will delete all records in existing database before restoring.",
+    "backup.restore_local": "Restore",
+    "backup.restore_upload": "Upload and Restore…"
 }

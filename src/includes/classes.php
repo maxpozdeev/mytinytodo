@@ -204,6 +204,11 @@ interface MTTHttpApiExtender
     function extendHttpApi(): array;
 }
 
+interface MTTControlPanelHttpApiExtender
+{
+    static function extendControlPanelHttpApi(): array;
+}
+
 interface MTTExtensionSettingsInterface
 {
     function settingsPage(): string;

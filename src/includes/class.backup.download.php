@@ -6,9 +6,7 @@
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
-namespace BackupExtension;
-
-use BackupExtension;
+namespace Backup;
 
 class Download
 {
@@ -51,7 +49,15 @@ class Download
     {
         $rnd = randomString();
         $hash = $rnd. ':'. hash_hmac('sha256', $rnd, $this->token);
-        $url = BackupExtension::extApiActionUrl("download", "t=$hash");
+        $url = get_unsafe_mttinfo('api_url'). 'cc/backup/download';
+        if (!is_null($hash)) {
+            if (false !== strpos($url, '?')) {
+                $url .= '&t='. $hash;
+            }
+            else {
+                $url .= '?t='. $hash;
+            }
+        }
         return $url;
     }
 

@@ -6,20 +6,30 @@
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
-namespace BackupExtension;
 
-use BackupExtension;
-use BackupExtension\Backup;
-use BackupExtension\Download;
-use BackupExtension\Check;
-use BackupExtension\Restore;
+namespace Backup;
 
-class Controller extends \ApiController
+require_once(MTTINC. 'class.backup.backup.php');
+require_once(MTTINC. 'class.backup.check.php');
+require_once(MTTINC. 'class.backup.download.php');
+require_once(MTTINC. 'class.backup.restore.php');
+
+use Backup\Backup;
+use Backup\Download;
+use Backup\Check;
+use Backup\Restore;
+
+class BackupController extends \ApiController implements \MTTControlPanelHttpApiExtender
 {
+    static function backupFilePath(): string
+    {
+        return MTTPATH. 'db/backup.xml';
+    }
+
     function postMakeBackup()
     {
-        require_once('class.backup.php');
-        $filename = BackupExtension::backupFilePath();
+        require_once(MTTINC. 'class.backup.backup.php');
+        $filename = self::backupFilePath();
         $tmpFile = null;
         if (file_exists('/run/.containerenv') || file_exists('/.dockerenv')) {
             $tmpFile = '/tmp/mtt-backup.xml';
@@ -44,8 +54,8 @@ class Controller extends \ApiController
 
     function postDownload()
     {
-        require_once('class.download.php');
-        $filename = BackupExtension::backupFilePath();
+        require_once(MTTINC. 'class.backup.download.php');
+        $filename = self::backupFilePath();
         $download = new Download($filename);
 
         if (!$download->checkFileAccess()) {
@@ -64,8 +74,8 @@ class Controller extends \ApiController
 
     function getDownload()
     {
-        require_once('class.download.php');
-        $filename = BackupExtension::backupFilePath();
+        require_once(MTTINC. 'class.backup.download.php');
+        $filename = self::backupFilePath();
         $download = new Download($filename);
 
         $ott = (string)_get('t');
@@ -83,15 +93,15 @@ class Controller extends \ApiController
 
     function postRestore(bool $isLocal = false)
     {
-        require_once('class.backup.php');
-        require_once('class.restore.php');
+        require_once(MTTINC. 'class.backup.backup.php');
+        require_once(MTTINC. 'class.backup.restore.php');
         $restore = new Restore();
 
         $filePresent = false;
         if ($isLocal) {
-            $filePresent = $restore->isLocal(BackupExtension::backupFilePath());
+            $filePresent = $restore->isLocal(self::backupFilePath());
         }
-        else         {
+        else        {
             $filePresent = $restore->isUploaded();
         }
         if (!$filePresent) {
@@ -128,7 +138,7 @@ class Controller extends \ApiController
 
     function postCheckInconsistency()
     {
-        require_once('class.check.php');
+        require_once(MTTINC. 'class.backup.check.php');
         $check = new Check();
 
         if (!$check->check()) {
@@ -155,7 +165,7 @@ class Controller extends \ApiController
 
     function postRepairInconsistency()
     {
-        require_once('class.check.php');
+        require_once(MTTINC. 'class.backup.check.php');
         $check = new Check();
 
         if (!$check->repair()) {
@@ -174,4 +184,18 @@ class Controller extends \ApiController
         ];
     }
 
+    static function extendControlPanelHttpApi(): array
+    {
+        return array(
+            '/backup/makeBackup' => ['POST' => [BackupController::class, 'postMakeBackup']],
+            '/backup/download' => [
+                'POST' => [BackupController::class, 'postDownload'],
+                'GET'  => [BackupController::class, 'getDownload', true],
+            ],
+            '/backup/restore' => ['POST' => [BackupController::class, 'postRestore']],
+            '/backup/restoreLocal' => ['POST' => [BackupController::class, 'postRestoreLocal']],
+            '/backup/checkInconsistency' => ['POST' => [BackupController::class, 'postCheckInconsistency']],
+            '/backup/repairInconsistency' => ['POST' => [BackupController::class, 'postRepairInconsistency']],
+        );
+    }
 }

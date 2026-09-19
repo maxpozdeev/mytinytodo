@@ -798,6 +798,11 @@ const mtt = window.mytinytodo = {
             return false;
         });
 
+        $("#page_settings").on('click', 'a[data-cp-action],button[data-cp-action]', function() {
+            cpAction(this.dataset.cpAction)
+            return false;
+        });
+
 
         // tab menu
         this.addAction('listSelected', tabmenuOnListSelected);
@@ -3564,6 +3569,65 @@ function extensionSettingsAction(actionString, ext, formData)
     }
 }
 mtt.extensionSettingsAction = extensionSettingsAction;
+
+function cpAction(action, formData)
+{
+    const success = function(json) {
+        if (json.total && json.total > 0) {
+            if (json.redirect) {
+                window.location.assign(json.redirect);
+                return;
+            }
+            if (json.html) {
+                mttAlert(json.html);
+                return;
+            }
+            if (json.alertText) {
+                mttAlert(json.alertText);
+                return;
+            }
+            const callback = function() {
+                if (json.alertTextOnLoad) {
+                    mttAlert(json.alertTextOnLoad);
+                }
+                else if (json.msg) {
+                    flashInfo(json.msg, json.details);
+                }
+                if (json.reload) {
+                    setTimeout( function(){
+                        window.location.reload();
+                    }, 1000);
+                }
+            }
+            if (callback) callback();
+        }
+        else if (json.msg) {
+            flashInfo(json.msg, json.details);
+        }
+    };
+    if (formData === undefined) {
+        $.ajax({
+            url: mtt.apiUrl + 'cp/' + action,
+            method: 'POST',
+            contentType : 'application/json',
+            data: '{}',
+            dataType: 'json',
+            success: success
+        });
+    }
+    else {
+        $.ajax({
+            url: mtt.apiUrl + 'cp/' + action,
+            method: 'POST',
+            contentType : false,
+            data: formData,
+            processData: false,
+            success: success
+        });
+    }
+}
+mtt.cpAction = cpAction;
+
 
 /*
  *  Dialogs

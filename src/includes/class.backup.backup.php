@@ -6,7 +6,7 @@
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
-namespace BackupExtension;
+namespace Backup;
 
 use Exception;
 

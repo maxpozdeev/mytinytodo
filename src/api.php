@@ -83,6 +83,10 @@ foreach (MTTExtensionLoader::loadedExtensions() as $instance) {
     }
 }
 
+// Control Panel API routes
+// TODO: need to check admin rights!
+ControlPanelApiController::mergeEndpoints($endpoints);
+
 $req = ApiRequest::instance();
 
 # All API requests have to check a CSRF token, except only this. //TODO: re-make
@@ -277,3 +281,36 @@ function haveWriteAccess(?int $listId = null) : bool
     return true;
 }
 
+
+class ControlPanelApiController
+{
+    /**
+     *
+     * @return array<MTTControlPanelHttpApiExtender>
+     */
+    static function registeredClasses(): array
+    {
+        require_once(MTTINC. 'api/BackupController.php');
+
+        return [
+            Backup\BackupController::class
+        ];
+    }
+
+    static function mergeEndpoints(array &$a)
+    {
+        foreach (self::registeredClasses() as $class)
+        {
+            if ( ! is_a($class, MTTControlPanelHttpApiExtender::class, true) ) {
+                continue;
+            }
+
+            $endpoints = $class::extendControlPanelHttpApi();
+            foreach ($endpoints as $endpoint => $methods) {
+                $endpoint = '/cp'. $endpoint;
+                $a[$endpoint] = $methods;
+            }
+        }
+    }
+
+}

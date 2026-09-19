@@ -313,6 +313,7 @@ function handleControlPanel(string $page)
 
     static $pages = [
         'general' => 'general.php',
+        'backup' => 'backup.php',
         'extensions' => 'extensions.php',
         'ext-settings' => 'ext-settings.php',
         'css' => 'css.php',

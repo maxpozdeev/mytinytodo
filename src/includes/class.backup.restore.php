@@ -6,13 +6,13 @@
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
-namespace BackupExtension;
+namespace Backup;
 
 use XMLReader;
 use DBConnection;
 use Exception;
 
-use BackupExtension\Backup;
+use Backup\Backup;
 
 class Restore
 {
