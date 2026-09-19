@@ -16,6 +16,10 @@ else {
     ini_set('display_errors', '0');
 }
 
+const MTT_API_ENDPOINT_OWNER_GENERAL = 0;
+const MTT_API_ENDPOINT_OWNER_EXTENSION = 1;
+const MTT_API_ENDPOINT_OWNER_CONTROLPANEL = 2;
+
 require_once(MTTINC. 'api/ListsController.php');
 require_once(MTTINC. 'api/TasksController.php');
 require_once(MTTINC. 'api/TagsController.php');
@@ -76,7 +80,8 @@ foreach (MTTExtensionLoader::loadedExtensions() as $instance) {
         foreach ($newRoutes as $endpoint => $methods) {
             $endpoint = '/ext/'. $instance::bundleId. $endpoint;
             foreach ($methods as $k => &$v) {
-                $v[3] = true; // Mark extension method
+                // Mark as extension method
+                $v[3] = MTT_API_ENDPOINT_OWNER_EXTENSION;
             }
             $endpoints[$endpoint] = $methods;
         }
@@ -84,7 +89,6 @@ foreach (MTTExtensionLoader::loadedExtensions() as $instance) {
 }
 
 // Control Panel API routes
-// TODO: need to check admin rights!
 ControlPanelApiController::mergeEndpoints($endpoints);
 
 $req = ApiRequest::instance();
@@ -119,11 +123,16 @@ foreach ($endpoints as $search => $methods) {
     // check if class method exists
     $class = $classDescr[0];
     $classMethod = $classDescr[1];
-    $isExtMethod = $classDescr[3] ?? false;
-    if ($isExtMethod) {
+    $endpointOwner = $classDescr[3] ?? MTT_API_ENDPOINT_OWNER_GENERAL;
+    if (MTT_API_ENDPOINT_OWNER_EXTENSION === $endpointOwner) {
         if (false == ($classDescr[2] ?? false)) { //TODO: describe $classDescr[2]
             // By default all extension methods require write access rights
             checkWriteAccess();
+        }
+    }
+    else if (MTT_API_ENDPOINT_OWNER_CONTROLPANEL === $endpointOwner) {
+        if (!is_logged() || !is_admin()) {
+            (new ErrorApiResponse("Access denied. Admin only.", 403))->exit();
         }
     }
 
@@ -308,6 +317,10 @@ class ControlPanelApiController
             $endpoints = $class::extendControlPanelHttpApi();
             foreach ($endpoints as $endpoint => $methods) {
                 $endpoint = '/cp'. $endpoint;
+                // Mark as control panel methods (admin check needed)
+                foreach ($methods as $k => &$v) {
+                    $v[3] = MTT_API_ENDPOINT_OWNER_CONTROLPANEL;
+                }
                 $a[$endpoint] = $methods;
             }
         }

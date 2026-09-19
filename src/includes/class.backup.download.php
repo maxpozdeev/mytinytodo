@@ -49,14 +49,12 @@ class Download
     {
         $rnd = randomString();
         $hash = $rnd. ':'. hash_hmac('sha256', $rnd, $this->token);
-        $url = get_unsafe_mttinfo('api_url'). 'cc/backup/download';
-        if (!is_null($hash)) {
-            if (false !== strpos($url, '?')) {
-                $url .= '&t='. $hash;
-            }
-            else {
-                $url .= '?t='. $hash;
-            }
+        $url = get_unsafe_mttinfo('api_url'). 'cp/backup/download';
+        if (false !== strpos($url, '?')) {
+            $url .= '&t='. $hash;
+        }
+        else {
+            $url .= '?t='. $hash;
         }
         return $url;
     }
