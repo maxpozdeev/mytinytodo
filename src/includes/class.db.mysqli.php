@@ -12,7 +12,7 @@ class MysqliDatabaseResult extends AbstractDatabaseResult
     /** @var mysqli_result */
     protected $q;
 
-    function __construct(mysqli $dbh, string $query, bool $resultless = false)
+    function __construct(mysqli $dbh, string $query)
     {
         $this->q = $dbh->query($query); //throws mysqli_sql_exception
     }
