@@ -88,14 +88,17 @@ foreach (MTTExtensionLoader::loadedExtensions() as $instance) {
     }
 }
 
-// Control Panel API routes
-ControlPanelApiController::mergeEndpoints($endpoints);
 
 $req = ApiRequest::instance();
 
 # All API requests have to check a CSRF token, except only this. //TODO: re-make
 if ($req->path !== '/session') {
     check_token();
+}
+
+# Control Panel API routes (lazy loading of classes)
+if (substr($req->path, 0, 4) === '/cp/') {
+    ControlPanelApiController::mergeEndpoints($endpoints);
 }
 
 $req->username = ''; //FIXME: !!!
