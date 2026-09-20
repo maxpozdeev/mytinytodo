@@ -26,12 +26,7 @@ class ApiRequest
     }
 
     function __construct() {
-        if (defined('MTT_API_USE_PATH_INFO')) {
-            $this->path = $_SERVER['PATH_INFO'];
-        }
-        else {
-            $this->path = $_GET['_path'] ?? '';
-        }
+        $this->path = self::getApiPath();
         $this->method = isset($_SERVER['REQUEST_METHOD']) ? strtoupper($_SERVER['REQUEST_METHOD']) : 'GET';
         $this->contentType = $_SERVER['CONTENT_TYPE'] ?? '';
     }
@@ -49,6 +44,34 @@ class ApiRequest
     function setUserId(int $id)
     {
         $this->userId = $id;
+    }
+
+    static function getApiPath(): string
+    {
+        if (!MTT_USE_REWRITE) {
+            if (isset($_GET['_path'])) {
+                $path = $_GET['_path'];
+                if ($path === '' || $path[0] !== '/')
+                    return '/'. $path;
+                return $path;
+            }
+            return '/';
+        }
+/*
+        $docRoot = rtrim($_SERVER['DOCUMENT_ROOT'], '/');                       # e.g. /var/www/html
+        $scriptName = substr($_SERVER['SCRIPT_FILENAME'], strlen($docRoot));    # e.g. /var/www/html/mtt/api.php --> /mtt/api.php
+        $uri = url_dir($scriptName). 'api/';                                    # /mtt/api/
+*/
+        #$uri = get_unsafe_mttinfo('mtt_uri'). 'api/';
+        $uri = apiMakeUrl('', null, false);
+        $path = $_SERVER['REQUEST_URI'] ?? '';
+        if (false !== $p = strpos($path, '?')) {
+            $path = substr($path, 0, $p);
+        }
+        if ($path !== '' && 0 === strncmp($path, $uri, strlen($uri))) {
+            $path = substr($path, strlen($uri) -1);
+        }
+        return $path;
     }
 }
 
@@ -172,17 +195,9 @@ abstract class MTTExtension
         return null;
     }
 
-    public static function extApiActionUrl(string $action, ?string $params = null)
+    public static function extApiActionUrl(string $action, ?array $params = null): string
     {
-        $url = get_unsafe_mttinfo('api_url'). 'ext/'. static::bundleId. "/$action";
-        if (!is_null($params)) {
-            if (false !== strpos($url, '?')) {
-                $url .= '&'. $params;
-            }
-            else {
-                $url .= '?'. $params;
-            }
-        }
+        $url = apiMakeUrl('ext/'. static::bundleId. "/$action", $params);
         return $url;
     }
 

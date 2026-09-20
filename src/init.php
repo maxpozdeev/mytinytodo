@@ -506,56 +506,44 @@ function get_unsafe_mttinfo(string $v)
     switch($v)
     {
         case 'theme_url':
-            $info['theme_url'] = get_unsafe_mttinfo('mtt_uri'). 'content/'. MTT_THEME. '/';
+            $info['theme_url'] = get_unsafe_mttinfo('mtt_url'). 'content/'. MTT_THEME. '/';
             return $info['theme_url'];
         case 'content_url':
-            $info['content_url'] = get_unsafe_mttinfo('mtt_uri'). 'content/';
+            $info['content_url'] = get_unsafe_mttinfo('mtt_url'). 'content/';
             return $info['content_url'];
         case 'url':
-            /* full url to homepage: directory with root index.php  */
-            /* ex: http://my.site/  or  http://my.site/mytinytodo/  */
-            /* Should not contain a query string. Have to be set in config if custom port is used or wrong detection. */
+            # Full url to homepage: directory (!) with root index.php.
+            # Prefix for pretty links. Used for links to lists or exports.
+            # ex: http://my.site/  or  http://my.site/mytinytodo/
+            # Should not contain a query string. Have to be set in config if custom port is used or wrong detection.
             $info['url'] = Config::getUrl('url');
             if ($info['url'] == '') {
                 $is_https = is_https();
+                # server port is a part of HTTP_HOST
                 $info['url'] = ($is_https ? 'https://' : 'http://'). $_SERVER['HTTP_HOST']. url_dir(getRequestUri());
             }
             if ($info['url'] == '' || $info['url'][-1] != '/')
                 $info['url'] .= '/';
             return $info['url'];
         case 'uri':
+            # URI part of script url (without a protocol://hostname:port part).
+            # By default is the same as mtt_uri. e.g. / or /mtt/
             $info['uri'] = url_dir( get_unsafe_mttinfo('url') );
             return $info['uri'];
         case 'mtt_url':
-            /* Directory with api.php. No need to set if you use default directory structure. */
+            # Full url to script installation: directory with root api.php.
+            # Used internally for api requests and assets loading.
+            # No need to set if you use default directory structure. By default it's the same as 'url'.
             $info['mtt_url'] = Config::getUrl('mtt_url'); // need to have a trailing slash
             if ($info['mtt_url'] == '') {
                 $info['mtt_url'] = url_dir( get_unsafe_mttinfo('url'), false );
             }
             return $info['mtt_url'];
         case 'mtt_uri':
-            $info['mtt_uri'] = Config::getUrl('mtt_url'); // need to have a trailing slash
-            if ($info['mtt_uri'] == '') {
-                if ( ''  !=  $url = Config::getUrl('url') ) {
-                    $info['mtt_uri'] = url_dir($url);
-                }
-                else {
-                    $info['mtt_uri'] = url_dir(getRequestUri());
-                }
-            }
+            # Same as mtt_url but URI only, without a protocol://hostname:port part
+            $url = get_unsafe_mttinfo('mtt_url');
+            $info['mtt_uri'] = parse_url($url, PHP_URL_PATH);
             return $info['mtt_uri'];
-        case 'api_url':
-            /* URL for API, like http://localhost/mytinytodo/api/. No need to set by default. */
-            $info['api_url'] = Config::getUrl('api_url'); // need to have a trailing slash
-            if ($info['api_url'] == '') {
-                if (defined('MTT_API_USE_PATH_INFO')) {
-                    $info['api_url'] = get_unsafe_mttinfo('mtt_uri'). 'api/';
-                }
-                else {
-                    $info['api_url'] = get_unsafe_mttinfo('mtt_uri'). 'api.php?_path=/';
-                }
-            }
-            return $info['api_url'];
         case 'title':
             $info['title'] = (Config::get('title') != '') ? Config::get('title') : __('My Tiny Todolist');
             return $info['title'];
@@ -627,6 +615,17 @@ function routerMakeUrl(string $path = '', ?array $qsa = null, bool $fullUrl = fa
     }
     else {
         return $prefix. $path. ($qsa !== null ? '?'. http_build_query($qsa) : '');
+    }
+}
+
+function apiMakeUrl(string $path = '', ?array $qsa = null, bool $fullUrl = false): string
+{
+    $prefix = $fullUrl ? get_unsafe_mttinfo('mtt_url') : get_unsafe_mttinfo('mtt_uri');
+    if (!MTT_USE_REWRITE) {
+        return $prefix. 'api.php?_path='. $path. ($qsa !== null ? '&'. http_build_query($qsa) : '');
+    }
+    else {
+        return $prefix. 'api/'. $path. ($qsa !== null ? '?'. http_build_query($qsa) : '');
     }
 }
 

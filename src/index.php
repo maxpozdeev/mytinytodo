@@ -178,7 +178,7 @@ function js_options()
         "title" => get_unsafe_mttinfo('title'),
         "mttUrl" => get_mttinfo('mtt_uri'),
         "homeUrl" => $homeUrl,
-        "apiUrl" => get_mttinfo('api_url'),
+        "apiUrl" =>  htmlspecialchars(apiMakeUrl('')),
         "goPrefix" => htmlspecialchars(routerGetGoPrefix()),
         "routerPrefix" => htmlspecialchars(routerMakeUrl('')),
         "tasksUrl" => get_mttinfo('tasks_uri'),

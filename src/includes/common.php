@@ -103,6 +103,11 @@ function getRequestUri(): string
 */
 }
 
+/*
+    Extract a directory from URL and return it with guaranteed trailing slash.
+    Can be a full URL or URI (without protocol and hostname part) depending on $onlyPath argument.
+    Like a dirname command for urls.
+ */
 function url_dir(string $url, bool $onlyPath = true)
 {
     if (false !== $p = strpos($url, '?')) {
