@@ -6,15 +6,7 @@ if (!defined('MTT_PAGE')) {
 
 if (isset($_POST['activate']))
 {
-    check_token();
-
-    $t = array('saved'=>0, 'ok'=>true);
-
-    // in Demo mode we do nothing
-    if (defined('MTT_DEMO')) {
-        $t['saved'] = 1;
-        jsonExit($t);
-    }
+     $t = array('saved'=>0, 'ok'=>true);
 
     $activate = (int)_post('activate');
     $ext = _post('ext');

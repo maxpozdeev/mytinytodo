@@ -179,6 +179,7 @@
     "feed_status_updated": "Updated",
     "feed_status_completed": "Completed",
     "alltasks": "All tasks",
+    "demo_mode": "Demo mode",
     "set_header": "Settings",
     "set_title": "Title",
     "set_title_descr": "Specify if you want to change default title.",

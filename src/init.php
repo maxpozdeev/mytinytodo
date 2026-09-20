@@ -80,13 +80,13 @@ if (!isset($dontStartSession)) {
 set_nocache_headers();
 
 
+require_once(MTTINC. 'class.lang.php');
 //User can override language setting by cookies or query
 if (isset($_COOKIE['lang']) && preg_match("/^[a-z-]+$/i", $_COOKIE['lang'])) {
     if (Lang::langExists($_COOKIE['lang']))
         MTTVars::$forcedLang = $_COOKIE['lang'];
 }
 
-require_once(MTTINC. 'class.lang.php');
 Lang::loadLang( MTTVars::$forcedLang ?: Config::get('lang') );
 if (Lang::instance()->rtl()) {
     MTTVars::$isRtl = true;

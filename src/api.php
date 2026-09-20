@@ -98,6 +98,9 @@ if ($req->path !== '/session') {
 
 # Control Panel API routes (lazy loading of classes)
 if (substr($req->path, 0, 4) === '/cp/') {
+    if (defined('MTT_DEMO')) {
+        (new JsonApiResponse([ 'ok'=>true, 'total' => 1, 'msg' => __('demo_mode', true), 'alertText' => __('demo_mode', true) ], 200))->exit();
+    }
     ControlPanelApiController::mergeEndpoints($endpoints);
 }
 

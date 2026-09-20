@@ -323,9 +323,16 @@ function handleControlPanel(string $page)
     }
     MTTVars::$settingsPage = 'controlpanel/'. $page;
     MTTVars::$settingsPageFile = MTTINC. 'settings/'. $pages[$page];
+    //TODO: need to set page title in html head
+    /** @disregard P1004 */
     define('MTT_PAGE', MTTVars::$settingsPageFile);
     require_once(MTTINC. 'settings/procs.php');
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        # in Demo mode we do nothing
+        if (defined('MTT_DEMO')) {
+            jsonExit(['ok' => true, 'saved' => 0, 'msg' => __('demo_mode', true)]);
+        }
+        check_token();
         require_once(MTTVars::$settingsPageFile);
         exit();
     }
@@ -348,9 +355,15 @@ function handleUserSettings(string $page)
     }
     MTTVars::$settingsPage = 'settings/'. $page;
     MTTVars::$settingsPageFile = MTTINC. 'settings/'. $pages[$page];
+    /** @disregard P1004 */
     define('MTT_PAGE', MTTVars::$settingsPageFile);
     require_once(MTTINC. 'settings/procs.php');
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        # in Demo mode we do nothing
+        # user general settings handle demo mode itself
+        if (defined('MTT_DEMO') && $page !== 'general') {
+            jsonExit(['ok' => true, 'msg' => __('demo_mode', true)]);
+        }
         check_token();
         require_once(MTTVars::$settingsPageFile);
         exit();

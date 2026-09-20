@@ -12,15 +12,7 @@ function _c($key)
 
 if (isset($_POST['save']))
 {
-    check_token();
-
     $t = array();
-
-    if (defined('MTT_DEMO')) {
-        $t['saved'] = 1;
-        $t['msg'] = __('set_saved', true);
-        jsonExit($t);
-    }
 
     $langs = getLangs();
     Config::$appSchema['lang']['options'] = array_keys($langs);

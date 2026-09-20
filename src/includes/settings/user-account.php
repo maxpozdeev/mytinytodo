@@ -216,13 +216,6 @@ function _c(string $key)
 }
 
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && defined('MTT_DEMO')) {
-    jsonExit([
-        'ok' => true,
-        'saved' => 0,
-    ]);
-}
-
 if (isset($_POST['edit_name'])) {
     UserAccountSettings::editName( _post('name') );
 }

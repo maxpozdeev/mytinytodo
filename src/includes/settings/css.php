@@ -8,8 +8,6 @@ $cssFilename = MTT_CONTENT_PATH. MTT_THEME. '/custom.css';
 
 if (isset($_POST['save']))
 {
-    check_token();
-
     $css = _post('css');
     $t = [
         'ok' => false,
