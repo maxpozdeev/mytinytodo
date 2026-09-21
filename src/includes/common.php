@@ -157,7 +157,7 @@ function passwordHash(string $p): string
     return 'sha256:'. hash('sha256', $p);
 }
 
-function randomToken(int $bytes = 16): string
+function randomToken(int $bytes = 18): string
 {
     return base64_encode(random_bytes($bytes));
 }
