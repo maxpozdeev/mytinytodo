@@ -1,0 +1,48 @@
+# --- Stage 1: composer deps --
+FROM composer:latest AS deps
+
+WORKDIR /build
+COPY composer.json composer.lock ./
+RUN mkdir -p src/includes
+RUN composer install --no-dev --optimize-autoloader --no-interaction --no-progress
+
+
+# --- Final image ---
+FROM php:8.5-apache
+
+RUN apt-get update && apt-get install -y libpq5 libpq-dev libicu76 libicu-dev && \
+    docker-php-ext-install pdo_mysql pdo_pgsql intl && \
+    mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" && \
+    a2enmod rewrite && \
+    apt-get remove -y libpq-dev libicu-dev && apt-get -y autoremove && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /var/www/html
+COPY src/ ./
+COPY --from=deps /build/src/includes/vendor includes/vendor
+
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html \
+    && find /var/www/html -type f -exec chmod 644 {} + \
+    && rm -f mtt-emergency.php
+
+
+# You can bind a volume to `/var/www/data` folder to store a sqlite database and configuration file.
+# In that case `db` folder and `config.php` are symlinked into `/var/www/data` directory.
+# e.g. docker run --rm -p 8080:80 --name mtt-nightly -v ~/mtt-data:/var/www/data localhost/mytinytodo:nightly
+RUN cat <<'EOF' > /usr/local/bin/run-mtt.sh
+#!/bin/sh
+set -e
+if [ -d /var/www/data ]; then \
+    [ ! -d /var/www/data/db ] && mv /var/www/html/db /var/www/data/
+    [ -d /var/www/html/db ] && rm -rf /var/www/html/db
+    ln -sfn /var/www/data/db /var/www/html/db
+    ln -sfn /var/www/data/config.php /var/www/html/config.php
+fi
+exec apache2-foreground
+EOF
+RUN chmod +x /usr/local/bin/run-mtt.sh
+
+# Run Apache on port 80/tcp
+CMD ["/usr/local/bin/run-mtt.sh"]
+
