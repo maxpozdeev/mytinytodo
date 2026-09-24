@@ -61,50 +61,50 @@ if (isset($_POST['save']))
 <div class="mtt-settings-table">
 
 <div class="tr">
-  <div class="th"> <?php _e('set_title');?>: <div class="descr"><?php _e('set_title_descr');?></div></div>
+  <div class="th"> <?php _e('set_title');?> <div class="descr"><?php _e('set_title_descr');?></div></div>
   <div class="td"> <input name="title" value="<?php echo htmlspecialchars(_c('title'));?>" class="in350" autocomplete="off" /> </div>
 </div>
 
 <div class="tr">
-  <div class="th"><?php _e('set_language');?>:</div>
+  <div class="th"><?php _e('set_language');?></div>
   <div class="td"> <select name="lang"><?php echo selectOptionsA(getLangs(), _c('lang')); ?></select> </div>
 </div>
 
 <div class="tr">
-<div class="th"><?php _e('set_smartsyntax');?>: <div class="descr"><?php _e('set_smartsyntax3_descr');?></div></div>
+<div class="th"><?php _e('set_smartsyntax');?> <div class="descr"><?php _e('set_smartsyntax3_descr');?></div></div>
 <div class="td">
  <label><input type="radio" name="smartsyntax" value="1" <?php if(_c('smartsyntax')) echo 'checked="checked"'; ?> /> <?php _e('set_enabled');?></label> <br/>
  <label><input type="radio" name="smartsyntax" value="0" <?php if(!_c('smartsyntax')) echo 'checked="checked"'; ?> /> <?php _e('set_disabled');?></label>
 </div></div>
 
 <div class="tr">
-<div class="th"><?php _e('set_autotag');?>: <div class="descr"><?php _e('set_autotag_descr');?></div></div>
+<div class="th"><?php _e('set_autotag');?> <div class="descr"><?php _e('set_autotag_descr');?></div></div>
 <div class="td">
  <label><input type="radio" name="autotag" value="1" <?php if(_c('autotag')) echo 'checked="checked"'; ?> /> <?php _e('set_enabled');?></label> <br/>
  <label><input type="radio" name="autotag" value="0" <?php if(!_c('autotag')) echo 'checked="checked"'; ?> /> <?php _e('set_disabled');?></label>
 </div></div>
 
 <div class="tr">
-<div class="th"><?php _e('set_markdown');?>: <div class="descr"><?php _e('set_markdown_descr');?></div></div>
+<div class="th"><?php _e('set_markdown');?> <div class="descr"><?php _e('set_markdown_descr');?></div></div>
 <div class="td">
  <label><input type="radio" name="markdown" value="1" <?php if (_c('markup') != 'v1') echo 'checked="checked"'; ?> /> <?php _e('set_enabled');?></label> <br/>
  <label><input type="radio" name="markdown" value="0" <?php if (_c('markup') == 'v1') echo 'checked="checked"'; ?> /> <?php _e('set_disabled');?></label>
 </div></div>
 
 <div class="tr">
-<div class="th"><?php _e('set_timezone');?>:</div>
+<div class="th"><?php _e('set_timezone');?></div>
 <div class="td">
  <select name="timezone"><?php echo selectOptions(timezoneIdentifiers(), _c('timezone')); ?></select>
 </div></div>
 
 <div class="tr">
-<div class="th"><?php _e('set_firstdayofweek');?>:</div>
+<div class="th"><?php _e('set_firstdayofweek');?></div>
 <div class="td">
  <select name="firstdayofweek"><?php echo selectOptions(__('days_long'), _c('firstdayofweek')); ?></select>
 </div></div>
 
 <div class="tr">
-<div class="th"><?php _e('set_date');?>:</div>
+<div class="th"><?php _e('set_date');?></div>
 <div class="td">
  <input name="dateformat" size="8" value="<?php echo htmlspecialchars(_c('dateformat'));?>" />
  <select onchange="if(this.value!=0) this.form.dateformat.value=this.value;">
@@ -122,7 +122,7 @@ if (isset($_POST['save']))
 </div></div>
 
 <div class="tr">
-<div class="th"><?php _e('set_date2');?>:</div>
+<div class="th"><?php _e('set_date2');?></div>
 <div class="td">
  <input name="dateformat2" size="8" value="<?php echo htmlspecialchars(_c('dateformat2'));?>" />
  <select onchange="if(this.value!=0) this.form.dateformat2.value=this.value;">
@@ -136,7 +136,7 @@ if (isset($_POST['save']))
 </div></div>
 
 <div class="tr">
-<div class="th"><?php _e('set_shortdate');?>:</div>
+<div class="th"><?php _e('set_shortdate');?></div>
 <div class="td">
  <input name="dateformatshort" size="8" value="<?php echo htmlspecialchars(_c('dateformatshort'));?>" />
  <select onchange="if(this.value!=0) this.form.dateformatshort.value=this.value;">
@@ -150,7 +150,7 @@ if (isset($_POST['save']))
 </div></div>
 
 <div class="tr">
-<div class="th"><?php _e('set_clock');?>:</div>
+<div class="th"><?php _e('set_clock');?></div>
 <div class="td">
  <select name="clock"><?php echo selectOptions(array(
     12 => __('set_12hour'). ' ('. date('g:i A', $ts). ')',
@@ -159,7 +159,7 @@ if (isset($_POST['save']))
 </div></div>
 
 <div class="tr">
-<div class="th"><?php _e('set_showdate');?>:</div>
+<div class="th"><?php _e('set_showdate');?></div>
 <div class="td">
  <label><input type="radio" name="showdate" value="1" <?php if(_c('showdate')) echo 'checked="checked"'; ?> /> <?php _e('set_enabled');?></label> <br>
  <label><input type="radio" name="showdate" value="0" <?php if(!_c('showdate')) echo 'checked="checked"'; ?> /> <?php _e('set_disabled');?></label> <br>
@@ -169,14 +169,14 @@ if (isset($_POST['save']))
 </div>
 
 <div class="tr">
-<div class="th"><?php _e('set_exactduedate');?>:</div>
+<div class="th"><?php _e('set_exactduedate');?></div>
 <div class="td">
  <label><input type="radio" name="exactduedate" value="1" <?php if(_c('exactduedate')) echo 'checked="checked"'; ?> /> <?php _e('set_enabled');?></label> <br/>
  <label><input type="radio" name="exactduedate" value="0" <?php if(!_c('exactduedate')) echo 'checked="checked"'; ?> /> <?php _e('set_disabled');?></label>
 </div></div>
 
 <div class="tr">
-<div class="th"><?php _e('set_appearance');?>:</div>
+<div class="th"><?php _e('set_appearance');?></div>
 <div class="td">
  <label><input type="radio" name="appearance" value="system" <?php if(_c('appearance') == 'system') echo 'checked="checked"'; ?> /> <?php _e('set_appearance_system');?></label> <br>
  <label><input type="radio" name="appearance" value="light"  <?php if(_c('appearance') == 'light')  echo 'checked="checked"'; ?> /> <?php _e('set_appearance_light');?></label> <br>
@@ -185,7 +185,7 @@ if (isset($_POST['save']))
 </div>
 
 <div class="tr">
-  <div class="th"><?php _e('set_newtaskcounter_h');?>:</div>
+  <div class="th"><?php _e('set_newtaskcounter_h');?></div>
   <div class="td">
     <label><input type="checkbox" name="newTaskCounter" value="1" <?php if(_c('newTaskCounter')) echo 'checked="checked"'; ?> /> <?php _e('set_newtaskcounter');?></label> <br>
     <label><input type="checkbox" name="newTaskCounterIcon" value="1" <?php if(_c('newTaskCounterIcon')) echo 'checked="checked"'; ?> /> <?php _e('set_newtaskcountericon');?></label>
