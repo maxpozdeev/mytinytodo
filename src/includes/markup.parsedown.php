@@ -40,6 +40,8 @@ class MTTParsedown extends Parsedown
 
         $this->InlineTypes['#'][]= 'TaskId';
         $this->inlineMarkerList .= '#';
+        $this->InlineTypes['m'][]= 'MidUri';
+        $this->inlineMarkerList .= 'm';
     }
 
     public function setToExternal(bool $v)
@@ -89,4 +91,23 @@ class MTTParsedown extends Parsedown
         }
         return $a;
      }
+
+    protected function inlineMidUri($Excerpt)
+    {
+        if (preg_match('/^mid:[^\s<]+/i', $Excerpt['text'], $matches))
+        {
+            $uri = $matches[0];
+            return array(
+                'extent' => strlen($uri),
+                'element' => array(
+                    'name' => 'a',
+                    'text' => $uri,
+                    'attributes' => array(
+                        'href' => $uri,
+                        'target' => '_blank',
+                    ),
+                ),
+            );
+        }
+    }
 }
