@@ -5,7 +5,7 @@ if (!defined('MTT_PAGE')) {
 }
 
 require_once(MTTINC. 'api/BackupController.php');
-use Backup\BackupController;
+use MTTBackup\BackupController;
 
 $e = function($s, $arg=null) { return __($s, true, $arg); };
 

@@ -308,7 +308,7 @@ class ControlPanelApiController
         require_once(MTTINC. 'api/BackupController.php');
 
         return [
-            Backup\BackupController::class
+            MTTBackup\BackupController::class
         ];
     }
 

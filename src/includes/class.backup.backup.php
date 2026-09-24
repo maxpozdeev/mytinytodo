@@ -6,7 +6,7 @@
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
-namespace Backup;
+namespace MTTBackup;
 
 use Exception;
 
@@ -38,7 +38,7 @@ class Backup
                 @touch($this->tempFilename);
             }
             if (!is_writable($this->tempFilename)) {
-                error_log("Backup temp file is not writebale");
+                error_log("Backup temp file is not writable");
                 return false;
             }
             @unlink($this->filename);

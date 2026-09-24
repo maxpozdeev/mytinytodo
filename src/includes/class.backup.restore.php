@@ -2,17 +2,17 @@
 
 /*
     This file is a part of myTinyTodo.
-    (C) Copyright 2023-2025 Max Pozdeev <maxpozdeev@gmail.com>
+    (C) Copyright 2023-2026 Max Pozdeev <maxpozdeev@gmail.com>
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
-namespace Backup;
+namespace MTTBackup;
 
 use XMLReader;
 use DBConnection;
 use Exception;
 
-use Backup\Backup;
+use MTTBackup\Backup;
 
 class Restore
 {

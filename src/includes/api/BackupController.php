@@ -7,17 +7,17 @@
 */
 
 
-namespace Backup;
+namespace MTTBackup;
 
 require_once(MTTINC. 'class.backup.backup.php');
 require_once(MTTINC. 'class.backup.check.php');
 require_once(MTTINC. 'class.backup.download.php');
 require_once(MTTINC. 'class.backup.restore.php');
 
-use Backup\Backup;
-use Backup\Download;
-use Backup\Check;
-use Backup\Restore;
+use MTTBackup\Backup;
+use MTTBackup\Download;
+use MTTBackup\Check;
+use MTTBackup\Restore;
 
 class BackupController extends \ApiController implements \MTTControlPanelHttpApiExtender
 {
