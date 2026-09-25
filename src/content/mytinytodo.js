@@ -335,7 +335,7 @@ var mytinytodo = window.mytinytodo = _mtt = {
 
         $('#tagcloudcontent').on('click', '.tag', function(event){
             //tag is not escaped
-            addFilterTag( this.dataset.tag, this.dataset.tagId, (event.metaKey || event.ctrlKey ? true : false) );
+            addFilterTag( this.dataset.tag, this.dataset.tagId, this.classList.contains('special-any-tag') ? !(event.metaKey || event.ctrlKey ? true : false) : (event.metaKey || event.ctrlKey ? true : false) );
             if (_mtt.menus.tagcloud)
                 _mtt.menus.tagcloud.close();
             return false;
@@ -555,7 +555,6 @@ var mytinytodo = window.mytinytodo = _mtt = {
             addFilterTag(this.dataset.tag, this.dataset.tagId, (event.metaKey || event.ctrlKey ? true : false) );
             return false;
         });
-
         if(!this.options.touchDevice) {
             $('#tasklist').on('mouseover mouseout', '.task-prio', function(event){
                 var id = parseInt(getLiTaskId(this));
@@ -2055,8 +2054,8 @@ function setTagcloudContent(tags, isFiltered = false)
         cloud = _mtt.lang.get('noTags');
     }
     else if (!isFiltered) {
-        cloud = `<span class="tag special-no-tags" data-tag="^"  data-tag-id="-1">${_mtt.lang.get('withoutTags')}</span>` +
-                `<span class="tag special-any-tag" data-tag="^^" data-tag-id="-2">${_mtt.lang.get('withAnyTag')}</span>` + cloud;
+        cloud = `<span class="tag special-any-tag" data-tag="^^" data-tag-id="-2">${_mtt.lang.get('withAnyTag')}</span>` +
+                `<span class="tag special-no-tags" data-tag="^"  data-tag-id="-1">${_mtt.lang.get('withoutTags')}</span>` + cloud;
     }
     $('#tagcloudcontent').html(cloud)
 }
