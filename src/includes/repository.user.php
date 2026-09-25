@@ -74,4 +74,119 @@ class UserRepo
         }
         return null;
     }
+
+    /**
+     *
+     * @return array<User>
+     */
+    public function findUsers(): array
+    {
+        $a = [];
+        $q = $this->db->dq("SELECT * FROM {$this->db->prefix}users ORDER BY id");
+        while ($r = $q->fetchAssoc()) {
+            $a[] = User::fromArray($r);
+        }
+        return $a;
+    }
+
+    /**
+     *
+     * @param int $id
+     * @return null|User
+     */
+    public function findUserById(int $id): ?User
+    {
+        $r = $this->db->sqa("SELECT * FROM {$this->db->prefix}users WHERE id = ?", [$id]);
+        if ($r)
+            return User::fromArray($r);
+        return null;
+    }
+
+    /**
+     *
+     * @param string $username
+     * @return null|User
+     */
+    public function findUserByUsername(string $username): ?User
+    {
+        $r = $this->db->sqa("SELECT * FROM {$this->db->prefix}users WHERE username=?", [$username]);
+        if ($r) {
+            return User::fromArray($r);
+        }
+        return null;
+    }
+
+    /**
+     * Check that a user can be created or updated with a unique username and e-mail
+     * that are not already registered with another user.
+     * @param User $user
+     * @param string|null $error  Receives a human-readable error message on failure.
+     * @return bool  True when the username and e-mail are free for this user.
+     */
+    public function canSaveUser(User $user, ?string &$error = null): bool
+    {
+        $existingId = $this->findUserIdByUsername((string) $user->username);
+        if ($existingId !== null && $existingId !== $user->id) {
+            $error = "Username '{$user->username}' is already taken";
+            return false;
+        }
+
+        $existingId = $this->findUserIdByEmail((string) $user->email);
+        if ($existingId !== null && $existingId !== $user->id) {
+            $error = "E-mail '{$user->email}' is already taken";
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Create or update a user in the database.
+     * @param User $user
+     * @return void
+     */
+    public function saveUser(User $user)
+    {
+        if ($user->id === null) {
+            # Create new record
+            $this->db->dq("INSERT INTO {$this->db->prefix}users (username,name,email) VALUES (?,?,?)",
+                [$user->username, $user->name, $user->email]);
+            $user->id = (int) $this->db->lastInsertId();
+        }
+        else {
+            # Update record
+            $this->db->dq("UPDATE {$this->db->prefix}users SET username=?,name=?,email=? WHERE id=?",
+                [$user->username, $user->name, $user->email, $user->id]);
+        }
+    }
+
+    /**
+     * Saves only changed field of a user
+     * @param User $user
+     * @return int
+     * @throws InvalidArgumentException
+     */
+    public function updateUserProperties(User $user): int
+    {
+        $fv = $user->toArray(true);
+        if (count($fv) == 0) {
+            return 0;
+        }
+
+        $fields = [];
+        $values = [];
+        foreach ($fv as $field => $value) {
+            if (!preg_match("/^[a-zA-Z0-9_]+$/", $field))
+                throw new InvalidArgumentException("Unexpected table field name: $field");
+            $fields[] = "$field=?";
+            $values[] = $value;
+        }
+
+        $sqlSet = implode(',', $fields);
+        $values[] = $user->id;
+
+        $this->db->ex("UPDATE {$this->db->prefix}users SET $sqlSet WHERE id=?", $values);
+        $affected = $this->db->affected();
+        return $affected;
+    }
 }

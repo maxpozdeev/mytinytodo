@@ -99,7 +99,8 @@ function cmd_deluser(string $user)
 function cmd_password(
     string $user,
     #[\SensitiveParameter]
-    string $pass): void {
+    string $pass): void
+{
     print "Set password for user '$user'\n";
     if ($pass == '') {
         print "Enter a password\n";
@@ -110,13 +111,13 @@ function cmd_password(
     if ($pass == '') {
         die("Error: cant set empty password\n");
     }
-    $db =  DBConnection::instance();
-    if (!$db->sq("SELECT 1 FROM {$db->prefix}users WHERE username = ?", [$user])) {
+    $userRepo = new UserRepo(DBConnection::instance());
+    $user = $userRepo->findUserByUsername($user);
+    if (!$user) {
         die("Error: user does not exist\n");
     }
-    $hash = passwordHash($pass);
-    $pwtoken = randomToken();
-    $db->ex("UPDATE {$db->prefix}users SET pwhash = ?, pwtoken = ? WHERE username = ?", [$hash, $pwtoken, $user]);
+    $user->setPassword($pass);
+    $userRepo->updateUserProperties($user);
     // delete sessions?
     print "New password set!\n";
 }
@@ -130,11 +131,16 @@ function cmd_email(string $user, string $email): void {
     if (!isValidEmail($email)) {
         die("Error: incorrect e-mail\n");
     }
-    $db = DBConnection::instance();
-    if (!$db->sq("SELECT 1 FROM {$db->prefix}users WHERE username = ?", [$user])) {
+    $userRepo = new UserRepo(DBConnection::instance());
+    $user = $userRepo->findUserByUsername($user);
+    if (!$user) {
         die("Error: user does not exist\n");
     }
-    $db->ex("UPDATE {$db->prefix}users SET email = ? WHERE username = ?", [$email, $user]);
+    $user->setEmail($email);
+    if (!$userRepo->canSaveUser($user, $err)) {
+        die("Failed to change email: $err\n");
+    }
+    $userRepo->updateUserProperties($user);
     print "New e-mail set!\n";
 }
 

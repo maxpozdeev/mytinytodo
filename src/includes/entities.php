@@ -679,6 +679,128 @@ class Task extends AbstractTask
 }
 
 
+class User extends AbstractEntity
+{
+    protected static array $dbfields = ['id','username','name','email','pwhash','pwtoken','last_visit','extra'];
+    protected array $changed = [];
+
+    public ?int $id = null;
+    public ?string $username;
+    public ?string $name;
+    public ?string $email;
+    public ?string $pwhash;
+    public ?string $pwtoken;
+    public ?string $last_visit;
+    public ?array $extra = null;
+
+    static function fromArray(array $a): self
+    {
+        $entity = new static();
+        #$entity::checkDbFields($a);
+        $entity->id = isset($a['id']) ? (int)$a['id'] : null;
+        $entity->username = $a['username'] ?? null;
+        $entity->name = $a['name'] ?? null;
+        $entity->email = $a['email'] ?? null;
+        $entity->pwhash = $a['pwhash'] ?? null;
+        $entity->pwtoken = $a['pwtoken'] ?? null;
+        $entity->last_visit = $a['last_visit'] ?? null;
+        if (isset($a['extra'])) {
+            $extra = json_decode($a['extra'], true, 10, JSON_INVALID_UTF8_SUBSTITUTE);
+            if ($extra === false) {
+                error_log("Failed to decode JSON data of user extra with id={$entity->id}: " . json_last_error_msg());
+                $extra = [];
+            }
+            # save all keys (even not used)
+            $entity->extra = $extra;
+        }
+        return $entity;
+    }
+
+    function toArray(bool $onlyChanged = false): array
+    {
+        $a = [
+            'id' => $this->id,
+            'username' => $this->username,
+            'name' => $this->name,
+            'email' => $this->email,
+            'pwhash' => $this->pwhash,
+            'pwtoken' => $this->pwtoken,
+            'last_visit' => $this->last_visit,
+            'extra' => null,
+        ];
+        if ($this->extra) {
+            $a['extra'] = json_encode($this->extra, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        }
+
+        if (!$onlyChanged)
+            return $a;
+
+        $b = [];
+        foreach (array_keys($this->changed) as $field) {
+            $b[$field] = $a[$field];
+        }
+        return $b;
+    }
+
+    static function create(string $username, string $name, string $email): User
+    {
+        if ($username === '' || $name === '' || $email === '')
+            throw new InvalidArgumentException("Empty username, name or email");
+        if (!isValidEmail($email))
+            throw new InvalidArgumentException("Invalid email format");
+
+        $user = new static();
+        $user->username = $username;
+        $user->name = $name;
+        $user->email = $email;
+        return $user;
+    }
+
+    function setUsername(string $username): bool
+    {
+        if ($username === '' || $username === $this->username)
+            return false;
+        $this->username = $username;
+        $this->changed['username'] = true;
+        return true;
+    }
+
+    function setName(string $name): bool
+    {
+        if ($name === '' || $name === $this->name)
+            return false;
+        $this->name = $name;
+        $this->changed['name'] = true;
+        return true;
+    }
+
+    function setEmail(string $email): bool
+    {
+        if ($email === '' || $email === $this->email)
+            return false;
+        if (!isValidEmail($email))
+            return false;
+        $this->email = $email;
+        $this->changed['email'] = true;
+        return true;
+    }
+
+    function setPassword(
+        #[\SensitiveParameter]
+        string $password)
+    {
+        if ($password === '')
+            return false;
+
+        $this->pwhash = passwordHash($password);
+        $this->changed['pwhash'] = true;
+        $this->pwtoken = randomToken();
+        $this->changed['pwtoken'] = true;
+        return true;
+    }
+}
+
+
 class Tag
 {
     public int $id;
