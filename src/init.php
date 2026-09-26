@@ -629,9 +629,9 @@ function apiMakeUrl(string $path = '', ?array $qsa = null, bool $fullUrl = false
     }
 }
 
-function mtturl(string $path)
+function mtturl(string $path, ?array $qsa = null)
 {
-    echo get_mtturl($path);
+    echo get_mtturl($path, $qsa);
 }
 
 function get_mtturl(string $path, ?array $qsa = null): string

@@ -58,8 +58,8 @@ function parseRoute(string $path)
     else if (preg_match("#^/settings/([^/]+)$#", $path, $m)) {
         handleUserSettings($m[1]);
     }
-    else if (preg_match("#^/controlpanel/([^/]+)$#", $path, $m)) {
-        handleControlPanel($m[1]);
+    else if (preg_match("#^/controlpanel/([^/]+)/?(.*)$#", $path, $m)) {
+        handleControlPanel($m[1], $m[2]);
     }
     else {
         page_404();
@@ -302,7 +302,7 @@ function mtt_get_settings_page_url(): string
     return get_mtturl(MTTVars::$settingsPage);
 }
 
-function handleControlPanel(string $page)
+function handleControlPanel(string $page, string $argument)
 {
     if (!is_logged()) {
         return page_403();
@@ -313,16 +313,20 @@ function handleControlPanel(string $page)
 
     static $pages = [
         'general' => 'general.php',
+        'users' => 'users.php',
         'backup' => 'backup.php',
         'extensions' => 'extensions.php',
         'ext-settings' => 'ext-settings.php',
         'css' => 'css.php',
+        'add-user' => 'add-user.php',
+        'edit-user' => 'edit-user.php',
     ];
     if (!isset($pages[$page])) {
         return page_404();
     }
     MTTVars::$settingsPage = 'controlpanel/'. $page;
     MTTVars::$settingsPageFile = MTTINC. 'settings/'. $pages[$page];
+    MTTVars::$settingsPageArgument = $argument;
     //TODO: need to set page title in html head
     /** @disregard P1004 */
     define('MTT_PAGE', MTTVars::$settingsPageFile);

@@ -12,6 +12,7 @@ class MTTVars {
     static int $userId = 0;
     static string $settingsPage;
     static string $settingsPageFile;
+    static string $settingsPageArgument;
     static bool $isRtl = false;
     static ?string $forcedLang = null;
     static string $mailerLastError = '';

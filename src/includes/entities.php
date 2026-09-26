@@ -690,7 +690,7 @@ class User extends AbstractEntity
     public ?string $email;
     public ?string $pwhash;
     public ?string $pwtoken;
-    public ?string $last_visit;
+    public ?string $last_visit; //DATE like YYYY-MM-DD
     public ?array $extra = null;
 
     static function fromArray(array $a): self

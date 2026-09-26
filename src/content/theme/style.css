@@ -1433,12 +1433,15 @@ li.mtt-item-hidden { display:none; }
 .mtt-settings-table select,
 .mtt-settings-table button,
 .mtt-settings-table textarea,
-.mtt-settings-upload-button {
+.mtt-settings-upload-button,
+.mtt-settings-button {
   padding: 3px;
   border: 1px solid var(--color-border-default);
   border-radius: 2px;
   background-color: var(--color-input-bg);
   color: var(--color-text-default);
+  text-decoration: none;
+  display: inline-block;
 }
 .mtt-settings-table button:disabled {
   background-color: var(--color-btn-hover);
@@ -1466,7 +1469,8 @@ li.mtt-item-hidden { display:none; }
   color: var(--color-text-default);
 }
 .mtt-settings-table button,
-.mtt-settings-upload-button {
+.mtt-settings-upload-button,
+.mtt-settings-button {
   padding: 3px 6px;
   border-radius: 3px;
 }

@@ -147,16 +147,17 @@ class UserRepo
      */
     public function saveUser(User $user)
     {
+        $a = $user->toArray();
         if ($user->id === null) {
             # Create new record
-            $this->db->dq("INSERT INTO {$this->db->prefix}users (username,name,email) VALUES (?,?,?)",
-                [$user->username, $user->name, $user->email]);
+            $this->db->dq("INSERT INTO {$this->db->prefix}users (username,name,email,extra,pwhash,pwtoken,last_visit) VALUES (?,?,?,?,?,?,?)",
+                [$user->username, $user->name, $user->email, $a['extra'], $user->pwhash, $user->pwtoken, $user->last_visit]);
             $user->id = (int) $this->db->lastInsertId();
         }
         else {
             # Update record
-            $this->db->dq("UPDATE {$this->db->prefix}users SET username=?,name=?,email=? WHERE id=?",
-                [$user->username, $user->name, $user->email, $user->id]);
+            $this->db->dq("UPDATE {$this->db->prefix}users SET username=?,name=?,email=?,extra=?,pwhash=?,pwtoken=?,last_visit=? WHERE id = ". (int)$user->id,
+                [$user->username, $user->name, $user->email, $a['extra'], $user->pwhash, $user->pwtoken, $user->last_visit]);
         }
     }
 
