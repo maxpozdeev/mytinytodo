@@ -260,7 +260,7 @@
     "emptyValue": "Empty value",
     "nothingToChange": "Nothing to change",
     "incorrectFormat": "Incorrect format",
-    "alreadyInUseByAccount": "Already in use with another account.",
+    "alreadyTakenByAnotherAccount": "%1$s '%2$s' already in use with another account.",
     "wrongConfirmPassword": "Passwords do not match",
     "invalidPassword": "Invalid password",
     "set_backup": "Backup",

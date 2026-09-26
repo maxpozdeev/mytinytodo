@@ -133,25 +133,23 @@ class Config
         {
             $db = DBConnection::instance();
             $userRepo = new UserRepo($db);
-            $r = $userRepo->userDataById($userId);
-            if (!$r) {
+            $user = $userRepo->findUserById($userId);
+            if (!$user) {
                 return;
             }
             # validate session signature
             # all sessions of a user will be invalid if password changed
-            if (!isValidSignature($_SESSION['sign'], session_id(), $r['pwtoken'], defined('MTT_SALT') ? MTT_SALT : '')) {
+            if (!isValidSignature($_SESSION['sign'], session_id(), $user->pwtoken, defined('MTT_SALT') ? MTT_SALT : '')) {
                 MTTVars::$isSessionInvalid = true; //used like readonly flag (if set any value)
                 return;
             }
 
-            MTTVars::$userPwToken = $r['pwtoken'];
-            MTTVars::$user = $r['name'];
-            MTTVars::$username = $r['username'];
+            MTTVars::$userPwToken = $user->pwtoken;
+            MTTVars::$user = $user->name;
+            MTTVars::$username = $user->username;
 
-            $today = date("Y-m-d");
-            if ($today !== $r['last_visit']) {
-                $db->ex("UPDATE {$db->prefix}users SET last_visit = ? WHERE id=?", [$today, $userId]);
-            }
+            $user->setLastVisit(time());
+            $userRepo->updateUserProperties($user);
         }
 
         $j = UserConfig::requestUserDomain($userId, static::userDomain);

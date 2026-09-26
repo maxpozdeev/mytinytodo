@@ -394,7 +394,7 @@ function setup_and_start_session()
 }
 
 
-function userDataByBasicAuth(): ?array
+function userByBasicAuth(): ?User
 {
     $header = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
     if (stripos($header, 'basic') !== 0) {
@@ -408,20 +408,17 @@ function userDataByBasicAuth(): ?array
     list($username, $password) = explode(':', $payload, 2);
 
     $repo = new UserRepo(DBConnection::instance());
-    $userdata = $repo->userDataByUsername($username);
-    if (!$userdata) {
+    $user = $repo->findUserByUsername($username);
+    if (!$user) {
         return null;
     }
-    $extra = json_decode($userdata['extra'] ?? '', true);
-    if (!$extra) {
-        return null;
-    }
+    $extra = $user->extra ?? [];
     if (!isset($extra['apppasswords']) || !is_array($extra['apppasswords'])) {
         return null;
     }
     foreach ($extra['apppasswords'] as $row) {
         if (isPasswordEqualsToHash($password, $row['hash'] ?? '')) {
-            return $userdata;
+            return $user;
         }
     }
     return null;
@@ -429,15 +426,15 @@ function userDataByBasicAuth(): ?array
 
 function checkBasicAuth()
 {
-    $data = userDataByBasicAuth();
-    if (!$data) {
+    $user = userByBasicAuth();
+    if (!$user) {
         http_response_code(401);
         die("Authorization required\n");
     }
-    MTTVars::$user = $data['name'];
-    MTTVars::$username = $data['username'];
-    MTTVars::$userId = (int)$data['id'];
-    MTTVars::$userPwToken = $data['pwtoken'];
+    MTTVars::$user = $user->name;
+    MTTVars::$username = $user->username;
+    MTTVars::$userId = (int)$user->id;
+    MTTVars::$userPwToken = $user->pwtoken;
 }
 
 function timestampToDatetime(int $timestamp, bool $forceTime = false) : string
@@ -473,11 +470,14 @@ function _e(string $s)
     echo __($s, true);
 }
 
-function __(string $s, bool $escape = false, ?string $arg = null)
+function __(string $s, bool $escape = false, ?string $arg = null, ?string $arg2 = null)
 {
     $v = Lang::instance()->get($s);
-    if (null !== $arg) {
+    if (null !== $arg && null === $arg2) {
         $v = sprintf($v, $arg);
+    }
+    else if (null !== $arg && null !== $arg2) {
+        $v = sprintf($v, $arg, $arg2);
     }
     return $escape ? htmlspecialchars($v) : $v;
 }

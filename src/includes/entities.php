@@ -690,7 +690,7 @@ class User extends AbstractEntity
     public ?string $email;
     public ?string $pwhash;
     public ?string $pwtoken;
-    public ?string $last_visit; //DATE like YYYY-MM-DD
+    public ?string $lastVisit; //DATE like YYYY-MM-DD
     public ?array $extra = null;
 
     static function fromArray(array $a): self
@@ -703,7 +703,7 @@ class User extends AbstractEntity
         $entity->email = $a['email'] ?? null;
         $entity->pwhash = $a['pwhash'] ?? null;
         $entity->pwtoken = $a['pwtoken'] ?? null;
-        $entity->last_visit = $a['last_visit'] ?? null;
+        $entity->lastVisit = $a['last_visit'] ?? null;
         if (isset($a['extra'])) {
             $extra = json_decode($a['extra'], true, 10, JSON_INVALID_UTF8_SUBSTITUTE);
             if ($extra === false) {
@@ -725,7 +725,7 @@ class User extends AbstractEntity
             'email' => $this->email,
             'pwhash' => $this->pwhash,
             'pwtoken' => $this->pwtoken,
-            'last_visit' => $this->last_visit,
+            'last_visit' => $this->lastVisit,
             'extra' => null,
         ];
         if ($this->extra) {
@@ -756,30 +756,81 @@ class User extends AbstractEntity
         return $user;
     }
 
-    function setUsername(string $username): bool
+
+    function isValidUsername(string $username, string &$error = null): bool
     {
-        if ($username === '' || $username === $this->username)
+        if ($username === '') {
+            $error = __("emptyValue");
             return false;
+        }
+        if (!preg_match("/^[a-zA-Z0-9_]+$/", $username)) {
+            $error = __("incorrectFormat");
+            return false;
+        }
+        return true;
+    }
+
+    function setUsername(string $username, string &$error = null): bool
+    {
+        if (!$this->isValidUsername($username, $error)) {
+            return false;
+        }
+        if ($username === $this->username) {
+            return true;
+        }
         $this->username = $username;
         $this->changed['username'] = true;
         return true;
     }
 
-    function setName(string $name): bool
+
+    function isValidName(string $name, string &$error = null): bool
     {
-        if ($name === '' || $name === $this->name)
+        if ($name === '') {
+            $error = __("emptyValue");
             return false;
+        }
+        if (preg_match("/[<>]+/", $name)) {
+            $error = __("incorrectFormat");
+            return false;
+        }
+        return true;
+    }
+
+    function setName(string $name, string &$error = null): bool
+    {
+        if (!$this->isValidUsername($name, $error)) {
+            return false;
+        }
+        if ($name === $this->name) {
+            return true;
+        }
         $this->name = $name;
         $this->changed['name'] = true;
         return true;
     }
 
-    function setEmail(string $email): bool
+    function isValidEmail(string $email, string &$error = null): bool
     {
-        if ($email === '' || $email === $this->email)
+        if ($email === '') {
+            $error = __("emptyValue");
             return false;
-        if (!isValidEmail($email))
+        }
+        if (!isValidEmail($email)) {
+            $error = __("incorrectFormat");
             return false;
+        }
+        return true;
+    }
+
+    function setEmail(string $email, string &$error = null): bool
+    {
+        if (!$this->isValidEmail($email, $error)) {
+            return false;
+        }
+        if ($email === $this->email) {
+            return true;
+        }
         $this->email = $email;
         $this->changed['email'] = true;
         return true;
@@ -796,6 +847,16 @@ class User extends AbstractEntity
         $this->changed['pwhash'] = true;
         $this->pwtoken = randomToken();
         $this->changed['pwtoken'] = true;
+        return true;
+    }
+
+    function setLastVisit(int $timestamp): bool
+    {
+        $date = date("Y-m-d", $timestamp);
+        if ($date === $this->lastVisit)
+            return true;
+        $this->lastVisit = $date;
+        $this->changed['last_visit'] = true;
         return true;
     }
 }

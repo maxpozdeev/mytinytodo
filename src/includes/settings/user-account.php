@@ -11,30 +11,27 @@ if (!defined('MTT_PAGE')) {
 }
 
 final class UserAccountSettings {
-    private static array $data;
+    private static User $user;
     static function load()
     {
         $userRepo = new UserRepo(DBConnection::instance());
-        $r = $userRepo->userDataById(userId());
-        if (!$r) {
+        $user = $userRepo->findUserById(userId());
+        if (!$user) {
             die("User not found");
         }
-        static::$data = $r;
+        static::$user = $user;
     }
     static function get(string $key): string
     {
-        if ($key === 'pwhash')
+        if ($key === 'pwhash' || $key === 'extra')
             return '';
-        return (string) (static::$data[$key] ?? '');
+
+        return (string) (static::$user->{$key} ?? '');
     }
 
     static function getExtra(): ?array
     {
-        $extra = json_decode(static::$data['extra'] ?? '', true);
-        if (!$extra) {
-            return null;
-        }
-        return $extra;
+        return static::$user->extra;
     }
 
     static function getAppPasswords(): ?array
@@ -69,61 +66,50 @@ final class UserAccountSettings {
     static function editName(string $name)
     {
         $errPrefix = __("cantChange", false, __("name"));
-        if ($name === '') {
-            static::exitError($errPrefix. " ". __("emptyValue"));
-        }
-        if ($name === static::$data['name']) {
+        if ($name === static::$user->name) {
             static::exitOk(false, __("nothingToChange"));
         }
-        if (preg_match("/[<>]$/", $name)) {
-            static::exitError($errPrefix. " ". __("incorrectFormat"));
+        if (!static::$user->setName($name, $error)) {
+            static::exitError($errPrefix. " ". $error);
         }
-        $db = DBConnection::instance();
-        $db->ex("UPDATE {$db->prefix}users SET name=? WHERE id=?", [$name, userId()]);
-        MTTVars::$user = $name;
+        $userRepo = new UserRepo(DBConnection::instance());
+        $userRepo->updateUserProperties(static::$user);
+        MTTVars::$user = static::$user->name;
         static::exitOk();
     }
 
     static function editUsername(string $username)
     {
         $errPrefix = __("cantChange", false, __("username"));
-        if ($username === '') {
-            static::exitError($errPrefix. " ". __("emptyValue"));
-        }
-        if ($username === static::$data['username']) {
+        if ($username === static::$user->username) {
             static::exitOk(false, __("nothingToChange"));
         }
-        if (!preg_match("/^[a-zA-Z0-9_]+$/", $username)) {
-            static::exitError($errPrefix. " ". __("incorrectFormat"));
+        if (!static::$user->setUsername($username, $error)) {
+            static::exitError($errPrefix. " ". $error);
         }
-        $db = DBConnection::instance();
-        $id = (int) (new UserRepo($db))->findUserIdByUsername($username);
-        if ($id && $id !== userId()) {
-            static::exitError($errPrefix. " ". __("alreadyInUseByAccount"));
+        $userRepo = new UserRepo(DBConnection::instance());
+        if (!$userRepo->canSaveUser(static::$user, $error)) {
+            static::exitError($errPrefix. " ". $error);
         }
-        $db->ex("UPDATE {$db->prefix}users SET username=? WHERE id=?", [$username, userId()]);
-        MTTVars::$username = $username;
+        $userRepo->updateUserProperties(static::$user);
+        MTTVars::$username = static::$user->username;
         static::exitOk();
     }
 
     static function editEmail(string $email)
     {
         $errPrefix = __("cantChange", false, __("email"));
-        if ($email === '') {
-            static::exitError($errPrefix. " ". __("emptyValue"));
-        }
-        if ($email === static::$data['email']) {
+        if ($email === static::$user->email) {
             static::exitOk(false, __("nothingToChange"));
         }
-        if ( ! isValidEmail($email) ) {
-            static::exitError($errPrefix. " ". __("incorrectFormat"));
+        if (!static::$user->setEmail($email, $error)) {
+            static::exitError($errPrefix. " ". $error);
         }
-        $db = DBConnection::instance();
-        $id = (int) (new UserRepo($db))->findUserIdByEmail($email);
-        if ($id && $id !== userId()) {
-            static::exitError($errPrefix. " ". __("alreadyInUseByAccount"));
+        $userRepo = new UserRepo(DBConnection::instance());
+        if (!$userRepo->canSaveUser(static::$user, $error)) {
+            static::exitError($errPrefix. " ". $error);
         }
-        $db->ex("UPDATE {$db->prefix}users SET email=? WHERE id=?", [$email, userId()]);
+        $userRepo->updateUserProperties(static::$user);
         static::exitOk();
     }
 
@@ -142,15 +128,14 @@ final class UserAccountSettings {
         if ($newpassword === '') {
             static::exitError($errPrefix. " ". __("emptyValue"));
         }
-        if (!isPasswordEqualsToHash($password, static::$data['pwhash'])) {
+        if (!isPasswordEqualsToHash($password, static::$user->pwhash)) {
             static::exitError($errPrefix. " ". __("invalidPassword"));
         }
-        $db = DBConnection::instance();
-        $hash = passwordHash($newpassword);
-        $pwtoken = randomToken();
-        $db->ex("UPDATE {$db->prefix}users SET pwhash = ?, pwtoken = ? WHERE id=?", [$hash, $pwtoken, userId()]);
-        MTTVars::$userPwToken = $pwtoken;
-        $_SESSION['sign'] = sessionSignature($pwtoken);
+        static::$user->setPassword($newpassword);
+        $userRepo = new UserRepo(DBConnection::instance());
+        $userRepo->updateUserProperties(static::$user);
+        MTTVars::$userPwToken = static::$user->pwtoken;
+        $_SESSION['sign'] = sessionSignature(static::$user->pwtoken); # to keep session logged
         static::exitOk();
     }
 

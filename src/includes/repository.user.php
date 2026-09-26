@@ -43,37 +43,6 @@ class UserRepo
         return (int)$r;
     }
 
-    /**
-     * Get array with raw user data by its username.
-     * Return null if user does not exists.
-     * @return null|array
-     */
-    public function userDataByUsername(string $username): ?array
-    {
-        $r = $this->db->sqa("SELECT * FROM {$this->db->prefix}users WHERE username=?", [$username]);
-        if ($r) {
-            return $r;
-        }
-        return null;
-    }
-
-
-    /**
-     * Get array with raw user data by its id.
-     * Return null if user does not exists.
-     * @return null|array
-     */
-    public function userDataById(?int $id): ?array
-    {
-        if (!$id) {
-            return null;
-        }
-        $r = $this->db->sqa("SELECT * FROM {$this->db->prefix}users WHERE id=?", [$id]);
-        if ($r) {
-            return $r;
-        }
-        return null;
-    }
 
     /**
      *
@@ -127,13 +96,13 @@ class UserRepo
     {
         $existingId = $this->findUserIdByUsername((string) $user->username);
         if ($existingId !== null && $existingId !== $user->id) {
-            $error = "Username '{$user->username}' is already taken";
+            $error = __2('alreadyTakenByAnotherAccount', __('username'), $user->username);
             return false;
         }
 
         $existingId = $this->findUserIdByEmail((string) $user->email);
         if ($existingId !== null && $existingId !== $user->id) {
-            $error = "E-mail '{$user->email}' is already taken";
+            $error = __2('alreadyTakenByAnotherAccount', __('email'), $user->email);
             return false;
         }
 
@@ -151,13 +120,13 @@ class UserRepo
         if ($user->id === null) {
             # Create new record
             $this->db->dq("INSERT INTO {$this->db->prefix}users (username,name,email,extra,pwhash,pwtoken,last_visit) VALUES (?,?,?,?,?,?,?)",
-                [$user->username, $user->name, $user->email, $a['extra'], $user->pwhash, $user->pwtoken, $user->last_visit]);
+                [$user->username, $user->name, $user->email, $a['extra'], $user->pwhash, $user->pwtoken, $user->lastVisit]);
             $user->id = (int) $this->db->lastInsertId();
         }
         else {
             # Update record
             $this->db->dq("UPDATE {$this->db->prefix}users SET username=?,name=?,email=?,extra=?,pwhash=?,pwtoken=?,last_visit=? WHERE id = ". (int)$user->id,
-                [$user->username, $user->name, $user->email, $a['extra'], $user->pwhash, $user->pwtoken, $user->last_visit]);
+                [$user->username, $user->name, $user->email, $a['extra'], $user->pwhash, $user->pwtoken, $user->lastVisit]);
         }
     }
 
