@@ -94,7 +94,7 @@
 
   /* Markdown */
   --color-md-border: #ddd;
-  --color-md-bg-highlighted: #f8f8f8;
+  --color-md-bg-highlighted:  #F2F5F9; /*#f8f8f8*/
   --color-md-text-blockquote: #777;
 
   /* Settings */
@@ -1422,7 +1422,7 @@ li.mtt-item-hidden { display:none; }
 }
 .mtt-settings-table .descr {
   display: block;
-  font-size:0.8rem;
+  font-size:0.85rem;
   font-weight:normal;
   color:var(--color-text-reduced);
   padding-top: 4px;
