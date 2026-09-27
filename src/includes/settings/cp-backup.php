@@ -62,7 +62,7 @@ function onBackupFileChange(el) {
         <div class="descr"> <?php echo $e('backup.d_restore'); ?> </div>
     </div>
     <div class="td">
-        <button type=button data-cp-action="backup/restoreLocal"> <?php echo $e('backup.restore_local'); ?> </button>
+        <button type=button data-cp-action="backup/restoreLocal" <?php echo $downloadDisabled; ?>> <?php echo $e('backup.restore_local'); ?> </button>
         &nbsp;
         <label class="mtt-settings-upload-button">
             <input type="file" name="file" onchange="return onBackupFileChange(this)" data-cp-action="backup/restore">

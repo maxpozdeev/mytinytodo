@@ -92,14 +92,14 @@ foreach (MTTExtensionLoader::loadedExtensions() as $instance) {
 $req = ApiRequest::instance();
 
 # All API requests have to check a CSRF token, except only this. //TODO: re-make
-if ($req->path !== '/session') {
+if ($req->path !== '/session' && $req->path !== '/cp/backup/downloadLink') {
     check_token();
 }
 
 # Control Panel API routes (lazy loading of classes)
 if (substr($req->path, 0, 4) === '/cp/') {
     if (defined('MTT_DEMO')) {
-        (new JsonApiResponse([ 'ok'=>true, 'total' => 1, 'msg' => __('demo_mode', true), 'alertText' => __('demo_mode', true) ], 200))->exit();
+        (new JsonApiResponse([ 'ok'=>true, 'msg' => __('demo_mode', true) ], 200))->exit();
     }
     ControlPanelApiController::mergeEndpoints($endpoints);
 }

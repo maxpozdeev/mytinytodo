@@ -21,11 +21,6 @@ class Download
 
     function checkFileAccess(?string $tokenHash = null): bool
     {
-        if (!file_exists($this->filename)) {
-            $this->lastErrorString = "Backup file not found";
-            return false;
-        }
-
         $this->token = access_token();
         if ($this->token == '') {
             $this->lastErrorString = "No token provided";
@@ -42,6 +37,11 @@ class Download
             }
         }
 
+        if (!file_exists($this->filename)) {
+            $this->lastErrorString = "Backup file not found";
+            return false;
+        }
+
         return true;
     }
 
@@ -49,7 +49,7 @@ class Download
     {
         $rnd = randomString();
         $hash = $rnd. ':'. hash_hmac('sha256', $rnd, $this->token);
-        $url = apiMakeUrl('cp/backup/download', ['t'=>$hash]);
+        $url = apiMakeUrl('cp/backup/downloadLink', ['t'=>$hash]); //TODO: no cp/ here
         return $url;
     }
 

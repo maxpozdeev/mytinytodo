@@ -69,7 +69,7 @@ class BackupController extends \ApiController implements \MTTControlPanelHttpApi
         ];
     }
 
-    function getDownload()
+    function getDownloadLink()
     {
         require_once(MTTINC. 'class.backup.download.php');
         $filename = self::backupFilePath();
@@ -171,10 +171,8 @@ class BackupController extends \ApiController implements \MTTControlPanelHttpApi
     {
         return array(
             '/backup/makeBackup' => ['POST' => [BackupController::class, 'postMakeBackup']],
-            '/backup/download' => [
-                'POST' => [BackupController::class, 'postDownload'],
-                'GET'  => [BackupController::class, 'getDownload', true],
-            ],
+            '/backup/download' => ['POST' => [BackupController::class, 'postDownload'] ],
+            '/backup/downloadLink' => ['GET'  => [BackupController::class, 'getDownloadLink']],
             '/backup/restore' => ['POST' => [BackupController::class, 'postRestore']],
             '/backup/restoreLocal' => ['POST' => [BackupController::class, 'postRestoreLocal']],
             '/backup/checkInconsistency' => ['POST' => [BackupController::class, 'postCheckInconsistency']],
