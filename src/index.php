@@ -312,15 +312,15 @@ function handleControlPanel(string $page, string $argument)
     }
 
     static $pages = [
-        'general' => 'general.php',
-        'users' => 'users.php',
-        'backup' => 'backup.php',
-        'extensions' => 'extensions.php',
-        'ext-settings' => 'ext-settings.php',
-        'css' => 'css.php',
-        'add-user' => 'add-user.php',
-        'edit-user' => 'edit-user.php',
-        'delete-user' => 'delete-user.php',
+        'general' => 'cp-general.php',
+        'users' => 'cp-users.php',
+        'backup' => 'cp-backup.php',
+        'extensions' => 'cp-extensions.php',
+        'ext-settings' => 'cp-ext-settings.php',
+        'css' => 'cp-css.php',
+        'add-user' => 'cp-add-user.php',
+        'edit-user' => 'cp-edit-user.php',
+        'delete-user' => 'cp-delete-user.php',
     ];
     if (!isset($pages[$page])) {
         return page_404();
@@ -342,7 +342,7 @@ function handleControlPanel(string $page, string $argument)
         exit();
     }
     require_once(MTT_THEME_PATH. 'header.php');
-    require_once(MTTINC. 'settings/controlpanel.php');
+    require_once(MTTINC. 'settings/cp-settings.php');
     require_once(MTT_THEME_PATH. 'footer.php');
 }
 
