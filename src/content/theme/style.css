@@ -70,6 +70,7 @@
   --color-tasklist-note-link: #777;
   --color-tasklist-link-hover: var(--color-link); /* #af0000 */
   --color-tasklisk-hover-shadow: rgba(0,0,0,0.3);
+  --color-tasklist-row-hover: #f3f8ff;
   --color-taglist-tag: var(--color-text-reduced);
   --color-taglist-tag-bg: #e0e0e0;
   --color-taglist-tag-hover: var(--color-taglist-tag);
@@ -708,12 +709,16 @@ li.task-row.task-expanded .task-toggle { transform:rotate(90deg); }
   background-color: var(--color-tasklist-row); /* ?? */
   position:relative; /* for z-index */
 }
-/*#mtt:not(.touch-device) #tasklist li.task-row:hover,*/
+#mtt:not(.touch-device) #tasklist li.task-row:not(.menu-active):has(.taskactionbtn:hover) {
+  background-color: var(--color-tasklist-row-hover);
+}
+/* #mtt:not(.touch-device) #tasklist li.task-row:hover, */
 #mtt:not(.touch-device) #tasklist li.task-row.menu-active {
   z-index: 1;
   box-shadow: 0 0 2px var(--color-tasklisk-hover-shadow);
   border-radius: 5px;
 }
+/* #mtt:not(.touch-device) #tasklist li.task-row:hover:not(.task-expanded), */
 #mtt:not(.touch-device) #tasklist li.task-row.menu-active:not(.task-expanded) {
   border-bottom-color: transparent;
 }
