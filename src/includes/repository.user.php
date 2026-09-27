@@ -85,6 +85,59 @@ class UserRepo
         return null;
     }
 
+
+    /**
+     *
+     * @return array<array{id: string|int, count: string|int}>
+     */
+    public function countLists(): array
+    {
+        $q = $this->db->dq("SELECT u.id, COUNT(l.id) AS count
+            FROM {$this->db->prefix}users AS u
+            LEFT JOIN {$this->db->prefix}lists AS l ON l.user_id = u.id
+            GROUP BY u.id");
+        $a = [];
+        while ($r = $q->fetchAssoc()) {
+            $a[] = $r;
+        }
+        return $a;
+    }
+
+    /**
+     *
+     * @return array<array{id: string|int, count: string|int}>
+     */
+    public function countTasks(): array
+    {
+        $q = $this->db->dq("SELECT u.id, COUNT(t.id) AS count
+            FROM {$this->db->prefix}users u
+            LEFT JOIN {$this->db->prefix}lists l ON l.user_id = u.id
+            LEFT JOIN {$this->db->prefix}todolist t ON t.list_id = l.id
+            GROUP BY u.id");
+        $a = [];
+        while ($r = $q->fetchAssoc()) {
+            $a[] = $r;
+        }
+        return $a;
+    }
+
+
+    public function deleteUserById(int $userId): int
+    {
+        $db = DBConnection::instance();
+        $db->ex("BEGIN");
+        $db->ex("DELETE FROM {$db->prefix}todolist WHERE list_id IN (SELECT id FROM {$db->prefix}lists WHERE user_id=?)", [$userId]);
+        $db->ex("DELETE FROM {$db->prefix}tag2task WHERE list_id IN (SELECT id FROM {$db->prefix}lists WHERE user_id=?)", [$userId]);
+        $db->ex("DELETE FROM {$db->prefix}tags WHERE user_id=?", [$userId]);
+        $db->ex("DELETE FROM {$db->prefix}lists WHERE user_id=?", [$userId]);
+        $db->ex("DELETE FROM {$db->prefix}usersettings WHERE user_id=?", [$userId]);
+        $db->ex("DELETE FROM {$db->prefix}users WHERE id=?", [$userId]);
+        $deleted = $db->affected();
+        # TODO: sessions?
+        $db->ex("COMMIT");
+        return $deleted;
+    }
+
     /**
      * Check that a user can be created or updated with a unique username and e-mail
      * that are not already registered with another user.
@@ -96,13 +149,13 @@ class UserRepo
     {
         $existingId = $this->findUserIdByUsername((string) $user->username);
         if ($existingId !== null && $existingId !== $user->id) {
-            $error = __2('alreadyTakenByAnotherAccount', __('username'), $user->username);
+            $error = __('alreadyTakenByAnotherAccount', false, __('username'), $user->username);
             return false;
         }
 
         $existingId = $this->findUserIdByEmail((string) $user->email);
         if ($existingId !== null && $existingId !== $user->id) {
-            $error = __2('alreadyTakenByAnotherAccount', __('email'), $user->email);
+            $error = __('alreadyTakenByAnotherAccount', false, __('email'), $user->email);
             return false;
         }
 

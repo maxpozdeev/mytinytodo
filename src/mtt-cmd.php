@@ -58,40 +58,36 @@ function cmd_write(string $param, ?string $value) {
 }
 
 
-function cmd_adduser(string $user, string $email = '')
+function cmd_adduser(string $username, string $email = '')
 {
     $db =  DBConnection::instance();
-    print "Adding user '$user'\n";
-    if ($db->sq("SELECT 1 FROM {$db->prefix}users WHERE username = ?", [$user])) {
+    print "Adding user '$username' with password '$username'\n";
+    $userRepo = new UserRepo(DBConnection::instance());
+    $userId = $userRepo->findUserIdByUsername($username);
+    if ($userId) {
         die("Error: user already exists\n");
     }
-    if ($email == '')
-        $email = "$user@localhost";
-    $db->ex( "INSERT INTO {$db->prefix}users (username,name,email) VALUES (?,?,?)", [$user, $user, $email]);
-    $id = $db->lastInsertId();
-    print "User created with ID $id\n";
+    if ($email == '') {
+        $email = "$username@localhost";
+    }
+    $user = User::create($username, $username, $email);
+    $user->setPassword($username);
+    $userRepo->saveUser($user);
+    print "User created with ID {$user->id}\n";
 }
 
 function cmd_deluser(string $user)
 {
-    $db =  DBConnection::instance();
     print "Deleting user '$user'\n";
-    $userId = (int) $db->sq("SELECT id FROM {$db->prefix}users WHERE username = ?", [$user]);
+    $userRepo = new UserRepo(DBConnection::instance());
+    $userId = $userRepo->findUserIdByUsername($user);
     if (!$userId) {
         die("Error: user does not exists\n");
     }
     if ($userId == 1) {
         die("Error: can not delete administrator\n");
     }
-    $db->ex("BEGIN");
-    $db->ex("DELETE FROM {$db->prefix}todolist WHERE list_id IN (SELECT id FROM {$db->prefix}lists WHERE user_id=?)", [$userId]);
-    $db->ex("DELETE FROM {$db->prefix}tag2task WHERE list_id IN (SELECT id FROM {$db->prefix}lists WHERE user_id=?)", [$userId]);
-    $db->ex("DELETE FROM {$db->prefix}tags WHERE user_id=?", [$userId]);
-    $db->ex("DELETE FROM {$db->prefix}lists WHERE user_id=?", [$userId]);
-    $db->ex("DELETE FROM {$db->prefix}usersettings WHERE user_id=?", [$userId]);
-    $db->ex("DELETE FROM {$db->prefix}users WHERE id=?", [$userId]);
-    # sessions?
-    $db->ex("COMMIT");
+    $userRepo->deleteUserById($userId);
     print "User (ID $userId) deleted\n";
 }
 

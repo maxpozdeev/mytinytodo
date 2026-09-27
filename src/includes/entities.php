@@ -688,9 +688,9 @@ class User extends AbstractEntity
     public ?string $username;
     public ?string $name;
     public ?string $email;
-    public ?string $pwhash;
-    public ?string $pwtoken;
-    public ?string $lastVisit; //DATE like YYYY-MM-DD
+    public ?string $pwhash = null;
+    public ?string $pwtoken = null;
+    public ?string $lastVisit = null; //DATE like YYYY-MM-DD
     public ?array $extra = null;
 
     static function fromArray(array $a): self
@@ -723,8 +723,8 @@ class User extends AbstractEntity
             'username' => $this->username,
             'name' => $this->name,
             'email' => $this->email,
-            'pwhash' => $this->pwhash,
-            'pwtoken' => $this->pwtoken,
+            'pwhash' => $this->pwhash ?? '',
+            'pwtoken' => $this->pwtoken ?? '',
             'last_visit' => $this->lastVisit,
             'extra' => null,
         ];

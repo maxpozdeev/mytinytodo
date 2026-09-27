@@ -3439,7 +3439,13 @@ function saveSettings(frm)
         }
         else if (json.ok) {
             const msg = json.msg ? json.msg : "OK";
-            const cb = frm.dataset.okReload ? function(){window.location.reload();} : undefined;
+            let cb = undefined;
+            if (frm.dataset.okReload) {
+                cb = function(){ window.location.reload(); }
+            }
+            else if (frm.dataset.okRedirect) {
+                cb = function(){ window.location.assign(frm.dataset.okRedirect); }
+            }
             if (json.isHtmlMsg) {
                 mttHtmlAlert(msg, cb);
             }

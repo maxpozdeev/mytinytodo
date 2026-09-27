@@ -30,11 +30,11 @@ if (!defined('MTT_PAGE')) {
 
   <div id="settings_content">
 <?php
-    if (isset(MTTVars::$settingsPageFile)) {
+    if (isset(MTTVars::$settingsPageFile) && file_exists(MTTVars::$settingsPageFile)) {
         require_once(MTTVars::$settingsPageFile);
     }
     else {
-        echo "Content not found";
+        echo "Page not found";
     }
 ?>
   </div>

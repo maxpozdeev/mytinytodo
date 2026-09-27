@@ -320,6 +320,7 @@ function handleControlPanel(string $page, string $argument)
         'css' => 'css.php',
         'add-user' => 'add-user.php',
         'edit-user' => 'edit-user.php',
+        'delete-user' => 'delete-user.php',
     ];
     if (!isset($pages[$page])) {
         return page_404();

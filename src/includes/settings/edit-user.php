@@ -11,7 +11,14 @@ if (!$user) {
     echo "User with ID $userId not found";
     return;
 }
-if (isset($_POST['save']))
+
+if (isset($_POST['deleteUser']))
+{
+    jsonExit([
+        'ok' => false
+    ]);
+}
+else if (isset($_POST['save']))
 {
     $user->setUsername(trim(_post('username')));
     $user->setName(trim(_post('name')));
@@ -44,9 +51,12 @@ $_u = function(string $key) use($user) {
 
 <h4> <?php _e('set_edituser');?> </h4>
 
+<div class="mtt-settings-table">
+
+<p><a href="<?php mtturl('controlpanel/delete-user', ['id'=>$user->id]); ?>" class="mtt-settings-button"><?php _e('btn_deleteuser'); ?></a></p>
+
 <form action="<?php mtt_settings_page_url(); ?>" method="post" data-ok-reload="yes">
 <input type="hidden" name="id" value="<?php $_u('id'); ?>">
-<div class="mtt-settings-table">
 
 <div class="tr">
   <div class="th"><?php _e('username');?></div>
@@ -80,5 +90,7 @@ $_u = function(string $key) use($user) {
   <button type="submit"><?php _e('set_save'); ?></button>
 </div>
 
-</div>
 </form>
+
+</div>
+
