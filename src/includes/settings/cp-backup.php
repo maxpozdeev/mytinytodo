@@ -16,6 +16,9 @@ $lastBackup = '';
 if (file_exists($filename)) {
     $time = filemtime($filename);
     $lastBackup = htmlspecialchars( sprintf($e('backup.last_backup'), formatTime(Config::get('dateformat'). " H:i:s", $time)) );
+    $bytes = filesize($filename);
+    $mb = number_format( $bytes / 1_000_000, 2 );
+    $lastBackup .= " ($mb MB)";
 }
 else {
     $downloadDisabled = 'disabled';
@@ -27,7 +30,7 @@ else {
 function onBackupFileChange(el) {
     const fd = new FormData();
     fd.append('file', el.files[0]);
-    mtt.cpAction(el.dataset.cpAction, fd);
+    mtt.cpAction(el, el.dataset.cpAction, fd);
 }
 </script>
 

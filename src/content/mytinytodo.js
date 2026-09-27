@@ -799,7 +799,7 @@ const mtt = window.mytinytodo = {
         });
 
         $("#page_settings").on('click', 'a[data-cp-action],button[data-cp-action]', function() {
-            cpAction(this.dataset.cpAction)
+            cpAction(this, this.dataset.cpAction)
             return false;
         });
 
@@ -3576,39 +3576,29 @@ function extensionSettingsAction(actionString, ext, formData)
 }
 mtt.extensionSettingsAction = extensionSettingsAction;
 
-function cpAction(action, formData)
+function cpAction(el, action, formData)
 {
     const success = function(json) {
-        if (json.total && json.total > 0) {
-            if (json.redirect) {
+        if (json.error || !json.ok) {
+            mttErrorAlert(json.error ? json.error : "Error");
+        }
+        else if (json.ok)
+        {
+            if (json.redirect && !json.msg) {
                 window.location.assign(json.redirect);
                 return;
             }
-            if (json.html) {
-                mttAlert(json.html);
+            if (json.reload && !json.msg) {
+                window.location.reload();
                 return;
             }
-            if (json.alertText) {
-                mttAlert(json.alertText);
-                return;
-            }
-            const callback = function() {
-                if (json.alertTextOnLoad) {
-                    mttAlert(json.alertTextOnLoad);
-                }
-                else if (json.msg) {
-                    flashInfo(json.msg, json.details);
-                }
-                if (json.reload) {
-                    setTimeout( function(){
-                        window.location.reload();
-                    }, 1000);
-                }
-            }
-            if (callback) callback();
-        }
-        else if (json.msg) {
-            flashInfo(json.msg, json.details);
+            const alertFunction = json.html ? mttHtmlAlert : mttAlert;
+            const msg = json.html ? json.html : json.msg ? json.msg : "OK";
+            let cb = undefined;
+            if (json.redirect)    cb = () => window.location.assign(json.redirect);
+            else if (json.reload) cb = () => window.location.reload();
+            alertFunction(msg, cb);
+
         }
     };
     if (formData === undefined) {

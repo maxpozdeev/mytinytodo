@@ -38,17 +38,15 @@ class BackupController extends \ApiController implements \MTTControlPanelHttpApi
 
         if (!$backup->makeBackup()) {
             $this->response->data = [
-                'total' => 0,
-                'msg' => __("error"),
-                'details' => $backup->lastErrorString ?? '',
+                'ok' => false,
+                'error' => $backup->lastErrorString ?? '',
             ];
         }
 
         $this->response->data = [
-            'total' => 1,
             'ok' => true,
             'msg' => __("backup.done"),
-            'alertTextOnLoad' => __("backup.done"),
+            'reload' => true,
         ];
     }
 
@@ -60,14 +58,13 @@ class BackupController extends \ApiController implements \MTTControlPanelHttpApi
 
         if (!$download->checkFileAccess()) {
             $this->response->data = [
-                'total' => 0,
-                'msg' => __("error"),
-                'details' => $download->lastErrorString ?? '',
+                'ok' => false,
+                'error' => $download->lastErrorString ?? '',
             ];
             return;
         }
         $this->response->data = [
-            'total' => 1,
+            'ok' => true,
             'redirect' => $download->downloadUrl()
         ];
     }
@@ -81,9 +78,8 @@ class BackupController extends \ApiController implements \MTTControlPanelHttpApi
         $ott = (string)_get('t');
         if (!$download->checkFileAccess($ott)) {
             $this->response->data = [
-                'total' => 0,
-                'msg' => __("error"),
-                'details' => $download->lastErrorString ?? '',
+                'ok' => false,
+                'error' => $download->lastErrorString ?? '',
             ];
             return;
         }
@@ -106,26 +102,22 @@ class BackupController extends \ApiController implements \MTTControlPanelHttpApi
         }
         if (!$filePresent) {
             $this->response->data = [
-                'total' => 0,
-                'msg' => __("error"),
-                'details' => $restore->lastErrorString ?? '',
+                'ok' => false,
+                'error' => $restore->lastErrorString ?? '',
             ];
             return;
         }
 
         if (!$restore->restore()) {
             $this->response->data = [
-                'total' => 1,
-                'ok' => true,
-                'alertText' => $restore->lastErrorString ?? 'Unknown error',
-                'msg' => __("error"),
-                'details' => $restore->lastErrorString ?? '',
+                'ok' => false,
+                'error' => $restore->lastErrorString ?? 'Unknown error',
             ];
             return;
         }
 
         $this->response->data = [
-            'total' => 1,
+            'ok' => true,
             'msg' => __("backup.done"),
             'redirect' => get_mttinfo('url'),
         ];
@@ -143,23 +135,17 @@ class BackupController extends \ApiController implements \MTTControlPanelHttpApi
 
         if (!$check->check()) {
             $this->response->data = [
-                'total' => 0,
-                'msg' => __("error"),
-                'details' => $check->lastErrorString ?? '',
+                'ok' => false,
+                'error' => $check->lastErrorString ?? '',
             ];
             return;
         }
         $this->response->data = [
-            'total' => 1,
             'ok' => true,
             'msg' => __("backup.done"),
         ];
-        if ($check->report == 'OK') {
-            $this->response->data['alertText'] = "OK";
-        }
-        else {
+        if ($check->report != 'OK') {
             $this->response->data['html'] = "<pre>". htmlspecialchars($check->report). "</pre>";
-            //$this->response->data['alertText'] = $check->report;
         }
     }
 
@@ -170,17 +156,14 @@ class BackupController extends \ApiController implements \MTTControlPanelHttpApi
 
         if (!$check->repair()) {
             $this->response->data = [
-                'total' => 0,
-                'msg' => __("error"),
-                'details' => $check->lastErrorString ?? '',
+                'ok' => false,
+                'error' => $check->lastErrorString ?? '',
             ];
             return;
         }
         $this->response->data = [
-            'total' => 1,
             'ok' => true,
             'msg' => __("backup.done"),
-            'alertText' => __("backup.done"),
         ];
     }
 
