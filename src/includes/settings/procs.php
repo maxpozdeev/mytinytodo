@@ -82,3 +82,13 @@ function timezoneIdentifiers()
     return $a;
 }
 
+
+function mtt_settings_page_url()
+{
+    echo get_mtturl(MTTVars::$settingsPage);
+}
+
+function mtt_get_settings_page_url(): string
+{
+    return get_mtturl(MTTVars::$settingsPage);
+}

@@ -164,7 +164,7 @@ function redirectWithHashRoute(array $hash, array $q = [])
     redirectExit($url);
 }
 
-function js_options()
+function jsOptions()
 {
     // Here we can use URIs instead of full URLs.
     $homeUrl = htmlspecialchars(Config::getUrl('url') ?? '');
@@ -291,16 +291,6 @@ function page_new_password()
     require_once(MTT_THEME_PATH. 'footer.php');
 }
 
-
-function mtt_settings_page_url()
-{
-    echo get_mtturl(MTTVars::$settingsPage);
-}
-
-function mtt_get_settings_page_url(): string
-{
-    return get_mtturl(MTTVars::$settingsPage);
-}
 
 function handleControlPanel(string $page, string $argument)
 {

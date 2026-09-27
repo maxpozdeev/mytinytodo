@@ -39,7 +39,7 @@
 
 <script type="text/javascript">
 $().ready(function(){
-  mytinytodo.init(<?php js_options(); ?>).setApiDriver(MytinytodoAjaxApi);
+  mytinytodo.init(<?php jsOptions(); ?>).setApiDriver(MytinytodoAjaxApi);
 });
 </script>
 
