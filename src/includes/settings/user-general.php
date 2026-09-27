@@ -27,6 +27,10 @@ if (isset($_POST['save']))
         setcookie('lang', $config->get('lang'), 0, url_dir(get_unsafe_mttinfo('url')));
         jsonExit($t);
     }
+    if (isset($_COOKIE['lang'])) {
+        // remove lang cookie
+        setcookie('lang', '', 1, url_dir(get_unsafe_mttinfo('url')));
+    }
 
     // Do not set invalid timezone
     try {
@@ -58,7 +62,7 @@ if (isset($_POST['save']))
 
 <h4> <?php _e('set_general');?> </h4>
 
-<form action="<?php mtt_settings_page_url(); ?>" method="post">
+<form action="<?php mtt_settings_page_url(); ?>" method="post" data-ok-reload="yes">
 <div class="mtt-settings-table">
 
 <div class="tr">

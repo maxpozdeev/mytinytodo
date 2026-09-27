@@ -1154,7 +1154,7 @@ const mtt = window.mytinytodo = {
     {
         if (location.hash == '')
             return false;
-        const h = location.hash.substr(1);
+        const h = location.hash.substring(1);
         const a = h.split("/");
         const p = {};
         let s = '';
@@ -1232,7 +1232,7 @@ const mtt = window.mytinytodo = {
 
     urlForExtSettings: function(ext)
     {
-        return '#settings/ext/' + ext;
+        return mtt.routerPrefix + 'controlpanel/ext-settings?ext=' + ext;
     },
 
     urlForTask: function(id)
