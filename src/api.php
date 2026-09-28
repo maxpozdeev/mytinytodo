@@ -306,9 +306,11 @@ class ControlPanelApiController
     static function registeredClasses(): array
     {
         require_once(MTTINC. 'api/BackupController.php');
+        require_once(MTTINC. 'api/UpdaterController.php');
 
         return [
-            MTTBackup\BackupController::class
+            MTTBackup\BackupController::class,
+            MTTUpdater\UpdaterController::class,
         ];
     }
 

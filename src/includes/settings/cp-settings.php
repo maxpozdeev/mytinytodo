@@ -25,6 +25,7 @@ if (!defined('MTT_PAGE')) {
   <p><a href="<?php mtturl('controlpanel/users'); ?>"><?php _e('set_users');?></a></p>
   <p><a href="<?php mtturl('controlpanel/css'); ?>"><?php _e('set_customcss');?></a></p>
   <p><a href="<?php mtturl('controlpanel/backup'); ?>"><?php _e('set_backup');?></a></p>
+  <p><a href="<?php mtturl('controlpanel/updater'); ?>"><?php _e('set_updater');?></a></p>
   <p><a href="<?php mtturl('controlpanel/extensions'); ?>"><?php _e('set_extensions');?></a></p>
 </div>
 

@@ -308,6 +308,7 @@ function handleControlPanel(string $page, string $argument)
         'extensions' => 'cp-extensions.php',
         'ext-settings' => 'cp-ext-settings.php',
         'css' => 'cp-css.php',
+        'updater' => 'cp-updater.php',
         'add-user' => 'cp-add-user.php',
         'edit-user' => 'cp-edit-user.php',
         'delete-user' => 'cp-delete-user.php',
