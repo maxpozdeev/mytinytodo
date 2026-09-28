@@ -757,7 +757,7 @@ class User extends AbstractEntity
     }
 
 
-    function isValidUsername(string $username, string &$error = null): bool
+    function isValidUsername(string $username, ?string &$error = null): bool
     {
         if ($username === '') {
             $error = __("emptyValue");
@@ -770,7 +770,7 @@ class User extends AbstractEntity
         return true;
     }
 
-    function setUsername(string $username, string &$error = null): bool
+    function setUsername(string $username, ?string &$error = null): bool
     {
         if (!$this->isValidUsername($username, $error)) {
             return false;
@@ -784,7 +784,7 @@ class User extends AbstractEntity
     }
 
 
-    function isValidName(string $name, string &$error = null): bool
+    function isValidName(string $name, ?string &$error = null): bool
     {
         if ($name === '') {
             $error = __("emptyValue");
@@ -797,7 +797,7 @@ class User extends AbstractEntity
         return true;
     }
 
-    function setName(string $name, string &$error = null): bool
+    function setName(string $name, ?string &$error = null): bool
     {
         if (!$this->isValidUsername($name, $error)) {
             return false;
@@ -810,7 +810,7 @@ class User extends AbstractEntity
         return true;
     }
 
-    function isValidEmail(string $email, string &$error = null): bool
+    function isValidEmail(string $email, ?string &$error = null): bool
     {
         if ($email === '') {
             $error = __("emptyValue");
@@ -823,7 +823,7 @@ class User extends AbstractEntity
         return true;
     }
 
-    function setEmail(string $email, string &$error = null): bool
+    function setEmail(string $email, ?string &$error = null): bool
     {
         if (!$this->isValidEmail($email, $error)) {
             return false;
