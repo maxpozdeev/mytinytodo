@@ -5,7 +5,7 @@ Your tiny todo list
 Original website - http://www.mytinytodo.net/
 
 ### System requirements
-- PHP 7.2 or greater
+- PHP 7.4 or greater
 - PHP extensions:
   - mbstring
   - pdo_sqlite, intl (SQLite version)
