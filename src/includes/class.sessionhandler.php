@@ -147,5 +147,14 @@ class MTTSessionHandler implements SessionHandlerInterface, SessionUpdateTimesta
         // Warning if return false
         return true;
     }
+
+    /**
+     * PHP 8.6 notices about this is missing
+     * @return string
+     */
+    public function create_sid(): string
+    {
+        return session_create_id() ?: throw new RuntimeException('Unable to create a session ID');;
+    }
 }
 
