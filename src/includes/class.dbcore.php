@@ -90,6 +90,29 @@ class DBCore
         return ($count > 0) ? true : false;
     }
 
+    /** Keep tags and tags_ids in lockstep, sort by tag name (any DB). */
+    private function sortTagsOnTaskRow(array &$r): void
+    {
+        $tags = $r['tags'] ?? '';
+        $ids = $r['tags_ids'] ?? '';
+        if ($tags === '' || $tags === null || $ids === '' || $ids === null) {
+            return;
+        }
+        $names = explode(',', $tags);
+        $idList = explode(',', $ids);
+        if (count($names) !== count($idList) || count($names) < 2) {
+            return;
+        }
+        $pairs = [];
+        foreach ($names as $i => $n) {
+            $pairs[] = [$n, $idList[$i]];
+        }
+        usort($pairs, function (array $a, array $b): int {
+            return strcmp($a[0], $b[0]);
+        });
+        $r['tags'] = implode(',', array_column($pairs, 0));
+        $r['tags_ids'] = implode(',', array_column($pairs, 1));
+    }
 
     public function getTaskById(int $id): ?array
     {
@@ -109,6 +132,9 @@ class DBCore
             WHERE todo.id = $id
             GROUP BY todo.id
         ");
+        if ($r) {
+            $this->sortTagsOnTaskRow($r);
+        }
         return $r;
     }
 
@@ -173,6 +199,7 @@ class DBCore
 
         $data = array();
         while ($r = $q->fetchAssoc()) {
+            $this->sortTagsOnTaskRow($r);
             $data[] = $r;
         }
         return $data;
