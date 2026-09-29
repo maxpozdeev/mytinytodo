@@ -43,9 +43,6 @@ function parseRoute(string $path)
         }
         page_login();
     }
-    else if ($path === '/go' ) {
-        handleGoRoute($_SERVER['QUERY_STRING'] ?? '');
-    }
     else if ($path === '/reset') {
         page_reset();
     }
@@ -241,6 +238,11 @@ function handleUser(string $username, string $path = '')
 
     if (!need_auth() && MTTVars::$requestedUserId !== userId())
         return page_404();
+
+    if ($path === '/go') {
+        handleGoRoute($_SERVER['QUERY_STRING'] ?? '');
+        exit;
+    }
 
     page_tasks();
 }
