@@ -86,7 +86,7 @@ function listExtensions()
     // removed and not deactivated
     foreach ($activatedExts as $ext) {
         $h = "$ext";
-        $v = " &lt;extension not found&gt; ";
+        $v = " <span style='color:red'>&lt;extension not found&gt;</span> ";
         $d = "<a href='#' data-settings-action='ext-deactivate' data-ext='". htmlspecialchars($ext). "'>". __('set_deactivate', true). '</a>';
         $a[] = [
             'h' => $h,
