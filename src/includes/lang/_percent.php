@@ -28,7 +28,7 @@ unset($src['_header']);
 
 $totalKeys = checkArray("en.json", $src, $src); //hack
 $langs = [];
-$files = array_diff(scandir('.') ?? [], ['.', '..', 'en-rtl.json']);
+$files = array_diff(scandir('.') ?: [], ['.', '..', 'en-rtl.json']);
 foreach ($files as $file) {
     if (!preg_match("/(.+)\.json$/", $file, $m)) {
         continue; // Skip non-json files

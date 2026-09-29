@@ -1,146 +1,171 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
     This file is a part of myTinyTodo.
-    (C) Copyright 2009-2011,2020-2021 Max Pozdeev <maxpozdeev@gmail.com>
+    (C) Copyright 2009-2011,2020-2025 Max Pozdeev <maxpozdeev@gmail.com>
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
 $dontStartSession = 1;
 require_once('./init.php');
-require_once(MTTINC. 'markup.php');
-
-$lang = Lang::instance();
 
 $listId = (int)_get('list');
-$db = DBConnection::instance();
-$listData = $db->sqa("SELECT * FROM {$db->prefix}lists WHERE id=$listId");
-if ( $listData && need_auth() && !$listData['published'] ) {
-    $extra = json_decode($listData['extra'] ?? '', true, 10, JSON_INVALID_UTF8_SUBSTITUTE);
-    $feedKey = (string) ($extra['feedKey'] ?? '');
-    $inFeedKey = trim(_get('key'));
-    if ($feedKey == '' || $feedKey != $inFeedKey) {
-        die("Access denied!<br> List is not published.");
-    }
-}
-if (!$listData) {
-    die("No list found.");
+
+$listRepo = new ListRepo(DBConnection::instance());
+$list = $listRepo->findRealListById($listId);
+
+if (!$list) {
+    if (is_logged())
+        die("No list found.");
+    else
+        die("Access denied.");
 }
 
-$data = array();
+if (!canReadList($list, trim(_get('key')))) {
+    die("Access denied.");
+}
+
 $feedType = _get('feed');
+$taskRepo = new TaskRepo(DBConnection::instance());
 
-if($feedType == 'completed') {
-    $listData['_feed_descr'] = $lang->get('feed_completed_tasks');
-    fillData( $data, $listId, 'd_completed', 'compl=1' );
-}
-elseif($feedType == 'modified') {
-    $listData['_feed_descr'] = $lang->get('feed_modified_tasks');
-    fillData( $data, $listId, 'd_edited', '' );
-}
-elseif($feedType == 'current') {
-    $listData['_feed_descr'] = $lang->get('feed_new_tasks');
-    fillData( $data, $listId, 'd_created', 'compl=0' );
-}
-elseif($feedType == 'status') {
-    $listData['_feed_descr'] = $lang->get('feed_tasks');
-    fillData( $data, $listId, 'd_created', '' );
-    fillData( $data, $listId, 'd_edited', 'compl=0 AND d_edited > d_created' );
-    fillData( $data, $listId, 'd_completed', 'compl=1' );
-}
-else {
-    $listData['_feed_descr'] = $lang->get('feed_new_tasks');
-    $feedType = 'tasks';
-    fillData( $data, $listId, 'd_created', '' );
-}
-
-$listData['_feed_title'] = sprintf($lang->get('feed_title'), $listData['name']) . ' - '. $listData['_feed_descr'];
-$listData['_feed_link'] = get_mttinfo('mtt_url'). "feed.php?list=". (int)$listData['id'] . ($feedType != '' ? "&feed=". $feedType : '');
-$listData['_feed_type'] = $feedType;
-htmlarray_ref($listData);
-
-printRss($data, $listData);
+$feed = new MTTRSSFeed($list, $taskRepo);
+$feed->feedType($feedType);
+$feed->print();
 
 
-function fillData(array &$data, int $listId, string $field, string $sqlWhere )
+class MTTRSSFeed
 {
-    $tasks = DBCore::default()->getTasksByListId($listId, $sqlWhere, "$field DESC", 100);
-    $lang = Lang::instance();
-    foreach ($tasks as $r)
+    protected TaskRepo $taskRepo;
+    protected TaskList $list;
+    protected array $feedData = [];
+    /** @var object{task:Task,field:string}[] */
+    protected array $data = [];
+
+    function __construct(TaskList $list, TaskRepo $repo)
     {
-        if ($r['prio'] > 0) {
-            $r['prio'] = '+'.$r['prio'];
-        }
-        $a = array(); //for _descr
-        $a[] = $lang->get('task'). ": ". $r['title'];
-        if ($r['prio']) {
-            $a[] = $lang->get('priority'). ": $r[prio]";
-        }
-        if ($r['duedate'] != '') {
-            $ad = explode('-', $r['duedate']);
-            $a[] = $lang->get('due'). ": ".formatDate3(Config::get('dateformat'), (int)$ad[0], (int)$ad[1], (int)$ad[2], $lang);
-        }
-        if ($r['tags'] != '') {
-            $a[] = $lang->get('tags'). ": ". str_replace(',', ', ', $r['tags']);
-        }
-        if ($r['compl']) {
-            $a[] = $lang->get('taskdate_completed'). ": ". timestampToDatetime($r['d_completed']);
-        }
-        $r['title'] = htmlspecialchars( $r['title'] );
-        $r['note'] = noteMarkup($r['note'], true);
-        $r['_descr'] = implode("<br/>", htmlarray($a)). "<br/><br/>". $r['note'];
-        $r['_title'] = "#". (int)$r['id']. ": ". $r['title'];
-        $r['_d'] =  gmdate('r', $r[$field]);
-        $r['_field'] = $field;
-        $data[] = $r;
-    }
-}
-
-function printRss(array $data, array $listData)
-{
-    $lang = Lang::instance();
-    $link = get_mttinfo('url'). "?list=". (int)$listData['id'];
-    $buildDate = gmdate('r');
-
-    $s = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n".
-        "<rss version=\"2.0\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:atom=\"http://www.w3.org/2005/Atom\">\n".
-        "<channel>\n".
-        "<title>$listData[_feed_title]</title>\n".
-        "<link>$link</link>\n".
-        "<atom:link href=\"{$listData['_feed_link']}\" rel=\"self\" type=\"application/rss+xml\"/>\n".
-        "<description>$listData[_feed_descr]</description>\n".
-        "<lastBuildDate>$buildDate</lastBuildDate>\n\n";
-
-    foreach($data as $v)
-    {
-        $guid = $listData['_feed_type']. '-'. $listData['id']. '-'. $v['id']. '-'. $v[$v['_field']];
-        $itemLink = $link. "&amp;task=". (int)$v['id'];
-
-        $status = '';
-        if ( $listData['_feed_type'] == 'status' ) {
-            if ( $v['_field'] == 'd_created' ) {
-                $status = $lang->get('feed_status_new');
-            }
-            elseif ( $v['_field'] == 'd_edited' ) {
-                $status = $lang->get('feed_status_updated');
-            }
-            elseif ( $v['_field'] == 'd_completed' ) {
-                $status = $lang->get('feed_status_completed');
-            }
-        }
-        if ( $status !='' ) $status = "[$status] ";
-
-        $s .= "\t<item>\n".
-            "\t\t<title>". $status. $v['title']. "</title>\n".
-            "\t\t<link>". $itemLink. "</link>\n".
-            "\t\t<pubDate>". $v['_d']. "</pubDate>\n".
-            "\t\t<description><![CDATA[". $v['_descr']. "]]></description>\n".
-            "\t\t<guid isPermaLink=\"false\">$guid</guid>\n".
-            "\t</item>\n\n";
+        $this->list = $list;
+        $this->taskRepo = $repo;
     }
 
-    $s .= "</channel>\n</rss>";
+    function feedType(string $feedType)
+    {
+        $lang = Lang::instance();
+        if ($feedType == 'completed') {
+            $this->feedData['_feed_descr'] = $lang->get('feed_completed_tasks');
+            $this->addData('d_completed', TaskRepo::FILTER_COMPLETED);
+        }
+        elseif ($feedType == 'modified') {
+            $this->feedData['_feed_descr'] = $lang->get('feed_modified_tasks');
+            $this->addData('d_edited', 0);
+        }
+        elseif ($feedType == 'current') {
+            $this->feedData['_feed_descr'] = $lang->get('feed_new_tasks');
+            $this->addData('d_created', TaskRepo::FILTER_OPEN);
+        }
+        elseif ($feedType == 'status') {
+            $this->feedData['_feed_descr'] = $lang->get('feed_tasks');
+            $this->addData('d_created', 0 );
+            $this->addData('d_edited', TaskRepo::FILTER_OPEN_AND_EDITED);
+            $this->addData('d_completed', TaskRepo::FILTER_COMPLETED);
+        }
+        else {
+            $this->feedData['_feed_descr'] = $lang->get('feed_new_tasks');
+            $feedType = 'tasks';
+            $this->addData('d_created', 0);
+        }
 
-    header("Content-type: text/xml; charset=utf-8");
-    print $s;
+        $this->feedData['_feed_title'] = sprintf($lang->get('feed_title'), $this->list->name) . ' - '. $this->feedData['_feed_descr'];
+        $this->feedData['_feed_link'] = get_unsafe_mttinfo('mtt_url'). "feed.php?list={$this->list->id}&feed=$feedType";
+        $this->feedData['_feed_type'] = $feedType;
+        htmlarray_ref($this->feedData);
+    }
+
+    function addData(string $sortField, int $filter)
+    {
+        if     ($sortField == 'd_created')   $sort = TaskRepo::SORT_FIELD_CREATED;
+        elseif ($sortField == 'd_edited')    $sort = TaskRepo::SORT_FIELD_EDITED;
+        elseif ($sortField == 'd_completed') $sort = TaskRepo::SORT_FIELD_COMPLETED;
+        else throw new Exception("Unexpected sort field: '$sortField'");
+
+        $tasks = $this->taskRepo->findTasks([$this->list->id], null, [], '', $sort, $filter, 100);
+        foreach ($tasks as $task)
+        {
+            $this->data[] = (object)array(
+                'task' => $task,
+                'field' => $sortField,
+            );
+        }
+    }
+
+
+    function print()
+    {
+        $lang = Lang::instance();
+        $link = get_mttinfo('url'). "?list={$this->list->id}"; #escaped
+        $buildDate = htmlspecialchars(gmdate('r'));
+
+        $s = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n".
+            "<rss version=\"2.0\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:atom=\"http://www.w3.org/2005/Atom\">\n".
+            "<channel>\n".
+            "<title>{$this->feedData['_feed_title']}</title>\n".
+            "<link>$link</link>\n".
+            "<atom:link href=\"{$this->feedData['_feed_link']}\" rel=\"self\" type=\"application/rss+xml\"/>\n".
+            "<description>{$this->feedData['_feed_descr']}</description>\n".
+            "<lastBuildDate>$buildDate</lastBuildDate>\n\n";
+
+        foreach ($this->data as $v)
+        {
+            $task = $v->task;
+            $guid = htmlspecialchars($this->feedData['_feed_type']. '-'. $this->list->id. '-'. $v->task->id. '-'. $v->task->{$v->field});
+            $itemLink = $link. "&amp;task=". $v->task->id; #escaped
+
+            $status = '';
+            if ( $this->feedData['_feed_type'] == 'status' ) {
+                if ( $v->field == 'd_created' ) {
+                    $status = $lang->get('feed_status_new');
+                }
+                elseif ( $v->field == 'd_edited' ) {
+                    $status = $lang->get('feed_status_updated');
+                }
+                elseif ( $v->field == 'd_completed' ) {
+                    $status = $lang->get('feed_status_completed');
+                }
+                if ($status != '')
+                    $status = "[$status] ";
+            }
+            $pubDate = htmlspecialchars(gmdate('r', $v->task->{$v->field}));
+
+            $a = array();
+            $a[] = $lang->get('task'). ": ". $task->title;
+            if ($task->priority) {
+                $a[] = $lang->get('priority'). ": ". ($task->priority > 0 ? '+' : ''). $task->priority;
+            }
+            if ($task->duedate != '') {
+                $ad = explode('-', $task->duedate);
+                $a[] = $lang->get('due'). ": ".formatDate3(Config::get('dateformat'), (int)$ad[0], (int)$ad[1], (int)$ad[2], $lang);
+            }
+            if ($task->tagNames) {
+                $a[] = $lang->get('tags'). ": ". implode(", ", $task->tagNames);
+            }
+            if ($task->isCompleted) {
+                $a[] = $lang->get('taskdate_completed'). ": ". timestampToDatetime($task->d_completed);
+            }
+            $descr = implode("<br/>", htmlarray($a));
+            if ($task->note != '')
+                $descr .= "<br/><br/>". $task->noteHtml(true);
+
+            $s .= "\t<item>\n".
+                "\t\t<title>". htmlspecialchars($status. $v->task->title). "</title>\n".
+                "\t\t<link>". $itemLink. "</link>\n".
+                "\t\t<pubDate>". $pubDate. "</pubDate>\n".
+                "\t\t<description><![CDATA[". $descr. "]]></description>\n".
+                "\t\t<guid isPermaLink=\"false\">$guid</guid>\n".
+                "\t</item>\n\n";
+        }
+
+        $s .= "</channel>\n</rss>";
+
+        header("Content-type: text/xml; charset=utf-8");
+        print $s;
+    }
 }

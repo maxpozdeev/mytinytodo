@@ -2,7 +2,7 @@
 
 /*
     This file is a part of myTinyTodo.
-    (C) Copyright 2022-2023 Max Pozdeev <maxpozdeev@gmail.com>
+    (C) Copyright 2022-2026 Max Pozdeev <maxpozdeev@gmail.com>
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
@@ -15,6 +15,10 @@ if (MTT_DEBUG) {
 else {
     ini_set('display_errors', '0');
 }
+
+const MTT_API_ENDPOINT_OWNER_GENERAL = 0;
+const MTT_API_ENDPOINT_OWNER_EXTENSION = 1;
+const MTT_API_ENDPOINT_OWNER_CONTROLPANEL = 2;
 
 require_once(MTTINC. 'api/ListsController.php');
 require_once(MTTINC. 'api/TasksController.php');
@@ -34,6 +38,9 @@ $endpoints = array(
         'DELETE'  => [ ListsController::class , 'deleteId' ],
         'POST'    => [ ListsController::class , 'putId' ], //compatibility
     ],
+    '/user/([^/]+)/lists' => [
+        'GET'  => [ ListsController::class , 'get' ]    # lists of specific user
+    ],
     '/tasks' => [
         'GET'  => [ TasksController::class , 'get' ],
         'POST' => [ TasksController::class , 'post' ],
@@ -48,7 +55,7 @@ $endpoints = array(
         'POST' => [ TasksController::class , 'postTitleParse' ],
     ],
     '/tasks/newCounter' => [
-        'POST' => [ TasksController::class , 'postNewCounter' ],
+        'POST' => [ TasksController::class , 'postCounterOfNewTasks' ],
     ],
     '/tagCloud/(-?\d+)' => [
         'GET'  => [ TagsController::class , 'getCloud' ],
@@ -56,7 +63,7 @@ $endpoints = array(
     '/suggestTags' => [
         'GET'  => [ TagsController::class , 'getSuggestions' ],
     ],
-    '/(login|logout|session)' => [
+    '/(login|logout|session|resetPassword|newPassword)' => [
         'POST' => [ AuthController::class , 'postAction' ],
     ],
     '/ext-settings/(.+)' => [
@@ -73,74 +80,100 @@ foreach (MTTExtensionLoader::loadedExtensions() as $instance) {
         foreach ($newRoutes as $endpoint => $methods) {
             $endpoint = '/ext/'. $instance::bundleId. $endpoint;
             foreach ($methods as $k => &$v) {
-                $v[3] = true; // Mark extension method
+                // Mark as extension method
+                $v[3] = MTT_API_ENDPOINT_OWNER_EXTENSION;
             }
             $endpoints[$endpoint] = $methods;
         }
     }
 }
 
-$req = new ApiRequest();
+
+$req = ApiRequest::instance();
+
+# All API requests have to check a CSRF token, except only this. //TODO: re-make
+if ($req->path !== '/session' && $req->path !== '/cp/backup/downloadLink') {
+    check_token();
+}
+
+# Control Panel API routes (lazy loading of classes)
+if (substr($req->path, 0, 4) === '/cp/') {
+    if (defined('MTT_DEMO')) {
+        (new JsonApiResponse([ 'ok'=>true, 'msg' => __('demo_mode', true) ], 200))->exit();
+    }
+    ControlPanelApiController::mergeEndpoints($endpoints);
+}
+
+$req->username = ''; //FIXME: !!!
+$req->setUserId( userId() ?? 0 );
+
 $response = new ApiResponse();
 $executed = false;
 $data = null;
 
 foreach ($endpoints as $search => $methods) {
     $m = array();
-    if (preg_match("#^$search$#", $req->path, $m)) {
-        $classDescr = $methods[$req->method] ?? null;
-        // check if http method is supported for path
-        if ( is_null($classDescr) ) {
-            $response->htmlContent("Unknown method for resource", 500)
-                ->exit();
-        }
-        if ( !is_array($classDescr) || count($classDescr) < 2) {
-            $response->htmlContent("Incorrect method definition", 500)
-                ->exit();
-        }
-        // check if class method exists
-        $class = $classDescr[0];
-        $classMethod = $classDescr[1];
-        $isExtMethod = $classDescr[3] ?? false;
-        if ($isExtMethod) {
-            if (false == ($classDescr[2] ?? false)) { //TODO: describe $classDescr[2]
-                // By default all extension methods require write access rights
-                checkWriteAccess();
-            }
-        }
-        $param = null;
-        if (count($m) >= 2) {
-            $param = $m[1];
-        }
-        if (method_exists($class, $classMethod)) { // test for static with ReflectionMethod?
-            if ($req->method != 'GET' && $req->contentType == 'application/json') {
-                if ($req->decodeJsonBody() === false) {
-                    $response->htmlContent("Failed to parse JSON body", 500)
-                        ->exit();
-                }
-            }
-            $instance = new $class($req, $response);
-            $instance->$classMethod($param);
-            $executed = true;
-            break;
-        }
-        else {
-            if (MTT_DEBUG) {
-                $response->htmlContent("Class method $class:$classMethod() not found", 405)
-                    ->exit();
-            }
-            $response->htmlContent("Class method not found", 405)
-                ->exit();
+    if (!preg_match("#^$search$#", $req->path, $m)) {
+        continue;
+    }
+
+    $classDescr = $methods[$req->method] ?? null;
+    // check if http method is supported for path
+    if ( is_null($classDescr) ) {
+        (new ErrorApiResponse("Unknown method for resource", 500))->exit();
+    }
+    if ( !is_array($classDescr) || count($classDescr) < 2) {
+        (new ErrorApiResponse("Incorrect method definition", 500))->exit();
+    }
+
+    // check if class method exists
+    $class = $classDescr[0];
+    $classMethod = $classDescr[1];
+    $endpointOwner = $classDescr[3] ?? MTT_API_ENDPOINT_OWNER_GENERAL;
+    if (MTT_API_ENDPOINT_OWNER_EXTENSION === $endpointOwner) {
+        if (false == ($classDescr[2] ?? false)) { //TODO: describe $classDescr[2]
+            // By default all extension methods require write access rights
+            checkWriteAccess();
         }
     }
+    else if (MTT_API_ENDPOINT_OWNER_CONTROLPANEL === $endpointOwner) {
+        if (!is_logged() || !is_admin()) {
+            (new ErrorApiResponse("Access denied. Admin only.", 403))->exit();
+        }
+    }
+
+    // method can get one argument //TODO: pass args via ApiRequest
+    $param = null;
+    if (count($m) >= 2) {
+        $param = $m[1];
+    }
+
+    // call it
+    if (method_exists($class, $classMethod)) { // test for static with ReflectionMethod?
+        if ($req->method != 'GET' && $req->contentType == 'application/json') {
+            if ($req->decodeJsonBody() === false) {
+                (new ErrorApiResponse("Failed to parse JSON body", 500))->exit();
+            }
+        }
+        $instance = new $class($req, $response);
+        $instance->$classMethod($param);
+        $executed = true;
+        break;
+    }
+    else {
+        if (MTT_DEBUG) {
+            (new ErrorApiResponse("Class method $class:$classMethod() not found", 405))->exit();
+        }
+        (new ErrorApiResponse("Class method not found", 405))->exit();
+    }
+
 }
 
 if (!$executed) {
     if (MTT_DEBUG) {
-        $response->htmlContent("Unknown endpoint: {$req->method} {$req->path}", 404)
-            ->exit();
+        (new ErrorApiResponse("Unknown endpoint: {$req->method} {$req->path}", 404))->exit();
     }
-    $response->htmlContent("Unknown endpoint", 404);
+    (new ErrorApiResponse("Unknown endpoint", 404))->exit();
 }
 $response->exit();
 
@@ -192,37 +225,113 @@ function myExceptionHandler(Throwable $e)
 
 function checkReadAccess(?int $listId = null)
 {
-    check_token();
-    $db = DBConnection::instance();
-    if (is_logged()) return true;
-    if ($listId !== null)
-    {
-        $id = $db->sq("SELECT id FROM {$db->prefix}lists WHERE id=? AND published=1", array($listId));
-        if ($id) return;
+    if (is_null($listId)) {
+        $req = ApiRequest::instance();
+        if (!$req->userId() && !is_logged())
+            ErrorApiResponse::exitWithMessage(__("denied"), 403);
     }
-    http_response_code(403);
-    jsonExit( array('total'=>0, 'list'=>array(), 'denied'=>1) );
+    else if ($listId === -1) {
+        if (!is_logged())
+            ErrorApiResponse::exitWithMessage(__("denied"), 403);
+    }
+    else
+    {
+        $repo = new ListRepo(DBConnection::instance());
+        $list = $repo->findRealListById($listId);
+        if (!$list) {
+            if (is_logged())
+                ErrorApiResponse::exitWithMessage(__("listNotFound"), 404);
+            else
+                ErrorApiResponse::exitWithMessage(__("denied"), 403);
+        }
+        if (!canReadList($list))
+            ErrorApiResponse::exitWithMessage(__("denied"), 403);
+    }
 }
 
 function checkWriteAccess(?int $listId = null)
 {
-    check_token();
-    if (haveWriteAccess($listId)) return;
-    http_response_code(403);
-    jsonExit( array('total'=>0, 'list'=>array(), 'denied'=>1) );
+    if (haveWriteAccess($listId))
+        return;
+    (new JsonApiResponse([ 'ok'=>false, 'total'=>0, 'list'=>[], 'denied'=>1 ], 403))->exit();
+}
+
+function checkAndGetListForWrite(int $listId): AbstractTaskList
+{
+    $repo = new ListRepo(DBConnection::instance());
+
+    $list = ($listId === -1) ? $repo->alltasksListByUserId(userId()) : $repo->findRealListById($listId);
+    if (!$list) {
+        if (is_logged())
+            ErrorApiResponse::exitWithMessage(__("listNotFound"), 404);
+        else
+            ErrorApiResponse::exitWithMessage(__("denied"), 403);
+    }
+    if (!canWriteToList($list))
+        ErrorApiResponse::exitWithMessage(__("denied"), 403);
+
+    return $list;
 }
 
 function haveWriteAccess(?int $listId = null) : bool
 {
-    if (is_readonly()) {
+    if (!is_logged())
         return false;
-    }
+
+    # currently a logged user have write access to own lists only
+    $req = ApiRequest::instance();
+    $reqUserId = $req->userId();
+    if (!$reqUserId || userId() != $reqUserId)
+        return false;
+
     // check list exist
     if ($listId !== null && $listId != -1)
     {
         $db = DBConnection::instance();
-        $count = $db->sq("SELECT COUNT(*) FROM {$db->prefix}lists WHERE id=?", array($listId));
-        if (!$count) return false;
+        $count = $db->sq("SELECT COUNT(*) FROM {$db->prefix}lists WHERE id=? AND user_id=?",
+            array($listId, $reqUserId));
+        if (!$count)
+            return false;
     }
     return true;
+}
+
+
+class ControlPanelApiController
+{
+    /**
+     *
+     * @return array<MTTControlPanelHttpApiExtender>
+     */
+    static function registeredClasses(): array
+    {
+        require_once(MTTINC. 'api/BackupController.php');
+        require_once(MTTINC. 'api/UpdaterController.php');
+
+        return [
+            MTTBackup\BackupController::class,
+            MTTUpdater\UpdaterController::class,
+        ];
+    }
+
+    static function mergeEndpoints(array &$a)
+    {
+        foreach (self::registeredClasses() as $class)
+        {
+            if ( ! is_a($class, MTTControlPanelHttpApiExtender::class, true) ) {
+                continue;
+            }
+
+            $endpoints = $class::extendControlPanelHttpApi();
+            foreach ($endpoints as $endpoint => $methods) {
+                $endpoint = '/cp'. $endpoint;
+                // Mark as control panel methods (admin check needed)
+                foreach ($methods as $k => &$v) {
+                    $v[3] = MTT_API_ENDPOINT_OWNER_CONTROLPANEL;
+                }
+                $a[$endpoint] = $methods;
+            }
+        }
+    }
+
 }

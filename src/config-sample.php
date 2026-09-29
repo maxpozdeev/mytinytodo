@@ -7,18 +7,15 @@
 */
 
 #define("MTT_DB_TYPE", "sqlite");
-
 define("MTT_DB_HOST", "localhost");
-
 define("MTT_DB_NAME", "mytinytodo");
-
 define("MTT_DB_USER", "mtt");
-
 define("MTT_DB_PASSWORD", "mtt");
-
 define("MTT_DB_PREFIX", "");
-
 // set mysqli if needed
 define("MTT_DB_DRIVER", "");
+
+// Define this constant for single user setup like in v1.x without password protection
+#define("MTT_MULTIUSER", 0);
 
 define("MTT_SALT", "Put random text here");

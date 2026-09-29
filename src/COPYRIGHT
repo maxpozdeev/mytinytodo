@@ -16,7 +16,7 @@ https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 myTinyTodo
 --------------
 Url:        https://www.mytinytodo.net/
-Copyright:  2009-2011,2019-2025 Max Pozdeev <maxpozdeev@gmail.com>
+Copyright:  2009-2011,2019-2026 Max Pozdeev <maxpozdeev@gmail.com>
 License:    GPL version 2 or any later (see LICENSE file)
 
 
@@ -50,6 +50,7 @@ License:    MIT license. Compatible with GNU GPL.
 
 Other libraries (in includes/vendor)
 ----------------------------------------------
+phpmailer/phpmailer
 symfony/polyfill-intl-normalizer
 league/commonmark
 

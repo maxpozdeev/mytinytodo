@@ -1,29 +1,12 @@
-# For REST API in Apache
+# myTinyTodo Setup
+# Enable clean (user-frendly) URLS.
 #<IfModule mod_rewrite.c>
-#    RewriteEngine On
-#    RewriteCond %{REQUEST_FILENAME} !-f
-#    RewriteCond %{REQUEST_FILENAME} !-d
-#    RewriteRule ^api/(.*)$ api.php/$1 [L,QSA]
+#  RewriteEngine On
+#  RewriteCond %{REQUEST_FILENAME} !-f
+#  RewriteCond %{REQUEST_FILENAME} !-d
+#  RewriteRule ^api/.*$ api.php [L]
+#  RewriteCond %{REQUEST_FILENAME} !-f
+#  RewriteCond %{REQUEST_FILENAME} !-d
+#  RewriteRule . index.php [L]
 #</IfModule>
-#<Limit GET POST PUT DELETE>
-#  Allow from all
-#</Limit>
-
-
-# In Nginx set something like this:
-
-# Deny access to some files and folders
-#location ~ ^/(db|includes)/ {
-#    deny all;
-#}
-#location ~ /\.ht {
-#    deny all;
-#}
-#location ~* ^/ext/.*\.(json|md)$ {
-#    deny all;
-#}
-
-# Optional
-# location /api/ {
-#    rewrite ^/api/(.*) /api.php/$1 last;
-# }
+# END myTinyTodo Setup

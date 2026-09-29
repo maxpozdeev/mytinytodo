@@ -2,15 +2,19 @@
 
 /*
     This file is a part of myTinyTodo.
-    (C) Copyright 2009-2011,2020-2025 Max Pozdeev <maxpozdeev@gmail.com>
+    (C) Copyright 2009-2011,2020-2026 Max Pozdeev <maxpozdeev@gmail.com>
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
-// Can be used to upgrade database from myTinyTodo v1.4 or later
-$lastVer = '1.8';
+// Minimal supported version of Mysql is 5.7.9
+// Minimal supported version of Maria DB is 10.2.2
+// Minimal supported version of Postgres is 10
 
-if (version_compare(PHP_VERSION, '7.2.0') < 0) {
-    die("PHP 7.2 or above is required");
+// Can be used to upgrade database from myTinyTodo v1.7 or later
+$lastVer = '2.0';
+
+if (PHP_VERSION_ID < 70400) {
+    die("PHP 7.4 or above is required");
 }
 
 if (getenv('MTT_ENABLE_DEBUG') == 'YES') {
@@ -25,44 +29,38 @@ else {
 
 if (!defined('MTTPATH')) define('MTTPATH', dirname(__FILE__) .'/');
 if (!defined('MTTINC'))  define('MTTINC', MTTPATH. 'includes/');
+require_once(MTTINC. 'vars.php');
 require_once(MTTINC. 'common.php');
 require_once(MTTINC. 'class.dbconnection.php');
 require_once(MTTINC. 'class.config.php');
-require_once(MTTINC. 'version.php');
 
 $db = null;
 $ver = '';
 $error = '';
-$passwordAskedV14 = false;
+$dbtype = '';
 
 $csrfToken = setupToken();
-if ($csrfToken == '' || strlen($csrfToken) != 36) {
+if ($csrfToken == '' || strlen($csrfToken) != 48) {
     $csrfToken = setSetupToken();
 }
 $csrfToken = htmlspecialchars($csrfToken);
 
+$mttVersion = htmlspecialchars(MTTVersion::VERSION);
+
+echo <<<EOD
+<html>
+<head>
+  <meta name='robots' content='noindex,nofollow'>
+  <title>myTinyTodo Setup (v$mttVersion )</title>
+</head>
+<body>
+<h1>myTinyTodo Setup <span class=version>v$mttVersion</span></h1>
+EOD;
+
+
 $configExists = file_exists(MTTPATH. 'config.php');
-$oldConfigExists = file_exists(MTTPATH. 'db/config.php');
-
-
-$mttVersion = htmlspecialchars(mytinytodo\Version::VERSION);
-echo "<html><head><meta name='robots' content='noindex,nofollow'><title>myTinyTodo $mttVersion Setup</title></head><body>";
-echo "<big><b>myTinyTodo $mttVersion Setup</b></big><br><br>";
-
-if (!$configExists && $oldConfigExists)
-{
-    // First we need to migrate database config of db v1.4
-    require_once(MTTPATH. 'db/config.php');
-    askPasswordV14($config, $csrfToken);
-    $passwordAskedV14 = true;
-    Config::loadConfigV14($config);
-    tryToSaveDBConfig();
-    $configExists = true;
-}
-
 if ($configExists)
 {
-    // No need to migrate database config
     require_once(MTTPATH. 'config.php');
     $db = testConnect($error);
     if (!$db) {
@@ -83,28 +81,23 @@ if ($configExists)
         // Don't load settings from database in init.php
         Config::$noDatabase = true;
     }
-    else if (version_compare($ver, '1.4') < 0) {
-        // Very old or previously failed while install
+    else if (version_compare($ver, '1.7') < 0) {
+        // Old or previously failed while install
         exitMessage(htmlspecialchars("Can not update. Unsupported database version ($ver)."));
     }
-    else if ($ver == '1.4') {
-        // Need to upgrade. Do not ask for old password
-        Config::$noDatabase = true; //don't load settings from db
-        require_once(MTTPATH. 'db/config.php');
-        if ( !$passwordAskedV14 ) {
-            askPasswordV14($config, $csrfToken);
-            $passwordAskedV14 = true;
-        }
-        Config::loadConfigV14($config);
-        unset($config);
-        DBConnection::init($db);
+    else {
+        // 1.7, 1.8
+        $dontStartSession = true;
     }
 
     require_once('./init.php');
-    if ( !Config::$noDatabase && !is_logged() ) {
+
+    if ($ver != '' && isset($dontStartSession)) {
+        askPasswordV18($csrfToken);
+    }
+    else if ( !Config::$noDatabase && !is_logged() ) {
         die("Access denied!<br> Disable password protection or Log in.");
     }
-
 }
 
 if ($ver == '')
@@ -128,7 +121,7 @@ if ($ver == '')
             <input type=hidden name=stoken value='$csrfToken'>
             <label><input type=radio name=db_type value=sqlite checked=checked onclick=\"document.getElementById('dbsettings').style.display='none'\"> SQLite</label><br><br>
             <label><input type=radio name=db_type value=mysql onclick=\"document.getElementById('dbsettings').style.display=''\"> MySQL</label><br><br>
-            <label><input type=radio name=db_type value=postgres onclick=\"document.getElementById('dbsettings').style.display=''\"> PostgreSQL (beta)</label><br>
+            <label><input type=radio name=db_type value=postgres onclick=\"document.getElementById('dbsettings').style.display=''\"> PostgreSQL</label><br>
             <div id='dbsettings' style='display:none; margin-left:30px;'><br><table>
             <tr><td>Host:</td><td><input name=db_host value=localhost></td></tr>
             <tr><td>Database:</td><td><input name=db_name value=mytinytodo></td></tr>
@@ -143,24 +136,24 @@ if ($ver == '')
         checkSetupToken();
         # Save configuration
         $dbtype = $_POST['db_type'] ?? '';
-        if ($dbtype != 'mysql' && $dbtype != 'postgres' && $dbtype != 'sqlite') {
+        if (!in_array($dbtype, ['sqlite', 'mysql', 'postgres'])) {
             exitMessage("Unknown database type $dbtype");
         }
-        Config::set('db.type', $dbtype);
+        SetupDbConfig::set('db.type', $dbtype);
         if ($dbtype == 'mysql' || $dbtype == 'postgres') {
-            Config::set('db.host', _post('db_host'));
-            Config::set('db.name', _post('db_name'));
-            Config::set('db.user', _post('db_user'));
-            Config::set('db.password', _post('db_password'));
-            Config::set('db.prefix', trim(_post('db_prefix')));
+            SetupDbConfig::set('db.host', _post('db_host'));
+            SetupDbConfig::set('db.name', _post('db_name'));
+            SetupDbConfig::set('db.user', _post('db_user'));
+            SetupDbConfig::set('db.password', _post('db_password'));
+            SetupDbConfig::set('db.prefix', trim(_post('db_prefix')));
         }
-        Config::defineDbConstants();
+        SetupDbConfig::defineDbConstants();
         $db = testConnect($error);
         if (!$db) {
             exitMessage("Database connection error: ". htmlspecialchars($error));
         }
         if (defined('MTT_DB_DRIVER')) {
-            Config::set('db.driver', MTT_DB_DRIVER);
+            SetupDbConfig::set('db.driver', MTT_DB_DRIVER);
         }
         tryToSaveDBConfig();
         exitMessage("<form method=post> This will create myTinyTodo database <br><br>
@@ -174,10 +167,13 @@ if ($ver == '')
         # install database
         createAllTables($db, $dbtype);  # throws
 
-        # create default list
-        $db->ex( "INSERT INTO {$db->prefix}lists (uuid,name,d_created,taskview) VALUES (?,?,?,?)", array(generateUUID(), 'Todo', time(), 1) );
+        # create user without a password
+        $db->ex( "INSERT INTO {$db->prefix}users (id,username,name) VALUES (?,?,?)",
+            array(1, "admin", "admin") );
 
-        Config::save();
+        # create default list
+        $db->ex( "INSERT INTO {$db->prefix}lists (user_id,uuid,name,d_created,taskview) VALUES (?,?,?,?,?)",
+            array(1, generateUUID(), 'Todo', time(), 1) );
     }
     else {
         exitMessage("Unknown action");
@@ -189,7 +185,7 @@ elseif ($ver == $lastVer)
 }
 else
 {
-    if (!in_array($ver, array('1.4','1.7'))) {
+    if (!in_array($ver, array('1.8', '1.7'))) {
         exitMessage(htmlspecialchars("Can not update. Unsupported database version ($ver)."));
     }
 
@@ -204,12 +200,12 @@ else
 
     # update process
     checkSetupToken();
-    if ($ver == '1.4') {
-        update_14_17($db, $dbtype);
+    if ($ver == '1.7') {
         update_17_18($db, $dbtype);
+        update_18_20($db, $dbtype);
     }
-    elseif ($ver == '1.7') {
-        update_17_18($db, $dbtype);
+    else if ($ver == '1.8') {
+        update_18_20($db, $dbtype);
     }
 }
 
@@ -224,18 +220,12 @@ function setupToken()
 
 function setSetupToken() : string
 {
-    $token = randomString(36);
-    if (PHP_VERSION_ID < 70300) {
-        setcookie('mtt-s-token', $token, 0, url_dir(getRequestUri()). '; samesite=lax', '', false, true ) ;
-    }
-    else {
-        /** @disregard P1006 available in php 7.3 */
-        setcookie('mtt-s-token', $token, [
-            'path' => url_dir(getRequestUri()),
-            'httponly' => true,
-            'samesite' => 'lax'
-        ]);
-    }
+    $token = bin2hex(random_bytes(24));
+    setcookie('mtt-s-token', $token, [
+        'path' => url_dir(getRequestUri()),
+        'httponly' => true,
+        'samesite' => 'Strict'
+    ]);
     $_COOKIE['mtt-s-token'] = $token;
     return $token;
 }
@@ -248,57 +238,40 @@ function checkSetupToken()
     }
 }
 
-function askPasswordV14(
-    #[\SensitiveParameter]
-    array $config,
-    string $csrfToken)
+function askPasswordV18(string $csrfToken)
 {
-    if (!isset($config['password']) || $config['password'] == '') {
+    $passhash = Config::get('password');
+    if ($passhash == '') {
         return;
     }
+
     if (isset($_POST['configpassword'])) {
         checkSetupToken();
     }
-    if (isset($_COOKIE['mtt-v14token'])) {
-        if (validateTokenV14($config, $_COOKIE['mtt-v14token'])) {
+    if (isset($_COOKIE['mtt-v18token'])) {
+        if (validateTokenV18(['password'=>$passhash], $_COOKIE['mtt-v18token'])) {
             return; //authorized
         }
-        if (MTT_DEBUG) error_log("Failed validation of v14token");
+        if (MTT_DEBUG)
+            error_log("Failed validation of v18token");
     }
-    if ( !isset($_POST['configpassword']) || $_POST['configpassword'] != $config['password'] ) {
+
+    if ( !isset($_POST['configpassword']) || !isPasswordEqualsToHash($_POST['configpassword'], $passhash) ) {
         exitMessage("Enter current password to continue.
             <form method=post><input type=hidden name=stoken value='$csrfToken'>
             <input type=password name=configpassword> <input type=submit value=' Continue '></form>");
     }
-    $token = generateTokenV14($config);
-    if (PHP_VERSION_ID < 70300) {
-        setcookie('mtt-v14token', $token, 0, url_dir(getRequestUri()). '; samesite=lax', '', false, true ) ;
-    }
-    else {
-        /** @disregard P1006 available in php 7.3 */
-        setcookie('mtt-v14token', $token, [
-            'path' => url_dir(getRequestUri()),
-            'httponly' => true,
-            'samesite' => 'lax'
-        ]);
-    }
+    $token = generateTokenV18(['password'=>$passhash]);
+
+    setcookie('mtt-v18token', $token, [
+        'path' => url_dir(getRequestUri()),
+        'httponly' => true,
+        'samesite' => 'Strict'
+    ]);
 }
 
-function generateTokenV14(
-    #[\SensitiveParameter]
-    array $config) : ?string
-{
-    if (!isset($config['password']) || $config['password'] == '') {
-        return null;
-    }
-    $payload = base64_encode(json_encode([
-        'exp' => time() + 300   # 5 min lifetime
-    ]));
-    return $payload. '.'. base64_encode(hash_hmac('sha256', $payload, $config['password'], true));
-}
-
-function validateTokenV14(
-    #[\SensitiveParameter]
+function validateTokenV18(
+    #[SensitiveParameter]
     array $config,
     string $token) : bool
 {
@@ -323,259 +296,22 @@ function validateTokenV14(
     return true;
 }
 
-
-function createAllTables($db, $dbtype)
+function generateTokenV18(
+    #[SensitiveParameter]
+    array $config ) : ?string
 {
-    if ($dbtype == 'mysql') {
-        createMysqlTables($db);
+    if (!isset($config['password']) || $config['password'] == '') {
+        return null;
     }
-    else if ($dbtype == 'postgres') {
-        createPostgresTables($db);
-    }
-    else {
-        createSqliteTables($db);
-    }
-}
-
-/* ===== mysql ========================================================= */
-function createMysqlTables(Database_Abstract $db)
-{
-    //$collation = hasMysqlUnicode520($db) ? 'utf8mb4_unicode_520_ci' : 'utf8mb4_unicode_ci';
-    $collation = 'utf8mb4_unicode_520_ci';
-
-    //TODO: use BIGINT for time() timestamp to avoid the Year-2038 problem (2106 here)
-
-    // Mysql does not support transactions while executing DDL
-    $db->ex(
-"CREATE TABLE {$db->prefix}lists (
-    `id` INT UNSIGNED NOT NULL auto_increment,
-    `uuid` CHAR(36) CHARACTER SET latin1 NOT NULL default '',
-    `ow` INT NOT NULL default 0,
-    `name` VARCHAR(250) NOT NULL default '',
-    `d_created` INT UNSIGNED NOT NULL default 0,
-    `d_edited` INT UNSIGNED NOT NULL default 0,
-    `sorting` TINYINT UNSIGNED NOT NULL default 0,
-    `published` TINYINT UNSIGNED NOT NULL default 0,
-    `taskview` INT UNSIGNED NOT NULL default 0,
-    `extra` TEXT,
-    PRIMARY KEY(`id`),
-    UNIQUE KEY(`uuid`)
-) CHARSET=utf8mb4 COLLATE $collation ");
-
-
-    $db->ex(
-"CREATE TABLE {$db->prefix}todolist (
-    `id` INT UNSIGNED NOT NULL auto_increment,
-    `uuid` CHAR(36) CHARACTER SET latin1 NOT NULL default '',
-    `list_id` INT UNSIGNED NOT NULL default 0,
-    `d_created` INT UNSIGNED NOT NULL default 0,   /* time() timestamp */
-    `d_completed` INT UNSIGNED NOT NULL default 0, /* time() timestamp */
-    `d_edited` INT UNSIGNED NOT NULL default 0,    /* time() timestamp */
-    `compl` TINYINT UNSIGNED NOT NULL default 0,
-    `title` VARCHAR(250) NOT NULL,
-    `note` TEXT,
-    `prio` TINYINT NOT NULL default 0,          /* priority -,0,+ */
-    `ow` INT NOT NULL default 0,                /* order weight */
-    `duedate` DATE default NULL,
-    PRIMARY KEY(`id`),
-    KEY(`list_id`),
-    UNIQUE KEY(`uuid`)
-) CHARSET=utf8mb4 COLLATE $collation ");
-
-    // Max length of varchar of utf8mb4 with UNIQUE index is 191 until Mysql 5.7 and MariaDB 10.2
-    $db->ex(
-"CREATE TABLE {$db->prefix}tags (
-    `id` INT UNSIGNED NOT NULL auto_increment,
-    `name` VARCHAR(250) NOT NULL default '',
-    PRIMARY KEY(`id`),
-    UNIQUE KEY `name` (`name`)
-) CHARSET=utf8mb4 COLLATE $collation ");
-
-
-    $db->ex(
-"CREATE TABLE {$db->prefix}tag2task (
-    `tag_id` INT UNSIGNED NOT NULL,
-    `task_id` INT UNSIGNED NOT NULL,
-    `list_id` INT UNSIGNED NOT NULL,
-    KEY(`tag_id`),
-    KEY(`task_id`),
-    KEY(`list_id`)  /* for tagcloud */
-) CHARSET=utf8mb4 COLLATE $collation ");
-
-
-    $db->ex(
-"CREATE TABLE {$db->prefix}settings (
-    `param_key`   VARCHAR(250) CHARACTER SET latin1 NOT NULL default '',
-    `param_value` TEXT,
-    UNIQUE KEY `param_key` (`param_key`)
-) CHARSET=utf8mb4 COLLATE $collation ");
-
-
-    $db->ex(
-"CREATE TABLE {$db->prefix}sessions (
-    `id`          VARCHAR(64) CHARACTER SET latin1 NOT NULL default '',  /* upto 64 bytes for sha256 */
-    `data`        TEXT,
-    `last_access` INT UNSIGNED NOT NULL default 0,  /* time() timestamp */
-    `expires`     INT UNSIGNED NOT NULL default 0,  /* time() timestamp */
-    UNIQUE KEY `id` (`id`)
-) CHARSET=utf8mb4 COLLATE $collation ");
+    $payload = base64_encode(json_encode([
+        'exp' => time() + 120   # 2 min lifetime
+    ]));
+    return $payload. '.'. base64_encode(hash_hmac('sha256', $payload, $config['password'], true));
 }
 
 
-/* ===== postgres =============================================== */
-function createPostgresTables(Database_Abstract $db)
+function databaseVersion(AbstractDatabase $db): string
 {
-    //TODO: use BIGINT for time() timestamp to avoid the Year-2038 problem
-
-    $db->ex(
-"CREATE TABLE {$db->prefix}lists (
-    id INTEGER NOT NULL GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
-    uuid CHAR(36) NOT NULL default '',
-    ow INTEGER NOT NULL default 0,
-    name VARCHAR(250) NOT NULL default '',
-    d_created INTEGER NOT NULL default 0,
-    d_edited INTEGER NOT NULL default 0,
-    sorting SMALLINT NOT NULL default 0,
-    published SMALLINT NOT NULL default 0,
-    taskview INTEGER NOT NULL default 0,
-    extra TEXT
-) ");
-    $db->ex("CREATE UNIQUE INDEX {$db->prefix}lists_uuid ON {$db->prefix}lists (uuid)");
-
-    $db->ex(
-"CREATE TABLE {$db->prefix}todolist (
-    id INTEGER NOT NULL GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
-    uuid CHAR(36) NOT NULL default '',
-    list_id INTEGER NOT NULL default 0,
-    d_created INTEGER NOT NULL default 0,
-    d_completed INTEGER NOT NULL default 0,
-    d_edited INTEGER NOT NULL default 0,
-    compl SMALLINT NOT NULL default 0,
-    title VARCHAR(250) NOT NULL default '',
-    note TEXT default NULL,
-    prio SMALLINT NOT NULL default 0,
-    ow INTEGER NOT NULL default 0,
-    duedate DATE default NULL
-) ");
-    $db->ex("CREATE INDEX {$db->prefix}todo_list_id ON {$db->prefix}todolist (list_id)");
-    $db->ex("CREATE UNIQUE INDEX {$db->prefix}todo_uuid ON {$db->prefix}todolist (uuid)");
-
-    $db->ex(
-"CREATE TABLE {$db->prefix}tags (
-    id INTEGER NOT NULL GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
-    name VARCHAR(250) NOT NULL DEFAULT ''
-) ");
-    $db->ex("CREATE UNIQUE INDEX {$db->prefix}tags_lower_name ON {$db->prefix}tags ((LOWER(name)))");
-
-    $db->ex(
-"CREATE TABLE {$db->prefix}tag2task (
-    tag_id INTEGER NOT NULL,
-    task_id INTEGER NOT NULL,
-    list_id INTEGER NOT NULL
-) ");
-    $db->ex("CREATE INDEX {$db->prefix}tag2task_tag_id ON {$db->prefix}tag2task (tag_id)");
-    $db->ex("CREATE INDEX {$db->prefix}tag2task_task_id ON {$db->prefix}tag2task (task_id)");
-    $db->ex("CREATE INDEX {$db->prefix}tag2task_list_id ON {$db->prefix}tag2task (list_id)");
-
-    $db->ex(
-"CREATE TABLE {$db->prefix}settings (
-    param_key   VARCHAR(250) NOT NULL default '',
-    param_value TEXT
-) ");
-    $db->ex("CREATE UNIQUE INDEX {$db->prefix}settings_key ON {$db->prefix}settings (param_key)");
-
-    $db->ex(
-"CREATE TABLE {$db->prefix}sessions (
-    id          VARCHAR(64) NOT NULL default '',
-    data        TEXT,
-    last_access INTEGER NOT NULL default 0,
-    expires     INTEGER NOT NULL default 0
-) ");
-    $db->ex("CREATE UNIQUE INDEX {$db->prefix}sessions_id ON {$db->prefix}sessions (id)");
-}
-
-
-/* ===== sqlite =============================================== */
-function createSqliteTables(Database_Abstract $db)
-{
-    $db->ex(
-"CREATE TABLE {$db->prefix}lists (
-    id INTEGER PRIMARY KEY,
-    uuid CHAR(36) NOT NULL,
-    ow INTEGER NOT NULL default 0,
-    name VARCHAR(250) NOT NULL,
-    d_created INTEGER UNSIGNED NOT NULL default 0,
-    d_edited INTEGER UNSIGNED NOT NULL default 0,
-    sorting TINYINT UNSIGNED NOT NULL default 0,
-    published TINYINT UNSIGNED NOT NULL default 0,
-    taskview INTEGER UNSIGNED NOT NULL default 0,
-    extra TEXT
-) ");
-
-    $db->ex("CREATE UNIQUE INDEX lists_uuid ON {$db->prefix}lists (uuid)");
-
-    $db->ex(
-"CREATE TABLE {$db->prefix}todolist (
-    id INTEGER PRIMARY KEY,
-    uuid CHAR(36) NOT NULL default '',
-    list_id INTEGER UNSIGNED NOT NULL default 0,
-    d_created INTEGER UNSIGNED NOT NULL default 0,
-    d_completed INTEGER UNSIGNED NOT NULL default 0,
-    d_edited INTEGER UNSIGNED NOT NULL default 0,
-    compl TINYINT UNSIGNED NOT NULL default 0,
-    title VARCHAR(250) NOT NULL default '' COLLATE UTF8CI,
-    note TEXT COLLATE UTF8CI default NULL,
-    prio TINYINT NOT NULL default 0,
-    ow INTEGER NOT NULL default 0,
-    duedate DATE default NULL
-) ");
-    $db->ex("CREATE INDEX todo_list_id ON {$db->prefix}todolist (list_id)");
-    $db->ex("CREATE UNIQUE INDEX todo_uuid ON {$db->prefix}todolist (uuid)");
-
-
-    $db->ex(
-"CREATE TABLE {$db->prefix}tags (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name VARCHAR(250) NOT NULL DEFAULT '' COLLATE UTF8CI
-) ");
-    $db->ex("CREATE INDEX tags_name ON {$db->prefix}tags (name)"); //NB: unique in mysql
-
-
-    $db->ex(
-"CREATE TABLE {$db->prefix}tag2task (
-    tag_id INTEGER NOT NULL,
-    task_id INTEGER NOT NULL,
-    list_id INTEGER NOT NULL
-) ");
-    $db->ex("CREATE INDEX tag2task_tag_id ON {$db->prefix}tag2task (tag_id)");
-    $db->ex("CREATE INDEX tag2task_task_id ON {$db->prefix}tag2task (task_id)");
-    $db->ex("CREATE INDEX tag2task_list_id ON {$db->prefix}tag2task (list_id)");    /* for tagcloud */
-
-
-    $db->ex(
-"CREATE TABLE {$db->prefix}settings (
-    param_key   VARCHAR(250) NOT NULL default '',
-    param_value TEXT
-) ");
-
-    $db->ex("CREATE UNIQUE INDEX settings_key ON {$db->prefix}settings (param_key COLLATE NOCASE)");
-
-
-    $db->ex(
-"CREATE TABLE {$db->prefix}sessions (
-    id          VARCHAR(64) NOT NULL default '',
-    data        TEXT,
-    last_access INTEGER UNSIGNED NOT NULL default 0,
-    expires     INTEGER UNSIGNED NOT NULL default 0
-) ");
-
-    $db->ex("CREATE UNIQUE INDEX sessions_id ON {$db->prefix}sessions (id COLLATE NOCASE)");
-}
-
-
-function databaseVersion(Database_Abstract $db): string
-{
-    if ( !$db ) return '';
     if ( !$db->tableExists($db->prefix.'todolist') ) return '';
     $v = '1.0';
     if ( !$db->tableExists($db->prefix.'tags') ) return $v;
@@ -590,18 +326,20 @@ function databaseVersion(Database_Abstract $db): string
     $v = '1.4';
     if ( !$db->tableExists($db->prefix.'settings') ) return $v;
     $v = '1.7';
-    if ( $db->tableFieldExists($db->prefix.'todolist', 'tags') ) return $v;
+    if ( $db->tableFieldExists($db->prefix.'todolist', 'tags') ) return $v; # field was removed in v1.8
     $v = '1.8';
+    if ( !$db->tableExists($db->prefix.'users') ) return $v;
+    $v = '2.0';
     return $v;
 }
 
-function hasMysqlUnicode520(Database_Abstract $db): bool
+function hasMysqlUnicode520(AbstractDatabase $db): bool
 {
     $r = $db->sq("SHOW COLLATION WHERE Charset='utf8mb4' and Collation='utf8mb4_unicode_520_ci'");
     return $r ? true : false;
 }
 
-function exitMessage($s)
+function exitMessage(string $s)
 {
     echo $s;
     printFooter();
@@ -621,15 +359,15 @@ function tryToSaveDbConfig()
     if (!is_writable(MTTPATH.'config.php')) {
         exitMessage("Database connection config file ('config.php') is not writable. You need to edit it manually, set contents to this and run setup once more. <br><br> \n".
             "<textarea id='contents' style='width:90%; min-height:300px;'>\n".
-            htmlspecialchars(Config::dbConfigAsFileContents()).
+            htmlspecialchars(SetupDbConfig::dbConfigAsFileContents()).
             "</textarea>\n".
             "<script type='text/javascript'>document.getElementById('contents').select();</script>"
         );
     }
-    Config::saveDbConfig();
+    SetupDbConfig::saveDbConfig();
 }
 
-function testConnect(&$error)
+function testConnect(string &$error): ?AbstractDatabase
 {
     $db = null;
     try
@@ -672,7 +410,7 @@ function testConnect(&$error)
                 if ($hasMysqli) {
                     require_once(MTTINC. 'class.db.mysqli.php');
                     if (!defined('MTT_DB_DRIVER')) define('MTT_DB_DRIVER', 'mysqli');
-                    $db = new Database_Mysqli();
+                    $db = new MysqliDatabase();
                 }
                 else {
                     throw new Exception("Required PHP extension 'MySQLi' is not installed.");
@@ -682,7 +420,7 @@ function testConnect(&$error)
                 if ($hasPDO) {
                     require_once(MTTINC. 'class.db.mysql.php');
                     if (!defined('MTT_DB_DRIVER')) define('MTT_DB_DRIVER', ''); // set pdo?
-                    $db = new Database_Mysql();
+                    $db = new MysqlDatabase();
                 }
                 else {
                     throw new Exception("Required PHP extension 'PDO_MySQL' is not installed.");
@@ -711,7 +449,7 @@ function testConnect(&$error)
                 if (!defined($c)) throw new Exception("$c is not defined");
             }
 
-            $db = new Database_Postgres;
+            $db = new PostgresDatabase;
             $db->connect([
                 'host' => MTT_DB_HOST,
                 'user' => MTT_DB_USER,
@@ -730,8 +468,8 @@ function testConnect(&$error)
             if (!is_writable(MTTPATH. 'db/')) {
                 throw new Exception("database directory ('db') is not writable");
             }
-            require_once(MTTINC. 'class.db.sqlite3.php');
-            $db = new Database_Sqlite3;
+            require_once(MTTINC. 'class.db.sqlite.php');
+            $db = new SqliteDatabase;
             $db->connect([
                 'filename' => MTTPATH. 'db/todolist.db'
             ]);
@@ -772,7 +510,7 @@ function myExceptionHandler(Throwable $e)
     exit;
 }
 
-function databaseTypeName(Database_Abstract $db)
+function databaseTypeName(AbstractDatabase $db): string
 {
     switch ($db::DBTYPE) {
         case DBConnection::DBTYPE_MYSQL: return "MySQL";
@@ -783,91 +521,360 @@ function databaseTypeName(Database_Abstract $db)
 }
 
 
-### update v1.4 to v1.7 ##########
-function update_14_17(Database_Abstract $db, $dbtype)
+
+function createAllTables(AbstractDatabase $db, string $dbtype): void
 {
-    $db->ex("BEGIN");
-
-    if($dbtype=='mysql')
-    {
-        $db->ex("ALTER TABLE {$db->prefix}lists ADD `extra` TEXT");
-
-        # increase the length of list and tag name
-        # (not applicable to sqlite because it uses VARCHAR fields of any length as TEXT)
-        $db->ex("ALTER TABLE {$db->prefix}todolist CHANGE `tags` `tags` VARCHAR(2000) NOT NULL default '' ");
-        $db->ex("ALTER TABLE {$db->prefix}tags CHANGE `name` `name` VARCHAR(250) NOT NULL default '' ");
-        $db->ex("ALTER TABLE {$db->prefix}lists CHANGE `name` `name` VARCHAR(250) NOT NULL default '' ");
-
-        # convert charset to utf8mb4
-
-        $db->ex("ALTER TABLE {$db->prefix}lists    CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
-        $db->ex("ALTER TABLE {$db->prefix}todolist CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
-        $db->ex("ALTER TABLE {$db->prefix}tags     CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
-        $db->ex("ALTER TABLE {$db->prefix}tag2task CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
-
-        # create settings table
-
-        $db->ex(
-"CREATE TABLE {$db->prefix}settings (
- `param_key`   VARCHAR(250) NOT NULL default '',
- `param_value` TEXT,
-UNIQUE KEY `param_key` (`param_key`)
-) CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ");
-
-        # create sessions table
-
-        $db->ex(
-"CREATE TABLE {$db->prefix}sessions (
- `id`          VARCHAR(64) NOT NULL default '',
- `data`        TEXT,
- `last_access` INT UNSIGNED NOT NULL default 0,
- `expires`     INT UNSIGNED NOT NULL default 0,
-UNIQUE KEY `id` (`id`)
-) CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ");
-
+    if ($dbtype == 'mysql') {
+        createMysqlTables($db);
     }
-
-    else #sqlite
-    {
-        $db->ex("ALTER TABLE {$db->prefix}lists ADD extra TEXT");
-
-        # settings
-
-        $db->ex(
-"CREATE TABLE {$db->prefix}settings (
- param_key   VARCHAR(100) NOT NULL default '',
- param_value TEXT
-) ");
-        $db->ex("CREATE UNIQUE INDEX settings_key ON {$db->prefix}settings (param_key COLLATE NOCASE)");
-
-        # sessions
-
-        $db->ex(
-"CREATE TABLE {$db->prefix}sessions (
- id          VARCHAR(250) NOT NULL default '',
- data        TEXT,
- last_access INTEGER UNSIGNED NOT NULL default 0,
- expires     INTEGER UNSIGNED NOT NULL default 0
-) ");
-
-        $db->ex("CREATE UNIQUE INDEX sessions_id ON {$db->prefix}sessions (id COLLATE NOCASE)");
+    else if ($dbtype == 'postgres') {
+        createPostgresTables($db);
     }
-
-    $db->ex("COMMIT");
-
-    Config::save();
-    Config::saveDbConfig();
+    else {
+        createSqliteTables($db);
+    }
 }
-### end of 1.7 #####
+
+
+
+/* ===== mysql ============================================================= */
+
+function createMysqlTables(AbstractDatabase $db)
+{
+    //$collation = hasMysqlUnicode520($db) ? 'utf8mb4_unicode_520_ci' : 'utf8mb4_unicode_ci';
+    $collation = 'utf8mb4_unicode_520_ci';
+
+    // Mysql does not support transactions while executing DDL
+    $db->ex(
+"CREATE TABLE {$db->prefix}lists (
+    `id` INT UNSIGNED NOT NULL auto_increment,
+    `uuid` CHAR(36) CHARACTER SET latin1 NOT NULL default '',
+    `ow` INT NOT NULL default 0,
+    `name` VARCHAR(250) NOT NULL default '',
+    `user_id` INT UNSIGNED NOT NULL default 0,
+    `d_created` BIGINT UNSIGNED NOT NULL default 0,
+    `d_edited` BIGINT UNSIGNED NOT NULL default 0,
+    `sorting` TINYINT UNSIGNED NOT NULL default 0,
+    `published` TINYINT UNSIGNED NOT NULL default 0,
+    `taskview` INT UNSIGNED NOT NULL default 0,
+    `extra` TEXT default NULL,
+    PRIMARY KEY(`id`),
+    UNIQUE KEY(`uuid`),
+    KEY(`user_id`)
+) CHARSET=utf8mb4 COLLATE $collation ");
+
+
+    $db->ex(
+"CREATE TABLE {$db->prefix}todolist (
+    `id` INT UNSIGNED NOT NULL auto_increment,
+    `uuid` CHAR(36) CHARACTER SET latin1 NOT NULL default '',
+    `list_id` INT UNSIGNED NOT NULL default 0,
+    `parent_id` INT UNSIGNED NOT NULL default 0,
+    `d_created` BIGINT UNSIGNED NOT NULL default 0,   /* time() timestamp */
+    `d_completed` BIGINT UNSIGNED NOT NULL default 0, /* time() timestamp */
+    `d_edited` BIGINT UNSIGNED NOT NULL default 0,    /* time() timestamp */
+    `compl` TINYINT UNSIGNED NOT NULL default 0,
+    `title` VARCHAR(250) NOT NULL,
+    `note` MEDIUMTEXT default NULL,
+    `prio` TINYINT NOT NULL default 0,          /* priority -,0,+ */
+    `ow` INT NOT NULL default 0,                /* order weight */
+    `duedate` DATE default NULL,
+    `extra` TEXT default NULL,
+    PRIMARY KEY(`id`),
+    KEY(`list_id`),
+    UNIQUE KEY(`uuid`)
+) CHARSET=utf8mb4 COLLATE $collation ");
+
+    // Max length of varchar of utf8mb4 with UNIQUE index is 191 until Mysql 5.7.9 and MariaDB 10.2.2
+    // since then innodb_default_row_format = DYNAMIC, https://dev.mysql.com/doc/relnotes/mysql/5.7/en/news-5-7-9.html
+    $db->ex(
+"CREATE TABLE {$db->prefix}tags (
+    `id` INT UNSIGNED NOT NULL auto_increment,
+    `user_id` INT UNSIGNED NOT NULL default 0,
+    `name` VARCHAR(250) NOT NULL default '',
+    PRIMARY KEY(`id`),
+    UNIQUE KEY `name` (`name`),
+    KEY(`user_id`)
+) CHARSET=utf8mb4 COLLATE $collation ");
+
+
+    $db->ex(
+"CREATE TABLE {$db->prefix}tag2task (
+    `tag_id` INT UNSIGNED NOT NULL,
+    `task_id` INT UNSIGNED NOT NULL,
+    `list_id` INT UNSIGNED NOT NULL,
+    KEY(`tag_id`),
+    KEY(`task_id`),
+    KEY(`list_id`)  /* for tagcloud */
+) CHARSET=utf8mb4 COLLATE $collation ");
+
+
+    $db->ex(
+"CREATE TABLE {$db->prefix}users (
+    `id` INT UNSIGNED NOT NULL auto_increment,
+    `username` VARCHAR(250) NOT NULL default '',
+    `email` VARCHAR(250) NOT NULL default '',
+    `name` VARCHAR(250) NOT NULL default '',
+    `pwhash` VARCHAR(250) NOT NULL default '',
+    `pwtoken` VARCHAR(250) NOT NULL default '',
+    `last_visit` DATE default NULL,
+    `extra` TEXT default NULL,
+    PRIMARY KEY(`id`),
+    UNIQUE KEY (`username`),
+    UNIQUE KEY (`email`)
+) CHARSET=utf8mb4 COLLATE $collation ");
+
+
+    $db->ex(
+"CREATE TABLE {$db->prefix}usersettings (
+    `user_id` INT UNSIGNED NOT NULL default 0,
+    `param_key` VARCHAR(250) NOT NULL default '',
+    `param_value` TEXT default NULL,
+    UNIQUE KEY (`user_id`, `param_key`)
+) CHARSET=utf8mb4 COLLATE $collation ");
+
+
+    $db->ex(
+"CREATE TABLE {$db->prefix}settings (
+    `param_key`   VARCHAR(250) CHARACTER SET latin1 NOT NULL default '',
+    `param_value` TEXT,
+    UNIQUE KEY `param_key` (`param_key`)
+) CHARSET=utf8mb4 COLLATE $collation ");
+
+
+    $db->ex(
+"CREATE TABLE {$db->prefix}sessions (
+    `id`          VARCHAR(64) CHARACTER SET latin1 NOT NULL default '',  /* upto 64 bytes for sha256 */
+    `data`        TEXT,
+    `last_access` BIGINT UNSIGNED NOT NULL default 0,  /* time() timestamp */
+    `expires`     BIGINT UNSIGNED NOT NULL default 0,  /* time() timestamp */
+    UNIQUE KEY `id` (`id`)
+) CHARSET=utf8mb4 COLLATE $collation ");
+}
+
+
+
+/* ===== postgres ========================================================= */
+
+function createPostgresTables(AbstractDatabase $db)
+{
+    $db->ex(
+"CREATE TABLE {$db->prefix}lists (
+    id INTEGER NOT NULL GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+    uuid CHAR(36) NOT NULL default '',
+    ow INTEGER NOT NULL default 0,
+    name VARCHAR(250) NOT NULL default '',
+    user_id INTEGER NOT NULL default 0,
+    d_created BIGINT NOT NULL default 0,
+    d_edited BIGINT NOT NULL default 0,
+    sorting SMALLINT NOT NULL default 0,
+    published SMALLINT NOT NULL default 0,
+    taskview INTEGER NOT NULL default 0,
+    extra TEXT
+) ");
+    $db->ex("CREATE UNIQUE INDEX {$db->prefix}lists_uuid ON {$db->prefix}lists (uuid)");
+    $db->ex("CREATE INDEX {$db->prefix}lists_user_id ON {$db->prefix}lists (user_id)");
+
+    $db->ex(
+"CREATE TABLE {$db->prefix}todolist (
+    id INTEGER NOT NULL GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+    uuid CHAR(36) NOT NULL default '',
+    list_id INTEGER NOT NULL default 0,
+    parent_id INTEGER NOT NULL default 0,
+    d_created BIGINT NOT NULL default 0,
+    d_completed BIGINT NOT NULL default 0,
+    d_edited BIGINT NOT NULL default 0,
+    compl SMALLINT NOT NULL default 0,
+    title VARCHAR(250) NOT NULL default '',
+    note TEXT default NULL,
+    prio SMALLINT NOT NULL default 0,
+    ow INTEGER NOT NULL default 0,
+    duedate DATE default NULL,
+    extra TEXT default NULL
+) ");
+    $db->ex("CREATE INDEX {$db->prefix}todo_list_id ON {$db->prefix}todolist (list_id)");
+    $db->ex("CREATE UNIQUE INDEX {$db->prefix}todo_uuid ON {$db->prefix}todolist (uuid)");
+
+    $db->ex(
+"CREATE TABLE {$db->prefix}tags (
+    id INTEGER NOT NULL GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+    user_id INTEGER NOT NULL default 0,
+    name VARCHAR(250) NOT NULL DEFAULT ''
+) ");
+    $db->ex("CREATE UNIQUE INDEX {$db->prefix}tags_lower_name ON {$db->prefix}tags ((LOWER(name)))");
+    $db->ex("CREATE INDEX {$db->prefix}tags_user_id ON {$db->prefix}tags (user_id)");
+
+    $db->ex(
+"CREATE TABLE {$db->prefix}tag2task (
+    tag_id INTEGER NOT NULL,
+    task_id INTEGER NOT NULL,
+    list_id INTEGER NOT NULL
+) ");
+    $db->ex("CREATE INDEX {$db->prefix}tag2task_tag_id ON {$db->prefix}tag2task (tag_id)");
+    $db->ex("CREATE INDEX {$db->prefix}tag2task_task_id ON {$db->prefix}tag2task (task_id)");
+    $db->ex("CREATE INDEX {$db->prefix}tag2task_list_id ON {$db->prefix}tag2task (list_id)");
+
+
+    $db->ex(
+"CREATE TABLE {$db->prefix}users (
+    id INTEGER NOT NULL GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+    username VARCHAR(250) NOT NULL DEFAULT '',
+    email VARCHAR(250) NOT NULL DEFAULT '',
+    name VARCHAR(250) NOT NULL DEFAULT '',
+    pwhash VARCHAR(250) NOT NULL DEFAULT '',
+    pwtoken VARCHAR(250) NOT NULL DEFAULT '',
+    last_visit DATE default NULL,
+    extra TEXT default NULL
+) ");
+    $db->ex("CREATE UNIQUE INDEX {$db->prefix}users_lower_username ON {$db->prefix}users ((LOWER(username)))");
+    $db->ex("CREATE UNIQUE INDEX {$db->prefix}users_lower_email ON {$db->prefix}users ((LOWER(email)))");
+
+
+    $db->ex(
+"CREATE TABLE {$db->prefix}usersettings (
+    user_id INTEGER NOT NULL default 0,
+    param_key VARCHAR(250) NOT NULL default '',
+    param_value TEXT default NULL
+) ");
+    $db->ex("CREATE UNIQUE INDEX {$db->prefix}usersettings_ukey ON {$db->prefix}usersettings (user_id, param_key)");
+
+
+    $db->ex(
+"CREATE TABLE {$db->prefix}settings (
+    param_key   VARCHAR(250) NOT NULL default '',
+    param_value TEXT
+) ");
+    $db->ex("CREATE UNIQUE INDEX {$db->prefix}settings_key ON {$db->prefix}settings (param_key)");
+
+
+    $db->ex(
+"CREATE TABLE {$db->prefix}sessions (
+    id          VARCHAR(64) NOT NULL default '',
+    data        TEXT,
+    last_access BIGINT NOT NULL default 0,
+    expires     BIGINT NOT NULL default 0
+) ");
+    $db->ex("CREATE UNIQUE INDEX {$db->prefix}sessions_id ON {$db->prefix}sessions (id)");
+}
+
+
+
+/* ===== sqlite ============================================================ */
+
+function createSqliteTables(AbstractDatabase $db)
+{
+    $db->ex(
+"CREATE TABLE {$db->prefix}lists (
+    id INTEGER PRIMARY KEY,
+    uuid CHAR(36) NOT NULL,
+    ow INTEGER NOT NULL default 0,
+    name VARCHAR(250) NOT NULL,
+    user_id INTEGER UNSIGNED NOT NULL default 0,
+    d_created INTEGER UNSIGNED NOT NULL default 0,
+    d_edited INTEGER UNSIGNED NOT NULL default 0,
+    sorting TINYINT UNSIGNED NOT NULL default 0,
+    published TINYINT UNSIGNED NOT NULL default 0,
+    taskview INTEGER UNSIGNED NOT NULL default 0,
+    extra TEXT
+) ");
+
+    $db->ex("CREATE UNIQUE INDEX lists_uuid ON {$db->prefix}lists (uuid)");
+    $db->ex("CREATE INDEX lists_user_id ON {$db->prefix}lists (user_id)");
+
+    $db->ex(
+"CREATE TABLE {$db->prefix}todolist (
+    id INTEGER PRIMARY KEY,
+    uuid CHAR(36) NOT NULL default '',
+    list_id INTEGER UNSIGNED NOT NULL default 0,
+    parent_id INTEGER UNSIGNED NOT NULL default 0,
+    d_created INTEGER UNSIGNED NOT NULL default 0,
+    d_completed INTEGER UNSIGNED NOT NULL default 0,
+    d_edited INTEGER UNSIGNED NOT NULL default 0,
+    compl TINYINT UNSIGNED NOT NULL default 0,
+    title VARCHAR(250) NOT NULL default '',
+    note TEXT default NULL,
+    prio TINYINT NOT NULL default 0,
+    ow INTEGER NOT NULL default 0,
+    duedate DATE default NULL,
+    extra TEXT default NULL
+) ");
+    $db->ex("CREATE INDEX todo_list_id ON {$db->prefix}todolist (list_id)");
+    $db->ex("CREATE UNIQUE INDEX todo_uuid ON {$db->prefix}todolist (uuid)");
+
+
+    $db->ex(
+"CREATE TABLE {$db->prefix}tags (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER UNSIGNED NOT NULL default 0,
+    name VARCHAR(250) NOT NULL DEFAULT ''
+) ");
+    $db->ex("CREATE INDEX tags_user_id ON {$db->prefix}tags (user_id)");
+
+
+    $db->ex(
+"CREATE TABLE {$db->prefix}tag2task (
+    tag_id INTEGER NOT NULL,
+    task_id INTEGER NOT NULL,
+    list_id INTEGER NOT NULL
+) ");
+    $db->ex("CREATE INDEX tag2task_tag_id ON {$db->prefix}tag2task (tag_id)");
+    $db->ex("CREATE INDEX tag2task_task_id ON {$db->prefix}tag2task (task_id)");
+    $db->ex("CREATE INDEX tag2task_list_id ON {$db->prefix}tag2task (list_id)");    /* for tagcloud */
+
+
+    $db->ex(
+        "CREATE TABLE {$db->prefix}users (
+        id         INTEGER PRIMARY KEY AUTOINCREMENT,
+        username   VARCHAR(250) NOT NULL DEFAULT '',
+        email      VARCHAR(250) NOT NULL DEFAULT '',
+        name       VARCHAR(250) NOT NULL DEFAULT '',
+        pwhash     VARCHAR(250) NOT NULL DEFAULT '',
+        pwtoken    VARCHAR(250) NOT NULL DEFAULT '',
+        last_visit DATE default NULL,
+        extra      TEXT default NULL
+    ) ");
+    $db->ex("CREATE UNIQUE INDEX users_username ON {$db->prefix}users (username COLLATE NOCASE)");
+    $db->ex("CREATE UNIQUE INDEX users_email ON {$db->prefix}users (email COLLATE NOCASE)");
+
+
+    $db->ex(
+        "CREATE TABLE {$db->prefix}usersettings (
+        user_id     INTEGER UNSIGNED NOT NULL default 0,
+        param_key   VARCHAR(250) NOT NULL default '',
+        param_value TEXT
+    ) ");
+    $db->ex("CREATE UNIQUE INDEX usersettings_ukey ON {$db->prefix}usersettings (user_id, param_key COLLATE NOCASE)");
+
+
+    $db->ex(
+"CREATE TABLE {$db->prefix}settings (
+    param_key   VARCHAR(250) NOT NULL default '',
+    param_value TEXT
+) ");
+    $db->ex("CREATE UNIQUE INDEX settings_key ON {$db->prefix}settings (param_key COLLATE NOCASE)");
+
+
+    $db->ex(
+"CREATE TABLE {$db->prefix}sessions (
+    id          VARCHAR(64) NOT NULL default '',
+    data        TEXT,
+    last_access INTEGER UNSIGNED NOT NULL default 0,
+    expires     INTEGER UNSIGNED NOT NULL default 0
+) ");
+
+    $db->ex("CREATE UNIQUE INDEX sessions_id ON {$db->prefix}sessions (id COLLATE NOCASE)");
+}
+
+
 
 ### update v1.7 to v1.8 ##########
-function update_17_18(Database_Abstract $db, $dbtype)
+function update_17_18(AbstractDatabase $db, string $dbtype)
 {
     $db->ex("BEGIN");
 
     if ($dbtype == 'sqlite')
     {
-        // Use UTF8CI collate. Old sqlite does not support DROP COLUMN (before v3.35.0 2021-03-12)
+        // Use UTF8CI collate. Old sqlite does not support DROP COLUMN (before v3.35.0 2021-03-12, https://sqlite.org/releaselog/3_35_0.html)
         $db->ex("DROP INDEX todo_list_id");
         $db->ex("DROP INDEX todo_uuid");
         $db->ex("ALTER TABLE {$db->prefix}todolist RENAME TO {$db->prefix}todolist_old");
@@ -936,3 +943,184 @@ function update_17_18(Database_Abstract $db, $dbtype)
 
 }
 ### end of 1.8 #####
+
+
+
+function update_18_20(AbstractDatabase $db, string $dbtype)
+{
+    $db->ex("BEGIN");
+
+    if ($dbtype == 'mysql')
+    {
+        $db->ex("ALTER TABLE {$db->prefix}lists MODIFY `d_created` BIGINT UNSIGNED NOT NULL default 0");
+        $db->ex("ALTER TABLE {$db->prefix}lists MODIFY `d_edited` BIGINT UNSIGNED NOT NULL default 0");
+        $db->ex("ALTER TABLE {$db->prefix}todolist MODIFY `d_created` BIGINT UNSIGNED NOT NULL default 0");
+        $db->ex("ALTER TABLE {$db->prefix}todolist MODIFY `d_completed` BIGINT UNSIGNED NOT NULL default 0");
+        $db->ex("ALTER TABLE {$db->prefix}todolist MODIFY `d_edited` BIGINT UNSIGNED NOT NULL default 0");
+        $db->ex("ALTER TABLE {$db->prefix}todolist MODIFY `note` MEDIUMTEXT default NULL"); //upto 4mb in utf8mb4
+        $db->ex("ALTER TABLE {$db->prefix}sessions MODIFY `last_access` BIGINT UNSIGNED NOT NULL default 0");
+        $db->ex("ALTER TABLE {$db->prefix}sessions MODIFY `expires` BIGINT UNSIGNED NOT NULL default 0");
+
+        $db->ex("ALTER TABLE {$db->prefix}lists ADD `user_id` INT UNSIGNED NOT NULL default 0");
+        $db->ex("ALTER TABLE {$db->prefix}lists ADD KEY (`user_id`)");
+
+        $db->ex("ALTER TABLE {$db->prefix}todolist ADD `parent_id` INT UNSIGNED NOT NULL default 0");
+        $db->ex("ALTER TABLE {$db->prefix}todolist ADD `extra` TEXT default NULL");
+
+        $db->ex("ALTER TABLE {$db->prefix}tags ADD `user_id` INT UNSIGNED NOT NULL default 0");
+        $db->ex("ALTER TABLE {$db->prefix}tags ADD KEY (`user_id`)");
+
+        $collation = 'utf8mb4_unicode_520_ci';
+
+        $db->ex(
+            "CREATE TABLE {$db->prefix}users (
+                `id` INT UNSIGNED NOT NULL auto_increment,
+                `username` VARCHAR(250) NOT NULL default '',
+                `email` VARCHAR(250) NOT NULL default '',
+                `name` VARCHAR(250) NOT NULL default '',
+                `pwhash` VARCHAR(250) NOT NULL default '',
+                `pwtoken` VARCHAR(250) NOT NULL default '',
+                `last_visit` DATE default NULL,
+                `extra` TEXT default NULL,
+                PRIMARY KEY(`id`),
+                UNIQUE KEY (`username`),
+                UNIQUE KEY (`email`)
+            ) CHARSET=utf8mb4 COLLATE $collation ");
+
+        $db->ex(
+            "CREATE TABLE {$db->prefix}usersettings (
+                `user_id` INT UNSIGNED NOT NULL default 0,
+                `param_key` VARCHAR(250) NOT NULL default '',
+                `param_value` TEXT default NULL,
+                UNIQUE KEY (`user_id`, `param_key`)
+            ) CHARSET=utf8mb4 COLLATE $collation ");
+
+    }
+    else if ($dbtype == 'postgres')
+    {
+        $db->ex("ALTER TABLE {$db->prefix}lists ALTER d_created TYPE BIGINT");
+        $db->ex("ALTER TABLE {$db->prefix}lists ALTER d_edited TYPE BIGINT");
+        $db->ex("ALTER TABLE {$db->prefix}todolist ALTER d_created TYPE BIGINT");
+        $db->ex("ALTER TABLE {$db->prefix}todolist ALTER d_completed TYPE BIGINT");
+        $db->ex("ALTER TABLE {$db->prefix}todolist ALTER d_edited TYPE BIGINT");
+        $db->ex("ALTER TABLE {$db->prefix}sessions ALTER last_access TYPE BIGINT");
+        $db->ex("ALTER TABLE {$db->prefix}sessions ALTER expires TYPE BIGINT");
+
+        $db->ex("ALTER TABLE {$db->prefix}todolist ADD parent_id INTEGER NOT NULL default 0");
+        $db->ex("ALTER TABLE {$db->prefix}todolist ADD extra TEXT default NULL");
+
+        $db->ex("ALTER TABLE {$db->prefix}lists ADD user_id INTEGER NOT NULL default 0");
+        $db->ex("CREATE INDEX {$db->prefix}lists_user_id ON {$db->prefix}lists (user_id)");
+
+        $db->ex("ALTER TABLE {$db->prefix}tags ADD user_id INTEGER NOT NULL default 0");
+        $db->ex("CREATE INDEX {$db->prefix}tags_user_id ON {$db->prefix}tags (user_id)");
+
+        $db->ex(
+            "CREATE TABLE {$db->prefix}users (
+                id INTEGER NOT NULL GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+                username VARCHAR(250) NOT NULL DEFAULT '',
+                email VARCHAR(250) NOT NULL DEFAULT '',
+                name VARCHAR(250) NOT NULL DEFAULT '',
+                pwhash VARCHAR(250) NOT NULL DEFAULT '',
+                pwtoken VARCHAR(250) NOT NULL DEFAULT '',
+                last_visit DATE default NULL,
+                extra TEXT default NULL
+            ) ");
+        $db->ex("CREATE UNIQUE INDEX {$db->prefix}users_lower_username ON {$db->prefix}users ((LOWER(username)))");
+        $db->ex("CREATE UNIQUE INDEX {$db->prefix}users_lower_email ON {$db->prefix}users ((LOWER(email)))");
+
+        $db->ex(
+            "CREATE TABLE {$db->prefix}usersettings (
+                user_id INTEGER NOT NULL default 0,
+                param_key VARCHAR(250) NOT NULL default '',
+                param_value TEXT default NULL
+            ) ");
+        $db->ex("CREATE UNIQUE INDEX {$db->prefix}usersettings_ukey ON {$db->prefix}usersettings (user_id, param_key)");
+
+    }
+    else if ($dbtype == 'sqlite')
+    {
+        // lists: add user_id column
+        $db->ex("ALTER TABLE {$db->prefix}lists ADD user_id INTEGER UNSIGNED NOT NULL default 0");
+        $db->ex("CREATE INDEX lists_user_id ON {$db->prefix}lists (user_id)");
+
+        // todolist: remove collation from title and note column; add parent_id and extra columns
+        $db->ex("DROP INDEX todo_list_id");
+        $db->ex("DROP INDEX todo_uuid");
+        $db->ex("ALTER TABLE {$db->prefix}todolist RENAME TO {$db->prefix}todolist_old");
+        $db->ex(
+            "CREATE TABLE {$db->prefix}todolist (
+                id INTEGER PRIMARY KEY,
+                uuid CHAR(36) NOT NULL default '',
+                list_id INTEGER UNSIGNED NOT NULL default 0,
+                parent_id INTEGER UNSIGNED NOT NULL default 0,
+                d_created INTEGER UNSIGNED NOT NULL default 0,
+                d_completed INTEGER UNSIGNED NOT NULL default 0,
+                d_edited INTEGER UNSIGNED NOT NULL default 0,
+                compl TINYINT UNSIGNED NOT NULL default 0,
+                title VARCHAR(250) NOT NULL default '',
+                note TEXT default NULL,
+                prio TINYINT NOT NULL default 0,
+                ow INTEGER NOT NULL default 0,
+                duedate DATE default NULL,
+                extra TEXT default NULL
+        ) ");
+        $db->ex("INSERT INTO {$db->prefix}todolist SELECT id,uuid,list_id,0,d_created,d_completed,d_edited,compl,title,note,prio,ow,duedate,null FROM {$db->prefix}todolist_old");
+        $db->ex("CREATE INDEX todo_list_id ON {$db->prefix}todolist (list_id)");
+        $db->ex("CREATE UNIQUE INDEX todo_uuid ON {$db->prefix}todolist (uuid)");
+        $db->ex("DROP TABLE {$db->prefix}todolist_old");
+
+        // tags: remove collation from name column; add user_id column
+        $db->ex("DROP INDEX tags_name");
+        $db->ex("ALTER TABLE {$db->prefix}tags RENAME TO {$db->prefix}tags_old");
+        $db->ex(
+            "CREATE TABLE {$db->prefix}tags (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER UNSIGNED NOT NULL default 0,
+                name VARCHAR(250) NOT NULL DEFAULT ''
+        ) ");
+        $db->ex("INSERT INTO {$db->prefix}tags SELECT id,0,name FROM {$db->prefix}tags_old");
+        $db->ex("DROP TABLE {$db->prefix}tags_old");
+        $db->ex("CREATE INDEX tags_user_id ON {$db->prefix}tags (user_id)");
+
+
+        $db->ex(
+            "CREATE TABLE {$db->prefix}users (
+                id         INTEGER PRIMARY KEY AUTOINCREMENT,
+                username   VARCHAR(250) NOT NULL DEFAULT '',
+                email      VARCHAR(250) NOT NULL DEFAULT '',
+                name       VARCHAR(250) NOT NULL DEFAULT '',
+                pwhash     VARCHAR(250) NOT NULL DEFAULT '',
+                pwtoken    VARCHAR(250) NOT NULL DEFAULT '',
+                last_visit DATE default NULL,
+                extra      TEXT default NULL
+        ) ");
+        $db->ex("CREATE UNIQUE INDEX users_username ON {$db->prefix}users (username COLLATE NOCASE)");
+        $db->ex("CREATE UNIQUE INDEX users_email ON {$db->prefix}users (email COLLATE NOCASE)");
+
+        $db->ex(
+            "CREATE TABLE {$db->prefix}usersettings (
+            user_id     INTEGER UNSIGNED NOT NULL default 0,
+            param_key   VARCHAR(250) NOT NULL default '',
+            param_value TEXT
+        ) ");
+        $db->ex("CREATE UNIQUE INDEX usersettings_ukey ON {$db->prefix}usersettings (user_id, param_key COLLATE NOCASE)");
+
+    }
+
+    $pwhash = (string)Config::get('password');
+    $pwtoken = randomToken();
+    $db->ex("INSERT INTO {$db->prefix}users (id,username,email,name,pwhash,pwtoken) VALUES (1,?,?,?,?,?)", [
+        "admin", "admin", "admin", $pwhash, $pwtoken
+    ]);
+
+    $db->ex("UPDATE {$db->prefix}lists SET user_id = 1");
+    $db->ex("UPDATE {$db->prefix}tags SET user_id = 1");
+
+    $db->ex("INSERT INTO {$db->prefix}usersettings (user_id,param_key,param_value)
+        SELECT 1,param_key,param_value FROM {$db->prefix}settings WHERE param_key='alltasks.json' ");
+    $db->ex("DELETE FROM {$db->prefix}settings WHERE param_key='alltasks.json'");
+
+    $db->ex("COMMIT");
+}
+### end of 2.0 #####

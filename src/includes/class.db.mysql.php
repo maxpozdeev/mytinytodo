@@ -7,7 +7,7 @@
 */
 
 // ---------------------------------------------------------------------------- //
-class DatabaseResult_Mysql extends DatabaseResult_Abstract
+class MysqlDatabaseResult extends AbstractDatabaseResult
 {
     /** @var PDOStatement */
     protected $q;
@@ -55,7 +55,7 @@ class DatabaseResult_Mysql extends DatabaseResult_Abstract
 }
 
 // ---------------------------------------------------------------------------- //
-class Database_Mysql extends Database_Abstract
+class MysqlDatabase extends AbstractDatabase
 {
     const DBTYPE = 'mysql';
 
@@ -77,12 +77,20 @@ class Database_Mysql extends Database_Abstract
         $user = $params['user'];
         $pass = $params['password'];
         $db = $params['db'];
-        $options = array(
-            PDO::MYSQL_ATTR_FOUND_ROWS => true,
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
-        );
         $this->dbname = $db;
-        $this->dbh = new PDO("mysql:host=$host;dbname=$db", $user, $pass, $options);
+        if (PHP_VERSION_ID < 80500) {
+            $this->dbh = new PDO("mysql:host=$host;dbname=$db", $user, $pass, [
+                PDO::MYSQL_ATTR_FOUND_ROWS => true,
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+            ]);
+        }
+        else {
+            /** @disregard P1009 available in php 8.5 */
+            $this->dbh = new \Pdo\Mysql("mysql:host=$host;dbname=$db", $user, $pass, [
+                \Pdo\Mysql::ATTR_FOUND_ROWS => true,
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+            ]);
+        }
     }
 
 
@@ -96,7 +104,7 @@ class Database_Mysql extends Database_Abstract
         $q = $this->_dq($query, $values);
 
         $res = $q->fetchRow();
-        if ($res === false || !is_array($res)) {
+        if ($res === null) {
             return null;
         }
 
@@ -111,13 +119,10 @@ class Database_Mysql extends Database_Abstract
     {
         $q = $this->_dq($query, $values);
         $res = $q->fetchAssoc();
-        if ($res === false || !is_array($res)){
-            return null;
-        }
         return $res;
     }
 
-    function dq(string $query, ?array $values = null) : DatabaseResult_Abstract
+    function dq(string $query, ?array $values = null) : AbstractDatabaseResult
     {
         return $this->_dq($query, $values);
     }
@@ -130,7 +135,7 @@ class Database_Mysql extends Database_Abstract
         $this->_dq($query, $values, true);
     }
 
-    private function _dq(string $query, ?array $values = null, bool $resultless = false) : DatabaseResult_Abstract
+    private function _dq(string $query, ?array $values = null, bool $resultless = false) : AbstractDatabaseResult
     {
         if (null !== $values && sizeof($values) > 0)
         {
@@ -148,7 +153,14 @@ class Database_Mysql extends Database_Abstract
             $query .= $m[$i];
         }
         $this->setLastQuery($query);
-        $dbr = new DatabaseResult_Mysql($this->dbh, $query, $resultless);
+        try {
+            $dbr = new MysqlDatabaseResult($this->dbh, $query, $resultless);
+        }
+        catch (Exception $e) {
+            $this->setLastQueryFinished(true);
+            throw $e;
+        }
+        $this->setLastQueryFinished();
         $this->affected = $dbr->rowsAffected();
         return $dbr;
     }

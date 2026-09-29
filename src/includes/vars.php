@@ -1,0 +1,26 @@
+<?php declare(strict_types=1);
+
+class MTTVars {
+    static array $info = [];
+    static string $requestedUsername = '';
+    static int $requestedUserId = 0;
+    static bool $isSessionInvalid; //readonly
+    static bool $isStateless; //readonly
+    static string $userPwToken; //TODO: check if not used
+    static string $username;
+    static string $user;
+    static int $userId = 0;
+    static string $settingsPage;
+    static string $settingsPageFile;
+    static string $settingsPageArgument;
+    static bool $isRtl = false;
+    static ?string $forcedLang = null;
+    static string $mailerLastError = '';
+}
+
+
+class MTTVersion
+{
+    const VERSION = '2.0';
+    const DB_VERSION = '2.0';
+}

@@ -7,7 +7,7 @@
 */
 
 // ---------------------------------------------------------------------------- //
-class DatabaseResult_Postgres extends DatabaseResult_Abstract
+class PostgresDatabaseResult extends AbstractDatabaseResult
 {
     /** @var PDOStatement */
     protected $q;
@@ -55,7 +55,7 @@ class DatabaseResult_Postgres extends DatabaseResult_Abstract
 }
 
 // ---------------------------------------------------------------------------- //
-class Database_Postgres extends Database_Abstract
+class PostgresDatabase extends AbstractDatabase
 {
     const DBTYPE = 'postgres';
 
@@ -80,12 +80,20 @@ class Database_Postgres extends Database_Abstract
         $user = $params['user'];
         $pass = $params['password'];
         $db = $params['db'];
-        $options = array(
-            PDO::PGSQL_ATTR_DISABLE_PREPARES => 1,
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
-        );
         $this->dbname = $db;
-        $this->dbh = new PDO("pgsql:host=$host;dbname=$db", $user, $pass, $options);
+        if (PHP_VERSION_ID < 80500) {
+            $this->dbh = new PDO("pgsql:host=$host;dbname=$db", $user, $pass, [
+                PDO::PGSQL_ATTR_DISABLE_PREPARES => 1,
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+            ]);
+        }
+        else {
+            /** @disregard P1009 available in php 8.5 */
+            $this->dbh = new \Pdo\Pgsql("pgsql:host=$host;dbname=$db", $user, $pass, [
+                \Pdo\Pgsql::ATTR_DISABLE_PREPARES => 1,
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+            ]);
+        }
     }
 
 
@@ -99,7 +107,7 @@ class Database_Postgres extends Database_Abstract
         $q = $this->_dq($query, $values);
 
         $res = $q->fetchRow();
-        if ($res === false || !is_array($res)) {
+        if ($res === null) {
             return null;
         }
 
@@ -114,13 +122,10 @@ class Database_Postgres extends Database_Abstract
     {
         $q = $this->_dq($query, $values);
         $res = $q->fetchAssoc();
-        if ($res === false || !is_array($res)){
-            return null;
-        }
         return $res;
     }
 
-    function dq(string $query, ?array $values = null) : DatabaseResult_Abstract
+    function dq(string $query, ?array $values = null) : AbstractDatabaseResult
     {
         return $this->_dq($query, $values);
     }
@@ -133,7 +138,7 @@ class Database_Postgres extends Database_Abstract
         $this->_dq($query, $values, true);
     }
 
-    private function _dq(string $query, ?array $values = null, bool $resultless = false) : DatabaseResult_Abstract
+    private function _dq(string $query, ?array $values = null, bool $resultless = false) : AbstractDatabaseResult
     {
         if (null !== $values && sizeof($values) > 0)
         {
@@ -151,7 +156,14 @@ class Database_Postgres extends Database_Abstract
             $query .= $m[$i];
         }
         $this->setLastQuery($query);
-        $dbr = new DatabaseResult_Postgres($this->dbh, $query, $resultless);
+        try {
+            $dbr = new PostgresDatabaseResult($this->dbh, $query, $resultless);
+        }
+        catch (Exception $e) {
+            $this->setLastQueryFinished(true);
+            throw $e;
+        }
+        $this->setLastQueryFinished();
         $this->affected = $dbr->rowsAffected();
         return $dbr;
     }

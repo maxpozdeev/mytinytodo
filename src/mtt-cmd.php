@@ -1,0 +1,164 @@
+#!/usr/bin/env php
+<?php
+
+if ( PHP_SAPI !== 'cli' ) {
+    die("Run from command line only!");
+}
+
+if ( $argc < 2 ) {
+    die("Usage:\n".
+        "  mtt-cmd.php read <parameter> \n".
+        "  mtt-cmd.php write <parameter> <value>\n".
+        "  mtt-cmd.php adduser <username> [email]\n".
+        "  mtt-cmd.php deluser <username> \n".
+        "  mtt-cmd.php password <username> [password]\n".
+        "  mtt-cmd.php email <username> <email>\n".
+        "  mtt-cmd.php users \n".
+        "  mtt-cmd.php addadmin \n"
+    );
+}
+
+$dontStartSession = true;
+require_once(__DIR__ . '/init.php');
+
+ini_set('display_errors', '0');
+ini_set('log_errors', '1');
+
+$cmd = $argv[1];
+$arg1 = $argv[2] ?? '';
+$arg2 = $argc > 3 ? $argv[3] : null;
+
+
+switch ($cmd) {
+    case 'read': cmd_read($arg1); break;
+    case 'write': cmd_write($arg1, $arg2); break;
+    case 'adduser': cmd_adduser((string)$arg1, (string)$arg2); break;
+    case 'password': cmd_password((string)$arg1, (string)$arg2); break;
+    case 'email': cmd_email((string)$arg1, (string)$arg2); break;
+    case 'deluser': cmd_deluser((string)$arg1); break;
+    case 'users': cmd_users(); break;
+    case 'addadmin': cmd_addadmin(); break;
+    default: die("Unknown command: $cmd\n");
+}
+
+
+function cmd_read(string $param) {
+    print Config::get($param) . "\n";
+}
+
+function cmd_write(string $param, ?string $value) {
+    if ($value === null) {
+        die("Can not write '$param': value is not specified\n");
+    }
+    print ("Set '$param' to '$value'\n");
+    $config = Config::getConfig();
+    $config->set($param, $value);
+    AppConfig::saveDomain(Config::appDomain, $config->asArray());
+    print ("Done!\n");
+}
+
+
+function cmd_adduser(string $username, string $email = '')
+{
+    $db =  DBConnection::instance();
+    print "Adding user '$username' with password '$username'\n";
+    $userRepo = new UserRepo(DBConnection::instance());
+    $userId = $userRepo->findUserIdByUsername($username);
+    if ($userId) {
+        die("Error: user already exists\n");
+    }
+    if ($email == '') {
+        $email = "$username@localhost";
+    }
+    $user = User::create($username, $username, $email);
+    $user->setPassword($username);
+    $userRepo->saveUser($user);
+    print "User created with ID {$user->id}\n";
+}
+
+function cmd_deluser(string $user)
+{
+    print "Deleting user '$user'\n";
+    $userRepo = new UserRepo(DBConnection::instance());
+    $userId = $userRepo->findUserIdByUsername($user);
+    if (!$userId) {
+        die("Error: user does not exists\n");
+    }
+    if ($userId == 1) {
+        die("Error: can not delete administrator\n");
+    }
+    $userRepo->deleteUserById($userId);
+    print "User (ID $userId) deleted\n";
+}
+
+
+function cmd_password(
+    string $user,
+    #[\SensitiveParameter]
+    string $pass): void
+{
+    print "Set password for user '$user'\n";
+    if ($pass == '') {
+        print "Enter a password\n";
+        system('stty -echo'); #no windows
+        $pass = trim(fgets(STDIN));
+        system('stty echo');
+    }
+    if ($pass == '') {
+        die("Error: cant set empty password\n");
+    }
+    $userRepo = new UserRepo(DBConnection::instance());
+    $user = $userRepo->findUserByUsername($user);
+    if (!$user) {
+        die("Error: user does not exist\n");
+    }
+    $user->setPassword($pass);
+    $userRepo->updateUserProperties($user);
+    // delete sessions?
+    print "New password set!\n";
+}
+
+
+function cmd_email(string $user, string $email): void {
+    print "Set e-mail address for user '$user'\n";
+    if ($email == '') {
+        die("Error: cant set empty e-mail\n");
+    }
+    if (!isValidEmail($email)) {
+        die("Error: incorrect e-mail\n");
+    }
+    $userRepo = new UserRepo(DBConnection::instance());
+    $user = $userRepo->findUserByUsername($user);
+    if (!$user) {
+        die("Error: user does not exist\n");
+    }
+    $user->setEmail($email);
+    if (!$userRepo->canSaveUser($user, $err)) {
+        die("Failed to change email: $err\n");
+    }
+    $userRepo->updateUserProperties($user);
+    print "New e-mail set!\n";
+}
+
+function cmd_users()
+{
+    $db =  DBConnection::instance();
+    $i = 0;
+    $q = $db->dq("SELECT id,username FROM {$db->prefix}users ORDER BY id");
+    while ($r = $q->fetchAssoc()) {
+        print "{$r['id']}: {$r['username']}\n";
+        $i++;
+    }
+    print "$i user(s) found\n";
+}
+
+function cmd_addadmin()
+{
+    $db = DBConnection::instance();
+    if ((int)$db->sq("SELECT 1 FROM {$db->prefix}users WHERE id=1")) {
+        print "Admin user already exists\n";
+        return;
+    }
+    $db->ex("INSERT INTO {$db->prefix}users (id,username,email,name) VALUES (1,'admin','admin','admin')");
+     print "User admin created\n";
+}

@@ -1,0 +1,228 @@
+<?php declare(strict_types=1);
+
+/*
+    This file is a part of myTinyTodo.
+    (C) Copyright 2023-2026 Max Pozdeev <maxpozdeev@gmail.com>
+    Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
+*/
+
+namespace MTTBackup;
+
+use Exception;
+
+class Backup
+{
+    public $lastErrorString = null;
+    public $filename;
+    private $tempFilename = null;
+    private $fh;
+    private $level = 0;
+    private $tagClosed = true;
+
+    function __construct(?string $filename, ?string $tempFilename = null)
+    {
+        $this->filename = is_null($filename) ?  MTTPATH. 'db/backup.xml' : $filename;
+        $this->tempFilename = $tempFilename;
+    }
+
+    function isFileWritable()
+    {
+        if (!file_exists($this->filename)) {
+            @touch($this->filename);
+        }
+        if (!is_writable($this->filename)) {
+            return false;
+        }
+        if ($this->tempFilename) {
+            if (!file_exists($this->tempFilename)) {
+                @touch($this->tempFilename);
+            }
+            if (!is_writable($this->tempFilename)) {
+                error_log("Backup temp file is not writable");
+                return false;
+            }
+            @unlink($this->filename);
+        }
+        return true;
+    }
+
+    function makeBackup()
+    {
+        if (!$this->isFileWritable()) {
+            $this->lastErrorString = __('backup.not_writable');
+            return false;
+        }
+
+        $this->fh = fopen($this->tempFilename ? $this->tempFilename : $this->filename, 'w');
+        if ($this->fh === false) {
+            $ea = error_get_last();
+            $this->lastErrorString = $ea['message'] ?? "Failed to open file for writing";
+            return false;
+        }
+
+        $db = \DBConnection::instance();
+
+        fwrite($this->fh, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
+        $this->writeOpeningTag('mttdb', [
+            'version' => 1,
+            'appversion' => \MTTVersion::VERSION,
+            'dbversion' => \MTTVersion::DB_VERSION,
+            'dbtype' => $db::DBTYPE,
+            'created' => date(DATE_ATOM)
+        ]);
+        $this->level = 0;
+
+
+        $this->writeTable($db->prefix.'lists', 'lists', 'list');
+        $this->writeTable($db->prefix.'todolist', 'tasks', 'task');
+        $this->writeTable($db->prefix.'tags', 'tags', 'tag');
+        $this->writeTable($db->prefix.'tag2task', 'tag2task', 'item');
+        $this->writeTable($db->prefix.'settings', 'settings', 'item');
+        $this->writeTable($db->prefix.'users', 'users', 'user');
+        $this->writeTable($db->prefix.'usersettings', 'usersettings', 'item');
+
+
+        $this->writeClosingTag('mttdb');
+        fwrite($this->fh, "\n");
+
+        if (!fclose($this->fh)) {
+            $ea = error_get_last();
+            $this->lastErrorString = $ea['message'] ?? "Failed to close file";
+            return false;
+        }
+
+        if ($this->tempFilename) {
+            if (!@rename($this->tempFilename, $this->filename)) {
+                $ea = error_get_last();
+                $this->lastErrorString = $ea['message'] ?? "Failed to move file";
+                @unlink($this->tempFilename);
+                return false;
+            }
+        }
+
+
+        return true;
+    }
+
+    function writeTable(string $table, string $group, string $itemName)
+    {
+        if (!preg_match("/^[\\w:]+$/", $table)) {
+            throw new Exception("Malformed table name: $table");
+        }
+        $db = \DBConnection::instance();
+        $props = null;
+        $autoinc = static::getTableAutoIncrement($table);
+        if ($autoinc != '') {
+            $props = ['auto_increment' => $autoinc];
+        }
+        $this->writeOpeningTag($group, $props);
+        $q = $db->dq("SELECT * FROM $table");
+        while ($r = $q->fetchAssoc()) {
+            $this->writeItem($itemName, $r);
+        }
+        $this->writeClosingTag($group);
+    }
+
+    function writeItem(string $entity, $r)
+    {
+        $tagAttrs = null;
+        if (isset($r['id'])) {
+            $tagAttrs = ['id' => $r['id']];
+            unset($r['id']);
+        }
+        $this->writeOpeningTag($entity, $tagAttrs);
+        foreach ($r as $field => $value) {
+            $props = null;
+            if (is_null($value)) {
+                $props['isnull'] = 'yes';
+            }
+            $this->writeOpeningTag($field, $props);
+            $this->writeTagContent((string)$value);
+            $this->writeClosingTag($field);
+        }
+        $this->writeClosingTag($entity);
+    }
+
+    static function getTableAutoIncrement($table): string
+    {
+        $db = \DBConnection::instance();
+        if ($db::DBTYPE == \DBConnection::DBTYPE_MYSQL) {
+            $r = $db->sqa("SHOW TABLE STATUS WHERE Name=?", [$table]);
+            return (string)($r['Auto_increment'] ?? '');
+        }
+        else if ($db::DBTYPE == \DBConnection::DBTYPE_SQLITE) {
+            $seq = (int)$db->sq("SELECT seq FROM sqlite_sequence WHERE name=?", [$table]);
+            if ($seq > 0)
+                return (string)$seq;
+        }
+        else if ($db::DBTYPE == \DBConnection::DBTYPE_POSTGRES) {
+            if ($db->tableFieldExists($table, 'id')) {
+                $v = (int)$db->sq("SELECT last_value FROM ". $table. '_id_seq');
+                if ($v > 0)
+                    return (string)$v;
+            }
+        }
+        return '';
+    }
+
+
+
+    function writeOpeningTag(string $tag, ?array $attrs = null)
+    {
+        if (!preg_match("/^[\\w:]+$/", $tag)) {
+            throw new Exception("Malformed tag: $tag");
+        }
+        $data = "<$tag";
+        if ($attrs !== null) {
+            $a = [];
+            foreach ($attrs as $k => $v) {
+                if (!preg_match("/^[\\w:-]+$/", $k)) {
+                    throw new Exception("Malformed attribute name: $k");
+                }
+                $v = (string)$v;
+                if (preg_match("/[\\r\\n]+/", $v)) {
+                    throw new Exception("Malformed attribute value: $v");
+                }
+                $a[] = "$k=\"". htmlspecialchars($v). "\"";
+            }
+            if (count($a) > 0) {
+                $data .= " ". implode(" ", $a);
+            }
+        }
+        $data .= ">";
+        $this->write( ($this->tagClosed ? "" : "\n"). str_repeat(' ', $this->level) . $data );
+        $this->level += 1;
+        $this->tagClosed = false;
+    }
+
+    function writeClosingTag(string $tag)
+    {
+        if (!preg_match("/^[\\w:]+$/", $tag)) {
+            throw new Exception("Malformed tag: $tag");
+        }
+        $this->level -= 1;
+        if ($this->level < 0) $this->level = 0;
+        $padding = '';
+        if ($this->tagClosed) {
+            $padding = str_repeat(' ', $this->level);
+        }
+        $this->write( $padding . "</$tag>\n" );
+        $this->tagClosed = true;
+    }
+
+    function writeTagContent(?string $content)
+    {
+        if ($content !== null) {
+            $this->write( htmlspecialchars($content, ENT_XML1, 'UTF-8') ); //TODO: make xml compliant?
+        }
+    }
+
+    function write(string $data)
+    {
+        if (false === @fwrite($this->fh, $data)) {
+            $ea = error_get_last();
+            throw new Exception("Failed to write to file: ". ($ea['message'] ?? "unknown reason"));
+        }
+    }
+
+}

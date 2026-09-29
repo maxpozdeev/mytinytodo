@@ -7,11 +7,11 @@ class ExtSettingsController extends ApiController {
      * @return void
      * @throws Exception
      */
-    function get(string $ext)
+    function get(string $ext): void
     {
         checkWriteAccess();
 
-        /** @var MTTExtension|MTTExtensionSettingsInterface $instance */
+        /** @var ?MTTExtensionSettingsInterface $instance */
         $instance = $this->extInstance($ext);
         if (!$instance) {
             return;
@@ -50,8 +50,7 @@ EOD;
         }
         $data =
 <<<EOD
-<h3 class="page-title"><a class="mtt-back-button"></a> $name </h3>
-<div id="settings_msg" style="display:none"></div>
+<h4> $name </h4>
 $formStart
   <div class="mtt-settings-table">
     $data
@@ -68,11 +67,11 @@ EOD;
      * @return void
      * @throws Exception
      */
-    function put(string $ext)
+    function put(string $ext): void
     {
         checkWriteAccess();
 
-        /** @var MTTExtension|MTTExtensionSettingsInterface $instance */
+        /** @var ?MTTExtensionSettingsInterface $instance */
         $instance = $this->extInstance($ext);
         if (!$instance) {
             return;

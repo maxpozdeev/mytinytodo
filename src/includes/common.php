@@ -2,65 +2,54 @@
 
 /*
     This file is a part of myTinyTodo.
-    (C) Copyright 2009-2010,2020-2022 Max Pozdeev <maxpozdeev@gmail.com>
+    (C) Copyright 2009-2010,2020-2026 Max Pozdeev <maxpozdeev@gmail.com>
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
-function htmlarray($a, $exclude=null)
+function htmlarray($a, $exclude = null): array
 {
     htmlarray_ref($a, $exclude);
     return $a;
 }
 
-function htmlarray_ref(&$a, $exclude=null)
+function htmlarray_ref(&$a, $exclude = null)
 {
-    if(!$a) return;
-    if(!is_array($a)) {
-        $a = htmlspecialchars($a);
+    if (!$a)
+        return;
+    if (!is_array($a)) {
+        $a = htmlspecialchars((string)$a);
         return;
     }
     reset($a);
-    if($exclude && !is_array($exclude)) $exclude = array($exclude);
-    foreach($a as $k=>$v)
-    {
-        if(is_array($v)) $a[$k] = htmlarray($v, $exclude);
-        elseif(!$exclude) $a[$k] = htmlspecialchars($v ?? '');
-        elseif(!in_array($k, $exclude)) $a[$k] = htmlspecialchars($v ?? '');
+    if ($exclude && !is_array($exclude))
+        $exclude = array($exclude);
+    foreach($a as $k=>$v) {
+        if (is_array($v))
+            $a[$k] = htmlarray($v, $exclude);
+        elseif (!$exclude)
+            $a[$k] = htmlspecialchars($v ?? '');
+        elseif (!in_array($k, $exclude))
+            $a[$k] = htmlspecialchars($v ?? '');
     }
     return;
 }
 
-function _post($param,$defvalue = '')
+function _post(string $param, $defvalue = '')
 {
-    if(!isset($_POST[$param])) {
-        return $defvalue;
-    }
-    else {
-        return $_POST[$param];
-    }
+    return $_POST[$param] ?? $defvalue;
 }
 
-function _get($param,$defvalue = '')
+function _get(string $param, $defvalue = '')
 {
-    if(!isset($_GET[$param])) {
-        return $defvalue;
-    }
-    else {
-        return $_GET[$param];
-    }
+    return $_GET[$param] ?? $defvalue;
 }
 
-function _server($param, $defvalue = '')
+function _server(string $param, $defvalue = '')
 {
-    if ( !isset($_SERVER[$param]) ) {
-        return $defvalue;
-    }
-    else {
-        return $_SERVER[$param];
-    }
+    return $_SERVER[$param] ?? $defvalue;
 }
 
-function formatDate3($format, $ay, $am, $ad, $lang)
+function formatDate3(string $format, int $ay, int $am, int $ad, Lang $lang)
 {
     # F - month long, M - month short
     # m - month 2-digit, n - month 1-digit
@@ -90,14 +79,19 @@ function daysInMonth(int $m, int $y = 0): int
 }
 
 
-function getRequestUri()
+function getRequestUri(): string
 {
     // Do not use HTTP_X_REWRITE_URL due to CVE-2018-14773
     // SCRIPT_NAME or PATH_INFO ?
     if (isset($_SERVER['SCRIPT_NAME'])) {
-        return $_SERVER['SCRIPT_NAME'];
+        return (string)$_SERVER['SCRIPT_NAME'];
     }
+    else {
+        die("SCRIPT_NAME server var is not defined.");
+    }
+/*
     elseif (isset($_SERVER['REQUEST_URI'])) {
+        # may be wrong if rewrite is used
         return $_SERVER['REQUEST_URI'];
     }
     else if (isset($_SERVER['ORIG_PATH_INFO']))  // IIS 5.0 CGI
@@ -106,8 +100,14 @@ function getRequestUri()
         if (!empty($_SERVER['QUERY_STRING'])) $uri .= '?'. $_SERVER['QUERY_STRING'];
         return $uri;
     }
+*/
 }
 
+/*
+    Extract a directory from URL and return it with guaranteed trailing slash.
+    Can be a full URL or URI (without protocol and hostname part) depending on $onlyPath argument.
+    Like a dirname command for urls.
+ */
 function url_dir(string $url, bool $onlyPath = true)
 {
     if (false !== $p = strpos($url, '?')) {
@@ -157,20 +157,33 @@ function passwordHash(string $p): string
     return 'sha256:'. hash('sha256', $p);
 }
 
+function randomToken(int $bytes = 18): string
+{
+    return base64_encode(random_bytes($bytes));
+}
+
 /**
  * Compares raw (not hashed) password with password hash. Return true if equals.
- * @param string $p Raw password
+ * @param string $password Raw password
  * @param string $hash Password hash
  * @return bool
  */
-function isPasswordEqualsToHash(string $p, string $hash): bool
+function isPasswordEqualsToHash(
+    #[\SensitiveParameter]
+    string $password,
+    #[\SensitiveParameter]
+    string $hash): bool
 {
-    if ($hash == '' && $p == '') return true;
-    if ($hash == '' || $p == '') return false;
+    if ($hash == '' && $password == '')
+        return true;
+    if ($hash == '' || $password == '')
+        return false;
     if ( false !== $pos = strpos($hash, ':') ) {
         $algo = substr($hash, 0, $pos);
-        if ($algo != 'sha256') throw new Exception("Unsupported algo of password hash");
-        if ( hash_equals($hash, passwordHash($p)) ) return true;
+        if ($algo != 'sha256')
+            throw new Exception("Unsupported algo of password hash");
+        if ( hash_equals($hash, passwordHash($password)) )
+            return true;
     }
     return false;
 }
@@ -196,6 +209,64 @@ function randomString(int $len = 16, string $chars = '0123456789abcdefghijklmnop
         $a[]= $chars[random_int(0, $max)];
     }
     return implode('', $a);
+}
+
+function randomString2(int $len = 16, string $chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ') : string
+{
+    $bytes = random_bytes($len);
+    $bytesLen = strlen($bytes);
+    $charsLen = strlen($chars);
+    $a = [];
+    for ($i = 0; $i < $bytesLen; $i++) {
+        $index = ord($bytes[$i]) % $charsLen;
+        $a[] = $chars[$index];
+    }
+    return implode('', $a);
+}
+
+
+function generateWebToken(
+    array $data,
+    #[SensitiveParameter]
+    string $key): string
+{
+    $payload = base64_encode(json_encode($data));
+    return $payload. '.'. base64_encode(hash_hmac('sha256', $payload, $key, true));
+}
+
+
+function validateWebToken(
+    string $token,
+    #[SensitiveParameter]
+    string $key,
+    array &$data,
+    bool $checkExpire = true): bool
+{
+    $parts = explode('.', $token);
+    if (count($parts) != 2) {
+        return false;
+    }
+    $signature = base64_decode($parts[1]); //binary
+    if ($signature === false) {
+        return false;
+    }
+    if ( !hash_equals($signature, hash_hmac('sha256', $parts[0], $key, true)) ) {
+        return false;
+    }
+    $data = json_decode(base64_decode($parts[0]), true);
+    if (!isset($data['exp'])) {
+        return false;
+    }
+    if ($checkExpire && time() > $data['exp']) {
+        return false;
+    }
+    return true;
+}
+
+
+function isValidEmail(string $email): bool
+{
+    return preg_match("/^[a-zA-Z0-9\\._+-]+@[a-zA-Z0-9\\.-]+$/", $email) ? true : false;
 }
 
 if (!function_exists('array_is_list')) {

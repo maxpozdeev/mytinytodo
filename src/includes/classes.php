@@ -8,18 +8,25 @@
 
 class ApiRequest
 {
+    protected static $instance;
+
     public $path;
     public $method;
     public $contentType;
     public $jsonBody;
+    public $username;         # not a session owner
+    protected $userId = null; # not a session owner
+
+    public static function instance() : ApiRequest
+    {
+        if (!isset(self::$instance)) {
+            self::$instance = new ApiRequest();
+        }
+        return self::$instance;
+    }
 
     function __construct() {
-        if (defined('MTT_API_USE_PATH_INFO')) {
-            $this->path = $_SERVER['PATH_INFO'];
-        }
-        else {
-            $this->path = $_GET['_path'] ?? '';
-        }
+        $this->path = self::getApiPath();
         $this->method = isset($_SERVER['REQUEST_METHOD']) ? strtoupper($_SERVER['REQUEST_METHOD']) : 'GET';
         $this->contentType = $_SERVER['CONTENT_TYPE'] ?? '';
     }
@@ -27,6 +34,44 @@ class ApiRequest
     function decodeJsonBody() {
         $this->jsonBody = json_decode( file_get_contents('php://input'), true, 10, JSON_INVALID_UTF8_SUBSTITUTE );
         return $this->jsonBody;
+    }
+
+    function userId(): int
+    {
+        return (int)$this->userId;
+    }
+
+    function setUserId(int $id)
+    {
+        $this->userId = $id;
+    }
+
+    static function getApiPath(): string
+    {
+        if (!MTT_USE_REWRITE) {
+            if (isset($_GET['_path'])) {
+                $path = $_GET['_path'];
+                if ($path === '' || $path[0] !== '/')
+                    return '/'. $path;
+                return $path;
+            }
+            return '/';
+        }
+/*
+        $docRoot = rtrim($_SERVER['DOCUMENT_ROOT'], '/');                       # e.g. /var/www/html
+        $scriptName = substr($_SERVER['SCRIPT_FILENAME'], strlen($docRoot));    # e.g. /var/www/html/mtt/api.php --> /mtt/api.php
+        $uri = url_dir($scriptName). 'api/';                                    # /mtt/api/
+*/
+        #$uri = get_unsafe_mttinfo('mtt_uri'). 'api/';
+        $uri = apiMakeUrl('', null, false);
+        $path = $_SERVER['REQUEST_URI'] ?? '';
+        if (false !== $p = strpos($path, '?')) {
+            $path = substr($path, 0, $p);
+        }
+        if ($path !== '' && 0 === strncmp($path, $uri, strlen($uri))) {
+            $path = substr($path, strlen($uri) -1);
+        }
+        return $path;
     }
 }
 
@@ -36,25 +81,25 @@ class ApiResponse
     public $contentType = 'application/json';
     public $code = null;
 
-    function content(string $contentType, string $content, int $code = 200)
+    // deprecated
+    function htmlContent(string $content): void
     {
-        $this->contentType = $contentType;
+        $this->contentType = 'text/html; charset=utf-8';
         $this->data = $content;
+        $this->code = 200;
+    }
+
+    // deprecated, use ErrorApiResponse
+    function errorJsonContent(string $errorMessage, int $code): void
+    {
+        $this->data = [
+            'ok' => false,
+            'error' => htmlspecialchars($errorMessage)
+        ];
         $this->code = $code;
-        return $this;
     }
 
-    function htmlContent(string $content, int $code = 200): ApiResponse
-    {
-        return $this->content('text/html', $content, $code);
-    }
-
-    function cssContent(string $content, int $code = 200): ApiResponse
-    {
-        return $this->content('text/css', $content, $code);
-    }
-
-    function  exit()
+    function exit()
     {
         if (is_null($this->data) && is_null($this->code)) {
             http_response_code(404);
@@ -62,12 +107,43 @@ class ApiResponse
         if (!is_null($this->code)) {
             http_response_code($this->code);
         }
-        if ($this->contentType != 'application/json') {
-            header('Content-type: '. $this->contentType);
-            print $this->data;
-            exit();
+        if ($this->contentType === 'application/json') {
+            header('Content-type: application/json; charset=utf-8');
+            echo json_encode($this->data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES). "\n";
         }
-        jsonExit($this->data);
+        else {
+            header('Content-type: '. $this->contentType);
+            echo $this->data;
+        }
+        MTTNotificationCenter::postDidFinishRequestNotification();
+        exit;
+    }
+}
+
+class JsonApiResponse extends ApiResponse
+{
+    function __construct(array $a, int $code = 200)
+    {
+        $this->code = $code;
+        $this->contentType = 'application/json';
+        $this->data = $a;
+    }
+}
+
+class ErrorApiResponse extends JsonApiResponse
+{
+    function __construct(string $errorMessage, int $code = 500)
+    {
+        $this->data = [
+            'ok' => false,
+            'error' => $errorMessage
+        ];
+        $this->code = $code;
+    }
+
+    static function exitWithMessage(string $errorMessage, int $code = 500)
+    {
+        (new static($errorMessage, $code))->exit();
     }
 }
 
@@ -94,6 +170,10 @@ abstract class MTTExtension
     function init() {
     }
 
+    /**
+     * @param string $ext
+     * @return null|array
+     */
     public static function extMetaInfo(string $ext): ?array
     {
         $file = MTT_EXT. $ext. '/extension.json';
@@ -115,17 +195,9 @@ abstract class MTTExtension
         return null;
     }
 
-    public static function extApiActionUrl(string $action, ?string $params = null)
+    public static function extApiActionUrl(string $action, ?array $params = null): string
     {
-        $url = get_unsafe_mttinfo('api_url'). 'ext/'. static::bundleId. "/$action";
-        if (!is_null($params)) {
-            if (false !== strpos($url, '?')) {
-                $url .= '&'. $params;
-            }
-            else {
-                $url .= '?'. $params;
-            }
-        }
+        $url = apiMakeUrl('ext/'. static::bundleId. "/$action", $params);
         return $url;
     }
 
@@ -145,6 +217,11 @@ abstract class MTTExtension
 interface MTTHttpApiExtender
 {
     function extendHttpApi(): array;
+}
+
+interface MTTControlPanelHttpApiExtender
+{
+    static function extendControlPanelHttpApi(): array;
 }
 
 interface MTTExtensionSettingsInterface
@@ -219,13 +296,13 @@ class MTTExtensionLoader
     }
 
     /**
-     * @return string[]
+     * @return array<string, array>
      */
     public static function bundles(): array
     {
         $lang = Lang::instance();
         $a = [];
-        $files = array_diff(scandir(MTT_EXT) ?? [], ['.', '..']);
+        $files = array_diff(scandir(MTT_EXT) ?: [], ['.', '..']);
         foreach ($files as $ext) {
             if ( !is_dir(MTT_EXT. $ext)
                 || !file_exists(MTT_EXT. $ext. '/loader.php') ) {
@@ -245,6 +322,24 @@ class MTTExtensionLoader
             $a[$ext] = $meta;
         }
         return $a;
+    }
+
+    /**
+     * @param array $meta
+     * @return bool
+     */
+    public static function isBundleCompatible(array $meta): bool
+    {
+        $cpt = $meta['compatibility'] ?? '';
+        if ($cpt === '' || !is_string($cpt) || strpos($cpt, '-') === false)
+            return false;
+        list($vmin, $vmax) = explode('-', $cpt, 2);
+
+        if (version_compare(MTTVersion::VERSION, $vmin) < 0)
+            return false;
+        if (version_compare(MTTVersion::VERSION, $vmax) > 0)
+            return false;
+        return true;
     }
 
     public static function extensionInstance(string $ext): ?MTTExtension

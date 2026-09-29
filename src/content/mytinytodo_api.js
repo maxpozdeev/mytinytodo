@@ -19,6 +19,10 @@ function MytinytodoAjaxApi(props)
     if (props.hasOwnProperty('useREST')) {
         this.useREST = !!props.useREST;
     }
+
+    if (props.hasOwnProperty('errorCallback')) {
+        this.errorCallback = props.errorCallback;
+    }
 }
 
 MytinytodoAjaxApi.prototype = {
@@ -47,11 +51,60 @@ MytinytodoAjaxApi.prototype = {
     },
 
 
+    /**
+     *
+     * @param {string} url
+     * @param {string} method
+     * @param {Object.<string, any>} [params]
+     * @param {JsonApiCallback} [callback]
+     * @param {JsonApiErrorCallback} [errorCallback]
+     * @callback JsonApiCallback
+     * @param {object} json
+     * @callback JsonApiErrorCallback
+     * @param {string} msg
+     * @param {object} obj
+     */
+    jsonRequest(url, method, params, callback, errorCallback) {
+        const obj = {
+            method: method,
+            credentials: 'same-origin', // old browsers
+            headers: {
+                'Content-Type': 'application/json',
+                'MTT-Token': mytinytodo.options.token,
+            }
+        };
+        if (method !== 'GET')
+            obj.body = JSON.stringify(params);
+
+        fetch(url, obj)
+        .then((response) => {
+            if (!response.ok)
+                throw response;
+            return response.json();
+        })
+        .then(json => {
+            return callback(json)
+        }, (e) => {
+            let s = '';
+            if (e instanceof Error) s = "Request failed: unexpected response content";
+            else if (e instanceof Response) s = "Request failed with HTTP status: " + e.status + ' ' + e.statusText;
+            else s = "Unexpected fetch() error";
+            console.log(s, e);
+            if (errorCallback)
+                errorCallback(s, e);
+            else if (this.errorCallback)
+                this.errorCallback(s, e);
+        });
+    },
+
+
     loadTasks(params, callback) {
         let q = '';
         if (params.search && params.search != '') q += '&s=' + encodeURIComponent(params.search);
         if (params.tag && params.tag != '') q += '&t=' + encodeURIComponent(params.tag);
-        if (params.setCompl && params.setCompl != 0) q += '&setCompl=1';
+        if (params.limit) q += '&limit=' + parseInt(params.limit);
+        if (params.page)  q += '&page=' + parseInt(params.page);
+        if (params.saveCompl && params.saveCompl != 0) q += '&saveCompl=1';
         if (params.saveSort && params.saveSort != 0) q += '&saveSort=1';
 
         $.getJSON(mytinytodo.apiUrl + 'tasks' + (mytinytodo.apiUrl.indexOf('?') > -1 ? '&' : '?') +
@@ -253,7 +306,8 @@ MytinytodoAjaxApi.prototype = {
 
     // Lists
     loadLists(params, callback) {
-        $.getJSON(mytinytodo.apiUrl + 'lists', callback);
+        const ep = params.username ? `user/${params.username}/lists` : 'lists';
+        $.getJSON(mytinytodo.apiUrl + ep, callback);
     },
 
     addList(params, callback) {
@@ -363,6 +417,7 @@ MytinytodoAjaxApi.prototype = {
             data: JSON.stringify({
                 action: 'hide',
                 hide: params.hide,
+                order: params.order,
             }),
             success: callback,
             dataType: 'json'
@@ -398,17 +453,11 @@ MytinytodoAjaxApi.prototype = {
 
     /* Auth */
 
-    login(params, callback) {
-        $.ajax({
-            url: mytinytodo.apiUrl + 'login',
-            method: 'POST',
-            contentType : 'application/json',
-            data: JSON.stringify({
-                password: params.password,
-            }),
-            success: callback,
-            dataType: 'json'
-        });
+    login(params, callback, errorCallback) {
+        this.jsonRequest(mytinytodo.apiUrl + 'login', 'POST', {
+            username: params.username,
+            password: params.password
+        }, callback, errorCallback);
     },
 
     logout(params, callback) {
@@ -418,6 +467,21 @@ MytinytodoAjaxApi.prototype = {
             success: callback,
             dataType: 'json'
         });
-    }
+    },
+
+    resetPassword(params, callback, errorCallback) {
+        this.jsonRequest(mytinytodo.apiUrl + 'resetPassword', 'POST', {
+            email: params.email
+        }, callback, errorCallback);
+    },
+
+    newPassword(params, callback, errorCallback) {
+        this.jsonRequest(mytinytodo.apiUrl + 'newPassword', 'POST', {
+            email: params.email,
+            code: params.code,
+            newpassword: params.newpassword,
+            newpassword2: params.newpassword2,
+        }, callback, errorCallback);
+    },
 
 };

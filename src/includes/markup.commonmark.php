@@ -2,7 +2,7 @@
 
 /*
     This file is a part of myTinyTodo.
-    (C) Copyright 2022 Max Pozdeev <maxpozdeev@gmail.com>
+    (C) Copyright 2022-2026 Max Pozdeev <maxpozdeev@gmail.com>
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
@@ -29,6 +29,10 @@ class MTTCommonmarkWrapper implements MTTMarkdownInterface
         $environment = new Environment([
             'html_input' => 'escape',
             'allow_unsafe_links' => false,
+            'max_nesting_level' => 10,
+            'renderer' => [
+                'soft_break' => "<br>\n",
+            ],
             'mentions' => [
                 'task_id' => [
                     'prefix'    => '#',
@@ -53,7 +57,7 @@ class MTTCommonmarkWrapper implements MTTMarkdownInterface
         $this->converter = new MarkdownConverter($environment);
     }
 
-    public function convert(string $s, bool $toExternal = false)
+    public function convert(string $s, bool $toExternal = false): string
     {
         $this->toExternal = $toExternal;
         return (string) $this->converter->convert($s);

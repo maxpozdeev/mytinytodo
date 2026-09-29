@@ -1,7 +1,7 @@
 /* Markdown notes */
 
 .markdown-note {
-  line-height: 1.3;
+  line-height: 1.5;
 }
 
 .markdown-note > *:first-child { margin-top: 0 !important; }
@@ -90,7 +90,7 @@
 .markdown-note pre {
   font-size: 13px;
   font-family: ui-monospace,Consolas,"SF Mono",Menlo,"Noto Sans Mono","Liberation Mono",monospace;
-  line-height: 1.2rem;
+  line-height: 1.4rem;
   padding: 10px;
   background-color: var(--color-md-bg-highlighted);
   overflow: auto;

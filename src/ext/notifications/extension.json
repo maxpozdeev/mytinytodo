@@ -2,5 +2,6 @@
     "bundleId": "notifications",
     "name": "Notifications",
     "version": "1.2.1",
-    "description": "Notify about new tasks and lists on e-mail or telegram"
+    "description": "Notify about new tasks and lists on e-mail or telegram",
+    "compatibility": "1.8-1.8"
 }

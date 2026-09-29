@@ -2,21 +2,23 @@
 
 /*
     This file is a part of myTinyTodo.
-    (C) Copyright 2021-2025 Max Pozdeev <maxpozdeev@gmail.com>
+    (C) Copyright 2021-2026 Max Pozdeev <maxpozdeev@gmail.com>
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
 require_once(MTTINC. 'markup.parsedown.php');
 //require_once(MTTINC. 'markup.commonmark.php');
 
+
 interface MTTMarkdownInterface
 {
-    public function convert(string $s, bool $toExternal = false);
+    public function convert(string $s, bool $toExternal = false): string;
 }
+
 
 final class MTTMarkdown
 {
-    /** @var MTTMarkdownInterface */
+    /** @var ?MTTMarkdownInterface */
     private static $instance;
 
     /** @var string */
@@ -40,7 +42,7 @@ final class MTTMarkdown
         return self::$instance;
     }
 
-    public static function setInstanceClass(string $class)
+    public static function setInstanceClass(string $class): void
     {
         if (!is_a($class, MTTMarkdownInterface::class, true)) {
             throw new Exception("Class '$class' is not a MTTMarkdownInterface");
@@ -81,7 +83,7 @@ class MTTTitleMarkupConverter implements MTTTitleMarkupInterface
 
 final class MTTTitleMarkup
 {
-    /** @var MTTTitleMarkupInterface */
+    /** @var ?MTTTitleMarkupInterface */
     private static $instance;
 
     /** @var string */
@@ -96,7 +98,7 @@ final class MTTTitleMarkup
         return self::$instance;
     }
 
-    public static function setInstanceClass(string $class)
+    public static function setInstanceClass(string $class): void
     {
         if (!is_a($class, MTTTitleMarkupInterface::class, true)) {
             throw new Exception("Class '$class' is not a MTTTitleMarkupInterface");
@@ -106,7 +108,14 @@ final class MTTTitleMarkup
     }
 }
 
-function noteMarkup($note, $toExternal = false)
+
+/**
+ * Convert note using markup method defined in settings
+ * @param null|string $note
+ * @param bool $toExternal
+ * @return string
+ */
+function noteMarkup(?string $note, bool $toExternal = false): string
 {
     if ($note === null) {
         $note = '';
@@ -117,14 +126,28 @@ function noteMarkup($note, $toExternal = false)
     return markdownToHtml($note, $toExternal);
 }
 
-function markdownToHtml($s, $toExternal = false)
+
+/**
+ * Convert text in markdown format to html
+ * @param null|string $s
+ * @param bool $toExternal
+ * @return string
+ */
+function markdownToHtml(?string $s, bool $toExternal = false): string
 {
+    if (is_null($s) || $s === '')
+        return '';
     return MTTMarkdown::instance()->convert($s, $toExternal);
 }
 
 
-// Convert note's raw text to html with allowed elements (b,i,u,s and raw urls)
-function mttMarkup_v1($s)
+/**
+ * Convert note's raw text to html with allowed elements (b,i,u,s and raw urls).
+ * The same behaviour as in first versions of the app.
+ * @param string $s
+ * @return string
+ */
+function mttMarkup_v1(string $s): string
 {
     //hide allowed elements from escaping
     $c1 = chr(1);
@@ -151,11 +174,16 @@ function mttMarkup_v1($s)
         $s
     );
 
-    return $s;
+    return (string)$s;
 }
 
-// Convert raw title to html with allowed urls
-function titleMarkup($title)
+
+/**
+ * Convert raw title to html with allowed urls
+ * @param string $title
+ * @return string
+ */
+function titleMarkup(string $title): string
 {
     return MTTTitleMarkup::instance()->convert($title);
 }

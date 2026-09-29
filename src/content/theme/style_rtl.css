@@ -1,8 +1,7 @@
 body { direction:rtl; }
-.topblock h2 {
-  background-position: right;
-  padding-left: 10px;
-  padding-right: 30px;
+#topblock a.logo {
+  margin-right:unset;
+  margin-left:6px;
 }
 #loading { margin-left:6px; margin-right:0px; }
 .bar-menu { text-align: left; }

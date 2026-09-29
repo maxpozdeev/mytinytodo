@@ -1,11 +1,11 @@
 @media print {
 
   html,body { height:auto; }
-  h2 { display: none; }
+  #mtt_title { display: none; }
   h3 { border-bottom:2px solid #777777; }
   #toolbar { display: none; }
 
-  .topblock { display:none; }
+  #topblock { display:none; }
   .mtt-tab { display:none; }
   .mtt-tab.mtt-tab-selected { display:block; border:none; background:none; margin:0; }
   .mtt-tab.mtt-tab-selected a { padding:0; display:inline-block; height:auto; }
@@ -50,7 +50,7 @@
   #footer_content { border-top:1px solid #777777; background:none; }
   #footer_content a { text-decoration:none; color:#000000; }
 
-  #tagcloudbtn { display:none; }
+  .page-title-right { display: none; }
   .mtt-notes-showhide { display:none; }
   #taskview img { display:none; }
 
