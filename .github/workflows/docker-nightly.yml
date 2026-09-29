@@ -3,7 +3,7 @@ name: Build Nightly Docker Image
 on:
   push:
     branches:
-      - v2.0
+      - master
   workflow_dispatch: # allows manual trigger
 
 permissions:
