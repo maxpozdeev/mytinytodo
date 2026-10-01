@@ -14,7 +14,8 @@ if (php_sapi_name() != 'cli') {
 }
 
 if (isset($argv[1])) {
-    print  base64file($argv[1]);
+    if (!file_exists($argv[1])) die("File {$argv[1]} does not exists\n");
+    print asVar(pathinfo($argv[1], PATHINFO_BASENAME), base64file($argv[1])) . "\n";
     exit();
 }
 
@@ -36,7 +37,7 @@ sort($files);
 print ":root {\n";
 foreach ($files as $name) {
     $b64 = base64file(__DIR__. "/$name.svg");
-    print "  --svg-{$name}: url('data:image/svg+xml;base64,$b64');\n";
+    print "  ". asVar($name, $b64). "\n";
 }
 print "}\n";
 
@@ -59,4 +60,9 @@ function cleanXml(string $data): string
         $comment->parentNode->removeChild($comment);
     }
     return $dom->saveXML();
+}
+
+function asVar(string $name, string $base64)
+{
+    return "--svg-{$name}: url('data:image/svg+xml;base64,$base64');";
 }

@@ -126,6 +126,8 @@
   --svg-selectlist2: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIj8+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2aWV3Qm94PSIwIDAgMTYgMTYiPjxnIGZpbGw9Im5vbmUiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2U9IiMwMDAiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCI+PGxpbmUgeDE9IjIiIHkxPSIzIiB4Mj0iMTQiIHkyPSIzIi8+PGxpbmUgeDE9IjIiIHkxPSI4IiB4Mj0iMTQiIHkyPSI4Ii8+PGxpbmUgeDE9IjQiIHkxPSIxMyIgeDI9IjE0IiB5Mj0iMTMiLz48L2c+PC9zdmc+Cg==');
   --svg-task-menu: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIj8+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2aWV3Qm94PSIwIDAgMTQgMTQiPjxwb2x5bGluZSBwb2ludHM9IjIgNiwgNyAxMSwgMTIgNiIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2U9IiMwMDAiIGZpbGw9Im5vbmUiLz48L3N2Zz4K');
   --svg-task-menu2: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIj8+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2aWV3Qm94PSIwIDAgMTQgMTQiPjxnIGZpbGw9IiMwMDAiPjxjaXJjbGUgY3g9IjciIGN5PSIyIiByPSIxLjUiLz48Y2lyY2xlIGN4PSI3IiBjeT0iNyIgcj0iMS41Ii8+PGNpcmNsZSBjeD0iNyIgY3k9IjEyIiByPSIxLjUiLz48L2c+PC9zdmc+Cg==');
+  --svg-user: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIj8+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2aWV3Qm94PSIwIDAgMTYgMTYiPjxwYXRoIGQ9Ik04IDEuNSBhMyAzIDAgMSAwIDAgNiBhMyAzIDAgMSAwIDAgLTYgWiIvPjxwYXRoIGQ9Ik0yLjUgMTQuNSBRMi41IDkgNS41IDguNSBRNyA4LjIgOCA4LjIgUTkgOC4yIDEwLjUgOC41IFExMy41IDkgMTMuNSAxNC41IFoiLz48L3N2Zz4K');
+
 }
 
 /*	default style	*/
@@ -254,6 +256,15 @@ h3.page-title .page-title-right {
 }
 .bar-menu > * {
   margin-left: 10px;
+}
+#usermenu {
+  position: relative;
+  padding-left: calc(1rem + 8px);
+}
+#usermenu .button-icon {
+  width: 1rem; height: 1rem;
+  mask: var(--svg-user) no-repeat; -webkit-mask: var(--svg-user) no-repeat;
+  background-color: var(--color-text-default);
 }
 
 
@@ -1212,6 +1223,14 @@ textarea.form-input.inmax {
 .mtt-menu-button.mtt-menu-button-active {
   background-color: var(--color-btn-hover);
   border-radius:4px;
+}
+.mtt-menu-button .button-icon {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  position: absolute;
+  top:0; bottom: 0; margin: auto; /* old magic */
+  left: 4px;
 }
 
 #pagination {
