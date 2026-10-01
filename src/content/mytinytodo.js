@@ -1164,7 +1164,9 @@ const mtt = window.mytinytodo = {
             s = a[i];
             switch(s) {
                 //case "u": p.username = a[++i]; break;
-                case "list": if (a[++i].match(/^-?\d+$/)) { p.list = a[i]; } break;
+                case "list": if (a[++i].match(/^-?\d+$/)) { p.list = a[i]; }
+                             else if (a[i] === 'alltasks') { p.list = '-1'; }
+                             break;
                 case "alltasks": p.list = '-1'; break;
                 case "settings": p.settings = true; break;
                 case "settings.json": p.settings = 'json'; break;
@@ -1205,6 +1207,8 @@ const mtt = window.mytinytodo = {
             const tags = mtt.filter.getTags(true);
             if (tags)
                 ret += '/tags/' + encodeURIComponent(tags);
+            if (filter.search !== '')
+                ret += '/search/' + encodeURIComponent(filter.search);
         }
         return ret;
     },
@@ -2419,7 +2423,10 @@ function liveSearchToggle(toSearch, dontLoad)
             $('#searchbarkeyword').text('');
             $('#searchbar').hide();
             $('#search_close').hide();
-            if(!dontLoad) loadTasks();
+            if (!dontLoad) {
+                replaceHistoryUrl(mtt.urlForList(curList, true));
+                loadTasks();
+            }
         }
 
         $('#search').blur();
@@ -2438,6 +2445,7 @@ function searchTasks(force)
     }
     else
         $('#searchbar').fadeOut('fast');
+    replaceHistoryUrl(mtt.urlForList(curList, true));
     loadTasks();
     return false;
 };

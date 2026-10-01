@@ -65,7 +65,7 @@ function parseRoute(string $path)
 
 function getIndexPath(): string
 {
-    if (!MTT_USE_REWRITE) {
+    if (!MTT_USE_REWRITE || isset($_GET['p'])) {
         if (isset($_GET['p'])) {
             $path = $_GET['p'];
             if ($path == '' || $path[0] != '/')
@@ -88,39 +88,19 @@ function getIndexPath(): string
     return $path;
 }
 
-function handleGoRoute(?string $queryString = null)
+/*
+    MTTVars::$requestedUserId and MTTVars::$requestedUsername are already set
+*/
+function handleUserGoRoute(?string $queryString = null)
 {
     if ($queryString === null)
         $queryString = $_SERVER['QUERY_STRING'] ?? '';
 
     if ($queryString == '')
-        redirectExit(get_unsafe_mttinfo('url'));
+        redirectExit(routerMakeUserUrl());
 
     parse_str($queryString, $q);
     unset($q['p']);
-
-/*
-    if (isset($q['user'])) {
-        $q['user'] = trim($q['user']);
-        if ($q['user'] == '') {
-            htmlExit(404, "Page not found");
-        }
-        $userId = (int) (new UserRepo(DBConnection::instance()))->findUserIdByUsername($q['user']);
-        if (!$userId) {
-            htmlExit(404, "User not found");
-        }
-    }
-    else {
-        # No user specified
-        if (is_logged()) {
-            // User dashboard
-        }
-        else {
-            // Guest main page
-            // Request for login?
-        }
-    }
-*/
 
     if (isset($q['list'])) {
         $hash = ($q['list'] == 'alltasks') ? ['alltasks'] : ['list', (int)$q['list']];
@@ -138,14 +118,16 @@ function handleGoRoute(?string $queryString = null)
         redirectWithHashRoute($hash, $q);
     }
     else if (isset($q['task'])) {
-        // TODO: check access
-        $taskRepo = new TaskRepo(DBConnection::instance());
-        $listId = $taskRepo->findListIdByTaskId((int)$q['task']);
-        if ($listId > 0) {
+        $listRepo = new ListRepo(DBConnection::instance());
+        $listId = $listRepo->findListIdByTaskIdAndUserId((int)$q['task'], MTTVars::$requestedUserId);
+        if ($listId) {
             $h = [ 'list', $listId, 'search', '#'. (int)$q['task']];
             redirectWithHashRoute($h);
         }
-        htmlExit(404, "Task not found");
+        else {
+            page_404();
+            exit;
+        }
     }
 }
 
@@ -207,18 +189,6 @@ function jsOptions()
     }
 }
 
-function htmlExit(int $code = 200, string $msg = '')
-{
-    if ($msg != '') {
-        print($msg);
-    }
-    else {
-        print "Status $code\n";
-    }
-    http_response_code($code);
-    exit;
-}
-
 
 function handleUser(string $username, string $path = '')
 {
@@ -239,12 +209,24 @@ function handleUser(string $username, string $path = '')
     if (!need_auth() && MTTVars::$requestedUserId !== userId())
         return page_404();
 
-    if ($path === '/go') {
-        handleGoRoute($_SERVER['QUERY_STRING'] ?? '');
+    if ($path === '' || $path === '/') {
+        page_tasks();
         exit;
     }
+    else if ($path === '/go') {
+        handleUserGoRoute($_SERVER['QUERY_STRING'] ?? '');
+        exit;
+    }
+    else if (substr($path, 0, 6) === '/list/') {
+        $url = routerMakeUserUrl('', MTTVars::$requestedUsername) . '#'. substr($path, 1);
+        redirectExit($url);
+    }
+    else if (substr($path, 0, 6) === '/task/') {
+        $taskId = (int)substr($path, 6);
+        handleUserGoRoute("task=$taskId"); # hack
+    }
 
-    page_tasks();
+    return page_404();
 }
 
 function page_404()

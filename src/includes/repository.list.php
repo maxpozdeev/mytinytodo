@@ -121,6 +121,16 @@ class ListRepo
     }
 
 
+    public function findListIdByTaskIdAndUserId(int $taskId, int $userId): ?int
+    {
+        $listId = (int)$this->db->sq("
+            SELECT lists.id FROM {$this->db->prefix}lists AS lists
+            INNER JOIN {$this->db->prefix}todolist AS tasks ON lists.id = tasks.list_id
+            WHERE tasks.id = ? AND lists.user_id = ?", [$taskId, $userId]);
+        return $listId ?: null;
+    }
+
+
     /**
      * Set order of lists of specfic user
      * @param (int|string)[] $order Ids of Lists in order of appearance
