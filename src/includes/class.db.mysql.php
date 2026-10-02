@@ -2,7 +2,7 @@
 
 /*
     This file is a part of myTinyTodo.
-    (C) Copyright 2020-2022 Max Pozdeev <maxpozdeev@gmail.com>
+    (C) Copyright 2020-2026 Max Pozdeev <maxpozdeev@gmail.com>
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
