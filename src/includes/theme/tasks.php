@@ -38,7 +38,7 @@ $().ready(function(){
 <div class="searchbox-c">
   <div class="mtt-searchbox">
     <input type="text" name="search" value="" maxlength="250" id="search" autocomplete="off" placeholder="<?php _e('htab_search');?>">
-    <div class="mtt-searchbox-icon mtt-icon-search"></div>
+    <div id="search_options" class="mtt-searchbox-icon mtt-icon-search"></div>
     <div id="search_close" class="mtt-searchbox-icon mtt-icon-cancelsearch"></div>
   </div>
 </div>
@@ -265,5 +265,13 @@ $().ready(function(){
 <ul>
   <li id="slmenu_list:-1" class="list-id--1 mtt-only-authorized"><div class="menu-icon"></div><a href="#alltasks"><?php _e('alltasks'); ?></a></li>
   <li class="mtt-menu-delimiter slmenu-lists-begin mtt-need-list"></li>
+</ul>
+</div>
+
+<div id="searchoptionscontainer" class="mtt-menu-container" style="display:none">
+<ul>
+  <li id="somenu_title" data-opt="title"><div class="menu-icon"></div> <?php _e('task_title');?> </li>
+  <li id="somenu_note" data-opt="note"><div class="menu-icon"></div> <?php _e('note');?> </li>
+  <li id="somenu_tags" data-opt="tags"><div class="menu-icon"></div> <?php _e('tags');?> </li>
 </ul>
 </div>

@@ -36,13 +36,17 @@ class TaskRepo
     const FILTER_EDITED = 4;
     const FILTER_OPEN_AND_EDITED = 5; # 1+4
 
+    const SEARCH_TITLE = 1;
+    const SEARCH_NOTE = 2;
+    const SEARCH_TAGS = 4;
+
     function __construct(AbstractDatabase $db)
     {
         $this->db = $db;
     }
 
 
-    public function findTasks(array $lists, ?bool $compl, array $tags, string $search, int $sort, int $filter = 0, int $limit = 0, ?TaskPaginator $paginator = null)
+    public function findTasks(array $lists, ?bool $compl, array $tags, string $search, int $sort, int $searchOptions = 0, int $filter = 0, int $limit = 0, ?TaskPaginator $paginator = null)
     {
         $makeInts = function (array &$a) { foreach ($a as &$v) $v = (int)$v; };
         $sqlWhere = $sqlWhereListId = $sqlLimit = '';
@@ -62,6 +66,14 @@ class TaskRepo
             $sqlWhere .= ' AND compl=1';
         }
 
+        $searchTitle = (($searchOptions & static::SEARCH_TITLE) === static::SEARCH_TITLE);
+        $searchNote = (($searchOptions & static::SEARCH_NOTE) === static::SEARCH_NOTE);
+        $searchTags = (($searchOptions & static::SEARCH_TAGS) === static::SEARCH_TAGS);
+        if (!$searchTitle && !$searchNote && !$searchTags) {
+            $searchTitle = true;
+            $searchNote = true;
+        }
+
         # tags
         if (isset($tags['excludeAll']) && $tags['excludeAll']) {
             # No Tags
@@ -77,10 +89,12 @@ class TaskRepo
                 $tagAnd = [];
                 foreach ($tags['include'] as $ids) {
                     $makeInts($ids);
-                    $tagAnd[] = "task_id IN (SELECT task_id FROM {$this->db->prefix}tag2task WHERE tag_id IN (". implode(',', $ids). "))";
+                    $tagAnd[] = "\t\t\t\t task_id IN (SELECT task_id FROM {$this->db->prefix}tag2task WHERE tag_id IN (". implode(',', $ids). "))";
                 }
-                $sqlWhere .= "\n AND todo.id IN (".
-                             "SELECT DISTINCT task_id FROM {$this->db->prefix}tag2task WHERE ". implode(' AND ', $tagAnd). ")";
+                $sqlWhere .= "
+                    AND todo.id IN (
+                        SELECT DISTINCT task_id FROM {$this->db->prefix}tag2task WHERE \n". implode(" AND \n", $tagAnd). "
+                    )";
             }
             if ($tags['exclude'] ?? 0) {
                 # Exclude tags
@@ -96,7 +110,16 @@ class TaskRepo
                 $sqlWhere .= " AND todo.id = ". (int)$m[1];
             }
             else {
-                $sqlWhere .= " AND (". $this->db->like("title", "%%%s%%", $search). " OR ". $this->db->like("note", "%%%s%%", $search). ")";
+                $sa = [];
+                if ($searchTitle) $sa[] = $this->db->like("title", "%%%s%%", $search);
+                if ($searchNote) $sa[] = $this->db->like("note", "%%%s%%", $search);
+                if ($searchTags) {
+                    if ($tags['search']) $sa[] = "todo.id IN (SELECT task_id FROM {$this->db->prefix}tag2task WHERE tag_id IN (". implode(",", $tags['search']). "))";
+                    else $sa[] = "todo.id IN (0)";
+                }
+                if ($sa) {
+                    $sqlWhere .= " AND (". implode(" OR ", $sa). ")";
+                }
             }
         }
 

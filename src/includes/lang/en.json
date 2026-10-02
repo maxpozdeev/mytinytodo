@@ -16,6 +16,7 @@
     "btn_search": "Search",
     "advanced_add": "Advanced",
     "searching": "Searching for",
+    "task_title": "Task title",
     "tasks": "Tasks",
     "taskdate_inline_created": "created on %s",
     "taskdate_inline_edited": "edited on %s",

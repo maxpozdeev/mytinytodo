@@ -102,6 +102,7 @@ MytinytodoAjaxApi.prototype = {
         let q = '';
         if (params.search && params.search != '') q += '&s=' + encodeURIComponent(params.search);
         if (params.tag && params.tag != '') q += '&t=' + encodeURIComponent(params.tag);
+        if (params.searchOptions) q += '&so=' + encodeURIComponent(params.searchOptions);
         if (params.limit) q += '&limit=' + parseInt(params.limit);
         if (params.page)  q += '&page=' + parseInt(params.page);
         if (params.saveCompl && params.saveCompl != 0) q += '&saveCompl=1';

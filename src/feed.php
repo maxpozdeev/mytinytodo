@@ -87,7 +87,7 @@ class MTTRSSFeed
         elseif ($sortField == 'd_completed') $sort = TaskRepo::SORT_FIELD_COMPLETED;
         else throw new Exception("Unexpected sort field: '$sortField'");
 
-        $tasks = $this->taskRepo->findTasks([$this->list->id], null, [], '', $sort, $filter, 100);
+        $tasks = $this->taskRepo->findTasks([$this->list->id], null, [], '', $sort, 0, $filter, 100);
         foreach ($tasks as $task)
         {
             $this->data[] = (object)array(

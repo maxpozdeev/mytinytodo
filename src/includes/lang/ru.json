@@ -16,6 +16,7 @@
     "btn_search": "Искать",
     "advanced_add": "Расширенная форма",
     "searching": "Поиск",
+    "task_title": "Заголовок задачи",
     "tasks": "Задачи",
     "taskdate_inline_created": "добавлена %s",
     "taskdate_inline_edited": "отредактирована %s",

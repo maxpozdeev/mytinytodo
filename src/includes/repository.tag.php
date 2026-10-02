@@ -56,6 +56,17 @@ class TagRepo
     }
 
 
+    public function getTagIdsBySearchName(string $name): array
+    {
+        $ids = [];
+        $q = $this->db->dq("SELECT id FROM {$this->db->prefix}tags WHERE ". $this->db->like("name", "%%%s%%", $name));
+        while ($r = $q->fetchAssoc()) {
+            $ids[] = (int) $r['id'];
+        }
+        return $ids;
+    }
+
+
     /**
      *
      * @param string $name

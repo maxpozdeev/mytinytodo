@@ -82,6 +82,40 @@ var pagination = {
   page: 1,
   totalPages: 1
 };
+const searchOptions = {
+    title: true,
+    note: true,
+    tags: false,
+    asInt() {
+        return (this.title?1:0) | (this.note?2:0) | (this.tags?4:0);
+    },
+    save() {
+        setLocalStorageItem('searchOptions', this.asInt());
+    },
+    restore() {
+        const v = getLocalStorageItem('searchOptions') ?? 3;
+        this.title = (v & 1) === 1;
+        this.note  = (v & 2) === 2;
+        this.tags  = (v & 4) === 4;
+        $('#somenu_title').toggleClass('mtt-item-checked', !!this.title);
+        $('#somenu_note').toggleClass('mtt-item-checked', !!this.note);
+        $('#somenu_tags').toggleClass('mtt-item-checked', !!this.tags);
+    },
+    toggleOption(opt) {
+        if (opt === 'title') {
+            this.title = !this.title;
+            $('#somenu_title').toggleClass('mtt-item-checked', !!this.title);
+        }
+        else if (opt === 'note') {
+            this.note = !this.note;
+            $('#somenu_note').toggleClass('mtt-item-checked', !!this.note);
+        }
+        else if (opt === 'tags') {
+            this.tags = !this.tags;
+            $('#somenu_tags').toggleClass('mtt-item-checked', !!this.tags);
+        }
+    }
+}
 
 const mtt = window.mytinytodo = {
 
@@ -309,6 +343,21 @@ const mtt = window.mytinytodo = {
             if('' == $(this).val()) $('#task_placeholder').addClass('placeholding');
             $('#toolbar').removeClass('mtt-intask');
         });
+
+
+        $('#search_options').click(function(event){
+            if (!mtt.menus.searchoptions) {
+                mtt.menus.searchoptions = new mttMenu( 'searchoptionscontainer', { onclick: function(el, menu){
+                    if (el.dataset.opt) {
+                        searchOptions.toggleOption(el.dataset.opt);
+                        searchOptions.save();
+                        searchTasks(true);
+                    }
+                }});
+            }
+            mtt.menus.searchoptions.show(this);
+        });
+
 
 
         $('#search_close').click(function(){
@@ -875,6 +924,7 @@ const mtt = window.mytinytodo = {
         const path = mtt.parseAnchor();
 
         updateAccessStatus();
+        searchOptions.restore();
 
         if (path.settings) {
             showSettings(path.settings == 'json' ? 1 : 0);
@@ -1373,6 +1423,7 @@ function loadTasks(opts)
         compl: curList.showCompl,
         sort: curList.sort,
         search: filter.search,
+        searchOptions: searchOptions.asInt(),
         tag: mtt.filter.getTags(true),
         saveCompl: opts.saveCompl,
         saveSort: opts.saveSort,

@@ -44,6 +44,7 @@ class TasksController extends ApiController {
             'includeAny' => false,
             'include' => [],
             'exclude' => [],
+            'search' => [],  # plain array of tag ids
         ];
         $t = trim(_get('t'));
         if ($t != '') {
@@ -89,6 +90,11 @@ class TasksController extends ApiController {
 
         $search = trim(_get('s'));
         $sort = (int)_get('sort');
+        $searchOptions = (int)_get('so');
+        $searchTags = (($searchOptions & TaskRepo::SEARCH_TAGS) === TaskRepo::SEARCH_TAGS);
+        if ($searchTags) {
+            $tags['search'] = (new TagRepo($db))->getTagIdsBySearchName($search);
+        }
 
         $page = (int)_get('page');
         $limit = (int)_get('limit');
@@ -103,7 +109,7 @@ class TasksController extends ApiController {
         $t['list'] = [];
 
         $taskRepo = new TaskRepo($db);
-        $tasks = $taskRepo->findTasks($lists, $showCompleted, $tags, $search, $sort, 0, 0, $paginator);
+        $tasks = $taskRepo->findTasks($lists, $showCompleted, $tags, $search, $sort, $searchOptions, 0, 0, $paginator);
         foreach ($tasks as $task) {
             $t['list'][] = $task->toJsonApiArray();
         }

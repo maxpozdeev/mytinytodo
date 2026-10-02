@@ -1,6 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 16">
 <g stroke-width="1.5" stroke="#000" fill="none">
-<path d="M14 14l-4-4"/>
-<circle cx="7" cy="7" r="4.5"/>
+ <path d="M14 14l-4-4"/>
+ <circle cx="7" cy="7" r="4.5"/>
 </g>
+<polygon points="15 7, 22 7, 18.5 10.5" fill="#000" />
 </svg>
