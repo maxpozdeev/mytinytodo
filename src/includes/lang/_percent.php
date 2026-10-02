@@ -28,6 +28,7 @@ unset($src['_header']);
 
 $totalKeys = checkArray("en.json", $src, $src); //hack
 $langs = [];
+$vers = [];
 $files = array_diff(scandir('.') ?: [], ['.', '..', 'en-rtl.json']);
 foreach ($files as $file) {
     if (!preg_match("/(.+)\.json$/", $file, $m)) {
@@ -36,23 +37,25 @@ foreach ($files as $file) {
     if (count($only) && !in_array($file, $only)) {
         continue;
     }
-    $translated = checkLang($src, $file);
+    $translated = checkLang($src, $file, $ver);
     $langs[$m[1]] = $translated;
+    $vers[$m[1]] = $ver;
 }
 ksort($langs);
 
 $rows = [];
-$rows[] = ["Locale", "Lines", "% Done"];
+$rows[] = ["Locale", "Version", "Lines", "% Done"];
 foreach ($langs as $lang => $translated) {
-    $rows[] = [$lang, "$translated/$totalKeys", round(100 * $translated/$totalKeys)."%"];
+    $rows[] = [$lang, $vers[$lang], "$translated/$totalKeys", round(100 * $translated/$totalKeys)."%"];
 }
 
 #calc column width
-$width = [0,0,0];
+$width = [0,0,0,0];
 foreach ($rows as $row) {
     $width[0] = max($width[0], strlen($row[0]));
     $width[1] = max($width[1], strlen($row[1]));
     $width[2] = max($width[2], strlen($row[2]));
+    $width[3] = max($width[3], strlen($row[3]));
 }
 
 # print table
@@ -61,21 +64,26 @@ foreach ($rows as $i => $row) {
     if ($i == 0) {
         print("| ". str_pad($row[0], $width[0], " ", STR_PAD_BOTH). " | ".
             str_pad($row[1], $width[1], " ", STR_PAD_BOTH). " | ".
-            str_pad($row[2], $width[2], " ", STR_PAD_BOTH). " |\n");
-        print("|:". str_repeat("-", $width[0]). "-|-". str_repeat("-", $width[1]). ":|-". str_repeat("-", $width[2]). ":|\n");
+            str_pad($row[2], $width[2], " ", STR_PAD_BOTH). " | ".
+            str_pad($row[3], $width[3], " ", STR_PAD_BOTH). " |\n");
+        print("|:". str_repeat("-", $width[0]). "-|:". str_repeat("-", $width[1]). "-|-". str_repeat("-", $width[2]). ":|-". str_repeat("-", $width[3]). ":|\n");
     }
     else {
         print("| ". str_pad($row[0], $width[0], " ", STR_PAD_RIGHT). " | ".
-            str_pad($row[1], $width[1], " ", STR_PAD_LEFT). " | ".
-            str_pad($row[2], $width[2], " ", STR_PAD_LEFT). " |\n");
+            str_pad($row[1], $width[1], " ", STR_PAD_RIGHT). " | ".
+            str_pad($row[2], $width[2], " ", STR_PAD_LEFT). " | ".
+            str_pad($row[3], $width[3], " ", STR_PAD_LEFT). " |\n");
     }
 }
 
 
 
-function checkLang(array $src, string $file) : int
+function checkLang(array $src, string $file, &$ver) : int
 {
     $lang = json_decode(file_get_contents($file), true) ?? [];
+    if (isset($lang['_header']['ver']) && preg_match('/^v?(\d+(?:\.\d+)*)$/', $lang['_header']['ver'], $m)) {
+        $ver = $m[1];
+    }
     unset($lang['_header']);
     $translated = checkArray($file, $src, $lang);
     return $translated;
