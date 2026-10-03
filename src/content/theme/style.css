@@ -564,16 +564,34 @@ select.form-input {
 }
 
 /* Quick Task Add */
-.taskbox-c { flex-grow:1; display:flex; align-items:center; }
-.mtt-taskbox { position:relative; padding-left:22px; /*input padding+border*/ flex-grow:1; max-width:430px; }
+.taskbox-c {
+  flex-grow:1;
+  display:flex;
+  align-items:center;
+}
+.mtt-taskbox {
+  position:relative;
+  padding-left:26px; /*input padding+border=1+4+20+1*/
+  flex-grow:1;
+  max-width:430px;
+}
 #task {
   color: var(--color-text-reduced);
   background: var(--color-bg);
-  height:1.35rem; padding:2px 4px; padding-right:20px; border:1px solid var(--color-border-default); border-radius:3px; width:100%; margin-left:-24px;
+  height:1.35rem;
+  padding:2px 4px;
+  padding-right:20px;
+  border:1px solid var(--color-border-default);
+  border-radius:3px;
+  width:100%;
+  margin-left:-26px; /*input padding+border*/
 }
 #mtt.show-all-tasks .taskbox-c,
 #mtt.readonly .taskbox-c {
   visibility: hidden;
+}
+#newtask_submit {
+  right:4px;
 }
 
 .mtt-taskbox-icon {
@@ -590,7 +608,10 @@ select.form-input {
 .mtt-taskbox-icon:hover {
   background-color: var(--color-btn-reduced-hover);
 }
-#newtask_adv { margin-left:0.5rem; }
+#newtask_adv {
+  margin-left:0.25rem;
+  margin-right:0.25rem;
+}
 #newtask_adv span {
   mask: url(images/newtask-ext.svg) no-repeat; -webkit-mask: url(images/newtask-ext.svg) no-repeat;
   background-color: var(--color-btn-reduced);
@@ -605,7 +626,7 @@ select.form-input {
   padding:2px 20px;
   padding-left:28px;
   width:100%;
-  margin-left:-50px; /*padding+border*/
+  margin-left:-50px; /*padding+border=1+28+20+1*/
   border:1px solid var(--color-border-default);
   border-radius:10px;
 }
@@ -1634,14 +1655,18 @@ li.mtt-item-hidden { display:none; }
   li.mtt-tab { display:none; }
   li.mtt-tab.mtt-tab-selected { display:block; }
 
-  #task { padding:5px; padding-right:18px; margin-left:-22px; }
+  .mtt-taskbox { padding-left:29px; /*1+5+22+1*/ }
+  #task { padding:5px; padding-right:22px; margin-left:-29px; }
   #task_placeholder span { padding:6px; }
+  #newtask_submit { right:5px; }
 
   .searchbox-c { width:30%; max-width:190px; }
   #toolbar.mtt-intask .searchbox-c { display:none; }
   #toolbar.mtt-insearch .taskbox-c { display:none; }
   #toolbar.mtt-insearch .searchbox-c { width:100%; max-width:100%; }
-  #search { padding:5px 20px; border-radius:15px; }
+  #search { padding-top:5px; padding-bottom:5px; border-radius:15px; }
+  #toolbar.mtt-intask .mtt-taskbox { max-width: unset; }
+  #toolbar.mtt-intask #newtask_adv { margin-right:0; }
 
   #tagcloudSearch {
     margin-top: 0.5rem;
