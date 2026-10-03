@@ -43,7 +43,7 @@ abstract class AbstractTaskList extends AbstractEntity implements JsonApiSeriali
     public ?int $userId;
     abstract function setSort(int $sort);
     abstract function setIsHidden(bool $hidden);
-    const defaultSort = 3;
+    const defaultSort = 103; # by date created desc (latest on top)
 }
 
 class TaskList extends AbstractTaskList
