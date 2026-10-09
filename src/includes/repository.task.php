@@ -46,7 +46,7 @@ class TaskRepo
     }
 
 
-    public function findTasks(array $lists, ?bool $compl, array $tags, string $search, int $sort, int $searchOptions = 0, int $filter = 0, int $limit = 0, ?TaskPaginator $paginator = null)
+    public function findTasks(array $lists, ?bool $compl, array $tags, string $search, int $sort, string $due = '', int $searchOptions = 0, int $filter = 0, int $limit = 0, ?TaskPaginator $paginator = null)
     {
         $makeInts = function (array &$a) { foreach ($a as &$v) $v = (int)$v; };
         $sqlWhere = $sqlWhereListId = $sqlLimit = '';
@@ -57,6 +57,24 @@ class TaskRepo
         }
         $makeInts($lists);
         $sqlWhereListId = "todo.list_id IN (". implode(",", $lists). ") ";
+
+        # Duedate filter
+        if ($due !== '') {
+            $ts = time();
+            $today = date('Y-m-d', $ts);
+            if ($due === 'past') {
+                $sqlWhere .= " AND todo.duedate IS NOT NULL AND todo.duedate < '$today'";
+            }
+            else if ($due === 'today') {
+                $date2 = date('Y-m-d', $ts + 86400); # tomorrow
+                $sqlWhere .= " AND (todo.duedate = '$today' OR todo.duedate = '$date2')";
+            }
+            else if ($due === 'soon') {
+                $date2 = date('Y-m-d', $ts + 7*86400); # 7 days
+                $sqlWhere .= " AND todo.duedate IS NOT NULL AND todo.duedate BETWEEN '$today' AND '$date2'";
+            }
+            else $due = '';
+        }
 
         # completed flag (null - show both)
         if ($compl === false) {

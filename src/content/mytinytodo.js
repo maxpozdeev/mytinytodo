@@ -1425,6 +1425,7 @@ function loadTasks(opts)
         search: filter.search,
         searchOptions: searchOptions.asInt(),
         tag: mtt.filter.getTags(true),
+        //due: filter.due,
         saveCompl: opts.saveCompl,
         saveSort: opts.saveSort,
         limit: pagination.limit,

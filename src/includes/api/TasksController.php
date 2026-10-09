@@ -88,6 +88,10 @@ class TasksController extends ApiController {
             }
         }
 
+        $due = trim(_get('due'));
+        # dont show completed tasks if duedate filter is active
+        if ($due === 'past' || $due === 'today' || $due === 'soon') $showCompleted = false;
+
         $search = trim(_get('s'));
         $sort = (int)_get('sort');
         $searchOptions = (int)_get('so');
@@ -109,7 +113,7 @@ class TasksController extends ApiController {
         $t['list'] = [];
 
         $taskRepo = new TaskRepo($db);
-        $tasks = $taskRepo->findTasks($lists, $showCompleted, $tags, $search, $sort, $searchOptions, 0, 0, $paginator);
+        $tasks = $taskRepo->findTasks($lists, $showCompleted, $tags, $search, $sort, $due, $searchOptions, 0, 0, $paginator);
         foreach ($tasks as $task) {
             $t['list'][] = $task->toJsonApiArray();
         }
