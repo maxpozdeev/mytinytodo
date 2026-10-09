@@ -1603,7 +1603,7 @@ function refreshPagination(json)
     const totalItems = parseInt(json.pagination_total ?? 0);
     const limit = parseInt(json.pagination_limit ?? 0);
     const page = parseInt(json.pagination_page ?? 0);
-    if (totalItems < 1 || limit < 1 || page < 1 /*|| (limit === 20 && totalItems <= limit) */) {
+    if (totalItems < 1 || limit === 0 || limit < -1 || page < 1 /*|| (limit === 20 && totalItems <= limit) */) {
         $("#pagination>ul").html('');
         $("#pagination").hide();
         return;
@@ -1660,17 +1660,18 @@ function refreshPagination(json)
     $('#pagination>ul').html(html);
     let sel = '';
     let found = false;
-    for (let i of [10, 20, 30, 50]) {
+    for (let i of [10, 20, 30, 50, -1]) {
+        const title = (i === -1) ? "&infin;" : i;
         if (limit == i) {
             found = true;
-            sel += `<option selected="selected">${i}</option>`;
+            sel += `<option value="${i}" selected="selected">${title}</option>`;
         }
         else  {
-            sel += `<option>${i}</option>`;
+            sel += `<option value="${i}">${title}</option>`;
         }
     }
     if (!found) {
-        sel += `<option selected="selected">${limit}</option>`;
+        sel += `<option value="${i}" selected="selected">${limit}</option>`;
     }
     $('#pagination>select').html(sel);
     $('#pagination').show();
