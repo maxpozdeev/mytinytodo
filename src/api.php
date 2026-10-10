@@ -47,6 +47,7 @@ $endpoints = array(
         'PUT'  => [ TasksController::class , 'put' ],
     ],
     '/tasks/(-?\d+)' => [
+        'GET'     => [ TasksController::class , 'getId' ],
         'PUT'     => [ TasksController::class , 'putId' ],
         'DELETE'  => [ TasksController::class , 'deleteId' ],
         'POST'    => [ TasksController::class , 'putId' ], //compatibility

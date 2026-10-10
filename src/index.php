@@ -125,8 +125,7 @@ function handleUserGoRoute(?string $queryString = null)
             redirectWithHashRoute($h);
         }
         else {
-            page_404();
-            exit;
+            return page_404();
         }
     }
 }

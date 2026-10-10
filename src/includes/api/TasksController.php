@@ -191,6 +191,27 @@ class TasksController extends ApiController {
     }
 
 
+    function getId($id): void
+    {
+        checkWriteAccess();
+        $id = (int)$id;
+        $repo = new TaskRepo(DBConnection::instance());
+        $task = $repo->findTaskById($id);
+        if (!$task) {
+            $this->response->errorJsonContent(__("taskNotFound"), 404);
+            return;
+        }
+        checkReadAccess($task->listId);
+        $t = [
+            'ok' => true,
+            'total' => 1,
+            'list' => [
+                $task->toJsonApiArray()
+            ],
+        ];
+        $this->response->data = $t;
+    }
+
     /**
      * Delete task by Id
      * @param mixed $id
