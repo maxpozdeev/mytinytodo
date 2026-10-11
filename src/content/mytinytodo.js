@@ -1416,6 +1416,7 @@ function loadTasks(opts)
     }
     if (!opts.isPagination) {
         pagination.page = 1;
+        refreshPagination(null);
     }
 
     mtt.db.request('loadTasks', {
@@ -1600,16 +1601,21 @@ mtt.prepareInlineDate = prepareInlineDate;
 
 function refreshPagination(json)
 {
+    if (json === null) {
+        $("#pagination>ul").html('');
+        $("#pagination").hide();
+        return;
+    }
     const totalItems = parseInt(json.pagination_total ?? 0);
     const limit = parseInt(json.pagination_limit ?? 0);
     const page = parseInt(json.pagination_page ?? 0);
-    if (totalItems < 1 || limit === 0 || limit < -1 || page < 1 /*|| (limit === 20 && totalItems <= limit) */) {
+    if (limit === 0 || page < 1) {
         $("#pagination>ul").html('');
         $("#pagination").hide();
         return;
     }
     taskCnt.total = totalItems;
-    const totalPages = pagination.totalPages =  Math.ceil(totalItems / limit);
+    const totalPages = pagination.totalPages =  Math.ceil(totalItems / limit); // || 1;
     const pages = [];
     if (totalPages <= 9) {
         for (let i = 1; i <= totalPages; i++) {
@@ -1660,8 +1666,8 @@ function refreshPagination(json)
     $('#pagination>ul').html(html);
     let sel = '';
     let found = false;
-    for (let i of [10, 20, 30, 50, -1]) {
-        const title = (i === -1) ? "&infin;" : i;
+    for (let i of [10, 20, 30, 50, 1000]) {
+        const title = (i === 1000 && totalItems <= 1000) ? "&infin;" : i;
         if (limit == i) {
             found = true;
             sel += `<option value="${i}" selected="selected">${title}</option>`;
@@ -1671,7 +1677,8 @@ function refreshPagination(json)
         }
     }
     if (!found) {
-        sel += `<option value="${limit}" selected="selected">${limit}</option>`;
+        const title = (limit === -1) ? "No limit" : limit;
+        sel += `<option value="${limit}" selected="selected">${title}</option>`;
     }
     $('#pagination>select').html(sel);
     $('#pagination').show();

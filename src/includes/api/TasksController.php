@@ -118,7 +118,7 @@ class TasksController extends ApiController {
             $t['list'][] = $task->toJsonApiArray();
         }
         $t['total'] = count($t['list']);
-        if ($paginator && $paginator->total) {
+        if ($paginator) {
             $t['pagination_total'] = $paginator->total;
             $t['pagination_page'] = $paginator->page;
             $t['pagination_limit'] = $paginator->limit;
