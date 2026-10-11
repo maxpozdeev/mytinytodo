@@ -1671,7 +1671,7 @@ function refreshPagination(json)
         }
     }
     if (!found) {
-        sel += `<option value="${i}" selected="selected">${limit}</option>`;
+        sel += `<option value="${limit}" selected="selected">${limit}</option>`;
     }
     $('#pagination>select').html(sel);
     $('#pagination').show();
