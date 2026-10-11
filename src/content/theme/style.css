@@ -355,6 +355,7 @@ select.form-input {
   color: red;
   text-align: center;
   opacity: 0;
+  white-space: pre;
 }
 #authmsg.show {
   opacity: 1;

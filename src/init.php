@@ -333,6 +333,10 @@ function check_token()
     $token = access_token();
     if ($token == '' || !isset($_SERVER['HTTP_MTT_TOKEN']) || $_SERVER['HTTP_MTT_TOKEN'] !== $token) {
         http_response_code(403);
+        if (_server('CONTENT_TYPE') === 'application/json') {
+            header('Content-type: application/json; charset=utf-8');
+            die('{"ok":false,"error":"Access denied! Authentication is required.","denied":1}');
+        }
         die("Access denied! Authentication is required.\n");
     }
 }
@@ -429,6 +433,10 @@ function checkBasicAuth()
     $user = userByBasicAuth();
     if (!$user) {
         http_response_code(401);
+        if (_server('CONTENT_TYPE') === 'application/json') {
+            header('Content-type: application/json; charset=utf-8');
+            die('{"ok":false,"error":"Authorization required","denied":1}');
+        }
         die("Authorization required\n");
     }
     MTTVars::$user = $user->name;

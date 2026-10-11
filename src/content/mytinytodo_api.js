@@ -41,7 +41,7 @@ MytinytodoAjaxApi.prototype = {
             throw "Unknown ApiDriver action: " + action;
         }
         this[action](params, function(json){
-            if (json.denied) {
+            if (!json.ok && json.denied) {
                 mytinytodo.errorDenied();
             }
             if (callback) {
@@ -87,7 +87,11 @@ MytinytodoAjaxApi.prototype = {
         }, (e) => {
             let s = '';
             if (e instanceof Error) s = "Request failed: unexpected response content";
-            else if (e instanceof Response) s = "Request failed with HTTP status: " + e.status + ' ' + e.statusText;
+            else if (e instanceof Response) {
+                s = "Request failed with HTTP status: " + e.status + ' ' + e.statusText;
+                if (e.headers.get("Content-Type")?.indexOf("application/json") === 0)
+                    s += ".\n Try to reload the page.";
+            }
             else s = "Unexpected fetch() error";
             console.log(s, e);
             if (errorCallback)
@@ -293,12 +297,14 @@ MytinytodoAjaxApi.prototype = {
             body: JSON.stringify(params)
         })
         .then((response) => {
-            if (!response.ok) throw response;
+            if (!response.ok && response.headers.get("Content-Type")?.indexOf("application/json") !== 0) {
+                throw response;
+            }
             return response.json();
         })
         .catch((e) => {
             if (e instanceof Error) console.log("newTaskCounter fetch error: ", e);
-            else console.log("newTaskCounter fetch error, HTTP status code: " + e.status);
+            else console.log("newTaskCounter fetch error, HTTP status code: " + e.status); //e is Response
         })
         .then(json => {
             callback(json)
