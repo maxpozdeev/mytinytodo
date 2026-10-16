@@ -398,7 +398,14 @@ const mtt = window.mytinytodo = {
 
 
         $('#taskview').click(function(){
-            if(!mtt.menus.taskview) mtt.menus.taskview = new mttMenu('taskviewcontainer');
+            if (!mtt.menus.taskview) mtt.menus.taskview = new mttMenu('taskviewcontainer', { onclick: function (el,menu){
+                if (el.id == 'view_tasks') filter.due = '';
+                else if (el.id == 'view_past') filter.due = 'past';
+                else if (el.id == 'view_today') filter.due = 'today';
+                else if (el.id == 'view_soon') filter.due = 'soon';
+                pagination.page = 1;
+                loadTasks({ isPagination:1 })
+            }});
             mtt.menus.taskview.show(this);
         });
 
@@ -497,13 +504,6 @@ const mtt = window.mytinytodo = {
             toggleAllNotes(0, e);
             this.blur();
             return false;
-        });
-
-        $('#taskviewcontainer li').click(function(){
-            if(this.id == 'view_tasks') setTaskview(0);
-            else if(this.id == 'view_past') setTaskview('past');
-            else if(this.id == 'view_today') setTaskview('today');
-            else if(this.id == 'view_soon') setTaskview('soon');
         });
 
 
@@ -1412,7 +1412,7 @@ function loadTasks(opts)
     opts = opts || {};
     if (opts.clearTasklist) {
         $('#tasklist').html('');
-        $('#total').html('0');
+        $('#total').html('');
     }
     if (!opts.isPagination) {
         pagination.page = 1;
@@ -1426,7 +1426,7 @@ function loadTasks(opts)
         search: filter.search,
         searchOptions: searchOptions.asInt(),
         tag: mtt.filter.getTags(true),
-        //due: filter.due,
+        due: filter.due,
         saveCompl: opts.saveCompl,
         saveSort: opts.saveSort,
         limit: pagination.limit,
@@ -1795,23 +1795,13 @@ function submitNewTask(form)
         if (!json.total) {
             return;
         }
-        $('#total').text( parseInt($('#total').text()) + 1 );
-        taskCnt.total++;
         form.task.value = '';
         const item = json.list[0];
-        taskList[item.id] = item;
-        const highlightTask = function() {
-            $('#taskrow_'+item.id).effect("highlight", {color:mtt.theme.newTaskFlashColor}, 2000);
-        }
-        if (curList.sort === 5 || curList.sort === 105) { // by title (asc,desc)
-            loadTasks({ isPagination: 1, afterShow: highlightTask });
-            return;
-        }
-        taskOrder.push(parseInt(item.id));
-        $('#tasklist').append(mtt.prepareTaskStr(item));
-        changeTaskOrder(item.id);
-        highlightTask();
-        refreshTaskCnt();
+        loadTasks({ isPagination:1, afterShow: () => {
+            if (mtt.pages.curPageId() !== 'tasks') return;
+            if (taskList[item.id])
+                $('#taskrow_'+item.id).effect("highlight", {color:mtt.theme.newTaskFlashColor}, 'normal');
+        }});
     });
     flag.tagsChanged = true;
     return false;
@@ -1919,36 +1909,11 @@ function changeTaskCnt(task, dir, old)
 
 function refreshTaskCnt()
 {
-    $('#cnt_total').text(taskCnt.total);
-    $('#cnt_past').text(taskCnt.past);
-    $('#cnt_today').text(taskCnt.today);
-    $('#cnt_soon').text(taskCnt.soon);
-    if(filter.due == '') $('#total').text(taskCnt.total);
-    else if(taskCnt[filter.due] != null) $('#total').text(taskCnt[filter.due]);
-};
-
-
-function setTaskview(v)
-{
-    if(v == 0)
-    {
-        if(filter.due == '') return;
+    if (filter.due === 'past' || filter.due === 'today' || filter.due === 'soon')
+        $('#taskview .btnstr').text(mtt.lang.get('f_'+filter.due));
+    else
         $('#taskview .btnstr').text(mtt.lang.get('tasks'));
-        $('#tasklist').removeClass('filter-'+filter.due);
-        filter.due = '';
-        $('#total').text(taskCnt.total);
-    }
-    else if(v=='past' || v=='today' || v=='soon')
-    {
-        if(filter.due == v) return;
-        else if(filter.due != '') {
-            $('#tasklist').removeClass('filter-'+filter.due);
-        }
-        $('#tasklist').addClass('filter-'+v);
-        $('#taskview .btnstr').text(mtt.lang.get('f_'+v));
-        $('#total').text(taskCnt[v]);
-        filter.due = v;
-    }
+    $('#total').text(taskCnt.total);
 };
 
 
@@ -2039,7 +2004,7 @@ function tabSelect(elementOrId)
     if (!isFirstLoad) {
         cancelTagFilter(0, 1);
     }
-    setTaskview(0);
+    filter.due = '';
 
     if (isFirstLoad && filter.search != '') {
         $('#search').val(filter.search);
@@ -2101,14 +2066,8 @@ function deleteTask(id)
                 return;
             }
             $('#taskrow_'+id).effect("highlight", {color:mtt.theme.deleteTaskFlashColor}, 'normal', function(){ $(this).remove() });
-            if (curList.sort === 5 || curList.sort === 105) { // by title (asc,desc)
-                loadTasks({ isPagination: 1 });
-                return;
-            }
-            taskOrder.splice($.inArray(id,taskOrder), 1);
-            changeTaskCnt(taskList[id], -1);
-            refreshTaskCnt();
             delete taskList[id];
+            loadTasks({ isPagination: 1 });
         });
     })
     return false;
@@ -2117,42 +2076,18 @@ function deleteTask(id)
 function completeTask(id, el)
 {
     if (!taskList[id]) return; //click on already removed from the list while anim. effect
+    //$('#tasklist input[type=checkbox]').attr('disabled', true);
     const compl = el.checked ? 1 : 0;
     mtt.db.request('completeTask', {id:id, compl:compl, list:curList.id}, function(json) {
         if (!json.total) {
             return;
         }
         const item = json.list[0];
-        if (item.compl) $('#taskrow_'+id).addClass('task-completed');
-        else $('#taskrow_'+id).removeClass('task-completed');
         taskList[id] = item;
-        changeTaskCnt(taskList[id], 0);
-        if (item.compl && !curList.showCompl) {
-            delete taskList[id];
-            taskOrder.splice($.inArray(id,taskOrder), 1);
-            $('#taskrow_'+id).fadeOut('normal', function(){ $(this).remove() });
-            if (curList.sort === 5 || curList.sort === 105) { // by title (asc,desc)
-                if (pagination.totalPages > 1) {
-                    loadTasks({ isPagination: 1 });
-                }
-                return;
-            }
-        }
-        else if (curList.showCompl) {
-            const highlightTask = function() {
-                $('#taskrow_'+item.id).effect("highlight", {color:mtt.theme.editTaskFlashColor}, 'normal', function(){$(this).css('display','')});
-            }
-            if (curList.sort === 5 || curList.sort === 105) { // by title (asc,desc)
-                loadTasks({ isPagination: 1, afterShow: highlightTask });
-                return;
-            }
-            $('#taskrow_'+item.id).replaceWith(mtt.prepareTaskStr(taskList[id]));
-            $('#taskrow_'+id).fadeOut('fast', function(){
-                changeTaskOrder(id);
-                highlightTask();
-            });
-        }
-        refreshTaskCnt();
+        loadTasks({ isPagination:1, afterShow: () => {
+            if (mtt.pages.curPageId() !== 'tasks') return;
+            if (taskList[item.id]) $('#taskrow_'+item.id).effect("highlight", {color:mtt.theme.editTaskFlashColor}, 'normal');
+        }});
     });
     return false;
 };
@@ -2339,23 +2274,11 @@ function saveTask(form)
                 fillTaskViewer(item.id);
             }
             mtt.pageBack(); //back to list or viewer
-            const highlightTask = function() {
-                if (mtt.pages.curPageId() === 'tasks')
-                    $('#taskrow_'+item.id).effect("highlight", {color:mtt.theme.editTaskFlashColor}, 'normal', function(){$(this).css('display','')});
-            }
-            if (curList.sort === 5 || curList.sort === 105) { // by title (asc,desc)
-                loadTasks({ isPagination: 1, afterShow: highlightTask });
-            }
-            else {
-                changeTaskCnt(item, 0, taskList[item.id]);
-                const noteExpanded = (item.note != '' && $('#taskrow_'+item.id).is('.task-expanded')) ? 1 : 0;
-                $('#taskrow_'+item.id).replaceWith(mtt.prepareTaskStr(item, noteExpanded));
-                if (curList.sort != 0 && curList.sort != 100) {
-                    changeTaskOrder(item.id);
-                }
-                refreshTaskCnt();
-                highlightTask();
-            }
+            loadTasks({ isPagination:1, afterShow: () => {
+                if (mtt.pages.curPageId() !== 'tasks') return;
+                if (taskList[item.id]) $('#taskrow_'+item.id).effect("highlight", {color:mtt.theme.editTaskFlashColor}, 'normal');
+                //else $('#tasklist').effect("highlight", {color:mtt.theme.editTaskFlashColor}, 'fast');
+            }});
     });
     flag.tagsChanged = true;
     return false;
@@ -2536,23 +2459,13 @@ function submitFullTask(form)
             }
             form.task.value = '';
             const item = json.list[0];
-            taskList[item.id] = item;
-            curList.lastTaskCreatedTime = item.dateInt;
+            //curList.lastTaskCreatedTime = item.dateInt;
             mtt.pageBack();
-            const highlightTask = function() {
-                if (mtt.pages.curPageId() === 'tasks')
-                    $('#taskrow_'+item.id).effect("highlight", {color:mtt.theme.newTaskFlashColor}, 2000);
-            }
-            if (curList.sort === 5 || curList.sort === 105) { // by title (asc,desc)
-                loadTasks({ isPagination: 1, afterShow: highlightTask });
-                return;
-            }
-            taskOrder.push(parseInt(item.id));
-            $('#tasklist').append(mtt.prepareTaskStr(item));
-            changeTaskOrder(item.id);
-            highlightTask();
-            changeTaskCnt(item, 1);
-            refreshTaskCnt();
+            loadTasks({ isPagination:1, afterShow: () => {
+                if (mtt.pages.curPageId() !== 'tasks') return;
+                if (taskList[item.id])
+                    $('#taskrow_'+item.id).effect("highlight", {color:mtt.theme.newTaskFlashColor}, 'normal');
+            }});
         }
     );
 
@@ -2928,39 +2841,19 @@ function moveTaskToList(taskId, listId)
         if (!json.total) {
             return;
         }
-        if (curList.id == -1)
-        {
-            // leave the task in current tab (all tasks tab)
-            const item = json.list[0];
-            changeTaskCnt(item, 0, taskList[item.id]);
+        const item = json.list[0];
+        if (curList.id == -1) {
             taskList[item.id] = item;
-            const highlightTask = function() {
-                $('#taskrow_'+item.id).effect("highlight", {color:mtt.theme.editTaskFlashColor}, 'normal', function(){$(this).css('display','')});
-            }
-            if (curList.sort === 5 || curList.sort === 105) { // by title (asc,desc)
-                loadTasks({ isPagination: 1, afterShow: highlightTask });
-                return;
-            }
-            const noteExpanded = (item.note != '' && $('#taskrow_'+item.id).is('.task-expanded')) ? 1 : 0;
-            $('#taskrow_'+item.id).replaceWith(mtt.prepareTaskStr(item, noteExpanded));
-            if (curList.sort != 0 && curList.sort != 100) {
-                changeTaskOrder(item.id);
-            }
-            refreshTaskCnt();
-            highlightTask();
         }
         else {
-            // remove the task from currrent tab
-            $('#taskrow_'+taskId).fadeOut('normal', function(){ $(this).remove() });
-            if (curList.sort === 5 || curList.sort === 105) { // by title (asc,desc)
-                loadTasks({ isPagination: 1 });
-                return;
-            }
-            changeTaskCnt(taskList[taskId], -1)
+            $('#taskrow_'+taskId).fadeOut('fast', function(){ $(this).remove() });
             delete taskList[taskId];
-            taskOrder.splice($.inArray(taskId,taskOrder), 1);
-            refreshTaskCnt();
         }
+        loadTasks({ isPagination:1, afterShow: () => {
+            if (mtt.pages.curPageId() !== 'tasks') return;
+            if (taskList[item.id])
+                $('#taskrow_'+item.id).effect("highlight", {color:mtt.theme.editTaskFlashColor}, 'normal');
+        }});
     });
     flag.tagsChanged = true;
 };

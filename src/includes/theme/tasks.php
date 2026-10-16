@@ -58,7 +58,7 @@ $().ready(function(){
 
 
 <h3 class="page-title">
-  <span id="taskview" class="mtt-menu-button"><span class="btnstr"><?php _e('tasks');?></span> (<span id="total">0</span>) <span class="arrdown"></span></span>
+  <span id="taskview" class="mtt-menu-button"><span class="btnstr"><?php _e('tasks');?></span> <span id="total"></span> <span class="arrdown"></span></span>
   <span class="mtt-notes-showhide"><?php _e('notes');?> <a href="#" id="mtt-notes-show"><?php _e('notes_show');?></a> / <a href="#" id="mtt-notes-hide"><?php _e('notes_hide');?></a></span>
   <span class="page-title-right">
     <span id="sortmenubtn" class="mtt-menu-button"><span class="title"><?php _e('sortShort');?></span> <span class="arrdown2"></span></span>
@@ -179,10 +179,10 @@ $().ready(function(){
 
 <div id="taskviewcontainer" class="mtt-menu-container" style="display:none">
 <ul>
-  <li id="view_tasks"><?php _e('tasks');?> (<span id="cnt_total">0</span>)</li>
-  <li id="view_past"><?php _e('f_past');?> (<span id="cnt_past">0</span>)</li>
-  <li id="view_today"><?php _e('f_today');?> (<span id="cnt_today">0</span>)</li>
-  <li id="view_soon"><?php _e('f_soon');?> (<span id="cnt_soon">0</span>)</li>
+  <li id="view_tasks"><?php _e('tasks');?></li>
+  <li id="view_past"><?php _e('f_past');?></li>
+  <li id="view_today"><?php _e('f_today');?></li>
+  <li id="view_soon"><?php _e('f_soon');?></li>
 </ul>
 </div>
 
