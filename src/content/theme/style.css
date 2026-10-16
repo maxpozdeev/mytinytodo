@@ -1329,9 +1329,11 @@ textarea.form-input.inmax {
   position:relative;
   overflow:hidden;
   text-overflow:ellipsis;
+  user-select: none;
+  -webkit-user-select: none;
 }
-.mtt-menu-container li:hover,
-.mtt-menu-container li.mtt-menu-item-active {
+.mtt-menu-container li:hover:not(.mtt-item-disabled),
+.mtt-menu-container li.mtt-menu-item-active:not(.mtt-item-disabled) {
   background-color: var(--color-menu-hover);
   color: var(--color-menu-text-hover);
 }
@@ -1348,7 +1350,7 @@ textarea.form-input.inmax {
   overflow:hidden;
   text-overflow:ellipsis;
   }
-.mtt-menu-container li:hover a {
+.mtt-menu-container li:hover:not(.mtt-item-disabled) a {
   color: var(--color-menu-text-hover);
 }
 .mtt-menu-container li.mtt-menu-delimiter { height:0px; line-height:0; border-bottom:1px solid var(--color-menu-border); margin:2px -1px; padding:0px; font-size:0px; }
