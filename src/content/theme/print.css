@@ -53,5 +53,6 @@
   .page-title-right { display: none; }
   .mtt-notes-showhide { display:none; }
   #taskview img { display:none; }
+  #pagination { display: none; }
 
 }
