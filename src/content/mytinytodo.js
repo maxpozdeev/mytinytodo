@@ -13,7 +13,6 @@ var taskOrder = new Array();
 var filter = { compl:0, search:'', due:'' };
 var sortOrder; //save task order before dragging
 var searchTimer;
-var objPrio = {};
 var flag = {
     needAuth: false,
     isLogged: false,
@@ -668,18 +667,6 @@ const mtt = window.mytinytodo = {
             $('#tasklist li').removeClass('not-in-tagpreview');
             //tag is not escaped
             addFilterTag(this.dataset.tag, this.dataset.tagId, (event.metaKey || event.ctrlKey ? true : false) );
-            return false;
-        });
-
-        $('#tasklist').on('click', '.mtt-action-note-cancel', function(){
-            var id = parseInt(getLiTaskId(this));
-            if(id) cancelTaskNote(id);
-            return false;
-        });
-
-        $('#tasklist').on('click', '.mtt-action-note-save', function(){
-            var id = parseInt(getLiTaskId(this));
-            if(id) saveTaskNote(id);
             return false;
         });
 
@@ -1479,10 +1466,6 @@ function prepareTaskBlocks(item)
 
         '<div class="task-note-block">' +
             '<div id="tasknote' + id + '" class="task-note ' + markdown + '">' + prepareTaskNoteInlineHtml(item.note, item.noteText) + '</div>' +
-            '<div id="tasknotearea'+id+'" class="task-note-area"><textarea id="notetext'+id+'"></textarea>'+
-                '<span class="task-note-actions"><a href="#" class="mtt-action-note-save">'+mtt.lang.get('actionNoteSave') +
-                    '</a> | <a href="#" class="mtt-action-note-cancel">'+mtt.lang.get('actionNoteCancel')+'</a></span>' +
-            '</div>' +
         '</div>';
 };
 mtt.prepareTaskBlocks = prepareTaskBlocks;
@@ -2041,44 +2024,6 @@ function completeTask(id, el)
     return false;
 };
 
-function toggleTaskNote(id)
-{
-    var aArea = '#tasknotearea'+id;
-    if($(aArea).css('display') == 'none')
-    {
-        $('#notetext'+id).val(taskList[id].noteText);
-        $(aArea).show();
-        $('#tasknote'+id).hide();
-        $('#taskrow_'+id).addClass('task-expanded');
-        $('#notetext'+id).focus();
-    } else {
-        cancelTaskNote(id)
-    }
-    return false;
-};
-
-function cancelTaskNote(id)
-{
-    if(taskList[id].note == '') $('#taskrow_'+id).removeClass('task-expanded');
-    $('#tasknotearea'+id).hide();
-    $('#tasknote'+id).show();
-    return false;
-};
-
-function saveTaskNote(id)
-{
-    mtt.db.request('editNote', {id:id, note:$('#notetext'+id).val()}, function(json){
-        if(!parseInt(json.total)) return;
-        var item = json.list[0];
-        taskList[id].note = item.note;
-        taskList[id].noteText = item.noteText;
-        $('#tasknote'+id).html(prepareTaskNoteInlineHtml(item.note, item.noteText));
-        if(item.note == '') $('#taskrow_'+id).removeClass('task-has-note task-expanded');
-        else $('#taskrow_'+id).addClass('task-has-note task-expanded');
-        cancelTaskNote(id);
-    });
-    return false;
-};
 
 function fillTaskViewer(id)
 {

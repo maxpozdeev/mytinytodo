@@ -120,8 +120,6 @@ class Lang
         $this->fillWithValues($a, [
             'confirmDelete',
             'confirmLeave',
-            'actionNoteSave',
-            'actionNoteCancel',
             'error',
             'denied',
             'listNotFound',

@@ -924,9 +924,6 @@ li.task-row:hover .taskactionbtn {
 }
 li.task-row.task-expanded .task-note-block { display:block; }
 li.task-row.task-completed .task-note-block .task-note { text-decoration:line-through; }
-.task-note-area { display:none; margin-bottom:5px; }
-.task-note-area textarea { color:var(--color-text-reduced); width:100%; display:block; height:65px; }
-.task-note-actions { font-size:0.8rem; }
 .hidden { display:none; }
 .invisible { visibility:hidden; }
 .task-note a { color: var(--color-tasklist-note-link); }
@@ -1663,13 +1660,11 @@ li.mtt-item-hidden { display:none; }
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  .task-note-actions { display:block; padding-top:8px; }
   .task-note-block {
     padding-left: 0.625rem;
     padding-right: 0.625rem;
     display: none;
   }
-  .task-note-area textarea { width:95%; }
   .taskactionbtn {
     padding: 2px 0.5rem;
     mask-origin: content-box;

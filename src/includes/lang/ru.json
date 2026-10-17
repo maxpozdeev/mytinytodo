@@ -1,7 +1,7 @@
 {
     "_header": {
         "ver": "v2.0",
-        "date": "2026-10-02",
+        "date": "2026-10-17",
         "language": "Russian",
         "original_name": "Русский",
         "authors": [
@@ -146,7 +146,6 @@
     "f_today": "Сегодня и завтра",
     "f_soon": "Скоро",
     "action_edit": "Редактировать",
-    "action_note": "Заметка",
     "action_delete": "Удалить",
     "action_priority": "Приоритет",
     "action_move": "Переместить в",
@@ -241,8 +240,6 @@
     "btn_revoke": "Отозвать",
     "confirmDelete": "Вы действительно хотите удалить задачу?",
     "confirmLeave": "На странице могут быть несохраненные данные. Вы действительно хотите закрыть страницу?",
-    "actionNoteSave": "сохранить",
-    "actionNoteCancel": "отмена",
     "error": "Ошибка",
     "denied": "Доступ запрещен",
     "listNotFound": "Список не найден",
