@@ -1076,15 +1076,6 @@ textarea.form-input.inmax {
 .ui-autocomplete .ui-menu-item-wrapper { position: relative; padding:0.3rem 4px; }
 .ui-autocomplete .ui-menu-item-wrapper.ui-state-active { background-color:var(--color-menu-hover); color: var(--color-menu-text-hover); }
 
-#priopopup { overflow: hidden; z-index:100;
-  background-color: var(--color-menu);
-  border:1px solid var(--color-border-default); padding:5px; }
-#priopopup span { cursor:pointer; border:1px solid var(--color-menu); padding:1px; }
-#priopopup .prio-zero:hover { border-color: var(--color-priority-none); }
-#priopopup .prio-neg:hover { border-color: var(--color-priority-low); }
-#priopopup .prio-pos:hover { border-color: var(--color-priority-urgent); }
-#priopopup .prio-pos-1:hover { border-color: var(--color-priority-high); }
-
 
 #tagcloudbtn, #sortmenubtn {
   font-size: 1rem;

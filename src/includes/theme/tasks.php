@@ -169,14 +169,6 @@ $().ready(function(){
 <div id="page_ajax" style="display:none">
 </div>
 
-
-<div id="priopopup" style="display:none">
-  <span class="prio-neg prio-neg-1">&minus;1</span>
-  <span class="prio-zero">&plusmn;0</span>
-  <span class="prio-pos prio-pos-1">+1</span>
-  <span class="prio-pos prio-pos-2">+2</span>
-</div>
-
 <div id="taskviewcontainer" class="mtt-menu-container" style="display:none">
 <ul>
   <li id="view_tasks"><?php _e('tasks');?></li>

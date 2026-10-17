@@ -525,27 +525,6 @@ const mtt = window.mytinytodo = {
             return false;   //stop bubble to tab click
         });
 
-        //Priority popup
-        $('#priopopup .prio-neg-1').click(function(){
-            prioClick(-1,this);
-        });
-
-        $('#priopopup .prio-zero').click(function(){
-            prioClick(0,this);
-        });
-
-        $('#priopopup .prio-pos-1').click(function(){
-            prioClick(1,this);
-        });
-
-        $('#priopopup .prio-pos-2').click(function(){
-            prioClick(2,this);
-        });
-
-        $('#priopopup').mouseleave(function(){
-            $(this).hide()}
-        );
-
 
         // edit form handlers
         $('#alltags_show').click(function(){
@@ -691,15 +670,6 @@ const mtt = window.mytinytodo = {
             addFilterTag(this.dataset.tag, this.dataset.tagId, (event.metaKey || event.ctrlKey ? true : false) );
             return false;
         });
-
-        if(!this.options.touchDevice) {
-            $('#tasklist').on('mouseover mouseout', '.task-prio', function(event){
-                var id = parseInt(getLiTaskId(this));
-                if(!id) return;
-                if(event.type == 'mouseover') prioPopup(1, this, id);
-                else prioPopup(0, this);
-            });
-        }
 
         $('#tasklist').on('click', '.mtt-action-note-cancel', function(){
             var id = parseInt(getLiTaskId(this));
@@ -1807,27 +1777,6 @@ function submitNewTask(form)
     return false;
 };
 
-
-function prioPopup(act, el, id)
-{
-    if(act == 0) {
-        clearTimeout(objPrio.timer);
-        return;
-    }
-    var offset = $(el).offset();
-    $('#priopopup').css({ position: 'absolute', top: offset.top + 1, left: offset.left + 1 });
-    objPrio.taskId = id;
-    objPrio.el = el;
-    objPrio.timer = setTimeout("$('#priopopup').show()", 300);
-};
-
-function prioClick(prio, el)
-{
-    el.blur();
-    prio = parseInt(prio);
-    $('#priopopup').fadeOut('fast'); //.hide();
-    setTaskPrio(objPrio.taskId, prio);
-};
 
 function setTaskPrio(id, prio)
 {
