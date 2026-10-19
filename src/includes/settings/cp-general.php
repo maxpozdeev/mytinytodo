@@ -210,7 +210,7 @@ if (isset($_POST['save']))
 
 <div class="tr">
   <div class="th"> <?php _e('set_mailfromname');?> <div class="descr"><?php _e('set_mailfromname_descr');?></div></div>
-  <div class="td"> <input name="mailFromName" value="<?php echo htmlspecialchars(_c('mailFrom'));?>" placeholder="myTinyTodo" class="in350" autocomplete="off" /> </div>
+  <div class="td"> <input name="mailFromName" value="<?php echo htmlspecialchars(_c('mailFromName'));?>" placeholder="myTinyTodo" class="in350" autocomplete="off" /> </div>
 </div>
 
 <div class="tr form-bottom-buttons">
