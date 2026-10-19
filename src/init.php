@@ -792,9 +792,15 @@ function mtt_mail(string $to, string $subject, string $message)
         // $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;   // Enable TLS encryption (or ENCRYPTION_SMTPS for SSL)
         // $mail->Port       = 587; //587 for STARTTLS, 465 - for SSL (SMTPS)
 
+        $mail->XMailer = "myTinyTodo Mailer";
+        $mailFrom = Config::getConfig()->get('mailFrom');
+        $mailFromName = Config::getConfig()->get('mailFromName');
+        $mail->setFrom($mailFrom === '' ? suggestedMailFrom() : $mailFrom, $mailFromName === '' ? 'myTinyTodo' : $mailFromName);
+
         if (defined('MTT_MAILER_DSN')) {
+            $dsn = explode('?', (string)MTT_MAILER_DSN)[0]; # ignore query params
             $configurator = new \PHPMailer\PHPMailer\DSNConfigurator;
-            $configurator->configure($mail, MTT_MAILER_DSN);
+            $configurator->configure($mail, $dsn);
 
             if (defined('MTT_MAILER_WEAK_SSL') && MTT_MAILER_WEAK_SSL) {
                 // allow self-signed certificates
@@ -807,12 +813,7 @@ function mtt_mail(string $to, string $subject, string $message)
                 ];
             }
         }
-
-        $mailFrom = Config::getConfig()->get('mailFrom');
-        $mailFromName = Config::getConfig()->get('mailFromName');
-        $mail->XMailer = "myTinyTodo Mailer";
         $mail->CharSet = "UTF-8";
-        $mail->setFrom($mailFrom === '' ? suggestedMailFrom() : $mailFrom, $mailFromName === '' ? 'myTinyTodo' : $mailFromName);
         $mail->addAddress($to);
         $mail->isHTML(true);
         $mail->Subject = $subject;
