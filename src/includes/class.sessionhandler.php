@@ -161,7 +161,11 @@ class MTTSessionHandler implements SessionHandlerInterface, SessionUpdateTimesta
      */
     public function create_sid(): string
     {
-        return session_create_id() ?: throw new RuntimeException('Unable to create a session ID');;
+        $sid = session_create_id();
+        if ($sid === '' || $sid === false) {
+            throw new RuntimeException('Unable to create a session ID');
+        }
+        return $sid;
     }
 }
 
