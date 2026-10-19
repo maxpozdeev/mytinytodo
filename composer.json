@@ -17,11 +17,11 @@
         "ext-mbstring": "*",
         "erusev/parsedown": "1.8.*",
         "symfony/polyfill-intl-normalizer": "^1.34",
-        "phpmailer/phpmailer": "^7.0"
+        "phpmailer/phpmailer": "^7.1"
     },
     "require-dev": {
         "php": ">=8.2",
-        "league/commonmark": "^2.10",
+        "league/commonmark": "^2.10.4",
         "phpstan/phpstan": "^2.0",
         "phpstan/phpstan-deprecation-rules": "^2.0"
     }
