@@ -777,7 +777,9 @@ function suggestedMailFrom(): string
 
 function mtt_mail(string $to, string $subject, string $message)
 {
+    require_once(MTTINC. 'vendor/phpmailer/phpmailer/src/Exception.php');
     require_once(MTTINC. 'vendor/phpmailer/phpmailer/src/PHPMailer.php');
+    require_once(MTTINC. 'vendor/phpmailer/phpmailer/src/DSNConfigurator.php');
 
     $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
     try {
@@ -790,10 +792,27 @@ function mtt_mail(string $to, string $subject, string $message)
         // $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;   // Enable TLS encryption (or ENCRYPTION_SMTPS for SSL)
         // $mail->Port       = 587; //587 for STARTTLS, 465 - for SSL (SMTPS)
 
+        if (defined('MTT_MAILER_DSN')) {
+            $configurator = new \PHPMailer\PHPMailer\DSNConfigurator;
+            $configurator->configure($mail, MTT_MAILER_DSN);
+
+            if (defined('MTT_MAILER_WEAK_SSL') && MTT_MAILER_WEAK_SSL) {
+                // allow self-signed certificates
+                $mail->SMTPOptions = [
+                    'ssl' => [
+                        'verify_peer' => false,
+                        'verify_peer_name' => false,
+                        'allow_self_signed' => true,
+                    ]
+                ];
+            }
+        }
+
         $mailFrom = Config::getConfig()->get('mailFrom');
+        $mailFromName = Config::getConfig()->get('mailFromName');
         $mail->XMailer = "myTinyTodo Mailer";
         $mail->CharSet = "UTF-8";
-        $mail->setFrom($mailFrom === '' ? suggestedMailFrom() : $mailFrom);
+        $mail->setFrom($mailFrom === '' ? suggestedMailFrom() : $mailFrom, $mailFromName === '' ? 'myTinyTodo' : $mailFromName);
         $mail->addAddress($to);
         $mail->isHTML(true);
         $mail->Subject = $subject;

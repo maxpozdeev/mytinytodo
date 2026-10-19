@@ -53,6 +53,7 @@ if (isset($_POST['save']))
     else {
         $allSaved = false;
     }
+    $config->set('mailFromName', removeNewLines(trim(_post('mailFromName'))) );
 
     AppConfig::saveDomain(Config::appDomain, $config->asArray());
 
@@ -205,6 +206,11 @@ if (isset($_POST['save']))
 <div class="tr">
   <div class="th"> <?php _e('set_mailfrom');?> <div class="descr"><?php _e('set_mailfrom_descr');?></div></div>
   <div class="td"> <input name="mailFrom" value="<?php echo htmlspecialchars(_c('mailFrom'));?>" placeholder="<?php echo htmlspecialchars(suggestedMailFrom()); ?>" class="in350" autocomplete="off" /> </div>
+</div>
+
+<div class="tr">
+  <div class="th"> <?php _e('set_mailfromname');?> <div class="descr"><?php _e('set_mailfromname_descr');?></div></div>
+  <div class="td"> <input name="mailFromName" value="<?php echo htmlspecialchars(_c('mailFrom'));?>" placeholder="myTinyTodo" class="in350" autocomplete="off" /> </div>
 </div>
 
 <div class="tr form-bottom-buttons">

@@ -66,7 +66,8 @@ class Config
         'newTaskCounter'     => array('default' => 0, 'type'=>'i'),
         'newTaskCounterIcon' => array('default' => 0, 'type'=>'i'),
 
-        'mailFrom' => array('default' =>'', 'type' => 's'),
+        'mailFrom'     => array('default' =>'', 'type' => 's'),
+        'mailFromName' => array('default' =>'', 'type' => 's'),
 
         # Array of activated extensions
         'extensions' => array('default'=>[], 'type'=>'a')
