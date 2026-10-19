@@ -1,7 +1,7 @@
 {
     "_header": {
         "ver": "v2.0",
-        "date": "2026-10-17",
+        "date": "2026-10-19",
         "language": "English",
         "original_name": "English",
         "authors": [
@@ -216,6 +216,8 @@
     "set_newtaskcounter_h": "New tasks counter",
     "set_newtaskcounter": "Check for new tasks",
     "set_newtaskcountericon": "Show counter in favicon",
+    "set_mailfrom": "Mail From",
+    "set_mailfrom_descr": "Use this e-mail as sender's address.",
     "set_general": "General",
     "set_users": "Users",
     "set_adduser": "Add user",
@@ -229,6 +231,7 @@
     "set_activate": "Activate",
     "set_deactivate": "Deactivate",
     "set_saved": "Settings have been saved",
+    "set_some_saved": "Some settings were not saved",
     "set_customcss_not_writable": "File is not writable, check permissions of %s",
     "set_customcss_h": "CSS",
     "set_customcss_d": "Write your own CSS rules",

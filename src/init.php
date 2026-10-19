@@ -790,9 +790,10 @@ function mtt_mail(string $to, string $subject, string $message)
         // $mail->SMTPSecure = \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;   // Enable TLS encryption (or ENCRYPTION_SMTPS for SSL)
         // $mail->Port       = 587; //587 for STARTTLS, 465 - for SSL (SMTPS)
 
+        $mailFrom = Config::getConfig()->get('mailFrom');
         $mail->XMailer = "myTinyTodo Mailer";
         $mail->CharSet = "UTF-8";
-        $mail->setFrom(suggestedMailFrom());
+        $mail->setFrom($mailFrom === '' ? suggestedMailFrom() : $mailFrom);
         $mail->addAddress($to);
         $mail->isHTML(true);
         $mail->Subject = $subject;

@@ -18,6 +18,7 @@ if (isset($_POST['save']))
     Config::$appSchema['lang']['options'] = array_keys($langs);
 
     $config = AppConfig::requestDictionary(Config::appDomain, Config::$appSchema);
+    $allSaved = true;
 
     $config->set('lang', _post('lang'));
     $config->set('smartsyntax', (int)_post('smartsyntax'));
@@ -28,6 +29,7 @@ if (isset($_POST['save']))
         $config->set('timezone', $tz);
     }
     catch (Exception $e) {
+        $allSaved = false;
     }
     $config->set('title', removeNewLines(trim(_post('title'))) );
     $config->set('autotag', (int)_post('autotag'));
@@ -44,11 +46,19 @@ if (isset($_POST['save']))
     $config->set('appearance', removeNewLines(trim(_post('appearance'))) );
     $config->set('newTaskCounter', (int)_post('newTaskCounter'));
     $config->set('newTaskCounterIcon', (int)_post('newTaskCounterIcon'));
+    $mailFrom = trim(_post('mailFrom'));
+    if ($mailFrom === '' || isValidEmail($mailFrom)) {
+        $config->set('mailFrom', $mailFrom);
+    }
+    else {
+        $allSaved = false;
+    }
 
     AppConfig::saveDomain(Config::appDomain, $config->asArray());
 
+    $t['ok'] = true;
     $t['saved'] = 1;
-    $t['msg'] = __('set_saved', true);
+    $t['msg'] = __( $allSaved ? 'set_saved' : 'set_some_saved', true);
     jsonExit($t);
 }
 
@@ -57,7 +67,7 @@ if (isset($_POST['save']))
 
 <h4> <?php _e('set_general');?> </h4>
 
-<form action="<?php mtt_settings_page_url(); ?>" method="post">
+<form action="<?php mtt_settings_page_url(); ?>" method="post" data-ok-reload="1">
 <div class="mtt-settings-table">
 
 <div class="tr">
@@ -190,6 +200,11 @@ if (isset($_POST['save']))
     <label><input type="checkbox" name="newTaskCounter" value="1" <?php if(_c('newTaskCounter')) echo 'checked="checked"'; ?> /> <?php _e('set_newtaskcounter');?></label> <br>
     <label><input type="checkbox" name="newTaskCounterIcon" value="1" <?php if(_c('newTaskCounterIcon')) echo 'checked="checked"'; ?> /> <?php _e('set_newtaskcountericon');?></label>
   </div>
+</div>
+
+<div class="tr">
+  <div class="th"> <?php _e('set_mailfrom');?> <div class="descr"><?php _e('set_mailfrom_descr');?></div></div>
+  <div class="td"> <input name="mailFrom" value="<?php echo htmlspecialchars(_c('mailFrom'));?>" placeholder="<?php echo htmlspecialchars(suggestedMailFrom()); ?>" class="in350" autocomplete="off" /> </div>
 </div>
 
 <div class="tr form-bottom-buttons">

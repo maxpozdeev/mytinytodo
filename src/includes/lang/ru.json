@@ -1,7 +1,7 @@
 {
     "_header": {
         "ver": "v2.0",
-        "date": "2026-10-17",
+        "date": "2026-10-19",
         "language": "Russian",
         "original_name": "Русский",
         "authors": [
@@ -216,6 +216,8 @@
     "set_newtaskcounter_h": "Счетчик новых задач",
     "set_newtaskcounter": "Проверять наличие новых задач",
     "set_newtaskcountericon": "Показывать счетчик в favicon",
+    "set_mailfrom": "Адрес отправителя",
+    "set_mailfrom_descr": "Этот адрес будет указан как адрес отправителя в письмах.",
     "set_general": "Основные",
     "set_users": "Пользователи",
     "set_adduser": "Добавление пользователя",
@@ -229,6 +231,7 @@
     "set_activate": "Активировать",
     "set_deactivate": "Деактивировать",
     "set_saved": "Настройки сохранены",
+    "set_some_saved": "Некоторые настройки не были сохранены",
     "set_customcss_not_writable": "Ошибка записи в файл, проверьте права доступа к файлу %s",
     "set_customcss_h": "CSS",
     "set_customcss_d": "Добавляйте собственные стили CSS",
