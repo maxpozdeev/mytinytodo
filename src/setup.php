@@ -642,7 +642,7 @@ function testConnect(&$error)
         {
             $hasPDO = false;
             $hasMysqli = false;
-            if (defined('PDO::MYSQL_ATTR_FOUND_ROWS')) {
+            if (class_exists('PDO') && in_array('mysql', PDO::getAvailableDrivers())) {
                 $hasPDO = true;
             }
             if (function_exists("mysqli_connect")) {
@@ -702,7 +702,7 @@ function testConnect(&$error)
         }
         else if (MTT_DB_TYPE == 'postgres')
         {
-            if (!defined('PDO::PGSQL_ATTR_DISABLE_PREPARES')) {
+            if (!class_exists('PDO') || !in_array('pgsql', PDO::getAvailableDrivers())) {
                 throw new Exception("Required PHP extension 'PDO_PostgreSQL' is not installed.");
             }
             require_once(MTTINC. 'class.db.postgres.php');
