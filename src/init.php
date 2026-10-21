@@ -5,58 +5,11 @@
     Licensed under the GNU GPL version 2 or any later. See file COPYRIGHT for details.
 */
 
-if (PHP_VERSION_ID < 70400) {
-    die("PHP 7.4 or above is required");
+if (!defined('MTTPATH')) {
+    define('MTTPATH', dirname(__FILE__) .'/');
 }
 
-
-if(!defined('MTTPATH')) define('MTTPATH', dirname(__FILE__) .'/');
-if(!defined('MTTINC'))  define('MTTINC', MTTPATH. 'includes/');
-if(!defined('MTT_CONTENT_PATH')) define('MTT_CONTENT_PATH', MTTPATH. 'content/');
-
-requireConfig();
-
-if (!defined('MTT_THEME')) {
-    define('MTT_THEME', 'theme');
-    define('MTT_THEME_PATH', MTTINC. 'theme/');
-}
-else {
-    define('MTT_THEME_PATH', MTT_CONTENT_PATH. MTT_THEME. '/');
-}
-
-if (!defined('MTT_USE_REWRITE')) {
-    define('MTT_USE_REWRITE', false);
-}
-
-if (getenv('MTT_ENABLE_DEBUG') == 'YES' || (defined('MTT_DEBUG') && MTT_DEBUG) ) {
-    if (!defined('MTT_DEBUG')) define('MTT_DEBUG', true);
-    error_reporting(E_ALL);
-    ini_set('display_errors', '1');
-    ini_set('log_errors', '1');
-}
-else {
-    //ini_set('display_errors', '0');
-    //ini_set('log_errors', '1');
-    if (!defined('MTT_DEBUG')) define('MTT_DEBUG', false);
-}
-
-if (!defined('MTT_MULTIUSER')) {
-    define('MTT_MULTIUSER', 1);
-}
-
-require_once(MTTINC. 'vars.php');
-require_once(MTTINC. 'common.php');
-require_once(MTTINC. 'classes.php');
-require_once(MTTINC. 'class.dbconnection.php');
-require_once(MTTINC. 'class.config.php');
-require_once(MTTINC. 'notifications.php');
-require_once(MTTINC. 'filters.php');
-require_once(MTTINC. 'markup.php');
-require_once(MTTINC. 'entities.php');
-require_once(MTTINC. 'repository.list.php');
-require_once(MTTINC. 'repository.tag.php');
-require_once(MTTINC. 'repository.task.php');
-require_once(MTTINC. 'repository.user.php');
+require_once(MTTPATH. 'load.php');
 
 configureDbConnection();
 
@@ -79,8 +32,6 @@ if (!isset($dontStartSession)) {
 }
 set_nocache_headers();
 
-
-require_once(MTTINC. 'class.lang.php');
 //User can override language setting by cookies or query
 if (isset($_COOKIE['lang']) && preg_match("/^[a-z-]+$/i", $_COOKIE['lang'])) {
     if (Lang::langExists($_COOKIE['lang']))
@@ -98,19 +49,6 @@ if (!defined('MTT_DISABLE_EXT')) {
 }
 
 
-function requireConfig()
-{
-    $exists = file_exists(MTTPATH. 'config.php');
-    $defined = false;
-    if ($exists) {
-        require_once(MTTPATH. 'config.php');
-        $defined = defined('MTT_DB_TYPE');
-    }
-    # It seems not installed
-    if (!$defined) {
-        die("Not installed. Run <a href=setup.php>setup.php</a> first.");
-    }
-}
 
 function configureDbConnection()
 {
@@ -827,4 +765,22 @@ function mtt_mail(string $to, string $subject, string $message)
     }
     MTTVars::$mailerLastError = '';
     return true;
+}
+
+function mtt_debug_print_urls()
+{
+    $a = [
+        'url' => get_unsafe_mttinfo('url'),
+        'uri' => get_unsafe_mttinfo('uri'),
+        'mtt_url' => get_unsafe_mttinfo('mtt_url'),
+        'mtt_uri' => get_unsafe_mttinfo('mtt_uri'),
+        'REQUEST_URI' => $_SERVER['REQUEST_URI'] ?? '<unset>',
+        'DOCUMENT_ROOT' => $_SERVER['DOCUMENT_ROOT'] ?? '<unset>',
+        'SCRIPT_FILENAME' => $_SERVER['SCRIPT_FILENAME'] ?? '<unset>',
+        'SCRIPT_NAME' => $_SERVER['SCRIPT_NAME'] ?? '<unset>',
+        'PATH_INFO' => $_SERVER['PATH_INFO'] ?? '<unset>',
+        'ORIG_PATH_INFO' => $_SERVER['ORIG_PATH_INFO'] ?? '<unset>',
+        'HTTP_HOST' => $_SERVER['HTTP_HOST'] ?? '<unset>',
+    ];
+    print_r($a);
 }
