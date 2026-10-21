@@ -1,0 +1,14 @@
+<phpunit defaultTestSuite="default" bootstrap="bootstrap.php" colors="true"
+  displayDetailsOnTestsThatTriggerWarnings="true"
+  displayDetailsOnTestsThatTriggerNotices="true"
+  displayDetailsOnTestsThatTriggerDeprecations="true"
+  failOnWarning="true" failOnDeprecation="true" failOnNotice="true"
+>
+  <testsuites>
+    <testsuite name="default">
+      <directory suffix="Test.php">.</directory>
+      <exclude>./driver_*</exclude>
+      <exclude>./vendor/</exclude>
+    </testsuite>
+  </testsuites>
+</phpunit>
