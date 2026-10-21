@@ -77,7 +77,7 @@ else
   echo "> Run Composer (containerized)"
   composer="./composer.sh"
 fi
-$composer install --no-dev --no-interaction --optimize-autoloader
+$composer install --no-dev --no-interaction --optimize-autoloader --prefer-dist
 if [ $? -ne 0 ]; then
   echo "Failed to install libs with composer"
   cd "$CURDIR" && rm -rf "$DIR"

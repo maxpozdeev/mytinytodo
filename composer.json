@@ -20,9 +20,9 @@
         "phpmailer/phpmailer": "^7.1"
     },
     "require-dev": {
-        "php": ">=8.2",
         "league/commonmark": "^2.10.4",
         "phpstan/phpstan": "^2.0",
-        "phpstan/phpstan-deprecation-rules": "^2.0"
+        "phpstan/phpstan-deprecation-rules": "^2.0",
+        "phpunit/phpunit": "^10.5"
     }
 }
