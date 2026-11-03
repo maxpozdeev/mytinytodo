@@ -219,6 +219,21 @@ MytinytodoAjaxApi.prototype = {
         });
     },
 
+    deleteTasks(params, callback) {
+        const data = {
+            ids: params.ids
+        }
+        if (!this.useREST) data['_method'] = 'DELETE';
+        $.ajax({
+            url: mytinytodo.apiUrl + 'tasks',
+            method: this.useREST ? 'DELETE' : 'POST',
+            contentType : 'application/json',
+            data: JSON.stringify(data),
+            success: callback,
+            dataType: 'json'
+        });
+    },
+
 
     setTaskPriority(params, callback) {
         $.ajax({

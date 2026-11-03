@@ -25,7 +25,7 @@ $().ready(function(){
 
 <div id="toolbar">
 
-<div class="newtask-n-search-container">
+<div class="newtask-n-search-container mtt-invis-on-select-tasks">
 <div class="taskbox-c">
   <div class="mtt-taskbox">
    <form id="newtask_form" method="post">
@@ -58,11 +58,14 @@ $().ready(function(){
 
 
 <h3 class="page-title">
-  <span id="taskview" class="mtt-menu-button"><span class="btnstr"><?php _e('tasks');?></span> <span id="total"></span> <span class="arrdown"></span></span>
-  <span class="mtt-notes-showhide"><?php _e('notes');?> <a href="#" id="mtt-notes-show"><?php _e('notes_show');?></a> / <a href="#" id="mtt-notes-hide"><?php _e('notes_hide');?></a></span>
+  <span id="taskview" class="mtt-menu-button mtt-hide-on-select-tasks"><span class="btnstr"><?php _e('tasks');?></span> <span id="total"></span> <span class="arrdown"></span></span>
+  <span class="mtt-notes-showhide mtt-hide-on-select-tasks"><?php _e('notes');?> <a href="#" id="mtt-notes-show"><?php _e('notes_show');?></a> / <a href="#" id="mtt-notes-hide"><?php _e('notes_hide');?></a></span>
+  <span id="total_selected" class="mtt-show-on-select-tasks"></span>
   <span class="page-title-right">
-    <span id="sortmenubtn" class="mtt-menu-button"><span class="title"><?php _e('sortShort');?></span> <span class="arrdown2"></span></span>
-    <span id="tagcloudbtn" class="mtt-menu-button"><span class="title"><?php _e('tagcloud');?></span> <span class="arrdown2"></span></span>
+    <span id="sortmenubtn" class="mtt-menu-button mtt-hide-on-select-tasks"><span class="title"><?php _e('sortShort');?></span> <span class="arrdown2"></span></span>
+    <span id="tagcloudbtn" class="mtt-menu-button mtt-hide-on-select-tasks"><span class="title"><?php _e('tagcloud');?></span> <span class="arrdown2"></span></span>
+    <span id="seltasksactionbtn" class="mtt-menu-button mtt-show-on-select-tasks-some"><span class="title"><?php _e('Action');?></span> <span class="arrdown2"></span></span>
+    <span id="seltasksbtn" class="mtt-img-button"><span></span>&nbsp;</span>
 </span>
 </h3>
 
@@ -226,6 +229,12 @@ $().ready(function(){
   <li class="mtt-need-list sort-item" id="sortByDueDate"><div class="menu-icon"></div><?php _e('sortByDueDate');?> <span class="mtt-sort-direction"></span></li>
   <li class="mtt-need-list sort-item" id="sortByDateModified"><div class="menu-icon"></div><?php _e('sortByDateModified');?> <span class="mtt-sort-direction"></span></li>
   <li class="mtt-need-list sort-item" id="sortByTitle"><div class="menu-icon"></div><?php _e('sortByTitle');?> <span class="mtt-sort-direction"></span></li>
+</ul>
+</div>
+
+<div id="seltasksactioncontainer" class="mtt-menu-container" style="display:none">
+<ul>
+  <li  id="seltasks_delete"><?php _e('action_delete');?></li>
 </ul>
 </div>
 

@@ -191,6 +191,43 @@ class TasksController extends ApiController {
     }
 
 
+    /**
+     * Delete multiple tasks
+     * @return void
+     */
+    function delete(): void
+    {
+        checkWriteAccess();
+        $ids = $this->req->jsonBody['ids'] ?? '';
+        if (!is_array($ids) || !array_is_list($ids)) {
+            $this->response->errorJsonContent("Malformed field: `ids`", 400);
+            return;
+        }
+        # convert to ints
+        foreach ($ids as &$id) {
+            $id = (int)$id;
+        }
+        # what tasks can delete?
+        $repo = new TaskRepo(DBConnection::instance());
+        $dict = $repo->findListIdsByTaskIds($ids);
+        if (empty($dict)) {
+            $this->response->errorJsonContent(__("taskNotFound"), 404);
+            return;
+        }
+        $lists = array_unique(array_values($dict), SORT_NUMERIC);
+        foreach ($lists as $listId) {
+            checkWriteAccess($listId);
+        }
+        $idsToDelete = array_keys($dict);
+        $deleted = $repo->deleteTasksByIds($idsToDelete);
+        $this->response->data = [
+            'ok' => true,
+            'total' => $deleted,
+            'list' => array_map(function($v) { return ['id' => $v]; }, $idsToDelete),
+        ];
+    }
+
+
     function getId($id): void
     {
         checkWriteAccess();

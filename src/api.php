@@ -42,9 +42,10 @@ $endpoints = array(
         'GET'  => [ ListsController::class , 'get' ]    # lists of specific user
     ],
     '/tasks' => [
-        'GET'  => [ TasksController::class , 'get' ],
-        'POST' => [ TasksController::class , 'post' ],
-        'PUT'  => [ TasksController::class , 'put' ],
+        'GET'     => [ TasksController::class , 'get' ],
+        'POST'    => [ TasksController::class , 'post' ],
+        'PUT'     => [ TasksController::class , 'put' ],
+        'DELETE'  => [ TasksController::class , 'delete' ],
     ],
     '/tasks/(-?\d+)' => [
         'GET'     => [ TasksController::class , 'getId' ],
@@ -108,6 +109,20 @@ if (substr($req->path, 0, 4) === '/cp/') {
 $req->username = ''; //FIXME: !!!
 $req->setUserId( userId() ?? 0 );
 
+# Simulate REST API http methods
+if ($req->method !== 'GET' && $req->contentType === 'application/json') {
+    if ($req->decodeJsonBody() === false) {
+        (new ErrorApiResponse("Failed to parse JSON body", 500))->exit();
+    }
+    if (isset($req->jsonBody['_method'])) {
+        if (!is_string($req->jsonBody['_method'])) {
+            (new ErrorApiResponse("Unexpected method", 500))->exit();
+        }
+        $req->method = strtoupper($req->jsonBody['_method']);
+        unset($req->jsonBody['_method']);
+    }
+}
+
 $response = new ApiResponse();
 $executed = false;
 $data = null;
@@ -151,11 +166,6 @@ foreach ($endpoints as $search => $methods) {
 
     // call it
     if (method_exists($class, $classMethod)) { // test for static with ReflectionMethod?
-        if ($req->method != 'GET' && $req->contentType == 'application/json') {
-            if ($req->decodeJsonBody() === false) {
-                (new ErrorApiResponse("Failed to parse JSON body", 500))->exit();
-            }
-        }
         $instance = new $class($req, $response);
         $instance->$classMethod($param);
         $executed = true;

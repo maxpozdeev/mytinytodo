@@ -119,6 +119,7 @@ class Lang
 
         $this->fillWithValues($a, [
             'confirmDelete',
+            'confirmDeleteMulti',
             'confirmLeave',
             'error',
             'denied',

@@ -495,6 +495,15 @@ const mtt = window.mytinytodo = {
             mtt.menus.sort.show(this);
         });
 
+        $('#seltasksactionbtn').click(function(){
+            if (!mtt.menus.seltasksaction) {
+                mtt.menus.seltasksaction = new mttMenu('seltasksactioncontainer', {
+                    onclick: selectedTasksActionClick
+                });
+            }
+            mtt.menus.seltasksaction.show(this);
+        });
+
         $('#mtt-notes-show').click(function(e){
             toggleAllNotes(1, e);
             this.blur();
@@ -507,6 +516,14 @@ const mtt = window.mytinytodo = {
             return false;
         });
 
+        $('#seltasksbtn').click(function(e){
+            switchSelectTasksMode();
+            return false;
+        });
+
+        $('#tasklist').on('click', 'input.mtt-multi-task', function(e){
+            refreshSelectedTasksCnt();
+        });
 
         // Tabs
         $('#lists').on('click', 'li.mtt-tab', function(event) {
@@ -652,7 +669,7 @@ const mtt = window.mytinytodo = {
             return false;
         });
 
-        $('#tasklist').on('click', 'input[type=checkbox]', function(){
+        $('#tasklist').on('click', 'input[type=checkbox].mtt-complete-btn', function(){
             const id = parseInt(getLiTaskId(this));
             if (id) completeTask(id, this);
             //return false;
@@ -1446,8 +1463,9 @@ function prepareTaskBlocks(item)
     return '' +
         '<div class="task-block">' +
             '<div class="task-left">' +
-                '<div class="task-toggle"></div>' +
-                '<label><input type="checkbox" '+(flag.readOnly?'disabled="disabled"':'')+(item.compl?'checked="checked"':'')+'></label>' +
+                `<div class="task-multiselect mtt-show-on-select-tasks"><label><input type="checkbox" name="seltask" class="mtt-multi-task" value="${id}"><label></div>` +
+                '<div class="task-toggle mtt-hide-on-select-tasks"></div>' +
+                '<label class="mtt-hide-on-select-tasks"><input type="checkbox" '+(flag.readOnly?'disabled="disabled"':'')+(item.compl?'checked="checked"':'')+' class="mtt-complete-btn"></label>' +
             "</div>\n" +
 
             '<div class="task-middle">' +
@@ -1851,6 +1869,43 @@ function refreshTaskCnt()
 };
 
 
+function switchSelectTasksMode(onoff)
+{
+    if (typeof onoff === 'undefined') {
+        // toggle
+        onoff = ! $('#mtt').is('.select-tasks');
+    }
+    if (onoff) {
+        refreshSelectedTasksCnt();
+        toggleAllNotes(0);
+        $('#mtt').addClass('select-tasks');
+    }
+    else {
+        $('#mtt').removeClass('select-tasks');
+        $('#tasklist input.mtt-multi-task').prop('checked', false);
+    }
+}
+
+function selectedTasks()
+{
+    const ids = [];
+    if (!$('#mtt').is('.select-tasks')) return ids;
+    $('#tasklist input.mtt-multi-task').each(function(){
+        if (this.checked) {
+            ids.push(this.value);
+        }
+    })
+    return ids;
+}
+
+function refreshSelectedTasksCnt()
+{
+    const count = selectedTasks().length;
+    $('#total_selected').text(`${count} of ${taskCnt.total}`); // TODO: translate
+    if (count > 0) $('#mtt').addClass('select-tasks-some');
+    else $('#mtt').removeClass('select-tasks-some');
+}
+
 function toggleAllNotes(show, event)
 {
     for (let id in taskList)
@@ -2001,6 +2056,8 @@ function deleteTask(id)
             }
             $('#taskrow_'+id).effect("highlight", {color:mtt.theme.deleteTaskFlashColor}, 'normal', function(){ $(this).remove() });
             delete taskList[id];
+            taskCnt.total--;
+            refreshTaskCnt();
             loadTasks({ isPagination: 1 });
         });
     })
@@ -2385,6 +2442,40 @@ function sortMenuClick(el, menu)
     }
     return false;
 };
+
+function selectedTasksActionClick(el, menu)
+{
+    if (!el.id)
+        return;
+
+    switch (el.id) {
+        case 'seltasks_delete': deleteSelectedTasks(); break;
+    }
+    return false;
+}
+
+function deleteSelectedTasks()
+{
+    mttConfirm( mtt.lang.get('confirmDeleteMulti'), function()
+    {
+        flag.tagsChanged = true;
+        mtt.db.request('deleteTasks', {ids: selectedTasks()}, function(json){
+            if (!json.total) {
+                return;
+            }
+            for (const item of json.list) {
+                const id = item.id;
+                $('#taskrow_'+id).effect("highlight", {color:mtt.theme.deleteTaskFlashColor}, 'normal', function(){ $(this).remove() })
+                delete taskList[id];
+                taskCnt.total--;
+            }
+            refreshTaskCnt(); // we assume all deleted tasks were visible (under any filters)
+            switchSelectTasksMode(false);
+            loadTasks({ isPagination: 1 });
+        });
+    })
+    return false;
+}
 
 
 function tasklistSortStart(event, ui)

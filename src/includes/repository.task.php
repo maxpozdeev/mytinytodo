@@ -447,6 +447,53 @@ class TaskRepo
         }
     }
 
+
+
+    /**
+     * Get Ids of lists where tasks are located.
+     * Return empty array if tasks are not found.
+     * @param int[] $ids
+     * @return array<string, int> # id => list_id
+     */
+    public function findListIdsByTaskIds(array $ids): array
+    {
+        # convert to ints
+        foreach ($ids as &$id) {
+            $id = (int)$id;
+        }
+        $strIds = implode(',', $ids);
+        $dict = [];
+        $q = $this->db->dq("SELECT id, list_id FROM {$this->db->prefix}todolist WHERE id IN ($strIds)");
+        while ($r = $q->fetchAssoc()) {
+            $dict[(string)$r['id']] = (int)$r['list_id'];
+        }
+        return $dict;
+    }
+
+    /**
+     * Delete multiple tasks by their ids
+     * Return number of task records deleted
+     * @param int[] $ids
+     * @return int
+     * @throws Exception
+     */
+    public function deleteTasksByIds(array $ids): int
+    {
+        # convert to ints
+        foreach ($ids as &$id) {
+            $id = (int)$id;
+        }
+        $strIds = implode(',', $ids);
+        $db = DBConnection::instance();
+        $db->ex("BEGIN");
+        $db->ex("DELETE FROM {$db->prefix}tag2task WHERE task_id IN ($strIds)");
+        //NB: we do not delete unused tags from tags table
+        $db->dq("DELETE FROM {$db->prefix}todolist WHERE id IN ($strIds)");
+        $deleted = $db->affected();
+        $db->ex("COMMIT");
+        return $deleted;
+    }
+
 }
 
 
