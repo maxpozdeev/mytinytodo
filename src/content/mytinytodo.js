@@ -43,11 +43,13 @@ const tabLists = {
         return (this._lists[id] || id == -1) ? true : false;
     },
     add(list) {
+        if (!list.nameText) list.nameText = dehtml(list.name);
         this._lists[list.id] = list;
         this._length++;
         this._order.push(list.id);
     },
     replace(list) {
+        if (!list.nameText) list.nameText = dehtml(list.name);
         this._lists[list.id] = list;
     },
     get(id) {
@@ -2781,7 +2783,7 @@ function cmenuOnListAdded(list)
 
 function cmenuOnListRenamed(list)
 {
-    $('#cmenu_list\\:'+list.id).text(list.name);
+    $('#cmenu_list\\:'+list.id).html(list.name);
 };
 
 function cmenuOnListSelected(a)
