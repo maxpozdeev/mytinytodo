@@ -3332,6 +3332,7 @@ function updateAccessStatus()
         liveSearchToggle(1);
         // remove some tab menu items
         $('#btnRenameList,#btnDeleteList,#btnClearCompleted,#btnPublish').remove();
+        $('#seltasksbtn').remove();
     }
     else {
         flag.readOnly = false;
