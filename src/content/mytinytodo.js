@@ -2562,7 +2562,7 @@ function cmenuOnListAdded(list)
 
 function cmenuOnListRenamed(list)
 {
-    $('#cmenu_list\\:'+list.id).text(list.name);
+    $('#cmenu_list\\:'+list.id).html(list.name);
 };
 
 function cmenuOnListSelected(a)
