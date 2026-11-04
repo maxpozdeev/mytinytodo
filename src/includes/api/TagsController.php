@@ -19,9 +19,10 @@ class TagsController extends ApiController {
         checkReadAccess($listId);
         $db = DBConnection::instance();
 
-        $sqlWhere = 'WHERE tags.user_id='. (int)$this->req->userId();
         if ($listId != -1)
-            $sqlWhere .= " AND t2t.list_id = $listId";
+            $sqlWhere = "WHERE t2t.list_id = $listId";
+        else
+            $sqlWhere = 'WHERE tags.user_id='. (int)$this->req->userId();
 
         $collate = ($db::DBTYPE === DBConnection::DBTYPE_SQLITE) ? "COLLATE {$db->orderCollation}" : "";
 
