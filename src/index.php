@@ -68,7 +68,7 @@ function getIndexPath(): string
     if (!MTT_USE_REWRITE || isset($_GET['p'])) {
         if (isset($_GET['p'])) {
             $path = $_GET['p'];
-            if ($path == '' || $path[0] != '/')
+            if ($path === '' || $path[0] !== '/')
                 return '/'. $path;
             return $path;
         }
@@ -82,8 +82,13 @@ function getIndexPath(): string
         $path = substr($path, 0, $p);
     }
     $uri = get_unsafe_mttinfo('uri');
-    if ($path != '' && 0 === strncmp($path, $uri, strlen($uri))) {
+    # uri is smth like '/' or '/mtt/'
+    # strip the uri prefix from the path
+    if ($path !== '' && 0 === strncmp($path, $uri, strlen($uri))) {
         $path = substr($path, strlen($uri) -1);
+    }
+    if ($path === '/index.php') {
+        return '/';
     }
     return $path;
 }
