@@ -30,7 +30,7 @@ else {
 function onBackupFileChange(el) {
     const fd = new FormData();
     fd.append('file', el.files[0]);
-    mtt.cpAction(el, el.dataset.cpAction, fd);
+    mytinytodo.cpAction(el, el.dataset.cpAction, fd);
 }
 </script>
 

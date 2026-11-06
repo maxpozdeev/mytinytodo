@@ -87,7 +87,7 @@ class BackupController extends \ApiController implements \MTTControlPanelHttpApi
         exit();
     }
 
-    function postRestore(bool $isLocal = false)
+    function _postRestore(bool $isLocal = false)
     {
         require_once(MTTINC. 'class.backup.backup.php');
         require_once(MTTINC. 'class.backup.restore.php');
@@ -123,9 +123,14 @@ class BackupController extends \ApiController implements \MTTControlPanelHttpApi
         ];
     }
 
+    function postRestore()
+    {
+        return $this->_postRestore(false);
+    }
+
     function postRestoreLocal()
     {
-        return $this->postRestore(true);
+        return $this->_postRestore(true);
     }
 
     function postCheckInconsistency()
