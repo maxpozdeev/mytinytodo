@@ -219,6 +219,7 @@ MytinytodoAjaxApi.prototype = {
         });
     },
 
+
     deleteTasks(params, callback) {
         const data = {
             ids: params.ids
@@ -506,5 +507,78 @@ MytinytodoAjaxApi.prototype = {
             newpassword2: params.newpassword2,
         }, callback, errorCallback);
     },
+
+
+    /* Extension Settings */
+
+    saveExtensionSettings(ext, params, callback) {
+        if (!this.useREST) params['_method'] = 'PUT';
+        $.ajax({
+            url: mytinytodo.apiUrl + 'ext-settings/' + ext,
+            method:  this.useREST ? 'PUT' : 'POST',
+            contentType : 'application/json',
+            data: JSON.stringify(params),
+            dataType: 'json',
+            success: callback
+        });
+    },
+
+    actionExtensionSettings(ext, action, method, params, callback) {
+        const endpoint = mytinytodo.apiUrl + 'ext/' + ext + '/' + action;
+        if (params instanceof FormData) {
+            $.ajax({
+                url: endpoint,
+                method: method.toUpperCase, // POST
+                contentType : false,
+                data: formData,
+                processData: false,
+                success: callback
+            });
+        }
+        else {
+            if (typeof params === 'undefined') params = {}
+            let _method = method.toUpperCase();
+            if (_method !== 'GET' && _method !== 'POST' && !this.useREST) {
+                data['_method'] = _method;
+                _method = 'POST';
+            }
+            $.ajax({
+                url: endpoint,
+                method: _method,
+                contentType : 'application/json',
+                data: params,
+                dataType: 'json',
+                success: callback
+            });
+        }
+    },
+
+
+    /* Control Panel */
+
+    controlPanelAction(action, params, callback)
+    {
+        const endpoint = mytinytodo.apiUrl + 'cp/' + action;
+        if (params instanceof FormData) {
+            $.ajax({
+                url: endpoint,
+                method: 'POST',
+                contentType : false,
+                data: params,
+                processData: false,
+                success: callback
+            });
+        }
+        else {
+            $.ajax({
+                url: endpoint,
+                method: 'POST',
+                contentType : 'application/json',
+                data: params ? params : {},
+                dataType: 'json',
+                success: callback
+            });
+        }
+    }
 
 };

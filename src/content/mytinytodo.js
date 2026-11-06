@@ -135,6 +135,8 @@ const mtt = window.mytinytodo = {
     apiUrl: '',
     goPrefix: '',
     routerPrefix: '',
+    /** @type MytinytodoAjaxApi */
+    db: null,
     options: {
         token: '',
         title: '',
@@ -3434,6 +3436,7 @@ function showExtensionSettings(ext, callback, reload)
     });
 }
 
+/* old */
 function saveExtensionSettings(frm)
 {
     if (!frm)
@@ -3443,22 +3446,15 @@ function saveExtensionSettings(frm)
     $(frm).find("input:hidden,input:text,input:password,input:checked,select,textarea").filter(":enabled").each(function() {
         params[this.name || '__'] = this.value;
     });
-    $.ajax({
-        url: mtt.apiUrl + 'ext-settings/' + ext,
-        method: 'PUT',
-        contentType : 'application/json',
-        data: JSON.stringify(params),
-        dataType: 'json',
-        success: function(json) {
-            if (json.saved) {
-                if (json.msg) showExtensionSettings(ext, function(){ flashInfo(json.msg); }, true);
-                else showExtensionSettings(ext, null, true);
-            }
-            else if (json.msg) {
-                flashError(json.msg);
-            }
+    mtt.db.saveExtensionSettings(ext, params, function(json){
+        if (json.saved) {
+            if (json.msg) showExtensionSettings(ext, function(){ flashInfo(json.msg); }, true);
+            else showExtensionSettings(ext, null, true);
         }
-    });
+        else if (json.msg) {
+            flashError(json.msg);
+        }
+    })
 }
 
 function extensionSettingsAction(actionString, ext, formData)
@@ -3502,26 +3498,7 @@ function extensionSettingsAction(actionString, ext, formData)
             flashInfo(json.msg, json.details);
         }
     };
-    if (formData === undefined) {
-        $.ajax({
-            url: mtt.apiUrl + 'ext/' + ext + '/' + action,
-            method: method.toUpperCase(),
-            contentType : 'application/json',
-            data: '{}',
-            dataType: 'json',
-            success: success
-        });
-    }
-    else {
-        $.ajax({
-            url: mtt.apiUrl + 'ext/' + ext + '/' + action,
-            method: method.toUpperCase(),
-            contentType : false,
-            data: formData,
-            processData: false,
-            success: success
-        });
-    }
+    mtt.db.actionExtensionSettings(ext, action, method, formData, success);
 }
 mtt.extensionSettingsAction = extensionSettingsAction;
 
@@ -3550,26 +3527,7 @@ function cpAction(el, action, formData)
 
         }
     };
-    if (formData === undefined) {
-        $.ajax({
-            url: mtt.apiUrl + 'cp/' + action,
-            method: 'POST',
-            contentType : 'application/json',
-            data: '{}',
-            dataType: 'json',
-            success: success
-        });
-    }
-    else {
-        $.ajax({
-            url: mtt.apiUrl + 'cp/' + action,
-            method: 'POST',
-            contentType : false,
-            data: formData,
-            processData: false,
-            success: success
-        });
-    }
+    mtt.db.controlPanelAction(action, formData, success);
 }
 mtt.cpAction = cpAction;
 
