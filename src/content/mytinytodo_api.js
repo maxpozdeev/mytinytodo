@@ -220,22 +220,6 @@ MytinytodoAjaxApi.prototype = {
     },
 
 
-    deleteTasks(params, callback) {
-        const data = {
-            ids: params.ids
-        }
-        if (!this.useREST) data['_method'] = 'DELETE';
-        $.ajax({
-            url: mytinytodo.apiUrl + 'tasks',
-            method: this.useREST ? 'DELETE' : 'POST',
-            contentType : 'application/json',
-            data: JSON.stringify(data),
-            success: callback,
-            dataType: 'json'
-        });
-    },
-
-
     setTaskPriority(params, callback) {
         $.ajax({
             url: mytinytodo.apiUrl + 'tasks/' + encodeURIComponent(params.id),
@@ -282,22 +266,6 @@ MytinytodoAjaxApi.prototype = {
                 from: params.from,
                 to: params.to
             }),
-            success: callback,
-            dataType: 'json'
-        });
-    },
-
-    moveTasks(params, callback) {
-        const data = {
-            ids: params.ids,
-            listId: params.listId,
-        }
-        if (!this.useREST) data['_method'] = 'PATCH';
-        $.ajax({
-            url: mytinytodo.apiUrl + 'tasks',
-            method: this.useREST ? 'PATCH' : 'POST',
-            contentType : 'application/json',
-            data: JSON.stringify(data),
             success: callback,
             dataType: 'json'
         });
@@ -490,6 +458,57 @@ MytinytodoAjaxApi.prototype = {
             dataType: 'json'
         });
     },
+
+
+    /* Multiple tasks */
+
+    completeTasks(params, callback) {
+        const data = {
+            ids: params.ids,
+            compl: params.compl ? true : false,
+        }
+        if (!this.useREST) data['_method'] = 'PATCH';
+        $.ajax({
+            url: mytinytodo.apiUrl + 'tasks',
+            method: this.useREST ? 'PATCH' : 'POST',
+            contentType : 'application/json',
+            data: JSON.stringify(data),
+            success: callback,
+            dataType: 'json'
+        });
+    },
+
+    moveTasks(params, callback) {
+        const data = {
+            ids: params.ids,
+            listId: params.listId,
+        }
+        if (!this.useREST) data['_method'] = 'PATCH';
+        $.ajax({
+            url: mytinytodo.apiUrl + 'tasks',
+            method: this.useREST ? 'PATCH' : 'POST',
+            contentType : 'application/json',
+            data: JSON.stringify(data),
+            success: callback,
+            dataType: 'json'
+        });
+    },
+
+    deleteTasks(params, callback) {
+        const data = {
+            ids: params.ids
+        }
+        if (!this.useREST) data['_method'] = 'DELETE';
+        $.ajax({
+            url: mytinytodo.apiUrl + 'tasks',
+            method: this.useREST ? 'DELETE' : 'POST',
+            contentType : 'application/json',
+            data: JSON.stringify(data),
+            success: callback,
+            dataType: 'json'
+        });
+    },
+
 
     /* Auth */
 

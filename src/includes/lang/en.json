@@ -151,6 +151,8 @@
     "action_move": "Move to",
     "action_ok": "OK",
     "action_cancel": "Cancel",
+    "action_mark_completed": "Mark as Completed",
+    "action_mark_open": "Mark as Open",
     "action": "Action",
     "notes": "Notes:",
     "notes_show": "Show",

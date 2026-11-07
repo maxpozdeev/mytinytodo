@@ -232,7 +232,10 @@ class TasksController extends ApiController {
         $body = $this->req->jsonBody;
 
         # We determine which action to take based on the property specified in the request.
-        if (isset($body['listId'])) {
+        if (isset($body['compl'])) {
+            $this->response->data = $this->completeTasks($tasks);
+        }
+        else if (isset($body['listId'])) {
             $list = (new ListRepo(DBConnection::instance()))->findRealListById((int)$body['listId']);
             if (!$list) {
                 $this->response->errorJsonContent(__("listNotFound"), 404);
@@ -241,6 +244,22 @@ class TasksController extends ApiController {
             checkWriteAceessToList($list);
             $this->response->data = $this->moveTasks($tasks, $list);
         }
+    }
+
+
+    private function completeTasks(array $tasks): ?array
+    {
+        $ids = [];
+        foreach ($tasks as $task) {
+            if ($this->completeTask($task)['total']) {
+                $ids[] = [ 'id' => $task->id ];
+            }
+        }
+        return [
+            'ok' => true,
+            'total' => count($ids),
+            'list' => $ids,
+        ];
     }
 
 

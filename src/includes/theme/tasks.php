@@ -234,6 +234,8 @@ $().ready(function(){
 
 <div id="seltasksactioncontainer" class="mtt-menu-container" style="display:none">
 <ul>
+  <li id="seltasks_complete"><?php _e('action_mark_completed');?></li>
+  <li id="seltasks_reopen"><?php _e('action_mark_open');?></li>
   <li id="seltasks_move" class="mtt-menu-indicator" submenu="cmenulistscontainer"><div class="submenu-icon"></div><?php _e('action_move');?></li>
   <li id="seltasks_delete"><?php _e('action_delete');?></li>
 </ul>

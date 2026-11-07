@@ -2454,15 +2454,33 @@ function selectedTasksActionClick(el, menu)
     if(a.length === 2) {
         id = a[0];
         listId = a[1];
-    }console.log('selectedTasksActionClick', id, listId);
+    }
     switch (id) {
+        case 'seltasks_complete': markSelectedTasks(1); break;
+        case 'seltasks_reopen':   markSelectedTasks(0); break;
         case 'seltasks_delete': deleteSelectedTasks(); break;
         case 'cmenu_list':
-            console.log('selectedTasksActionClick', id, listId);
             if (menu.$caller && menu.$caller.attr('id') === 'seltasks_move') moveSelectedTasksToList(listId);
             break;
     }
     return false;
+}
+
+function markSelectedTasks(completed)
+{
+    mtt.db.request('completeTasks', {ids: selectedTasks(), compl: completed}, function(json){
+        if (!json.total) {
+            return;
+        }
+        switchSelectTasksMode(false);
+        loadTasks({ isPagination:1, afterShow: () => {
+            if (mtt.pages.curPageId() !== 'tasks') return;
+            for (const item of json.list) {
+                if (taskList[item.id])
+                    $('#taskrow_'+item.id).effect("highlight", {color:mtt.theme.editTaskFlashColor}, 'normal');
+            }
+        }});
+    });
 }
 
 function deleteSelectedTasks()
