@@ -45,6 +45,7 @@ $endpoints = array(
         'GET'     => [ TasksController::class , 'get' ],
         'POST'    => [ TasksController::class , 'post' ],
         'PUT'     => [ TasksController::class , 'put' ],
+        'PATCH'   => [ TasksController::class , 'patch' ],
         'DELETE'  => [ TasksController::class , 'delete' ],
     ],
     '/tasks/(-?\d+)' => [
@@ -263,6 +264,13 @@ function checkReadAccess(?int $listId = null)
 function checkWriteAccess(?int $listId = null)
 {
     if (haveWriteAccess($listId))
+        return;
+    (new JsonApiResponse([ 'ok'=>false, 'total'=>0, 'list'=>[], 'denied'=>1 ], 403))->exit();
+}
+
+function checkWriteAceessToList(AbstractTaskList $list)
+{
+    if (canWriteToList($list))
         return;
     (new JsonApiResponse([ 'ok'=>false, 'total'=>0, 'list'=>[], 'denied'=>1 ], 403))->exit();
 }

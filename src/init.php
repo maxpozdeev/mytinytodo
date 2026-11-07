@@ -698,6 +698,7 @@ function canReadList(TaskList $list, string $inFeedKey = '') : bool
 
 function canWriteToList(AbstractTaskList $list) : bool
 {
+    if ($list->id === null || $list->userId === null) return false;
     return (is_logged() && userId() === $list->userId);
 }
 

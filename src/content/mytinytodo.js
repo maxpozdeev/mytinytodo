@@ -2449,9 +2449,18 @@ function selectedTasksActionClick(el, menu)
 {
     if (!el.id)
         return;
-
-    switch (el.id) {
+    let id = el.id, listId = null;
+    const a = id.split(':');
+    if(a.length === 2) {
+        id = a[0];
+        listId = a[1];
+    }console.log('selectedTasksActionClick', id, listId);
+    switch (id) {
         case 'seltasks_delete': deleteSelectedTasks(); break;
+        case 'cmenu_list':
+            console.log('selectedTasksActionClick', id, listId);
+            if (menu.$caller && menu.$caller.attr('id') === 'seltasks_move') moveSelectedTasksToList(listId);
+            break;
     }
     return false;
 }
@@ -2477,6 +2486,32 @@ function deleteSelectedTasks()
         });
     })
     return false;
+}
+
+function moveSelectedTasksToList(listId)
+{
+    mtt.db.request('moveTasks', {ids: selectedTasks(), listId: listId}, function(json){
+        if (!json.total) {
+            return;
+        }
+        for (const item of json.list) {
+            if (curList.id !== -1) {
+                $('#taskrow_'+item.id).fadeOut('fast', function(){ $(this).remove() });
+                delete taskList[item.id];
+                taskCnt.total--;
+            }
+        }
+        refreshTaskCnt();
+        switchSelectTasksMode(false);
+        loadTasks({ isPagination:1, afterShow: () => {
+            if (mtt.pages.curPageId() !== 'tasks') return;
+            for (const item of json.list) {
+                if (taskList[item.id])
+                    $('#taskrow_'+item.id).effect("highlight", {color:mtt.theme.editTaskFlashColor}, 'normal');
+            }
+        }});
+    });
+    flag.tagsChanged = true;
 }
 
 

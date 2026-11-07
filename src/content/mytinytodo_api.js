@@ -287,6 +287,22 @@ MytinytodoAjaxApi.prototype = {
         });
     },
 
+    moveTasks(params, callback) {
+        const data = {
+            ids: params.ids,
+            listId: params.listId,
+        }
+        if (!this.useREST) data['_method'] = 'PATCH';
+        $.ajax({
+            url: mytinytodo.apiUrl + 'tasks',
+            method: this.useREST ? 'PATCH' : 'POST',
+            contentType : 'application/json',
+            data: JSON.stringify(data),
+            success: callback,
+            dataType: 'json'
+        });
+    },
+
     parseTaskStr(params, callback) {
         $.ajax({
             url: mytinytodo.apiUrl + 'tasks/parseTitle',

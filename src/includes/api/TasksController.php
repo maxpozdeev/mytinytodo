@@ -228,6 +228,89 @@ class TasksController extends ApiController {
     }
 
 
+    /**
+     * Actions with multiple tasks
+     * @return void
+     */
+    function patch(): void
+    {
+        checkWriteAccess();
+        $ids = $this->req->jsonBody['ids'] ?? '';
+        if (!is_array($ids) || !array_is_list($ids)) {
+            $this->response->errorJsonContent("Malformed field: `ids`", 400);
+            return;
+        }
+
+        /** @var Task[] */
+        $tasks = [];
+        $listIds = [];
+        $repo = new TaskRepo(DBConnection::instance());
+
+        foreach ($ids as &$id) {
+            $id = (int)$id;
+            $task = $repo->findTaskById($id);
+            if (!$task) continue;
+            $listIds[] = $task->listId;
+            $tasks[] = $task;
+        }
+        if (empty($tasks)) {
+            $this->response->errorJsonContent(__("taskNotFound"), 404);
+            return;
+        }
+        foreach (array_unique($listIds) as $listId) {
+            checkWriteAccess($listId);
+        }
+        $body = $this->req->jsonBody;
+
+        # We determine which action to take based on the property specified in the request.
+        if (isset($body['listId'])) {
+            $list = (new ListRepo(DBConnection::instance()))->findRealListById((int)$body['listId']);
+            if (!$list) {
+                $this->response->errorJsonContent(__("listNotFound"), 404);
+                return;
+            }
+            checkWriteAceessToList($list);
+            $this->response->data = $this->moveTasks($tasks, $list);
+        }
+    }
+
+
+    /**
+     *
+     * @param Task[] $tasks
+     * @param TaskList $list
+     * @return null|array
+     */
+    private function moveTasks(array $tasks, TaskList $list): ?array
+    {
+        $ids = [];
+        $repo = new TaskRepo(DBConnection::instance());
+        foreach ($tasks as $task) {
+            if ($task->listId === $list->id) continue;
+            if ($task->setList($list)) {
+                $repo->updateTaskProperties($task);
+                $ids[] = [ 'id' => $task->id ];
+                MTTNotificationCenter::postNotification(MTTNotification::didEditTask, [
+                    'property' => 'listId',
+                    'task' => $task
+                ]);
+            }
+        }
+        if (count($ids) === 0)  {
+            return  [
+                'ok' => false,
+                'total' => 0,
+                'error' => "Failed to move tasks",
+            ];
+        }
+        return [
+            'ok' => true,
+            'total' =>count($ids),
+            'list' => $ids,
+        ];
+    }
+
+
     function getId($id): void
     {
         checkWriteAccess();
@@ -532,7 +615,7 @@ class TasksController extends ApiController {
             $repo = new TaskRepo(DBConnection::instance());
             $repo->updateTaskProperties($task);
             MTTNotificationCenter::postNotification(MTTNotification::didEditTask, [
-                'property' => 'list',
+                'property' => 'listId',
                 'task' => $task
             ]);
         }
