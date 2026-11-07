@@ -199,31 +199,43 @@ class TasksController extends ApiController {
     {
         checkWriteAccess();
         $ids = $this->req->jsonBody['ids'] ?? '';
-        if (!is_array($ids) || !array_is_list($ids)) {
+        if (!is_array($ids) || !array_is_list($ids) || empty($ids)) {
             $this->response->errorJsonContent("Malformed field: `ids`", 400);
             return;
         }
-        # convert to ints
+
+        /** @var Task[] */
+        $tasks = [];
+        $listIds = [];
+        $repo = new TaskRepo(DBConnection::instance());
+
         foreach ($ids as &$id) {
             $id = (int)$id;
+            $task = $repo->findTaskById($id);
+            if (!$task) continue;
+            $listIds[] = $task->listId;
+            $tasks[] = $task;
         }
-        # what tasks can delete?
-        $repo = new TaskRepo(DBConnection::instance());
-        $dict = $repo->findListIdsByTaskIds($ids);
-        if (empty($dict)) {
+        if (empty($tasks)) {
             $this->response->errorJsonContent(__("taskNotFound"), 404);
             return;
         }
-        $lists = array_unique(array_values($dict), SORT_NUMERIC);
-        foreach ($lists as $listId) {
+        foreach (array_unique($listIds) as $listId) {
             checkWriteAccess($listId);
         }
-        $idsToDelete = array_keys($dict);
-        $deleted = $repo->deleteTasksByIds($idsToDelete);
+
+        # delete one by one to send notification for each task
+        $deleted = [];
+        foreach ($tasks as $task) {
+            if ($repo->deleteTaskById($task->id)) {
+                MTTNotificationCenter::postNotification(MTTNotification::didDeleteTask, $task);
+                $deleted[] = [ 'id' => $task->id ];
+            }
+        }
         $this->response->data = [
             'ok' => true,
-            'total' => $deleted,
-            'list' => array_map(function($v) { return ['id' => $v]; }, $idsToDelete),
+            'total' => count($deleted),
+            'list' => $deleted,
         ];
     }
 
@@ -236,7 +248,7 @@ class TasksController extends ApiController {
     {
         checkWriteAccess();
         $ids = $this->req->jsonBody['ids'] ?? '';
-        if (!is_array($ids) || !array_is_list($ids)) {
+        if (!is_array($ids) || !array_is_list($ids) || empty($ids)) {
             $this->response->errorJsonContent("Malformed field: `ids`", 400);
             return;
         }
