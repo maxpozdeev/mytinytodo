@@ -137,7 +137,7 @@ foreach ($endpoints as $search => $methods) {
     $classDescr = $methods[$req->method] ?? null;
     // check if http method is supported for path
     if ( is_null($classDescr) ) {
-        (new ErrorApiResponse("Unknown method for resource", 500))->exit();
+        (new ErrorApiResponse("Unknown method for resource", 405))->exit();  # HTTP 405 Method Not Allowed
     }
     if ( !is_array($classDescr) || count($classDescr) < 2) {
         (new ErrorApiResponse("Incorrect method definition", 500))->exit();

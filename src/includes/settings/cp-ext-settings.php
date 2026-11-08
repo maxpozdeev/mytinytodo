@@ -50,6 +50,7 @@ else if ('' !== $ext = _get('ext')) {
     $formEnd = '';
     $formButtons = '';
     if ($instance->settingsPageType() == 0) {
+        # id='ext_settings_form' ?
         $formStart = "<form data-ext='$escapedExt' action='". mtt_get_settings_page_url(). "' method='post'>";
         $formEnd = "</form>";
         $formButtons =

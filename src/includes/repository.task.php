@@ -365,9 +365,9 @@ class TaskRepo
         if (isset($fv['compl']) || isset($fv['list_id'])) {
             # Calculate new order weight
             if ($task->isCompleted)
-                $ow = 1 + (int)$this->db->sq("SELECT MAX(ow) FROM {$this->db->prefix}todolist WHERE list_id=? AND compl=1", [$task->listId]);
+                $ow = 10 + (int)$this->db->sq("SELECT MAX(ow) FROM {$this->db->prefix}todolist WHERE list_id=? AND compl=1", [$task->listId]);
             else
-                $ow = 1 + (int)$this->db->sq("SELECT MAX(ow) FROM {$this->db->prefix}todolist WHERE list_id=? AND compl=0", [$task->listId]);
+                $ow = 10 + (int)$this->db->sq("SELECT MAX(ow) FROM {$this->db->prefix}todolist WHERE list_id=? AND compl=0", [$task->listId]);
             $fields[] = "ow=?";
             $values[] = $ow;
             ##$task->ow = $ow;
@@ -392,7 +392,7 @@ class TaskRepo
             # Create new record
             $a = $task->toArray();
 
-            $a['ow'] = 1 + (int)$this->db->sq("SELECT MAX(ow) FROM {$this->db->prefix}todolist WHERE list_id=? AND compl=?",
+            $a['ow'] = 10 + (int)$this->db->sq("SELECT MAX(ow) FROM {$this->db->prefix}todolist WHERE list_id=? AND compl=?",
                     [$task->listId, $task->isCompleted ? 1 : 0]);
 
             $this->db->ex("BEGIN");
