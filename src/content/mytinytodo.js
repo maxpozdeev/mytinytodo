@@ -9,7 +9,6 @@
 "use strict";
 
 var taskList = new Array();
-var taskOrder = new Array();
 var filter = { compl:0, search:'', due:'' };
 var sortOrder; //save task order before dragging
 var searchTimer;
@@ -1411,13 +1410,11 @@ function loadTasks(opts)
         page: pagination.page
     }, function(json){
         taskList.length = 0;
-        taskOrder.length = 0;
         taskCnt.total = taskCnt.past = taskCnt.today = taskCnt.soon = 0;
         let tasks = '';
         $.each(json.list, function(i,item){
             tasks += mtt.prepareTaskStr(item);
             taskList[item.id] = item;
-            taskOrder.push(parseInt(item.id));
             changeTaskCnt(item, 1);
         });
         curList.lastTime = json.time;
@@ -1658,109 +1655,6 @@ function refreshPagination(json)
     $('#pagination>select').html(sel);
     $('#pagination').show();
 }
-
-
-function changeTaskOrder(id)
-{
-    id = parseInt(id);
-    if (taskOrder.length < 2) {
-        return;
-    }
-    if (id && (curList.sort == 5 || curList.sort == 105)) {
-        // re-sort the whole list in case of database sorting is not the same due to collation
-        changeTaskOrder();
-    }
-    const oldOrder = taskOrder.slice();
-    function firstNonZero(order, compl,  ...args) {
-        const m = (order < 100) ? 1 : -1;
-        if (compl != 0) return compl;
-        for (const arg of args) {
-            if (arg != 0) return arg * m;
-        }
-        return 0;
-    }
-    // sortByHand
-    if (curList.sort == 0 || curList.sort == 100) {
-        taskOrder.sort( (a, b) => firstNonZero(
-            curList.sort,
-            taskList[a].compl - taskList[b].compl,
-            taskList[a].ow - taskList[b].ow
-        ))
-    }
-    // sortByPrio and reverse
-    else if (curList.sort == 1 || curList.sort == 101) {
-        taskOrder.sort( (a, b) => firstNonZero(
-            curList.sort,
-            taskList[a].compl - taskList[b].compl,
-            taskList[b].prio - taskList[a].prio,
-            taskList[a].dueInt - taskList[b].dueInt,
-            taskList[a].id - taskList[b].id
-        ));
-    }
-    // sortByDueDate and reverse
-    else if (curList.sort == 2 || curList.sort == 102) {
-        taskOrder.sort( (a, b) => firstNonZero(
-            curList.sort,
-            taskList[a].compl - taskList[b].compl,
-            taskList[a].dueInt - taskList[b].dueInt,
-            taskList[b].prio - taskList[a].prio,
-            taskList[a].id - taskList[b].id
-        ))
-    }
-    // sortByDateCreated and reverse
-    else if (curList.sort == 3 || curList.sort == 103) {
-        taskOrder.sort( (a, b) => firstNonZero(
-            curList.sort,
-            taskList[a].compl - taskList[b].compl,
-            taskList[a].dateInt - taskList[b].dateInt,
-            taskList[b].prio - taskList[a].prio,
-            taskList[a].id - taskList[b].id
-        ));
-    }
-    // sortByDateModified and reverse
-    else if (curList.sort == 4 || curList.sort == 104) {
-        taskOrder.sort( (a, b) => firstNonZero(
-            curList.sort,
-            taskList[a].compl - taskList[b].compl,
-            taskList[a].dateEditedInt - taskList[b].dateEditedInt,
-            taskList[b].prio - taskList[a].prio,
-            taskList[a].id - taskList[b].id
-        ))
-    }
-    // sortByTitle and reverse
-    else if (curList.sort == 5 || curList.sort == 105) {
-        //deprecated, just reload tasks
-        taskOrder.sort( (a, b) => firstNonZero(
-            curList.sort,
-            taskList[a].compl - taskList[b].compl,
-            taskList[a].title.localeCompare(taskList[b].title, 'en', {sensitivity: 'base'}),
-            taskList[b].prio - taskList[a].prio,
-            taskList[a].id - taskList[b].id
-        ))
-    }
-    else {
-        return;
-    }
-    if (oldOrder.toString() == taskOrder.toString()) {
-        return;
-    }
-    if (id && taskList[id]) {
-        // optimization: determine where to insert task: top or after some task
-        const indx = $.inArray(id, taskOrder);
-        if (indx == 0) {
-            $('#tasklist').prepend($('#taskrow_'+id))
-        } else {
-            const after = taskOrder[indx-1];
-            $('#taskrow_' + after).after($('#taskrow_'+id));
-        }
-    }
-    else {
-        const o = $('#tasklist');
-        for (const i in taskOrder) {
-            o.append($('#taskrow_' + taskOrder[i]));
-        }
-    }
-};
 
 
 function submitNewTask(form)
@@ -2569,7 +2463,6 @@ function tasklistSortUpdated(event, ui)
     const posAfter = {};
     for (let j = 0; j < n.length; j++) {
         posAfter[n[j]] = j;
-        taskOrder[j] = parseInt(n[j].split('_')[1]);
     }
 
     // prepare params
