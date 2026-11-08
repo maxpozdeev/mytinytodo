@@ -375,7 +375,7 @@ class TasksController extends ApiController {
      * @return void
      * @throws Exception
      */
-    function postTitleParse(): void
+    function postParseTitle(): void
     {
         checkWriteAccess();
         $t = array(
@@ -398,7 +398,7 @@ class TasksController extends ApiController {
     }
 
 
-    function postCounterOfNewTasks(): void
+    function postNewTaskCounter(): void
     {
         $curList = (int) ($this->req->jsonBody['list'] ?? 0);
         $curLater = (int) ($this->req->jsonBody['later'] ?? 0);

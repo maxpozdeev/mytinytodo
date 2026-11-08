@@ -287,7 +287,7 @@ MytinytodoAjaxApi.prototype = {
     },
 
     newTaskCounter(params, callback) {
-        fetch(mytinytodo.apiUrl + 'tasks/newCounter', {
+        fetch(mytinytodo.apiUrl + 'tasks/newTaskCounter', {
             method: 'POST',
             credentials: 'same-origin', // old browsers
             headers: {

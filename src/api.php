@@ -55,10 +55,10 @@ $endpoints = array(
         'POST'    => [ TasksController::class , 'putId' ], //compatibility
     ],
     '/tasks/parseTitle' => [
-        'POST' => [ TasksController::class , 'postTitleParse' ],
+        'POST' => [ TasksController::class , 'postParseTitle' ],
     ],
-    '/tasks/newCounter' => [
-        'POST' => [ TasksController::class , 'postCounterOfNewTasks' ],
+    '/tasks/newTaskCounter' => [
+        'POST' => [ TasksController::class , 'postNewTaskCounter' ],
     ],
     '/tagCloud/(-?\d+)' => [
         'GET'  => [ TagsController::class , 'getCloud' ],
