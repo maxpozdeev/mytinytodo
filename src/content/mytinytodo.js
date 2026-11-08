@@ -1785,12 +1785,16 @@ function submitNewTask(form)
 
 function setTaskPrio(id, prio)
 {
-    mtt.db.request('setTaskPriority', {id:id, priority:prio});
-    taskList[id].prio = prio;
-    var $t = $('#taskrow_'+id);
-    $t.find('.task-prio').replaceWith(preparePrio(prio, id));
-    if (curList.sort != 0 && curList.sort != 100) changeTaskOrder(id);
-    $t.effect("highlight", {color:mtt.theme.editTaskFlashColor}, 'normal');
+    mtt.db.request('setTaskPriority', {id:id, priority:prio}, function(json) {
+        if (!json.total) {
+            return;
+        }
+        const item = json.list[0];
+        loadTasks({ isPagination:1, afterShow: () => {
+            if (mtt.pages.curPageId() !== 'tasks') return;
+            if (taskList[item.id]) $('#taskrow_'+item.id).effect("highlight", {color:mtt.theme.editTaskFlashColor}, 'normal');
+        }});
+    });
 };
 
 function setSort(v, init)
