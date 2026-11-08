@@ -44,7 +44,6 @@ $endpoints = array(
     '/tasks' => [
         'GET'     => [ TasksController::class , 'get' ],
         'POST'    => [ TasksController::class , 'post' ],
-        'PUT'     => [ TasksController::class , 'put' ],
         'PATCH'   => [ TasksController::class , 'patch' ],
         'DELETE'  => [ TasksController::class , 'delete' ],
     ],
@@ -53,6 +52,9 @@ $endpoints = array(
         'PUT'     => [ TasksController::class , 'putId' ],
         'DELETE'  => [ TasksController::class , 'deleteId' ],
         'POST'    => [ TasksController::class , 'putId' ], //compatibility
+    ],
+    '/tasks/(-?\d+)/position' => [
+        'PUT'     => [ TasksController::class , 'putPosition' ],
     ],
     '/tasks/parseTitle' => [
         'POST' => [ TasksController::class , 'postParseTitle' ],

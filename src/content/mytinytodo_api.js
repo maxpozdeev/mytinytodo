@@ -234,15 +234,25 @@ MytinytodoAjaxApi.prototype = {
         });
     },
 
-    changeOrder(params, callback) {
+
+    /**
+     * Place task immediately after or before the anchor task.
+     * params: { id, afterId } or { id, beforeId }
+     */
+    changeTaskPosition(params, callback) {
+        const data = {};
+        if (typeof params.afterId !== 'undefined') {
+            data.afterId = parseInt(params.afterId);
+        }
+        else {
+            data.beforeId = parseInt(params.beforeId);
+        }
+        if (!this.useREST) data['_method'] = 'PUT';
         $.ajax({
-            url: mytinytodo.apiUrl + 'tasks',
+            url: mytinytodo.apiUrl + 'tasks/' + encodeURIComponent(params.id) + '/position',
             method: this.useREST ? 'PUT' : 'POST',
             contentType : 'application/json',
-            data: JSON.stringify({
-                action: 'order',
-                order:  params.order,
-            }),
+            data: JSON.stringify(data),
             success: callback,
             dataType: 'json'
         });

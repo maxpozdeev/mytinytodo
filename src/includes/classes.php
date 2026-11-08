@@ -33,6 +33,9 @@ class ApiRequest
 
     function decodeJsonBody() {
         $this->jsonBody = json_decode( file_get_contents('php://input'), true, 10, JSON_INVALID_UTF8_SUBSTITUTE );
+        if (!is_array($this->jsonBody)) {
+            $this->jsonBody = [];
+        }
         return $this->jsonBody;
     }
 

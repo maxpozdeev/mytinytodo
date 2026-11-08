@@ -144,8 +144,8 @@ class TaskRepo
         # Sort
         $collate = ($this->db::DBTYPE === DBConnection::DBTYPE_SQLITE) ? "COLLATE {$this->db->orderCollation}" : "";
         $sqlSort = "ORDER BY compl ASC, ";
-        if ($sort == self::SORT_MANUAL)                     $sqlSort .= "ow ASC";
-        elseif ($sort == self::SORT_MANUAL_REVERSE)         $sqlSort .= "ow DESC";
+        if ($sort == self::SORT_MANUAL)                     $sqlSort .= "ow ASC, id ASC";
+        elseif ($sort == self::SORT_MANUAL_REVERSE)         $sqlSort .= "ow DESC, id DESC";
         elseif ($sort == self::SORT_PRIORITY)               $sqlSort .= "prio DESC, duedate IS NULL ASC, duedate ASC, id ASC";
         elseif ($sort == self::SORT_PRIORITY_REVERSE)       $sqlSort .= "prio ASC, duedate IS NULL DESC, duedate DESC, id DESC";
         elseif ($sort == self::SORT_DUEDATE)                $sqlSort .= "duedate IS NULL ASC, duedate ASC, prio DESC, id ASC";
@@ -317,32 +317,124 @@ class TaskRepo
     }
 
 
+
     /**
-     * Update order weights of tasks to change their display order
-     * @param array{id:int|string,diff:int}[] $order
-     * @return void
+     * Place a task immediately after or before the anchor task.
+     * Task and anchor must be located in the same list and have the same completion flag.
+     * Returns null when the anchor task is not found
+     * and false when the anchor is in another list or has another completion flag.
+     * @param Task $task
+     * @param int $anchorId
+     * @param bool $isAfter Place after the anchor (true) or before it (false)
+     * @return bool|null
+     * @throws Exception
      */
-    public function changeTaskOrder(array $order)
+    public function changeTaskPosition(Task $task, int $anchorId, bool $isAfter): ?bool
     {
-        /** @var array<int,int[]> */
-        $ad = array();
-        foreach ($order as $obj) {
-            $id = (int) ($obj['id'] ?? 0);
-            $diff = (int) ($obj['diff'] ?? 0);
-            if ($id === 0 || $diff === 0)
-                continue;
-            $ad[$diff][] = $id;
+        if ($task->id === null) {
+            throw new InvalidArgumentException("Task id is not set");
+        }
+        $anchor = $this->db->sqa(
+            "SELECT id, list_id, compl, ow FROM {$this->db->prefix}todolist WHERE id=?",
+            [$anchorId]
+        );
+        if (!$anchor) {
+            return null;
+        }
+        $listId = (int)$task->listId;
+        $compl = $task->isCompleted ? 1 : 0;
+        if ((int)$anchor['list_id'] !== $listId || (int)$anchor['compl'] !== $compl) {
+            return false;
         }
 
+        $anchorOw = (int)$anchor['ow'];
+        $newOw = null;
+
         $this->db->ex("BEGIN");
-        foreach ($ad as $diff=>$ids) {
-            if ($diff >=0)
-                $set = "ow=ow+".$diff;
-            else
-                $set = "ow=ow-".abs($diff);
-            $this->db->dq( "UPDATE {$this->db->prefix}todolist SET $set WHERE id IN (". implode(',', $ids). ")" );
+        try {
+            if ($isAfter) {
+                # is there a gap right after the anchor?
+                $nextOw = $this->db->sq(
+                    "SELECT MIN(ow) FROM {$this->db->prefix}todolist WHERE list_id=? AND compl=? AND ow>? AND id<>?",
+                    [$listId, $compl, $anchorOw, $task->id]
+                );
+                $newOw = $anchorOw + 1;
+                if ($nextOw !== null && (int)$nextOw <= $anchorOw + 1) {
+                    # no gap - shift the following tasks
+                    $this->db->ex(
+                        "UPDATE {$this->db->prefix}todolist SET ow=ow+1 WHERE list_id=? AND compl=? AND ow>? AND id<>?",
+                        [$listId, $compl, $anchorOw, $task->id]
+                    );
+                }
+            }
+            else {
+                # is there a gap right before the anchor?
+                $prevOw = $this->db->sq(
+                    "SELECT MAX(ow) FROM {$this->db->prefix}todolist WHERE list_id=? AND compl=? AND ow<? AND id<>?",
+                    [$listId, $compl, $anchorOw, $task->id]
+                );
+                $hasGap = ($prevOw === null) ? ($anchorOw > 1) : ((int)$prevOw + 1 < $anchorOw);
+                if ($hasGap) {
+                    $newOw = $anchorOw - 1;
+                }
+                else {
+                    # no gap - shift the anchor and the following tasks
+                    $this->db->ex(
+                        "UPDATE {$this->db->prefix}todolist SET ow=ow+1 WHERE list_id=? AND compl=? AND ow>=? AND id<>?",
+                        [$listId, $compl, $anchorOw, $task->id]
+                    );
+                    $newOw = $anchorOw;
+                }
+            }
+            $this->db->ex("UPDATE {$this->db->prefix}todolist SET ow=? WHERE id=?", [$newOw, $task->id]);
+            $this->db->ex("COMMIT");
         }
-        $this->db->ex("COMMIT");
+        catch (Exception $e) {
+            $this->db->ex("ROLLBACK");
+            throw $e;
+        }
+
+        $task->ow = $newOw;
+        return true;
+    }
+
+
+    /**
+     * Rewrite order weights of tasks in the list as 10, 20, 30, ...
+     * Can be used to compact weights after many insertions.
+     * @param int $listId
+     * @param int $compl
+     * @return int number of updated tasks
+     * @throws Exception
+     */
+    public function renumberTaskOrder(int $listId, int $compl): int
+    {
+        $q = $this->db->dq(
+            "SELECT id FROM {$this->db->prefix}todolist WHERE list_id=? AND compl=? ORDER BY ow ASC, id ASC",
+            [$listId, $compl]
+        );
+        $ids = [];
+        while ($r = $q->fetchAssoc()) {
+            $ids[] = (int)$r['id'];
+        }
+        if (!$ids) {
+            return 0;
+        }
+        $step = 10;
+        $this->db->ex("BEGIN");
+        try {
+            $ow = $step;
+            foreach ($ids as $id) {
+                $this->db->ex("UPDATE {$this->db->prefix}todolist SET ow=? WHERE id=?", [$ow, $id]);
+                $ow += $step;
+            }
+            $this->db->ex("COMMIT");
+        }
+        catch (Exception $e) {
+            $this->db->ex("ROLLBACK");
+            throw $e;
+        }
+        return count($ids);
     }
 
 

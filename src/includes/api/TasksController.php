@@ -159,34 +159,13 @@ class TasksController extends ApiController {
     function post()
     {
         $action = $this->req->jsonBody['action'] ?? '';
-        if ($action == 'order') { //compatibility
-            checkWriteAccess();
-            $this->response->data = $this->changeTaskOrder();
+        $listId = (int)($this->req->jsonBody['list'] ?? 0);
+        checkWriteAccess($listId);
+        if ($action == 'newFull') {
+            $this->response->data = $this->fullNewTaskInList($listId);
         }
         else {
-            $listId = (int)($this->req->jsonBody['list'] ?? 0);
-            checkWriteAccess($listId);
-            if ($action == 'newFull') {
-                $this->response->data = $this->fullNewTaskInList($listId);
-            }
-            else {
-                $this->response->data = $this->newTaskInList($listId);
-            }
-        }
-    }
-
-    /**
-     * Actions with multiple tasks
-     * @return void
-     * @throws Exception
-     */
-    function put(): void
-    {
-        checkWriteAccess();
-        $action = $this->req->jsonBody['action'] ?? '';
-        switch ($action) {
-            case 'order': $this->response->data = $this->changeTaskOrder(); break;
-            default:      $this->response->errorJsonContent("Unexpected action", 400); return;
+            $this->response->data = $this->newTaskInList($listId);
         }
     }
 
@@ -367,6 +346,77 @@ class TasksController extends ApiController {
             case 'delete':   $this->response->data = $this->deleteTask($task);   break; //compatibility
             default:         $this->response->errorJsonContent("Unexpected action", 400); return;
         }
+    }
+
+
+    /**
+     * Change position of a task within its list.
+     * Body must contain exactly one of `afterId` or `beforeId` - id of the neighbour task.
+     * Task is placed immediately after (or before) the anchor task.
+     * @param mixed $id
+     * @return void
+     * @throws Exception
+     */
+    function putPosition($id): void
+    {
+        $id = (int)$id;
+        $repo = new TaskRepo(DBConnection::instance());
+        $task = $repo->findTaskById($id);
+        if (!$task) {
+            $this->response->errorJsonContent(__("taskNotFound"), 404);
+            return;
+        }
+        checkWriteAccess($task->listId);
+
+        $body = $this->req->jsonBody;
+        $hasAfter = array_key_exists('afterId', $body);
+        $hasBefore = array_key_exists('beforeId', $body);
+        if ($hasAfter === $hasBefore) {
+            $this->response->errorJsonContent("Exactly one of `afterId` or `beforeId` must be set", 400);
+            return;
+        }
+        $isAfter = $hasAfter;
+        $anchorId = (int)($isAfter ? $body['afterId'] : $body['beforeId']);
+        if ($anchorId <= 0) {
+            $this->response->errorJsonContent("Unexpected task id in `". ($isAfter ? 'afterId' : 'beforeId'). "`", 400);
+            return;
+        }
+        if ($anchorId === $task->id) {
+            # already in place
+            $this->response->data = [
+                'ok' => true,
+                'total' => 1,
+                'list' => [ [
+                    'id' => $task->id,
+                    'ow' => $task->ow,
+                ] ],
+            ];
+            return;
+        }
+
+        $result = $repo->changeTaskPosition($task, $anchorId, $isAfter);
+        if ($result === null) {
+            $this->response->errorJsonContent(__("taskNotFound"), 404);
+            return;
+        }
+        if ($result === false) {
+            $this->response->errorJsonContent("Anchor task is in another list or has another completion state", 409);
+            return;
+        }
+
+        MTTNotificationCenter::postNotification(MTTNotification::didEditTask, [
+            'property' => 'ow',
+            'task' => $task
+        ]);
+
+        $this->response->data = [
+            'ok' => true,
+            'total' => 1,
+            'list' => [ [
+                'id' => $task->id,
+                'ow' => $task->ow,
+            ] ],
+        ];
     }
 
 
@@ -674,26 +724,6 @@ class TasksController extends ApiController {
         ];
     }
 
-
-    private function changeTaskOrder(): ?array
-    {
-        $order = $this->req->jsonBody['order'] ?? null;
-
-        if (!is_array($order)) {
-            return [
-                'ok' => false,
-                'total' => 0,
-                'error' => "Unexpected type of order"
-            ];
-        }
-
-        $repo = new TaskRepo(DBConnection::instance());
-        $repo->changeTaskOrder($order);
-        return [
-            'ok' => true,
-            'total' => 1,
-        ];
-    }
 
 
     /**

@@ -1734,7 +1734,7 @@ function updateSortUI(v)
     }
 
     curList.sort = v;
-    if ( (v == 0 || v == 100) && !flag.readOnly) $("#tasklist").sortable('enable');
+    if ( (v == 0 || v == 100) && !flag.readOnly && curList.id !== -1) $("#tasklist").sortable('enable');
     else $("#tasklist").sortable('disable');
 };
 
@@ -2434,58 +2434,57 @@ function moveSelectedTasksToList(listId)
 function tasklistSortStart(event, ui)
 {
     // remember initial order before sorting
-    sortOrder = $(this).sortable('toArray');
+    sortOrder = $(this).sortable('toArray').filter(function(v){ return v != ''; });
 };
 
 function tasklistSortUpdated(event, ui)
 {
-    if (!ui.item[0]) {
+    if (!ui.item || !ui.item[0]) {
         return;
     }
-    const itemId = ui.item[0].id;
-    const n = $(this).sortable('toArray');
-
-    // remove possible empty id's
-    for (let i = 0; i < sortOrder.length; i++) {
-        if (sortOrder[i] == '') {
-            sortOrder.splice(i,1); i--;
-        }
-    }
-    if (n.toString() == sortOrder.toString()) {
+    // DOM is already updated: the dragged row is in its new place
+    const li = ui.item[0];
+    const id = parseInt(li.dataset.id || li.id.split('_')[1], 10);
+    if (!id) {
         return;
     }
 
-    // make index: id=>position
-    const posBefore = {};
-    for (let j = 0; j < sortOrder.length; j++) {
-        posBefore[sortOrder[j]] = j;
-    }
-    const posAfter = {};
-    for (let j = 0; j < n.length; j++) {
-        posAfter[n[j]] = j;
+    const n = $(this).sortable('toArray').filter(function(v){ return v != ''; });
+    if (sortOrder && n.toString() == sortOrder.toString()) {
+        return; // nothing has been changed
     }
 
-    // prepare params
-    const o = [];
-    const newWeight = taskList[sortOrder[posAfter[itemId]].split('_')[1]].ow;
-    let diff;
-    for (const j in posBefore)
-    {
-        diff = posAfter[j] - posBefore[j]; // depends on position
-        if (curList.sort == 100) {
-            diff *= -1;
-        }
-        if (diff != 0) {
-            const taskId = j.split('_')[1];
-            if (j == itemId) {
-                diff = newWeight - taskList[taskId].ow; // just for new weight
-            }
-            o.push({id:taskId, diff:diff});
-            taskList[taskId].ow += diff;
-        }
+    // nearest neighbours among draggable (not completed) rows
+    const prevLi = ui.item.prevAll('li.task-row:not(.task-completed)').first();
+    const nextLi = ui.item.nextAll('li.task-row:not(.task-completed)').first();
+    const prevId = prevLi.length ? parseInt(prevLi[0].dataset.id, 10) : 0;
+    const nextId = nextLi.length ? parseInt(nextLi[0].dataset.id, 10) : 0;
+
+    // order is ascending by `ow` for sort 0 and descending for sort 100
+    const params = { id: id };
+    if (curList.sort == 100) {
+        // lower row has lesser ow
+        if (nextId) params.afterId = nextId;
+        else if (prevId) params.beforeId = prevId;
+    }
+    else {
+        // upper row has lesser ow
+        if (prevId) params.afterId = prevId;
+        else if (nextId) params.beforeId = nextId;
+    }
+    if (typeof params.afterId === 'undefined' && typeof params.beforeId === 'undefined') {
+        return; // no neighbour to be an anchor
     }
 
-    mtt.db.request('changeOrder', {order:o});
+    mtt.db.request('changeTaskPosition', params, function(json){
+        if (!json || !json.list || !json.list[0]) {
+            return;
+        }
+        const item = json.list[0];
+        if (taskList[item.id]) {
+            taskList[item.id].ow = item.ow;
+        }
+    });
 };
 
 
