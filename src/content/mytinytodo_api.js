@@ -547,12 +547,15 @@ MytinytodoAjaxApi.prototype = {
     /* Extension Settings */
 
     saveExtensionSettings(ext, params, callback) {
-        if (!this.useREST) params['_method'] = 'PUT';
+        const data = {};
+        Object.assign(data, params);
+        if (!this.useREST) data['_method'] = 'PUT';
+        else delete data['_method'];
         $.ajax({
             url: mytinytodo.apiUrl + 'ext-settings/' + ext,
             method:  this.useREST ? 'PUT' : 'POST',
             contentType : 'application/json',
-            data: JSON.stringify(params),
+            data: JSON.stringify(data),
             dataType: 'json',
             success: callback
         });
@@ -571,17 +574,19 @@ MytinytodoAjaxApi.prototype = {
             });
         }
         else {
-            if (typeof params === 'undefined') params = {}
+            const data = {};
+            Object.assign(data, params);
             let _method = method.toUpperCase();
             if (_method !== 'GET' && _method !== 'POST' && !this.useREST) {
                 data['_method'] = _method;
                 _method = 'POST';
             }
+            else delete data['_method'];
             $.ajax({
                 url: endpoint,
                 method: _method,
                 contentType : 'application/json',
-                data: params,
+                data: data,
                 dataType: 'json',
                 success: callback
             });
