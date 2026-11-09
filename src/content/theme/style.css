@@ -1105,7 +1105,9 @@ textarea.form-input.inmax {
 .ui-autocomplete .ui-menu-item-wrapper { position: relative; padding:0.3rem 4px; }
 .ui-autocomplete .ui-menu-item-wrapper.ui-state-active { background-color:var(--color-menu-hover); color: var(--color-menu-text-hover); }
 
-
+#seltask_all_label {
+  padding:0 4px;
+}
 #seltasksbtn {
   position: relative;
   width: 16px;

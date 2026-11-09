@@ -22,7 +22,7 @@ var flag = {
     dontChangeHistoryOnce: false,
     showTagsFromAllLists: false
 };
-var taskCnt = { total:0, past: 0, today:0, soon:0 };
+var taskCnt = { total:0, totalOnPage:0, past: 0, today:0, soon:0 };
 const tabLists = {
     _lists: {},
     _length: 0,
@@ -516,6 +516,10 @@ const mtt = window.mytinytodo = {
             this.blur();
             return false;
         });
+
+        $('#seltask_all').click(function(){
+            stateSelectedTasks(this.checked ? true : false);
+        })
 
         $('#seltasksbtn').click(function(e){
             switchSelectTasksMode();
@@ -1410,7 +1414,7 @@ function loadTasks(opts)
         page: pagination.page
     }, function(json){
         taskList.length = 0;
-        taskCnt.total = taskCnt.past = taskCnt.today = taskCnt.soon = 0;
+        taskCnt.total = taskCnt.totalOnPage = taskCnt.past = taskCnt.today = taskCnt.soon = 0;
         let tasks = '';
         $.each(json.list, function(i,item){
             tasks += mtt.prepareTaskStr(item);
@@ -1756,6 +1760,7 @@ function changeTaskCnt(task, dir, old)
     if(dir != 0) {
         if(task.dueClass != '' && !task.compl) taskCnt[task.dueClass] += dir;
         taskCnt.total += dir;
+        taskCnt.totalOnPage += dir;
     }
 };
 
@@ -1801,9 +1806,21 @@ function selectedTasks()
 function refreshSelectedTasksCnt()
 {
     const count = selectedTasks().length;
-    $('#total_selected').text(`${count} of ${taskCnt.total}`); // TODO: translate
+    const title = mtt.lang.get('selectedOf').replace('%1', count).replace('%2', taskCnt.totalOnPage);
+    $('#total_selected').text(title);
     if (count > 0) $('#mtt').addClass('select-tasks-some');
     else $('#mtt').removeClass('select-tasks-some');
+    if (count === 0) $('#seltask_all').prop('checked', false).prop('indeterminate', false);
+    else if (count === taskCnt.totalOnPage) $('#seltask_all').prop('checked', true).prop('indeterminate', false);
+    else $('#seltask_all').prop('checked', true).prop('indeterminate', true);
+}
+
+function stateSelectedTasks(isSelected)
+{
+    $('#tasklist input.mtt-multi-task').each(function(){
+        this.checked = isSelected ? true : false;
+    });
+    refreshSelectedTasksCnt();
 }
 
 function toggleAllNotes(show, event)
@@ -1956,7 +1973,9 @@ function deleteTask(id)
             }
             $('#taskrow_'+id).effect("highlight", {color:mtt.theme.deleteTaskFlashColor}, 'normal', function(){ $(this).remove() });
             delete taskList[id];
+            changeTaskCnt
             taskCnt.total--;
+            taskCnt.totalOnPage--;
             refreshTaskCnt();
             loadTasks({ isPagination: 1 });
         });
@@ -2395,6 +2414,7 @@ function deleteSelectedTasks()
                 $('#taskrow_'+id).effect("highlight", {color:mtt.theme.deleteTaskFlashColor}, 'normal', function(){ $(this).remove() })
                 delete taskList[id];
                 taskCnt.total--;
+                taskCnt.totalOnPage--;
             }
             refreshTaskCnt(); // we assume all deleted tasks were visible (under any filters)
             switchSelectTasksMode(false);
@@ -2415,6 +2435,7 @@ function moveSelectedTasksToList(listId)
                 $('#taskrow_'+item.id).fadeOut('fast', function(){ $(this).remove() });
                 delete taskList[item.id];
                 taskCnt.total--;
+                taskCnt.totalOnPage--;
             }
         }
         refreshTaskCnt();

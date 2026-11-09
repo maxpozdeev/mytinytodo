@@ -149,6 +149,7 @@ class Lang
             "sortShortByDueDate",
             "sortShortByDateCreated",
             "sortShortByDateModified",
+            'selectedOf',
         ]);
         $a['_rtl'] = $this->rtl() ? 1 : 0;
 

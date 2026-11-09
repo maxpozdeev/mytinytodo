@@ -60,6 +60,7 @@ $().ready(function(){
 <h3 class="page-title">
   <span id="taskview" class="mtt-menu-button mtt-hide-on-select-tasks"><span class="btnstr"><?php _e('tasks');?></span> <span id="total"></span> <span class="arrdown"></span></span>
   <span class="mtt-notes-showhide mtt-hide-on-select-tasks"><?php _e('notes');?> <a href="#" id="mtt-notes-show"><?php _e('notes_show');?></a> / <a href="#" id="mtt-notes-hide"><?php _e('notes_hide');?></a></span>
+  <label id="seltask_all_label" class="mtt-show-on-select-tasks"><input type="checkbox" id="seltask_all"></label>
   <span id="total_selected" class="mtt-show-on-select-tasks"></span>
   <span class="page-title-right">
     <span id="sortmenubtn" class="mtt-menu-button mtt-hide-on-select-tasks"><span class="title"><?php _e('sortShort');?></span> <span class="arrdown2"></span></span>
