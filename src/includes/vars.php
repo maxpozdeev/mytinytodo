@@ -21,6 +21,6 @@ class MTTVars {
 
 class MTTVersion
 {
-    const VERSION = '2.0';
+    const VERSION = '2.0-dev';
     const DB_VERSION = '2.0';
 }

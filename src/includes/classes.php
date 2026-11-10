@@ -334,13 +334,13 @@ class MTTExtensionLoader
     public static function isBundleCompatible(array $meta): bool
     {
         $cpt = $meta['compatibility'] ?? '';
-        if ($cpt === '' || !is_string($cpt) || strpos($cpt, '-') === false)
+        if ($cpt === '' || !is_string($cpt) || strpos($cpt, ' - ') === false)
             return false;
-        list($vmin, $vmax) = explode('-', $cpt, 2);
+        list($vmin, $vmax) = explode(' - ', $cpt, 2);
 
-        if (version_compare(MTTVersion::VERSION, $vmin) < 0)
+        if (version_compare(MTTVersion::VERSION, trim($vmin)) < 0)
             return false;
-        if (version_compare(MTTVersion::VERSION, $vmax) > 0)
+        if (version_compare(MTTVersion::VERSION, trim($vmax)) > 0)
             return false;
         return true;
     }
