@@ -41,14 +41,18 @@ class TagRepo
 
 
     /**
-     * Finds all variations of tag by its "normalized" name. Return array of id.
+     * Finds tag by its name. Return array of id.
      * @param string $name
      * @return int[]
      */
     public function getTagIdsByName(string $name): array
     {
+        $collate = '';
+        if ($this->db::DBTYPE === DBConnection::DBTYPE_SQLITE)
+            $collate = "COLLATE {$this->db->equalCollation}";
+
         $ids = [];
-        $q = $this->db->dq("SELECT id FROM {$this->db->prefix}tags WHERE ". $this->db->ciEquals('name', $name));
+        $q = $this->db->dq("SELECT id FROM {$this->db->prefix}tags WHERE name=? $collate", [$name]);
         while ($r = $q->fetchAssoc()) {
             $ids[] = (int) $r['id'];
         }
@@ -79,7 +83,10 @@ class TagRepo
         $tag = new Tag();
         $tag->name = $name;
         $tag->userId = $userId;
-        $collate = ($this->db::DBTYPE === DBConnection::DBTYPE_SQLITE) ? "COLLATE {$this->db->equalCollation}" : "";
+        $collate = '';
+        if ($this->db::DBTYPE === DBConnection::DBTYPE_SQLITE)
+            $collate = "COLLATE {$this->db->equalCollation}";
+
         $tag->id = (int) $this->db->sq("SELECT id FROM {$this->db->prefix}tags WHERE user_id=? AND name=? $collate", [$userId, $name]);
         if (!$tag->id) {
             $this->db->ex("INSERT INTO {$this->db->prefix}tags (user_id,name) VALUES (?,?)", [$userId, $name]);

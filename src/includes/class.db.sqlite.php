@@ -68,7 +68,7 @@ class SqliteDatabase extends AbstractDatabase
     protected $useNormalizedSearch = true;
 
     protected string $orderCollation = 'UTF8CI';
-    protected string $equalCollation = 'UTF8CI';
+    protected string $equalCollation = 'UTF8CI_ORIGINAL';
 
 
     function __construct(?array $params = null)
@@ -95,6 +95,7 @@ class SqliteDatabase extends AbstractDatabase
             $this->dbh->sqliteCreateFunction('utf8_lower', [$this, 'utf8_lower'], 1);
             $this->dbh->sqliteCreateFunction('utf8_normalized_lower', [$this, 'utf8_normalized_lower'], 1);
             $this->dbh->sqliteCreateCollation('UTF8CI', [$this, 'collate_utf8ci']);
+            $this->dbh->sqliteCreateCollation('UTF8CI_ORIGINAL', [$this, 'collate_utf8ci_original']);
             $this->dbh->sqliteCreateCollation('UTF8CI_NORMALIZED', [$this, 'collate_utf8ci_normalized']);
         }
         else {
@@ -103,6 +104,7 @@ class SqliteDatabase extends AbstractDatabase
             $this->dbh->createFunction('utf8_lower', [$this, 'utf8_lower'], 1);
             $this->dbh->createFunction('utf8_normalized_lower', [$this, 'utf8_normalized_lower'], 1);
             $this->dbh->createCollation('UTF8CI', [$this, 'collate_utf8ci']);
+            $this->dbh->createCollation('UTF8CI_ORIGINAL', [$this, 'collate_utf8ci_original']);
             $this->dbh->createCollation('UTF8CI_NORMALIZED', [$this, 'collate_utf8ci_normalized']);
         }
     }
@@ -270,6 +272,12 @@ class SqliteDatabase extends AbstractDatabase
             $r = strcmp($str1, $str2);
         }
         return $r;
+    }
+
+    public function collate_utf8ci_original(string $str1, string $str2): int
+    {
+        return strcmp( mb_convert_case($str1, MB_CASE_FOLD, 'UTF-8'), mb_convert_case($str2, MB_CASE_FOLD, 'UTF-8') );
+        //return strcmp(mb_strtolower($str1, 'UTF-8'), mb_strtolower($str2, 'UTF-8'));
     }
 
     public function collate_utf8ci_normalized(string $str1, string $str2): int
