@@ -92,22 +92,33 @@ class TagRepo
     }
 
     /**
-     * Get tag cloud for a real list or virtual alltasks list.
+     * Get tag cloud (no unused tags) for a real list or virtual alltasks list.
+     * @param int $listId List id or -1 for all tasks of user
+     * @param int $userId Owner of the lists
+     * @param bool $publishedOnly Take into account published lists only (for another user's all tasks)
      * @return array<int, array{name: string, id: int}>
      */
-    public function getCloud(int $listId, int $userId): array
+    public function getCloud(int $listId, int $userId, bool $publishedOnly = false): array
     {
-        if ($listId === -1)
-            $sqlWhere = "WHERE tags.user_id = $userId";
-        else
-            $sqlWhere = "WHERE t2t.list_id = $listId";
-
         $orderBy = $this->tagNameOrderByCollation();
-        $q = $this->db->dq(
-            "SELECT DISTINCT tag_id, name
-             FROM {$this->db->prefix}tag2task AS t2t INNER JOIN {$this->db->prefix}tags AS tags ON tag_id = id
-             $sqlWhere
-             ORDER BY name $orderBy ASC");
+        if ($listId === -1) {
+            $sql = "SELECT DISTINCT tags.id AS tag_id, tags.name AS name
+                FROM {$this->db->prefix}tag2task AS t2t
+                INNER JOIN {$this->db->prefix}tags AS tags ON t2t.tag_id = tags.id
+                INNER JOIN {$this->db->prefix}lists AS lists ON t2t.list_id = lists.id
+                WHERE lists.user_id = ? AND tags.user_id = ?";
+            if ($publishedOnly)
+                $sql .= " AND lists.published = 1";
+            $sql .= " ORDER BY name $orderBy ASC";
+            $q = $this->db->dq($sql, [$userId, $userId]);
+        }
+        else {
+            $q = $this->db->dq(
+                "SELECT DISTINCT tag_id, name
+                 FROM {$this->db->prefix}tag2task AS t2t INNER JOIN {$this->db->prefix}tags AS tags ON tag_id = id
+                 WHERE t2t.list_id = ?
+                 ORDER BY name $orderBy ASC", [$listId]);
+        }
         $aTags = [];
         while ($r = $q->fetchAssoc()) {
             $aTags[] = [

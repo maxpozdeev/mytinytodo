@@ -104,6 +104,7 @@ class TagRepoTest extends TestCase
     }
     public function testCloudAndSuggestions(): void
     {
+        $this->insertList(50, 1, 0);
         $alpha = $this->repo->getOrCreateTag('Alpha', 1);
         $beta = $this->repo->getOrCreateTag('Beta', 1);
         $this->db->ex(
@@ -124,6 +125,62 @@ class TagRepoTest extends TestCase
             $this->repo->getSuggestions(50, 'al')
         );
         $this->assertCount(2, $this->repo->getCloud(-1, 1));
+    }
+
+    public function testCloudForAnotherUserPublishedOnly(): void
+    {
+        $this->insertList(60, 2, 1);
+        $this->insertList(61, 2, 0);
+
+        $alpha = $this->repo->getOrCreateTag('Alpha', 2);
+        $beta = $this->repo->getOrCreateTag('Beta', 2);
+        $this->db->ex(
+            'INSERT INTO tag2task (tag_id, task_id, list_id) VALUES (?,?,?)',
+            [$alpha->id, 200, 60]
+        );
+        $this->db->ex(
+            'INSERT INTO tag2task (tag_id, task_id, list_id) VALUES (?,?,?)',
+            [$beta->id, 201, 61]
+        );
+
+        $this->assertSame(
+            ['Alpha'],
+            array_column($this->repo->getCloud(-1, 2, true), 'name')
+        );
+        $this->assertSame(
+            ['Alpha', 'Beta'],
+            array_column($this->repo->getCloud(-1, 2), 'name')
+        );
+        $this->assertSame([], $this->repo->getCloud(-1, 1));
+    }
+
+    public function testCloudDoesNotIncludeForeignTags(): void
+    {
+        $this->insertList(70, 2, 1);
+
+        $own = $this->repo->getOrCreateTag('Own', 1);
+        $foreign = $this->repo->getOrCreateTag('Foreign', 2);
+        $this->db->ex(
+            'INSERT INTO tag2task (tag_id, task_id, list_id) VALUES (?,?,?)',
+            [$own->id, 300, 70]
+        );
+        $this->db->ex(
+            'INSERT INTO tag2task (tag_id, task_id, list_id) VALUES (?,?,?)',
+            [$foreign->id, 301, 70]
+        );
+
+        $this->assertSame(
+            ['Foreign'],
+            array_column($this->repo->getCloud(-1, 2, true), 'name')
+        );
+    }
+
+    private function insertList(int $id, int $userId, int $published): void
+    {
+        $this->db->ex(
+            'INSERT INTO lists (id,uuid,name,user_id,published) VALUES (?,?,?,?,?)',
+            [$id, 'uuid-'. $id, 'List '. $id, $userId, $published]
+        );
     }
 
 }

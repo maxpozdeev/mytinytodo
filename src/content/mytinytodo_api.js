@@ -263,7 +263,9 @@ MytinytodoAjaxApi.prototype = {
     },
 
     tagCloud(params, callback) {
-        $.getJSON(mytinytodo.apiUrl + 'tagCloud/' + encodeURIComponent(params.list), callback);
+        const username = params.username || mytinytodo.options.username;
+        $.getJSON(mytinytodo.apiUrl + 'user/' + encodeURIComponent(username) +
+            '/tags/' + encodeURIComponent(params.list), callback);
     },
 
     moveTask(params, callback) {

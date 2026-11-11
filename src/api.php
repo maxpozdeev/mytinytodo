@@ -62,8 +62,8 @@ $endpoints = array(
     '/tasks/newTaskCounter' => [
         'POST' => [ TasksController::class , 'postNewTaskCounter' ],
     ],
-    '/tagCloud/(-?\d+)' => [
-        'GET'  => [ TagsController::class , 'getCloud' ],
+    '/user/([^/]+)/tags/(-?\d+)' => [
+        'GET'  => [ TagsController::class , 'getUserCloud' ]
     ],
     '/suggestTags' => [
         'GET'  => [ TagsController::class , 'getSuggestions' ],
@@ -161,16 +161,18 @@ foreach ($endpoints as $search => $methods) {
         }
     }
 
-    // method can get one argument //TODO: pass args via ApiRequest
-    $param = null;
-    if (count($m) >= 2) {
-        $param = $m[1];
+    // pass all route captures to a general endpoint method
+    // extensions historically receive only the first capture
+    // TODO: pass args via ApiRequest ?
+    $args = array_slice($m, 1);
+    if (MTT_API_ENDPOINT_OWNER_EXTENSION === $endpointOwner) {
+        $args = isset($m[1]) ? [$m[1]] : [];
     }
 
     // call it
     if (method_exists($class, $classMethod)) { // test for static with ReflectionMethod?
         $instance = new $class($req, $response);
-        $instance->$classMethod($param);
+        $instance->$classMethod(...$args);
         $executed = true;
         break;
     }

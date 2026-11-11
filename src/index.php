@@ -154,10 +154,15 @@ function jsOptions()
     if ($homeUrl == '') {
         $homeUrl = get_mttinfo('mtt_uri');
     }
+    $requestedUsername = MTTVars::$requestedUsername;
+    if ($requestedUsername === '') {
+        // homepage: the owner of requested lists is the logged-in user
+        $requestedUsername = MTTVars::$username ?? username() ?? '';
+    }
     $a = array(
         "token" => htmlspecialchars(access_token()),
-        "me" => username() ?? '',
-        "username" => MTTVars::$requestedUsername,
+        "me" => username() ?? '',                   # logged-in username (may be empty for guest)
+        "username" => $requestedUsername,           # the user who owns the requested lists
         "title" => get_unsafe_mttinfo('title'),
         "mttUrl" => get_mttinfo('mtt_uri'),
         "homeUrl" => $homeUrl,

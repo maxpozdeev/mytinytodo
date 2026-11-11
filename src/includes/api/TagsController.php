@@ -9,35 +9,74 @@
 class TagsController extends ApiController {
 
     /**
-     * Get tag cloud
+     * Get tag cloud of a user: all tasks (listId = -1) or a single list.
+     * @param mixed $username Owner of the requested lists
+     * @param mixed $listId List id or -1 for all tasks
      * @return void
      * @throws Exception
      */
-    function getCloud($listId): void
+    function getUserCloud($username, $listId): void
     {
+        $username = trim((string)$username);
         $listId = (int)$listId;
-        checkReadAccess($listId);
-        $db = DBConnection::instance();
-        $aTags = (new TagRepo($db))->getCloud($listId, (int)$this->req->userId());
 
-        $t = array();
-        $t['total'] = 0;
-        $count = count($aTags);
-        if (!$count) {
-            $this->response->data = $t;
+        $db = DBConnection::instance();
+        $requestUserId = (int)$this->req->userId();
+
+        if (username() !== null && $username === username())
+            $targetUserId = $requestUserId;
+        else
+            $targetUserId = (int)(new UserRepo($db))->findUserIdByUsername($username);
+
+        if (!$targetUserId || (!need_auth() && $targetUserId !== $requestUserId)) {
+            $this->response->errorJsonContent("User not found", 404);
             return;
         }
 
-        foreach ($aTags as $tag)
-        {
-            $t['items'][] = array(
+        if ($listId === -1) {
+            $publishedOnly = ($targetUserId !== $requestUserId);
+            if (!$publishedOnly) {
+                // own alltasks include unpublished lists and require a logged-in user
+                checkReadAccess(-1);
+            }
+            $aTags = (new TagRepo($db))->getCloud(-1, $targetUserId, $publishedOnly);
+        }
+        else {
+            $list = (new ListRepo($db))->findRealListById($listId, $targetUserId);
+            if (!$list) {
+                if (is_logged())
+                    ErrorApiResponse::exitWithMessage(__("listNotFound"), 404);
+                else
+                    ErrorApiResponse::exitWithMessage(__("denied"), 403);
+            }
+            if (!canReadList($list))
+                ErrorApiResponse::exitWithMessage(__("denied"), 403);
+            $aTags = (new TagRepo($db))->getCloud($listId, $targetUserId);
+        }
+
+        $this->response->data = $this->cloudToArray($aTags);
+    }
+
+    /**
+     * @param array<int, array{name: string, id: int}> $aTags
+     * @return array{total: int, items?: array<int, array{tag: string, tagText: string, id: int}>}
+     */
+    private function cloudToArray(array $aTags): array
+    {
+        $t = ['total' => 0];
+        $count = count($aTags);
+        if (!$count)
+            return $t;
+
+        foreach ($aTags as $tag) {
+            $t['items'][] = [
                 'tag' => htmlspecialchars($tag['name']),
                 'tagText' => (string)$tag['name'],
                 'id' => (int)$tag['id'],
-            );
+            ];
         }
         $t['total'] = $count;
-        $this->response->data = $t;
+        return $t;
     }
 
     /**

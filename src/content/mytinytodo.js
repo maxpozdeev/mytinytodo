@@ -2202,7 +2202,7 @@ function loadTags(listId, callback)
 {
     if (flag.showTagsFromAllLists)
         listId = -1;
-    mtt.db.request('tagCloud', {list:listId}, function(json){
+    mtt.db.request('tagCloud', {list:listId, username:mtt.options.username}, function(json){
         if (!parseInt(json.total)) tagsList = [];
         else tagsList = json.items;
         flag.tagsChanged = false;
