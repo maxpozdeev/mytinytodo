@@ -70,6 +70,10 @@ class PostgresDatabase extends AbstractDatabase
     /** @var string  const */
     protected $schema = 'public';
 
+    /** @var bool|null */
+    protected ?bool $hasUnaccent = null;
+
+
     function __construct()
     {
     }
@@ -191,6 +195,25 @@ class PostgresDatabase extends AbstractDatabase
     {
         $column = str_replace('"', '""', $column);
         return '"'. $column. '" ILIKE '. $this->quoteForLike($format, $string);
+    }
+
+    function hasUnaccent(): bool
+    {
+        if ($this->hasUnaccent === null) {
+            $this->hasUnaccent = (int) $this->sq("SELECT COUNT(*) FROM pg_proc WHERE proname = 'unaccent'") > 0;
+        }
+        return $this->hasUnaccent;
+    }
+
+    function aiciLike(string $column, string $format, string $string): string
+    {
+        $column = str_replace('"', '""', $column);
+        $string = str_replace(array('\\','%','_'), array('\\\\','\%','\_'), $string);
+        $pattern = $this->quote(sprintf($format, $string));
+        if ($this->hasUnaccent()) {
+            return "lower(unaccent(\"$column\")) LIKE lower(unaccent($pattern)) ESCAPE '\\'";
+        }
+        return "lower(\"$column\") LIKE lower($pattern) ESCAPE '\\'";
     }
 
     function ciEquals(string $column, string $value): string

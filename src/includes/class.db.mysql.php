@@ -66,6 +66,7 @@ class MysqlDatabase extends AbstractDatabase
     protected $affected = 0;
 
     protected $dbname;
+    protected string $orderCollation = 'utf8mb4_unicode_520_ci';
 
     function __construct()
     {
@@ -188,6 +189,12 @@ class MysqlDatabase extends AbstractDatabase
     {
         $column = str_replace('`', '``', $column);
         return '`'. $column. '` LIKE '. $this->quoteForLike($format, $string);
+    }
+
+    function aiciLike(string $column, string $format, string $string): string
+    {
+        $column = str_replace('`', '``', $column);
+        return '`'. $column. '` COLLATE utf8mb4_unicode_520_ci LIKE '. $this->quoteForLike($format, $string);
     }
 
     function ciEquals(string $column, string $value): string

@@ -8,7 +8,7 @@
 
 // Minimal supported version of Mysql is 5.7.9
 // Minimal supported version of Maria DB is 10.2.2
-// Minimal supported version of Postgres is 10
+// Minimal supported version of Postgres is 12
 
 // Can be used to upgrade database from myTinyTodo v1.7 or later
 $lastVer = '2.0';
@@ -631,7 +631,9 @@ function update_18_20(AbstractDatabase $db, string $dbtype)
         $db->ex("ALTER TABLE {$db->prefix}todolist ADD `extra` TEXT default NULL");
 
         $db->ex("ALTER TABLE {$db->prefix}tags ADD `user_id` INT UNSIGNED NOT NULL default 0");
-        $db->ex("ALTER TABLE {$db->prefix}tags ADD KEY (`user_id`)");
+        $db->ex("ALTER TABLE {$db->prefix}tags DROP INDEX `name`");
+        $db->ex("ALTER TABLE {$db->prefix}tags MODIFY `name` VARCHAR(750) COLLATE utf8mb4_bin NOT NULL DEFAULT ''");
+        $db->ex("ALTER TABLE {$db->prefix}tags ADD UNIQUE KEY (`user_id`, `name`)");
 
         $collation = 'utf8mb4_unicode_520_ci';
 
@@ -676,7 +678,11 @@ function update_18_20(AbstractDatabase $db, string $dbtype)
         $db->ex("CREATE INDEX {$db->prefix}lists_user_id ON {$db->prefix}lists (user_id)");
 
         $db->ex("ALTER TABLE {$db->prefix}tags ADD user_id INTEGER NOT NULL default 0");
+        $db->ex("ALTER TABLE {$db->prefix}tags ALTER name TYPE VARCHAR(750)");
         $db->ex("CREATE INDEX {$db->prefix}tags_user_id ON {$db->prefix}tags (user_id)");
+        MTTDBSetup::tryCreatePostgresUnaccent($db);
+        $db->ex("DROP INDEX IF EXISTS {$db->prefix}tags_lower_name");
+        $db->ex("CREATE UNIQUE INDEX {$db->prefix}tags_user_name ON {$db->prefix}tags (user_id, name)");
 
         $db->ex(
             "CREATE TABLE {$db->prefix}users (
@@ -733,18 +739,32 @@ function update_18_20(AbstractDatabase $db, string $dbtype)
         $db->ex("CREATE UNIQUE INDEX todo_uuid ON {$db->prefix}todolist (uuid)");
         $db->ex("DROP TABLE {$db->prefix}todolist_old");
 
-        // tags: remove collation from name column; add user_id column
+        // tags: remove collation from name column; add user_id column; add unique index on (user_id, name); length of name set to 750
         $db->ex("DROP INDEX tags_name");
         $db->ex("ALTER TABLE {$db->prefix}tags RENAME TO {$db->prefix}tags_old");
         $db->ex(
             "CREATE TABLE {$db->prefix}tags (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 user_id INTEGER UNSIGNED NOT NULL default 0,
-                name VARCHAR(250) NOT NULL DEFAULT ''
+                name VARCHAR(750) NOT NULL DEFAULT ''
         ) ");
         $db->ex("INSERT INTO {$db->prefix}tags SELECT id,0,name FROM {$db->prefix}tags_old");
+
+        // remove duplicate tag names before creating the unique index
+        $db->ex("UPDATE {$db->prefix}tag2task SET tag_id = ("
+            . "    SELECT MIN(t2.id) FROM {$db->prefix}tags t2 WHERE t2.name = (SELECT t.name FROM {$db->prefix}tags t WHERE t.id = {$db->prefix}tag2task.tag_id)"
+            . ")"
+            . "WHERE tag_id IN ( "
+            . "    SELECT id FROM {$db->prefix}tags WHERE id NOT IN (SELECT MIN(id) FROM {$db->prefix}tags GROUP BY name)" # dups
+            . ")");
+        $db->ex("DELETE FROM {$db->prefix}tags WHERE id NOT IN (SELECT MIN(id) FROM {$db->prefix}tags GROUP BY name)");
+        $db->ex("CREATE TABLE {$db->prefix}tag2task_dedup AS SELECT DISTINCT task_id, tag_id, list_id FROM {$db->prefix}tag2task"); # only unique (task_id,tag_id,list_id)
+        $db->ex("DELETE FROM {$db->prefix}tag2task");
+        $db->ex("INSERT INTO {$db->prefix}tag2task (task_id, tag_id, list_id) SELECT task_id, tag_id, list_id FROM {$db->prefix}tag2task_dedup");
+        $db->ex("DROP TABLE {$db->prefix}tag2task_dedup");
+
         $db->ex("DROP TABLE {$db->prefix}tags_old");
-        $db->ex("CREATE INDEX tags_user_id ON {$db->prefix}tags (user_id)");
+        $db->ex("CREATE UNIQUE INDEX tags_user_name ON {$db->prefix}tags (user_id, name)");
 
 
         $db->ex(

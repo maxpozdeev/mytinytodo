@@ -13,7 +13,7 @@ Original website - http://www.mytinytodo.net/
   - pdo_pgsql (PostgreSQL version)
 - One of databases:
   - MySQL 5.7 or greater / MariaDB 10.2 or greater
-  - PostgreSQL 10 or greater
+  - PostgreSQL 12 or greater
   - SQLite (system library)
 
 Supported browsers: Chrome 49, Safari 10, Firefox 53.

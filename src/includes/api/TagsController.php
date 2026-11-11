@@ -18,25 +18,7 @@ class TagsController extends ApiController {
         $listId = (int)$listId;
         checkReadAccess($listId);
         $db = DBConnection::instance();
-
-        if ($listId != -1)
-            $sqlWhere = "WHERE t2t.list_id = $listId";
-        else
-            $sqlWhere = 'WHERE tags.user_id='. (int)$this->req->userId();
-
-        $collate = ($db::DBTYPE === DBConnection::DBTYPE_SQLITE) ? "COLLATE {$db->orderCollation}" : "";
-
-        $q = $db->dq("SELECT DISTINCT tag_id, name
-                      FROM {$db->prefix}tag2task AS t2t INNER JOIN {$db->prefix}tags AS tags ON tag_id = id
-                      $sqlWhere
-                      ORDER BY name $collate ASC");
-        $aTags = array();
-        while ($r = $q->fetchAssoc()) {
-            $aTags[] = array(
-                'name' => $r['name'],
-                'id' => $r['tag_id']
-            );
-        }
+        $aTags = (new TagRepo($db))->getCloud($listId, (int)$this->req->userId());
 
         $t = array();
         $t['total'] = 0;
@@ -59,6 +41,7 @@ class TagsController extends ApiController {
     }
 
     /**
+     * Suggest tags by its prefix (for jQuery UI autocomplete widget)
      * @return void
      * @throws Exception
      */
@@ -67,20 +50,8 @@ class TagsController extends ApiController {
         $listId = (int)_get('list');
         checkWriteAccess($listId);
         $db = DBConnection::instance();
-        $begin = trim(_get('q'));
-        $limit = 8;
-        $collate = ($db::DBTYPE === DBConnection::DBTYPE_SQLITE) ? "COLLATE {$db->orderCollation}" : "";
-        $q = $db->dq("SELECT name, tag_id AS id FROM {$db->prefix}tags
-                      INNER JOIN {$db->prefix}tag2task ON id=tag_id
-                      WHERE list_id=$listId AND ". $db->like('name', '%s%%', $begin). "
-                      GROUP BY tag_id, name
-                      ORDER BY name $collate
-                      LIMIT $limit");
-        $t = array();
-        while ($r = $q->fetchRow()) {
-            $t[] = $r[0];
-        }
-        $this->response->data = $t;
+        $prefix = trim(_get('q'));
+        $this->response->data = (new TagRepo($db))->getSuggestions($listId, $prefix, 8);
     }
 
 }

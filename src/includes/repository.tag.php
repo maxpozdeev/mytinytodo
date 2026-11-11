@@ -47,12 +47,8 @@ class TagRepo
      */
     public function getTagIdsByName(string $name): array
     {
-        $collate = '';
-        if ($this->db::DBTYPE === DBConnection::DBTYPE_SQLITE)
-            $collate = "COLLATE {$this->db->equalCollation}";
-
         $ids = [];
-        $q = $this->db->dq("SELECT id FROM {$this->db->prefix}tags WHERE name=? $collate", [$name]);
+        $q = $this->db->dq("SELECT id FROM {$this->db->prefix}tags WHERE name=?", [$name]);
         while ($r = $q->fetchAssoc()) {
             $ids[] = (int) $r['id'];
         }
@@ -63,7 +59,7 @@ class TagRepo
     public function getTagIdsBySearchName(string $name): array
     {
         $ids = [];
-        $q = $this->db->dq("SELECT id FROM {$this->db->prefix}tags WHERE ". $this->db->like("name", "%%%s%%", $name));
+        $q = $this->db->dq("SELECT id FROM {$this->db->prefix}tags WHERE ". $this->db->aiciLike("name", "%%%s%%", $name));
         while ($r = $q->fetchAssoc()) {
             $ids[] = (int) $r['id'];
         }
@@ -83,11 +79,8 @@ class TagRepo
         $tag = new Tag();
         $tag->name = $name;
         $tag->userId = $userId;
-        $collate = '';
-        if ($this->db::DBTYPE === DBConnection::DBTYPE_SQLITE)
-            $collate = "COLLATE {$this->db->equalCollation}";
 
-        $tag->id = (int) $this->db->sq("SELECT id FROM {$this->db->prefix}tags WHERE user_id=? AND name=? $collate", [$userId, $name]);
+        $tag->id = (int) $this->db->sq("SELECT id FROM {$this->db->prefix}tags WHERE user_id=? AND name=?", [$userId, $name]);
         if (!$tag->id) {
             $this->db->ex("INSERT INTO {$this->db->prefix}tags (user_id,name) VALUES (?,?)", [$userId, $name]);
             $tag->id = (int) $this->db->lastInsertId();
@@ -97,4 +90,63 @@ class TagRepo
 
         return $tag;
     }
+
+    /**
+     * Get tag cloud for a real list or virtual alltasks list.
+     * @return array<int, array{name: string, id: int}>
+     */
+    public function getCloud(int $listId, int $userId): array
+    {
+        if ($listId === -1)
+            $sqlWhere = "WHERE tags.user_id = $userId";
+        else
+            $sqlWhere = "WHERE t2t.list_id = $listId";
+
+        $orderBy = $this->tagNameOrderByCollation();
+        $q = $this->db->dq(
+            "SELECT DISTINCT tag_id, name
+             FROM {$this->db->prefix}tag2task AS t2t INNER JOIN {$this->db->prefix}tags AS tags ON tag_id = id
+             $sqlWhere
+             ORDER BY name $orderBy ASC");
+        $aTags = [];
+        while ($r = $q->fetchAssoc()) {
+            $aTags[] = [
+                'name' => $r['name'],
+                'id' => (int) $r['tag_id'],
+            ];
+        }
+        return $aTags;
+    }
+
+    /**
+     * Get tag name suggestions for a list.
+     * @return string[]
+     */
+    public function getSuggestions(int $listId, string $begin, int $limit = 8): array
+    {
+        $orderBy = $this->tagNameOrderByCollation();
+        $where = $this->db->aiciLike('name', '%s%%', $begin);
+        $q = $this->db->dq(
+            "SELECT name, tag_id AS id FROM {$this->db->prefix}tags
+             INNER JOIN {$this->db->prefix}tag2task ON id=tag_id
+             WHERE list_id=$listId AND $where
+             GROUP BY tag_id, name
+             ORDER BY name $orderBy
+             LIMIT $limit");
+        $t = [];
+        while ($r = $q->fetchRow()) {
+            $t[] = $r[0];
+        }
+        return $t;
+    }
+
+    private function tagNameOrderByCollation(): string
+    {
+        if ($this->db::DBTYPE === DBConnection::DBTYPE_SQLITE)
+            return "COLLATE {$this->db->orderCollation}";
+        if ($this->db::DBTYPE === DBConnection::DBTYPE_MYSQL)
+            return "COLLATE {$this->db->orderCollation}";
+        return '';
+    }
+
 }

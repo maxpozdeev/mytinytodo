@@ -212,6 +212,11 @@ class SqliteDatabase extends AbstractDatabase
         return 'utf8_lower("'. $column. '") LIKE '. $this->quoteForLike($format, $this->utf8_lower($string));
     }
 
+    function aiciLike(string $column, string $format, string $string): string
+    {
+        return $this->like($column, $format, $string);
+    }
+
     function ciEquals(string $column, string $value): string
     {
         $column = str_replace('"', '""', $column);
