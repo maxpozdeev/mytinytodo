@@ -14,8 +14,8 @@ class ApiRequest
     public $method;
     public $contentType;
     public $jsonBody;
-    public $username;         # not a session owner
-    protected $userId = null; # not a session owner
+    public $username;         # owner of requested data (not the session user)
+    protected $userId = null; # id of the owner of requested data (not the session user)
 
     public static function instance() : ApiRequest
     {
@@ -44,9 +44,10 @@ class ApiRequest
         return (int)$this->userId;
     }
 
-    function setUserId(int $id)
+    function setUserId(int $id, string $username)
     {
         $this->userId = $id;
+        $this->username = $username;
     }
 
     static function getApiPath(): string

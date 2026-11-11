@@ -478,8 +478,12 @@ class TaskRepo
     }
 
 
-    public function saveTask(Task $task, int $userId)
+    public function saveTask(Task $task, TaskList $list)
     {
+        if ($list->id !== $task->listId) {
+            throw new InvalidArgumentException("Unexpected list argument");
+        }
+
         if ($task->id === null) {
             # Create new record
             $a = $task->toArray();
@@ -500,7 +504,7 @@ class TaskRepo
             if ($task->tagNames)
             {
                 $tagRepo = new TagRepo($this->db);
-                $tags = $tagRepo->getTags($task->tagNames, $userId);
+                $tags = $tagRepo->getTags($task->tagNames, $list->userId);
                 foreach ($tags as $tag) {
                     $this->db->ex(
                         "INSERT INTO {$this->db->prefix}tag2task (task_id,tag_id,list_id) VALUES (?,?,?)",
@@ -522,7 +526,7 @@ class TaskRepo
             if ($task->tagNames)
             {
                 $tagRepo = new TagRepo($this->db);
-                $tags = $tagRepo->getTags($task->tagNames, $userId);
+                $tags = $tagRepo->getTags($task->tagNames, $list->userId);
                 foreach ($tags as $tag) {
                     $this->db->ex(
                         "INSERT INTO {$this->db->prefix}tag2task (task_id,tag_id,list_id) VALUES (?,?,?)",

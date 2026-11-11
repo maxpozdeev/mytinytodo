@@ -30,7 +30,7 @@ class ListsController extends ApiController {
                 $this->response->errorJsonContent("User not found", 404);
                 return;
             }
-            $this->req->setUserId($userId); //set before haveWriteAccess
+            $this->req->setUserId($userId, $username); //set before haveWriteAccess
         }
 
         $isOwner = haveWriteAccess();

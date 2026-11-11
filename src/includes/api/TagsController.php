@@ -20,21 +20,28 @@ class TagsController extends ApiController {
         $username = trim((string)$username);
         $listId = (int)$listId;
 
-        $db = DBConnection::instance();
-        $requestUserId = (int)$this->req->userId();
-
-        if (username() !== null && $username === username())
-            $targetUserId = $requestUserId;
-        else
-            $targetUserId = (int)(new UserRepo($db))->findUserIdByUsername($username);
-
-        if (!$targetUserId || (!need_auth() && $targetUserId !== $requestUserId)) {
+        if ($username === '') {
             $this->response->errorJsonContent("User not found", 404);
             return;
         }
+        $db = DBConnection::instance();
+
+        if ($username === username() && userId()) {
+            # request for own lists
+            $targetUserId = (int)userId();
+        }
+        else {
+            # request for lists of another user
+            $targetUserId = (int)(new UserRepo($db))->findUserIdByUsername($username);
+            if (!$targetUserId) {
+                $this->response->errorJsonContent("User not found", 404);
+                return;
+            }
+        }
+        $this->req->setUserId($targetUserId, $username);
 
         if ($listId === -1) {
-            $publishedOnly = ($targetUserId !== $requestUserId);
+            $publishedOnly = ($targetUserId !== (userId() ?? 0));
             if (!$publishedOnly) {
                 // own alltasks include unpublished lists and require a logged-in user
                 checkReadAccess(-1);

@@ -47,6 +47,9 @@ $endpoints = array(
         'PATCH'   => [ TasksController::class , 'patch' ],
         'DELETE'  => [ TasksController::class , 'delete' ],
     ],
+    '/user/([^/]+)/tasks' => [
+        'GET'     => [ TasksController::class , 'get' ],
+    ],
     '/tasks/(-?\d+)' => [
         'GET'     => [ TasksController::class , 'getId' ],
         'PUT'     => [ TasksController::class , 'putId' ],
@@ -109,8 +112,7 @@ if (substr($req->path, 0, 4) === '/cp/') {
     ControlPanelApiController::mergeEndpoints($endpoints);
 }
 
-$req->username = ''; //FIXME: !!!
-$req->setUserId( userId() ?? 0 );
+$req->setUserId( userId() ?? 0, username() ?? '');  //FIXME: !!!
 
 # Simulate REST API http methods
 if ($req->method !== 'GET' && $req->contentType === 'application/json') {
@@ -247,13 +249,17 @@ function checkReadAccess(?int $listId = null)
             ErrorApiResponse::exitWithMessage(__("denied"), 403);
     }
     else if ($listId === -1) {
-        if (!is_logged())
+        $req = ApiRequest::instance();
+        $ownerId = $req->userId();
+        $viewerId = userId() ?? 0;
+        if ($ownerId === $viewerId && !is_logged())
             ErrorApiResponse::exitWithMessage(__("denied"), 403);
     }
     else
     {
         $repo = new ListRepo(DBConnection::instance());
-        $list = $repo->findRealListById($listId);
+        $ownerId = ApiRequest::instance()->userId();
+        $list = $repo->findRealListById($listId, $ownerId ?: null);
         if (!$list) {
             if (is_logged())
                 ErrorApiResponse::exitWithMessage(__("listNotFound"), 404);

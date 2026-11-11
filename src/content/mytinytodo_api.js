@@ -103,6 +103,7 @@ MytinytodoAjaxApi.prototype = {
 
 
     loadTasks(params, callback) {
+        const endpoint = mytinytodo.options.username ? `user/${encodeURIComponent(mytinytodo.options.username)}/tasks` : 'tasks';
         let q = '';
         if (params.search && params.search != '') q += '&s=' + encodeURIComponent(params.search);
         if (params.tag && params.tag != '') q += '&t=' + encodeURIComponent(params.tag);
@@ -113,7 +114,7 @@ MytinytodoAjaxApi.prototype = {
         if (params.saveCompl && params.saveCompl != 0) q += '&saveCompl=1';
         if (params.saveSort && params.saveSort != 0) q += '&saveSort=1';
 
-        $.getJSON(mytinytodo.apiUrl + 'tasks' + (mytinytodo.apiUrl.indexOf('?') > -1 ? '&' : '?') +
+        $.getJSON(mytinytodo.apiUrl + endpoint + (mytinytodo.apiUrl.indexOf('?') > -1 ? '&' : '?') +
             'list='+params.list+'&compl='+params.compl+'&sort='+params.sort+q,
             callback);
     },
@@ -326,8 +327,8 @@ MytinytodoAjaxApi.prototype = {
 
     // Lists
     loadLists(params, callback) {
-        const ep = params.username ? `user/${params.username}/lists` : 'lists';
-        $.getJSON(mytinytodo.apiUrl + ep, callback);
+        const endpoint = params.username ? `user/${params.username}/lists` : 'lists';
+        $.getJSON(mytinytodo.apiUrl + endpoint, callback);
     },
 
     addList(params, callback) {

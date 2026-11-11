@@ -16,16 +16,33 @@ class TasksController extends ApiController {
      * @return void
      * @throws Exception
      */
-    function get()
+    function get($username = null)
     {
+        $db = DBConnection::instance();
+        if (!is_null($username) && $username !== '') {
+            if (isset(MTTVars::$username) && $username === MTTVars::$username)
+                $userId = userId();
+            else
+                $userId = (new UserRepo($db))->findUserIdByUsername($username);
+
+            if (!$userId) {
+                $this->response->errorJsonContent("User not found", 404);
+                return;
+            }
+            if (!need_auth() && $userId !== userId()) {
+                $this->response->errorJsonContent("User not found", 404);
+                return;
+            }
+            $this->req->setUserId($userId, $username); //set before haveWriteAccess
+        }
+        $isOwner = haveWriteAccess();
+
         $listId = (int)_get('list');
         checkReadAccess($listId);
 
-        $db = DBConnection::instance();
-
         if ($listId == -1) {
             $listRepo = new ListRepo($db);
-            $userLists = $listRepo->findListNamesByUserId( userId() );
+            $userLists = $listRepo->findListNamesByUserId( $this->req->userId(), !$isOwner );
             $lists = array_keys($userLists);
         }
         else {
@@ -160,12 +177,16 @@ class TasksController extends ApiController {
     {
         $action = $this->req->jsonBody['action'] ?? '';
         $listId = (int)($this->req->jsonBody['list'] ?? 0);
-        checkWriteAccess($listId);
+        if ($listId <= 0) {
+            $this->response->errorJsonContent(__("listNotFound"), 404);
+            return;
+        }
+        $list = checkAndGetListForWrite($listId);
         if ($action == 'newFull') {
-            $this->response->data = $this->fullNewTaskInList($listId);
+            $this->response->data = $this->fullNewTaskInList($list);
         }
         else {
-            $this->response->data = $this->newTaskInList($listId);
+            $this->response->data = $this->newTaskInList($list);
         }
     }
 
@@ -334,11 +355,11 @@ class TasksController extends ApiController {
             $this->response->errorJsonContent(__("taskNotFound"), 404);
             return;
         }
-        checkWriteAccess($task->listId);
+        $list = checkAndGetListForWrite($task->listId);
 
         $action = $this->req->jsonBody['action'] ?? '';
         switch ($action) {
-            case 'edit':     $this->response->data = $this->editTask($task);     break;
+            case 'edit':     $this->response->data = $this->editTask($task, $list); break;
             case 'complete': $this->response->data = $this->completeTask($task); break;
             case 'note':     $this->response->data = $this->editNote($task);     break;
             case 'move':     $this->response->data = $this->moveTask($task);     break;
@@ -453,7 +474,7 @@ class TasksController extends ApiController {
         $curList = (int) ($this->req->jsonBody['list'] ?? 0);
         $curLater = (int) ($this->req->jsonBody['later'] ?? 0);
 
-        haveWriteAccess(); # need to be logged
+        checkWriteAccess(); # need to be logged
         checkReadAccess($curList);
 
         /** @var array{listId:int|string,later:int|null}[] */
@@ -507,7 +528,7 @@ class TasksController extends ApiController {
 
     /* Private Functions */
 
-    private function newTaskInList(int $listId): ?array
+    private function newTaskInList(TaskList $list): ?array
     {
         $failedResult = [
             'ok' => false,
@@ -538,13 +559,13 @@ class TasksController extends ApiController {
             $tags .= ',' . ($this->req->jsonBody['tag'] ?? '');
         }
 
-        $task = Task::create($title, $listId);
+        $task = Task::create($title, $list->id);
         $task->setPriority($prio);
         $task->setDuedate($duedate);
         $task->tagNames = explode(',', $tags);
 
         $repo = new TaskRepo(DBConnection::instance());
-        $repo->saveTask($task, $this->req->userId());
+        $repo->saveTask($task, $list);
         MTTNotificationCenter::postNotification(MTTNotification::didCreateTask, $task);
 
         return [
@@ -554,7 +575,7 @@ class TasksController extends ApiController {
         ];
     }
 
-    private function fullNewTaskInList(int $listId): ?array
+    private function fullNewTaskInList(TaskList $list): ?array
     {
         $title = trim($this->req->jsonBody['title'] ?? '');
         if ($title == '')
@@ -574,14 +595,14 @@ class TasksController extends ApiController {
         if (Config::get('autotag'))
             $tags .= ',' . ($this->req->jsonBody['tag'] ?? '');
 
-        $task = Task::create($title, $listId);
+        $task = Task::create($title, $list->id);
         $task->setNote($note);
         $task->setPriority($prio);
         $task->setDuedate($duedate);
         $task->tagNames = explode(',', $tags);
 
         $repo = new TaskRepo(DBConnection::instance());
-        $repo->saveTask($task, $this->req->userId());
+        $repo->saveTask($task, $list);
         MTTNotificationCenter::postNotification(MTTNotification::didCreateTask, $task);
 
         return [
@@ -591,7 +612,7 @@ class TasksController extends ApiController {
         ];
     }
 
-    private function editTask(Task $task): ?array
+    private function editTask(Task $task, TaskList $list): ?array
     {
         $title = trim($this->req->jsonBody['title'] ?? '');
         if ($title == '')
@@ -616,7 +637,7 @@ class TasksController extends ApiController {
         $task->tagNames = explode(',', $tags);
 
         $repo = new TaskRepo(DBConnection::instance());
-        $repo->saveTask($task, $this->req->userId());
+        $repo->saveTask($task, $list);
 
         MTTNotificationCenter::postNotification(MTTNotification::didEditTask, [
             'task' => $task
@@ -641,13 +662,10 @@ class TasksController extends ApiController {
             'error' => "Failed to move a task",
         ];
 
-        if ($task->listId == $toId) {
+        if ($toId <= 0 || $task->listId == $toId) {
             return $failedResult;
         }
-        $list = (new ListRepo(DBConnection::instance()))->findRealListById($toId);
-        if (!$list) {
-            return $failedResult;
-        }
+        $list = checkAndGetListForWrite($toId);
 
         if ($task->setList($list)) {
             $repo = new TaskRepo(DBConnection::instance());

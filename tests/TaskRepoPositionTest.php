@@ -59,7 +59,9 @@ class TaskRepoPositionTest extends TestCase
         $task->isCompleted = ($compl != 0);
         $task->tagNames = [];
 
-        $this->repo->saveTask($task, self::USER_ID);
+        $list = $this->listRepo->findRealListById($listId ?? $this->listId);
+
+        $this->repo->saveTask($task, $list);
 
         # saveTask() always appends a task to the end (10 + MAX(ow)), so the weight is
         # overridden here to reproduce the exact order required by the test scenario
