@@ -17,48 +17,20 @@ class TagsController extends ApiController {
      */
     function getUserCloud($username, $listId): void
     {
-        $username = trim((string)$username);
-        $listId = (int)$listId;
-
-        if ($username === '') {
-            $this->response->errorJsonContent("User not found", 404);
+        if (!$this->resolveTargetUser($username, true)) {
             return;
         }
+        $listId = (int)$listId;
         $db = DBConnection::instance();
 
-        if ($username === username() && userId()) {
-            # request for own lists
-            $targetUserId = (int)userId();
-        }
-        else {
-            # request for lists of another user
-            $targetUserId = (int)(new UserRepo($db))->findUserIdByUsername($username);
-            if (!$targetUserId) {
-                $this->response->errorJsonContent("User not found", 404);
-                return;
-            }
-        }
-        $this->req->setUserId($targetUserId, $username);
-
         if ($listId === -1) {
-            $publishedOnly = ($targetUserId !== (userId() ?? 0));
-            if (!$publishedOnly) {
-                // own alltasks include unpublished lists and require a logged-in user
-                checkReadAccess(-1);
-            }
-            $aTags = (new TagRepo($db))->getCloud(-1, $targetUserId, $publishedOnly);
+            checkReadAccess(-1);
+            $publishedOnly = !$this->req->isViewerOwnerOfTarget();
+            $aTags = (new TagRepo($db))->getCloud(-1, $this->req->ownerUserId(), $publishedOnly);
         }
         else {
-            $list = (new ListRepo($db))->findRealListById($listId, $targetUserId);
-            if (!$list) {
-                if (is_logged())
-                    ErrorApiResponse::exitWithMessage(__("listNotFound"), 404);
-                else
-                    ErrorApiResponse::exitWithMessage(__("denied"), 403);
-            }
-            if (!canReadList($list))
-                ErrorApiResponse::exitWithMessage(__("denied"), 403);
-            $aTags = (new TagRepo($db))->getCloud($listId, $targetUserId);
+            $list = checkAndGetListForRead($listId);
+            $aTags = (new TagRepo($db))->getCloud((int)$list->id, $this->req->ownerUserId());
         }
 
         $this->response->data = $this->cloudToArray($aTags);
@@ -91,7 +63,7 @@ class TagsController extends ApiController {
      * @return void
      * @throws Exception
      */
-    function getSuggestions($listId): void
+    function getSuggestions(): void
     {
         $listId = (int)_get('list');
         checkWriteAccess($listId);

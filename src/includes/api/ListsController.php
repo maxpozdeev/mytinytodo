@@ -15,34 +15,22 @@ class ListsController extends ApiController {
      */
     function get($username = null): void
     {
-        $db = DBConnection::instance();
-        if (!is_null($username) && $username !== '') {
-            if (isset(MTTVars::$username) && $username === MTTVars::$username)
-                $userId = userId();
-            else
-                $userId = (new UserRepo($db))->findUserIdByUsername($username);
-
-            if (!$userId) {
-                $this->response->errorJsonContent("User not found", 404);
-                return;
-            }
-            if (!need_auth() && $userId !== userId()) {
-                $this->response->errorJsonContent("User not found", 404);
-                return;
-            }
-            $this->req->setUserId($userId, $username); //set before haveWriteAccess
+        if (!$this->resolveTargetUser($username)) {
+            return;
         }
 
-        $isOwner = haveWriteAccess();
-
+        $db = DBConnection::instance();
         $repo = new ListRepo($db);
+        $ownerId = $this->req->ownerUserId();
+        $isOwner = $this->req->isViewerOwnerOfTarget();
+
         $t = [
             'time' => time(),
         ];
         if ($isOwner)
-            $lists = $repo->findListsByUserId($this->req->userId(), true);
+            $lists = $repo->findListsByUserId($ownerId, true);
         else
-            $lists = $repo->findPublicListsByUserId($this->req->userId());
+            $lists = $repo->findPublicListsByUserId($ownerId);
 
         $t['total'] = count($lists);
 
@@ -100,13 +88,14 @@ class ListsController extends ApiController {
     function getId($id): void
     {
         $id = (int)$id;
-        $repo = new ListRepo(DBConnection::instance());
-        $list = $repo->findRealListById($id);
-        if (!$list || !canReadList($list)) {
-            $this->response->errorJsonContent(__("listNotFound"), 404);
+        if ($id === -1) {
+            checkReadAccess(-1);
+            $list = (new ListRepo(DBConnection::instance()))->alltasksListByUserId((int)userId());
+            $this->response->data = $list->toJsonApiArray();
             return;
         }
 
+        $list = checkAndGetListForRead($id);
         $isOwner = canWriteToList($list);
         if ($isOwner)
             $this->response->data = $list->toJsonApiArray();

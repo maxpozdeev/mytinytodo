@@ -112,7 +112,7 @@ if (substr($req->path, 0, 4) === '/cp/') {
     ControlPanelApiController::mergeEndpoints($endpoints);
 }
 
-$req->setUserId( userId() ?? 0, username() ?? '');  //FIXME: !!!
+$req->resetTargetUser(); // target user is set by controllers for /user/{username}/... routes
 
 # Simulate REST API http methods
 if ($req->method !== 'GET' && $req->contentType === 'application/json') {
@@ -159,7 +159,7 @@ foreach ($endpoints as $search => $methods) {
     }
     else if (MTT_API_ENDPOINT_OWNER_CONTROLPANEL === $endpointOwner) {
         if (!is_logged() || !is_admin()) {
-            (new ErrorApiResponse("Access denied. Admin only.", 403))->exit();
+            denyAccess();
         }
     }
 
@@ -241,63 +241,86 @@ function myExceptionHandler(Throwable $e)
     exit;
 }
 
-function checkReadAccess(?int $listId = null)
+/**
+ * Standard access denied response (HTTP 403).
+ */
+function denyAccess(): void
 {
-    if (is_null($listId)) {
+    (new JsonApiResponse([
+        'ok' => false,
+        'total' => 0,
+        'list' => [],
+        'denied' => 1,
+        'error' => __('denied'),
+    ], 403))->exit();
+}
+
+
+/**
+ * Check read access to a real list or to the virtual all tasks list (-1).
+ */
+function checkReadAccess(int $listId): void
+{
+    if ($listId === -1) {
         $req = ApiRequest::instance();
-        if (!$req->userId() && !is_logged())
-            ErrorApiResponse::exitWithMessage(__("denied"), 403);
-    }
-    else if ($listId === -1) {
-        $req = ApiRequest::instance();
-        $ownerId = $req->userId();
+        $ownerId = $req->ownerUserId();
         $viewerId = userId() ?? 0;
-        if ($ownerId === $viewerId && !is_logged())
-            ErrorApiResponse::exitWithMessage(__("denied"), 403);
+        if ($ownerId === 0 || ($ownerId === $viewerId && !is_logged()))
+            denyAccess();
     }
-    else
-    {
-        $repo = new ListRepo(DBConnection::instance());
-        $ownerId = ApiRequest::instance()->userId();
-        $list = $repo->findRealListById($listId, $ownerId ?: null);
-        if (!$list) {
-            if (is_logged())
-                ErrorApiResponse::exitWithMessage(__("listNotFound"), 404);
-            else
-                ErrorApiResponse::exitWithMessage(__("denied"), 403);
-        }
-        if (!canReadList($list))
-            ErrorApiResponse::exitWithMessage(__("denied"), 403);
+    else {
+        checkAndGetListForRead($listId);
     }
 }
+
+/**
+ * Ensure that requested list is readable by the current user.
+ * Returns the list instance.
+ * @throws Exception
+ */
+function checkAndGetListForRead(int $listId): TaskList
+{
+    $req = ApiRequest::instance();
+    $repo = new ListRepo(DBConnection::instance());
+    $ownerId = $req->isTargetExplicit() ? $req->targetUserId() : null;
+    $list = $repo->findRealListById($listId, $ownerId);
+    if (!$list) {
+        if (is_logged())
+            ErrorApiResponse::exitWithMessage(__("listNotFound"), 404);
+        denyAccess();
+    }
+    if (!canReadList($list))
+        denyAccess();
+    return $list;
+}
+
 
 function checkWriteAccess(?int $listId = null)
 {
     if (haveWriteAccess($listId))
         return;
-    (new JsonApiResponse([ 'ok'=>false, 'total'=>0, 'list'=>[], 'denied'=>1 ], 403))->exit();
+    denyAccess();
 }
 
-function checkWriteAceessToList(AbstractTaskList $list)
+function checkWriteAccessToList(AbstractTaskList $list)
 {
-    if (canWriteToList($list))
+    if (canWriteToList($list) && ApiRequest::instance()->isViewerOwnerOfTarget())
         return;
-    (new JsonApiResponse([ 'ok'=>false, 'total'=>0, 'list'=>[], 'denied'=>1 ], 403))->exit();
+    denyAccess();
 }
 
 function checkAndGetListForWrite(int $listId): AbstractTaskList
 {
-    $repo = new ListRepo(DBConnection::instance());
+    $viewerId = userId();
+    if (!is_logged() || !$viewerId || !ApiRequest::instance()->isViewerOwnerOfTarget())
+        denyAccess();
 
-    $list = ($listId === -1) ? $repo->alltasksListByUserId(userId()) : $repo->findRealListById($listId);
-    if (!$list) {
-        if (is_logged())
-            ErrorApiResponse::exitWithMessage(__("listNotFound"), 404);
-        else
-            ErrorApiResponse::exitWithMessage(__("denied"), 403);
-    }
+    $repo = new ListRepo(DBConnection::instance());
+    $list = ($listId === -1) ? $repo->alltasksListByUserId($viewerId) : $repo->findRealListById($listId);
+    if (!$list)
+        ErrorApiResponse::exitWithMessage(__("listNotFound"), 404);
     if (!canWriteToList($list))
-        ErrorApiResponse::exitWithMessage(__("denied"), 403);
+        denyAccess();
 
     return $list;
 }
@@ -309,9 +332,9 @@ function haveWriteAccess(?int $listId = null) : bool
 
     # currently a logged user have write access to own lists only
     $req = ApiRequest::instance();
-    $reqUserId = $req->userId();
-    if (!$reqUserId || userId() != $reqUserId)
+    if (!$req->isViewerOwnerOfTarget())
         return false;
+    $reqUserId = $req->ownerUserId();
 
     // check list exist
     if ($listId !== null && $listId != -1)

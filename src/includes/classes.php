@@ -14,8 +14,9 @@ class ApiRequest
     public $method;
     public $contentType;
     public $jsonBody;
-    public $username;         # owner of requested data (not the session user)
-    protected $userId = null; # id of the owner of requested data (not the session user)
+    protected string $targetUsername = '';  # owner of requested data (not the session user)
+    protected ?int $targetUserId = null;    # id of the owner of requested data, null when not specified
+    protected bool $targetExplicit = false;
 
     public static function instance() : ApiRequest
     {
@@ -23,6 +24,11 @@ class ApiRequest
             self::$instance = new ApiRequest();
         }
         return self::$instance;
+    }
+
+    public static function resetInstance(): void
+    {
+        self::$instance = null;
     }
 
     function __construct() {
@@ -39,15 +45,54 @@ class ApiRequest
         return $this->jsonBody;
     }
 
-    function userId(): int
+    /**
+     * Id of the owner of the requested data.
+     * Falls back to the current authernticated user when no target user was specified explicitly.
+     */
+    function ownerUserId(): int
     {
-        return (int)$this->userId;
+        return $this->targetUserId ?? (userId() ?? 0);
     }
 
-    function setUserId(int $id, string $username)
+    /**
+     * Id of the explicitly requested user.
+     * null when no target user was specified.
+     */
+    function targetUserId(): ?int
     {
-        $this->userId = $id;
-        $this->username = $username;
+        return $this->targetUserId;
+    }
+
+    function targetUsername(): string
+    {
+        return (string)$this->targetUsername;
+    }
+
+    function isTargetExplicit(): bool
+    {
+        return $this->targetExplicit;
+    }
+
+    /**
+     * Whether the current user owns the requested data.
+     */
+    function isViewerOwnerOfTarget(): bool
+    {
+        return is_logged() && $this->ownerUserId() === userId();
+    }
+
+    function setTargetUser(?int $id, string $username = '')
+    {
+        $this->targetUserId = $id;
+        $this->targetExplicit = ($id !== null);
+        $this->targetUsername = $username;
+    }
+
+    function resetTargetUser(): void
+    {
+        $this->targetUserId = null;
+        $this->targetExplicit = false;
+        $this->targetUsername = '';
     }
 
     static function getApiPath(): string
@@ -162,6 +207,42 @@ abstract class ApiController
     function __construct(ApiRequest $req, ApiResponse $response) {
         $this->req = $req;
         $this->response = $response;
+    }
+
+    /**
+     * Resolve an optional /user/{username}/... route parameter and set it as
+     * the owner of the requested data.
+     *
+     * Returns false and sets a 404 response when the user cannot be resolved.
+     */
+    protected function resolveTargetUser(?string $username, bool $required = false): bool
+    {
+        $this->req->resetTargetUser();
+
+        $username = trim((string)$username);
+        if ($username === '') {
+            if ($required) {
+                $this->response->errorJsonContent("User not found", 404);
+                return false;
+            }
+            return true;
+        }
+
+        $sessionUsername = username();
+        if ($sessionUsername !== null && $username === $sessionUsername) {
+            $targetUserId = userId();
+        }
+        else {
+            $targetUserId = (new UserRepo(DBConnection::instance()))->findUserIdByUsername($username);
+        }
+
+        if (!$targetUserId || (!need_auth() && $targetUserId !== userId())) {
+            $this->response->errorJsonContent("User not found", 404);
+            return false;
+        }
+
+        $this->req->setTargetUser((int)$targetUserId, $username);
+        return true;
     }
 }
 

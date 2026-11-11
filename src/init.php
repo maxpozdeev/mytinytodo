@@ -273,7 +273,13 @@ function check_token()
         http_response_code(403);
         if (_server('CONTENT_TYPE') === 'application/json') {
             header('Content-type: application/json; charset=utf-8');
-            die('{"ok":false,"error":"Access denied! Authentication is required.","denied":1}');
+            die(json_encode([
+                'ok' => false,
+                'total' => 0,
+                'list' => [],
+                'denied' => 1,
+                'error' => __('denied'),
+            ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
         }
         die("Access denied! Authentication is required.\n");
     }

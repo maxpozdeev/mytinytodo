@@ -18,32 +18,18 @@ class TasksController extends ApiController {
      */
     function get($username = null)
     {
-        $db = DBConnection::instance();
-        if (!is_null($username) && $username !== '') {
-            if (isset(MTTVars::$username) && $username === MTTVars::$username)
-                $userId = userId();
-            else
-                $userId = (new UserRepo($db))->findUserIdByUsername($username);
-
-            if (!$userId) {
-                $this->response->errorJsonContent("User not found", 404);
-                return;
-            }
-            if (!need_auth() && $userId !== userId()) {
-                $this->response->errorJsonContent("User not found", 404);
-                return;
-            }
-            $this->req->setUserId($userId, $username); //set before haveWriteAccess
+        if (!$this->resolveTargetUser($username)) {
+            return;
         }
-        $isOwner = haveWriteAccess();
 
         $listId = (int)_get('list');
         checkReadAccess($listId);
+        $db = DBConnection::instance();
 
-        if ($listId == -1) {
+        if ($listId === -1) {
             $listRepo = new ListRepo($db);
-            $userLists = $listRepo->findListNamesByUserId( $this->req->userId(), !$isOwner );
-            $lists = array_keys($userLists);
+            $publicOnly = !$this->req->isViewerOwnerOfTarget();
+            $lists = array_keys($listRepo->findListNamesByUserId($this->req->ownerUserId(), $publicOnly));
         }
         else {
             $lists = [ $listId ];
@@ -241,7 +227,7 @@ class TasksController extends ApiController {
                 $this->response->errorJsonContent(__("listNotFound"), 404);
                 return;
             }
-            checkWriteAceessToList($list);
+            checkWriteAccessToList($list);
             $this->response->data = $this->moveTasks($tasks, $list);
         }
     }
@@ -301,7 +287,6 @@ class TasksController extends ApiController {
 
     function getId($id): void
     {
-        checkWriteAccess();
         $id = (int)$id;
         $repo = new TaskRepo(DBConnection::instance());
         $task = $repo->findTaskById($id);
