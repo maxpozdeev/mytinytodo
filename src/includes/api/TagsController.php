@@ -25,7 +25,7 @@ class TagsController extends ApiController {
 
         if ($listId === -1) {
             checkReadAccess(-1);
-            $publishedOnly = !$this->req->isViewerOwnerOfTarget();
+            $publishedOnly = !$this->req->isOwnerOfTarget();
             $aTags = (new TagRepo($db))->getCloud(-1, $this->req->ownerUserId(), $publishedOnly);
         }
         else {

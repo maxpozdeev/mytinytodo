@@ -74,9 +74,20 @@ class ApiRequest
     }
 
     /**
-     * Whether the current user owns the requested data.
+     * Determines whether the current user (viewer) owns the requested data.
+     *
+     * Always returns false for guests.
+     *
+     * If the route targets a specific user — via the URI /user/{username}
+     * or the query parameter user={username} — returns true only when
+     * {username} matches the authenticated user (i.e. the viewer owns
+     * the resource); otherwise returns false.
+     *
+     * If the route has no user target, returns true for an authenticated user.
+     *
+     * {@see ApiController::resolveTargetUser}
      */
-    function isViewerOwnerOfTarget(): bool
+    function isOwnerOfTarget(): bool
     {
         return is_logged() && $this->ownerUserId() === userId();
     }

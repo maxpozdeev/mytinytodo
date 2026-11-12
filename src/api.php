@@ -304,16 +304,25 @@ function checkWriteAccess(?int $listId = null)
 
 function checkWriteAccessToList(AbstractTaskList $list)
 {
-    if (canWriteToList($list) && ApiRequest::instance()->isViewerOwnerOfTarget())
+    if (canWriteToList($list) && ApiRequest::instance()->isOwnerOfTarget())
         return;
     denyAccess();
 }
 
-function checkAndGetListForWrite(int $listId): AbstractTaskList
+/**
+ * @param int $listId
+ * @param bool $onlyReal
+ * @return AlltasksList|TaskList
+ * @throws Exception
+ */
+function checkAndGetListForWrite(int $listId, bool $onlyReal = false): AbstractTaskList
 {
     $viewerId = userId();
-    if (!is_logged() || !$viewerId || !ApiRequest::instance()->isViewerOwnerOfTarget())
+    if (!is_logged() || !$viewerId || !ApiRequest::instance()->isOwnerOfTarget())
         denyAccess();
+
+    if ($onlyReal && $listId === -1)
+        ErrorApiResponse::exitWithMessage(__("listNotFound"), 404);
 
     $repo = new ListRepo(DBConnection::instance());
     $list = ($listId === -1) ? $repo->alltasksListByUserId($viewerId) : $repo->findRealListById($listId);
@@ -332,7 +341,7 @@ function haveWriteAccess(?int $listId = null) : bool
 
     # currently a logged user have write access to own lists only
     $req = ApiRequest::instance();
-    if (!$req->isViewerOwnerOfTarget())
+    if (!$req->isOwnerOfTarget())
         return false;
     $reqUserId = $req->ownerUserId();
 

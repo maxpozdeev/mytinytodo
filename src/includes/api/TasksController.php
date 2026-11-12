@@ -28,7 +28,7 @@ class TasksController extends ApiController {
 
         if ($listId === -1) {
             $listRepo = new ListRepo($db);
-            $publicOnly = !$this->req->isViewerOwnerOfTarget();
+            $publicOnly = !$this->req->isOwnerOfTarget();
             $lists = array_keys($listRepo->findListNamesByUserId($this->req->ownerUserId(), $publicOnly));
         }
         else {
@@ -167,7 +167,7 @@ class TasksController extends ApiController {
             $this->response->errorJsonContent(__("listNotFound"), 404);
             return;
         }
-        $list = checkAndGetListForWrite($listId);
+        $list = checkAndGetListForWrite($listId, true);
         if ($action == 'newFull') {
             $this->response->data = $this->fullNewTaskInList($list);
         }
@@ -222,12 +222,7 @@ class TasksController extends ApiController {
             $this->response->data = $this->completeTasks($tasks);
         }
         else if (isset($body['listId'])) {
-            $list = (new ListRepo(DBConnection::instance()))->findRealListById((int)$body['listId']);
-            if (!$list) {
-                $this->response->errorJsonContent(__("listNotFound"), 404);
-                return;
-            }
-            checkWriteAccessToList($list);
+            $list = checkAndGetListForWrite((int)$body['listId'], true);
             $this->response->data = $this->moveTasks($tasks, $list);
         }
     }
@@ -650,7 +645,7 @@ class TasksController extends ApiController {
         if ($toId <= 0 || $task->listId == $toId) {
             return $failedResult;
         }
-        $list = checkAndGetListForWrite($toId);
+        $list = checkAndGetListForWrite($toId, true);
 
         if ($task->setList($list)) {
             $repo = new TaskRepo(DBConnection::instance());

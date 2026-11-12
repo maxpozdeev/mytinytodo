@@ -22,7 +22,7 @@ class ListsController extends ApiController {
         $db = DBConnection::instance();
         $repo = new ListRepo($db);
         $ownerId = $this->req->ownerUserId();
-        $isOwner = $this->req->isViewerOwnerOfTarget();
+        $isOwner = $this->req->isOwnerOfTarget();
 
         $t = [
             'time' => time(),
@@ -111,7 +111,7 @@ class ListsController extends ApiController {
      */
     function deleteId($id): void
     {
-        $list = checkAndGetListForWrite((int)$id);
+        $list = checkAndGetListForWrite((int)$id, true);
         $this->response->data = $this->deleteList($list);
     }
 
