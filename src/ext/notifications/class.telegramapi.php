@@ -57,6 +57,7 @@ class TelegramApi
         }
         restore_error_handler();
         if ($body === false || null !== $err) {
+            # bot token can be present in the error cause it is a part of the url.
             $msg = "Failed to make request to Telegram API ($method)". ($err ? ": $err" : "");
             if ($this->logApiErrors) {
                 error_log($msg);

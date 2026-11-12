@@ -225,6 +225,10 @@ class TasksController extends ApiController {
             $list = checkAndGetListForWrite((int)$body['listId'], true);
             $this->response->data = $this->moveTasks($tasks, $list);
         }
+        else {
+            $this->response->errorJsonContent("Unexpected action", 400);
+            return;
+        }
     }
 
 

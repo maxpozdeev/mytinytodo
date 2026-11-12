@@ -77,10 +77,10 @@ EOD;
             return;
         }
         //$userError = '';
-        $saved = $instance->saveSettings($this->req->jsonBody ?? [], $userError);
-        $a = [ 'saved' => (int)$saved ];
-        if ($userError) {
-            $a['msg'] = $userError;
+        $saved = $instance->saveSettings($this->req->jsonBody ?? [], $userMessage);
+        $a = [ 'saved' => (int)$saved, 'ok' => $saved ];
+        if ('' !== ($userMessage ?? '')) {
+            $a['msg'] = $userMessage;
         }
         $this->response->data = $a;
     }
@@ -89,12 +89,12 @@ EOD;
     {
         $instance = MTTExtensionLoader::extensionInstance($ext);
         if (!$instance) {
-            $this->response->data = [ 'msg' => "Unknown extension" ];
+            $this->response->data = [ 'ok' => false, 'msg' => "Unknown extension" ];
             $this->response->code = 404;
             return null;
         }
         if (! ($instance instanceof MTTExtensionSettingsInterface) ) {
-            $this->response->data = [ 'msg' => "No settings page for extension" ];
+            $this->response->data = [ 'ok' => false, 'msg' => "No settings page for extension" ];
             $this->response->code = 500;
             return null;
         }

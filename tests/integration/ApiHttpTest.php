@@ -388,6 +388,57 @@ class ApiHttpTest extends TestCase
         $this->assertStatus(404, $this->api('GET', '/lists/'. $listId));
     }
 
+    public function testRequiresExplicitAction(): void
+    {
+        $this->login('alice', self::ALICE_PASSWORD);
+
+        $cases = [
+            'POST /lists: missing action' => [
+                'POST', '/lists', ['name' => 'No action list'],
+            ],
+            'POST /lists: empty action' => [
+                'POST', '/lists', ['action' => '', 'name' => 'Empty action list'],
+            ],
+            'POST /lists: unknown action' => [
+                'POST', '/lists', ['action' => 'unknown', 'name' => 'Unknown action list'],
+            ],
+            'PUT /lists: missing action' => [
+                'PUT', '/lists', ['order' => [self::ALICE_PRIVATE_LIST]],
+            ],
+            'PUT /lists: unknown action' => [
+                'PUT', '/lists', ['action' => 'unknown'],
+            ],
+            'POST /lists/{id}: missing action' => [
+                'POST', '/lists/'. self::ALICE_PRIVATE_LIST, ['name' => 'No action'],
+            ],
+            'PUT /lists/{id}: missing action' => [
+                'PUT', '/lists/'. self::ALICE_PRIVATE_LIST, ['name' => 'No action'],
+            ],
+            'PUT /lists/{id}: unknown action' => [
+                'PUT', '/lists/'. self::ALICE_PRIVATE_LIST, ['action' => 'unknown'],
+            ],
+            'POST /tasks/{id}: missing action' => [
+                'POST', '/tasks/'. self::ALICE_PRIVATE_TASK, [],
+            ],
+            'PUT /tasks/{id}: missing action' => [
+                'PUT', '/tasks/'. self::ALICE_PRIVATE_TASK, [],
+            ],
+            'PUT /tasks/{id}: unknown action' => [
+                'PUT', '/tasks/'. self::ALICE_PRIVATE_TASK, ['action' => 'unknown'],
+            ],
+            'PATCH /tasks: no compl or listId' => [
+                'PATCH', '/tasks', ['ids' => [self::ALICE_PRIVATE_TASK]],
+            ],
+        ];
+        foreach ($cases as $label => [$method, $path, $body]) {
+            $r = $this->api($method, $path, $body);
+            $message = $label. "\n". $this->requestMessage($r);
+            $this->assertStatus(400, $r);
+            $this->assertSame(false, $r['json']['ok'] ?? null, $message);
+            $this->assertSame('Unexpected action', $r['json']['error'] ?? null, $message);
+        }
+    }
+
     public function testListsMethodOverride(): void
     {
         $this->login('alice', self::ALICE_PASSWORD);

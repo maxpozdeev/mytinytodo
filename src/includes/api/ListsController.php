@@ -46,7 +46,6 @@ class ListsController extends ApiController {
 
     /**
      * Create new list and Actions with all lists
-     * Code 201 on success
      * @return void
      * @throws Exception
      */
@@ -56,8 +55,8 @@ class ListsController extends ApiController {
         $action = $this->req->jsonBody['action'] ?? '';
         switch ($action) {
             case 'order': $this->response->data = $this->changeListOrder(userId()); break; //compatibility
-            case 'new':
-            default:      $this->response->data = $this->createList(userId());
+            case 'new':   $this->response->data = $this->createList(userId()); break;      //http 201?
+            default:      $this->response->errorJsonContent("Unexpected action", 400); return;
         }
     }
 
@@ -72,7 +71,7 @@ class ListsController extends ApiController {
         $action = $this->req->jsonBody['action'] ?? '';
         switch ($action) {
             case 'order': $this->response->data = $this->changeListOrder(userId()); break;
-            default:      $this->response->data = ['total' => 0]; // error 400 ?
+            default:      $this->response->errorJsonContent("Unexpected action", 400); return;
         }
     }
 

@@ -16,13 +16,13 @@ class AuthController extends ApiController {
             case 'session': $this->response->data = $this->createSession(); break;
             case 'resetPassword': $this->response->data = $this->resetPassword(); break;
             case 'newPassword':   $this->response->data = $this->newPassword(); break;
-            default:        $this->response->data = ['total' => 0]; // error 400 ?
+            default:              $this->response->errorJsonContent("Unexpected action", 400); return;
         }
     }
 
     private function login(): ?array
     {
-        $t = array('logged' => 0);
+        $t = array('logged' => 0, 'ok' => false);
         if (!need_auth()) {
             $t['disabled'] = 1;
             return $t;

@@ -175,7 +175,12 @@ class ApiResponse
             header('Content-type: '. $this->contentType);
             echo $this->data;
         }
-        MTTNotificationCenter::postDidFinishRequestNotification();
+        try {
+            MTTNotificationCenter::postDidFinishRequestNotification();
+        }
+        catch (Throwable $e) {
+            error_log('postDidFinishRequestNotification: '. $e->getMessage());
+        }
         exit;
     }
 }

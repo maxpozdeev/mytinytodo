@@ -41,6 +41,7 @@ class BackupController extends \ApiController implements \MTTControlPanelHttpApi
                 'ok' => false,
                 'error' => $backup->lastErrorString ?? '',
             ];
+            return;
         }
 
         $this->response->data = [
