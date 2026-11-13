@@ -246,7 +246,7 @@ $().ready(function(){
 <div id="seltaskstagscontainer" class="mtt-menu-container" style="display:none">
   <div class="actions">
     <div class="filterbar">
-      <input type="checkbox" id="seltaskstagsAllLists"> <label for="seltaskstagsAllLists"><?php _e('showTagsFromAllLists');?></label>
+      <!--<input type="checkbox" id="seltaskstagsAllLists"> <label for="seltaskstagsAllLists"><?php _e('showTagsFromAllLists');?></label>-->
       <input type="text" class="form-input" id="seltaskstagsSearch" autocomplete="off" placeholder="<?php _e('filterTags');?>">
     </div>
   </div>
