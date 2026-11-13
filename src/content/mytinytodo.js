@@ -1946,14 +1946,14 @@ function stateSelectedTasks(isSelected)
 
 function loadSelTasksTags(callback)
 {
-    let listId = curList.id;
-    if (flag.showTagsFromAllLists) {
-        listId = -1;
-    }
+    // let listId = curList.id;
+    // if (flag.showTagsFromAllLists) {
+    //     listId = -1;
+    // }
     selTasksTagsList = [];
     $('#seltaskstagscontent').html('');
 
-    mtt.db.request('tagCloud', {list:listId, username:mtt.options.username}, function(json){
+    mtt.db.request('tagCloud', {list:-1, username:mtt.options.username}, function(json){
         if (!parseInt(json.total)) selTasksTagsList = [];
         else selTasksTagsList = json.items;
         callback();

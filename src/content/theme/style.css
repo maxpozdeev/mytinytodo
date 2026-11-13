@@ -1155,7 +1155,8 @@ textarea.form-input.inmax {
   text-align: center;
 }
 #seltaskstagsSearch {
-  margin-left: 0.5rem;
+  /*margin-left: 0.5rem;*/
+  width:100%;
   box-sizing: border-box;
 }
 #seltaskstagsAllLists:disabled + label {
