@@ -46,4 +46,4 @@ jobs:
         run: composer install --no-interaction --optimize-autoloader --prefer-dist --no-dev
 
       - name: Run unit tests
-        run: phpunit --configuration ./tests/phpunit.xml
+        run: phpunit --configuration ./tests/phpunit.xml --testsuite default,functional

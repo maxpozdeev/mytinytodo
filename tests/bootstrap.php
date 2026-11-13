@@ -1,5 +1,7 @@
 <?php
 
+putenv("IS_PHPUNIT_TEST=1");
+
 if (getenv('MTT_PATH') !== false) {
     define('MTTPATH', getenv('MTT_PATH'));
 }

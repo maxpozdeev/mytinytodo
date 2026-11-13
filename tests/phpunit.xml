@@ -1,4 +1,4 @@
-<phpunit bootstrap="bootstrap.php" colors="true"
+<phpunit defaultTestSuite="default" bootstrap="bootstrap.php" colors="true"
   displayDetailsOnTestsThatTriggerWarnings="true"
   displayDetailsOnTestsThatTriggerNotices="true"
   displayDetailsOnTestsThatTriggerDeprecations="true"
@@ -10,9 +10,13 @@
       <exclude>./driver_*</exclude>
       <exclude>./vendor/</exclude>
       <exclude>./integration</exclude>
+      <exclude>./functional</exclude>
     </testsuite>
     <testsuite name="integration">
       <directory suffix="Test.php">./integration</directory>
+    </testsuite>
+    <testsuite name="functional">
+      <directory suffix="Test.php">./functional</directory>
     </testsuite>
   </testsuites>
 </phpunit>

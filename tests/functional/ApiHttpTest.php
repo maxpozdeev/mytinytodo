@@ -541,6 +541,71 @@ class ApiHttpTest extends TestCase
         ]));
     }
 
+    public function testTasksBulkTags(): void
+    {
+        $this->login('alice', self::ALICE_PASSWORD);
+
+        $r = $this->api('PATCH', '/tasks', [
+            'ids' => [self::ALICE_PRIVATE_TASK],
+            'tagsAdd' => [1],
+        ]);
+        $this->assertStatus(200, $r);
+        $this->assertTrue($r['json']['ok'] ?? false, $this->requestMessage($r));
+        $this->assertSame(1, $r['json']['total'] ?? null, $this->requestMessage($r));
+        $this->assertStringContainsString('alice-tag', (string)($r['json']['list'][0]['tags'] ?? ''));
+
+        // adding the same tag again changes nothing
+        $r = $this->api('PATCH', '/tasks', [
+            'ids' => [self::ALICE_PRIVATE_TASK],
+            'tagsAdd' => [1],
+        ]);
+        $this->assertStatus(200, $r);
+        $this->assertSame(0, $r['json']['total'] ?? null, $this->requestMessage($r));
+
+        $r = $this->api('PATCH', '/tasks', [
+            'ids' => [self::ALICE_PRIVATE_TASK],
+            'tagsRemove' => [1],
+        ]);
+        $this->assertStatus(200, $r);
+        $this->assertSame(1, $r['json']['total'] ?? null, $this->requestMessage($r));
+        $this->assertStringNotContainsString('alice-tag', (string)($r['json']['list'][0]['tags'] ?? ''));
+
+        $r = $this->api('PATCH', '/tasks', [
+            'ids' => [self::ALICE_PRIVATE_TASK],
+            'tagsRemove' => [1],
+        ]);
+        $this->assertStatus(200, $r);
+        $this->assertSame(0, $r['json']['total'] ?? null, $this->requestMessage($r));
+
+        // foreign tag
+        $r = $this->api('PATCH', '/tasks', [
+            'ids' => [self::ALICE_PRIVATE_TASK],
+            'tagsAdd' => [2],
+        ]);
+        $this->assertStatus(404, $r);
+
+        // foreign task
+        $this->assertDenied($this->api('PATCH', '/tasks', [
+            'ids' => [self::BOB_PRIVATE_TASK],
+            'tagsAdd' => [1],
+        ]));
+
+        // malformed and ambiguous requests
+        $this->assertStatus(400, $this->api('PATCH', '/tasks', [
+            'ids' => [self::ALICE_PRIVATE_TASK],
+            'tagsAdd' => '1',
+        ]));
+        $this->assertStatus(400, $this->api('PATCH', '/tasks', [
+            'ids' => [self::ALICE_PRIVATE_TASK],
+            'tagsAdd' => [],
+        ]));
+        $this->assertStatus(400, $this->api('PATCH', '/tasks', [
+            'ids' => [self::ALICE_PRIVATE_TASK],
+            'tagsAdd' => [1],
+            'tagsRemove' => [1],
+        ]));
+    }
+
     public function testTaskUtilityRoutes(): void
     {
         $this->login('alice', self::ALICE_PASSWORD);
