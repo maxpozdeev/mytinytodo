@@ -606,6 +606,92 @@ class ApiHttpTest extends TestCase
         ]));
     }
 
+    public function testTasksBulkCopy(): void
+    {
+        $this->login('alice', self::ALICE_PASSWORD);
+
+        $r = $this->api('POST', '/tasks', [
+            'action' => 'newFull',
+            'list' => self::ALICE_PRIVATE_LIST,
+            'title' => 'Copy source',
+            'note' => 'source note',
+            'prio' => 2,
+            'duedate' => '2030-01-15',
+            'tags' => 'alice-tag',
+        ]);
+        $this->assertStatus(200, $r);
+        $sourceId = (int)$r['json']['list'][0]['id'];
+
+        $this->assertStatus(200, $this->api('PUT', '/tasks/'. $sourceId, [
+            'action' => 'complete',
+            'compl' => 1,
+        ]));
+
+        // Make the source dates old enough to distinguish them from the copy dates.
+        $created = 1600000000;
+        $edited = 1600000100;
+        $completed = 1600000200;
+        self::updateTaskDates($sourceId, $created, $edited, $completed);
+
+        $r = $this->api('GET', '/tasks/'. $sourceId);
+        $this->assertStatus(200, $r);
+        $source = $r['json']['list'][0];
+        $this->assertSame($created, $source['dateInt'] ?? null);
+        $this->assertSame($edited, $source['dateEditedInt'] ?? null);
+
+        // Copy with default dates.
+        $r = $this->api('PATCH', '/tasks', [
+            'ids' => [$sourceId],
+            'copyToListId' => self::ALICE_PUBLIC_LIST,
+        ]);
+        $this->assertStatus(200, $r);
+        $this->assertTrue($r['json']['ok'] ?? false, $this->requestMessage($r));
+        $this->assertSame(1, $r['json']['total'] ?? null);
+        $copyId = (int)$r['json']['list'][0]['id'];
+        $this->assertNotSame($sourceId, $copyId);
+
+        $r = $this->api('GET', '/tasks/'. $copyId);
+        $this->assertStatus(200, $r);
+        $copy = $r['json']['list'][0];
+        $this->assertSame(self::ALICE_PUBLIC_LIST, $copy['listId']);
+        $this->assertSame('Copy source', $copy['titleText']);
+        $this->assertSame('source note', $copy['noteText']);
+        $this->assertSame(2, $copy['prio']);
+        $this->assertSame(20300115, $copy['dueInt']);
+        $this->assertStringContainsString('alice-tag', (string)$copy['tags']);
+        $this->assertSame(1, $copy['compl']);
+        $this->assertNotSame($source['dateInt'], $copy['dateInt']);
+        $this->assertNotSame($source['dateCompleted'], $copy['dateCompleted']);
+
+        // Copy to the same list and keep the source dates.
+        $r = $this->api('PATCH', '/tasks', [
+            'ids' => [$sourceId],
+            'copyToListId' => self::ALICE_PRIVATE_LIST,
+            'keepDates' => true,
+        ]);
+        $this->assertStatus(200, $r);
+        $this->assertSame(1, $r['json']['total'] ?? null);
+        $copyId = (int)$r['json']['list'][0]['id'];
+
+        $r = $this->api('GET', '/tasks/'. $copyId);
+        $this->assertStatus(200, $r);
+        $copy = $r['json']['list'][0];
+        $this->assertSame(self::ALICE_PRIVATE_LIST, $copy['listId']);
+        $this->assertSame($source['dateInt'], $copy['dateInt']);
+        $this->assertSame($source['dateEditedInt'], $copy['dateEditedInt']);
+        $this->assertSame($source['dateCompleted'], $copy['dateCompleted']);
+
+        // A foreign target list or a foreign source task is not allowed.
+        $this->assertDenied($this->api('PATCH', '/tasks', [
+            'ids' => [$sourceId],
+            'copyToListId' => self::BOB_PRIVATE_LIST,
+        ]));
+        $this->assertDenied($this->api('PATCH', '/tasks', [
+            'ids' => [self::BOB_PRIVATE_TASK],
+            'copyToListId' => self::ALICE_PRIVATE_LIST,
+        ]));
+    }
+
     public function testTaskUtilityRoutes(): void
     {
         $this->login('alice', self::ALICE_PASSWORD);
@@ -1036,6 +1122,17 @@ SH;
             throw new RuntimeException('Failed to create the fake sendmail script');
         }
         chmod(self::$sendmailFile, 0755);
+    }
+
+    private static function updateTaskDates(int $taskId, int $created, int $edited, int $completed): void
+    {
+        $db = new SqliteDatabase(null);
+        $db->connect(['filename' => self::$root. '/db/todolist.db']);
+        $db->setPrefix('');
+        $db->ex(
+            'UPDATE todolist SET d_created=?, d_edited=?, d_completed=? WHERE id=?',
+            [$created, $edited, $completed, $taskId]
+        );
     }
 
     private static function createSeedDatabase(): void

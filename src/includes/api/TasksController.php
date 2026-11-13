@@ -225,6 +225,10 @@ class TasksController extends ApiController {
             $list = checkAndGetListForWrite((int)$body['listId'], true);
             $this->response->data = $this->moveTasks($tasks, $list);
         }
+        else if (isset($body['copyToListId'])) {
+            $list = checkAndGetListForWrite((int)$body['copyToListId'], true);
+            $this->response->data = $this->copyTasks($tasks, $list);
+        }
         else if (isset($body['tagsAdd']) || isset($body['tagsRemove'])) {
             $result = $this->updateTasksTags($tasks, $body);
             if ($result !== null) {
@@ -368,6 +372,53 @@ class TasksController extends ApiController {
         return [
             'ok' => true,
             'total' =>count($ids),
+            'list' => $ids,
+        ];
+    }
+
+
+    /**
+     * Copy tasks to a list (the target list may be the same as the source list).
+     * The `keepDates` flag preserves creation, edit and completion dates of the source tasks.
+     * @param Task[] $tasks
+     * @param TaskList $list
+     * @return null|array
+     */
+    private function copyTasks(array $tasks, TaskList $list): ?array
+    {
+        $keepDates = boolval($this->req->jsonBody['keepDates'] ?? false);
+        $repo = new TaskRepo(DBConnection::instance());
+        $ids = [];
+        foreach ($tasks as $task) {
+            $copy = Task::create($task->title, $list->id);
+            $copy->setNote($task->note ?? '');
+            $copy->setPriority($task->priority);
+            $copy->setDuedate($task->duedate !== '' ? $task->duedate : null);
+            if ($task->isCompleted) {
+                $copy->setIsCompleted(true);
+            }
+            if ($keepDates) {
+                $copy->d_created = $task->d_created;
+                $copy->d_edited = $task->d_edited;
+                if ($task->isCompleted) {
+                    $copy->d_completed = $task->d_completed;
+                }
+            }
+            $copy->tagNames = $task->tagNames ?? [];
+            $repo->saveTask($copy, $list);
+            $ids[] = [ 'id' => $copy->id ];
+            MTTNotificationCenter::postNotification(MTTNotification::didCreateTask, $copy);
+        }
+        if (count($ids) === 0) {
+            return [
+                'ok' => false,
+                'total' => 0,
+                'error' => "Failed to copy tasks",
+            ];
+        }
+        return [
+            'ok' => true,
+            'total' => count($ids),
             'list' => $ids,
         ];
     }

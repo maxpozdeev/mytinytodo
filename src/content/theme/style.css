@@ -1447,6 +1447,7 @@ li.mtt-item-hidden { display:none; }
 
 #slmenucontainer li.mtt-list-hidden a { font-style:italic; }
 #cmenulistscontainer li.mtt-list-hidden { font-style:italic; }
+#copymenulistscontainer li.mtt-list-hidden { font-style:italic; }
 #mtt.readonly .mtt-need-list { display:none; }
 #mtt.readonly .mtt-only-authorized { display:none; }
 

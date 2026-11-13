@@ -2590,6 +2590,9 @@ function selectedTasksActionClick(el, menu)
         case 'cmenu_list':
             if (menu.$caller && menu.$caller.attr('id') === 'seltasks_move') moveSelectedTasksToList(listId);
             break;
+        case 'cmenu_copylist':
+            if (menu.$caller && menu.$caller.attr('id') === 'seltasks_copy') copySelectedTasksToList(listId);
+            break;
     }
     return false;
 }
@@ -2660,6 +2663,24 @@ function moveSelectedTasksToList(listId)
         }});
     });
     flag.tagsChanged = true;
+}
+
+function copySelectedTasksToList(listId)
+{
+    mtt.db.request('copyTasks', {ids: selectedTasks(), listId: listId}, function(json){
+        if (!json.total) {
+            return;
+        }
+        flag.tagsChanged = true;
+        switchSelectTasksMode(false);
+        loadTasks({ isPagination:1, afterShow: () => {
+            if (mtt.pages.curPageId() !== 'tasks') return;
+            for (const item of json.list) {
+                if (taskList[item.id])
+                    $('#taskrow_'+item.id).effect("highlight", {color:mtt.theme.newTaskFlashColor}, 'normal');
+            }
+        }});
+    });
 }
 
 
@@ -3029,17 +3050,14 @@ function moveTaskToList(taskId, listId)
 };
 
 
-function cmenuOnListsLoaded()
+function renderListsSubmenu(selector, idPrefix, disabledListId)
 {
-    if (mtt.menus.cmenu)
-        mtt.menus.cmenu.destroy();
-    mtt.menus.cmenu = null;
     let opened = '';
     let hidden = '';
     tabLists.getAll().forEach( (list) => {
-        const classDisabled = (list.id == curList.id) ? 'mtt-disabled' : '';
+        const classDisabled = (disabledListId !== null && list.id == disabledListId) ? 'mtt-disabled' : '';
         const classHidden = list.hidden ? 'mtt-list-hidden' : '';
-        const s = `<li id="cmenu_list:${list.id}" class="${classHidden} ${classDisabled}">${list.name}</li>`;
+        const s = `<li id="${idPrefix}:${list.id}" class="${classHidden} ${classDisabled}">${list.name}</li>`;
         if (list.hidden)
             hidden += s;
         else
@@ -3047,7 +3065,19 @@ function cmenuOnListsLoaded()
     });
     if (hidden != '')
         opened += '<li class="mtt-menu-delimiter"></li>';
-    $('#cmenulistscontainer ul').html(opened + hidden);
+    $(selector + ' ul').html(opened + hidden);
+}
+
+function cmenuOnListsLoaded()
+{
+    if (mtt.menus.cmenu)
+        mtt.menus.cmenu.destroy();
+    mtt.menus.cmenu = null;
+    if (mtt.menus.seltasksaction)
+        mtt.menus.seltasksaction.destroy();
+    mtt.menus.seltasksaction = null;
+    renderListsSubmenu('#cmenulistscontainer', 'cmenu_list', curList.id);
+    renderListsSubmenu('#copymenulistscontainer', 'cmenu_copylist', null);
 };
 
 function cmenuOnListAdded(list)
@@ -3058,6 +3088,7 @@ function cmenuOnListAdded(list)
 function cmenuOnListRenamed(list)
 {
     $('#cmenu_list\\:'+list.id).html(list.name);
+    $('#cmenu_copylist\\:'+list.id).html(list.name);
 };
 
 function cmenuOnListSelected(a)

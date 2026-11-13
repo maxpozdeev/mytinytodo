@@ -149,6 +149,7 @@
     "action_delete": "Удалить",
     "action_priority": "Приоритет",
     "action_move": "Переместить в",
+    "action_copy": "Копировать в",
     "action_ok": "ОК",
     "action_cancel": "Отмена",
     "action_mark_completed": "Отметить как Выполнено",
