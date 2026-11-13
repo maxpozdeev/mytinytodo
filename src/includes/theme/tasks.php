@@ -66,6 +66,7 @@ $().ready(function(){
     <span id="sortmenubtn" class="mtt-menu-button mtt-hide-on-select-tasks"><span class="title"><?php _e('sortShort');?></span> <span class="arrdown2"></span></span>
     <span id="tagcloudbtn" class="mtt-menu-button mtt-hide-on-select-tasks"><span class="title"><?php _e('tagcloud');?></span> <span class="arrdown2"></span></span>
     <span id="seltasksactionbtn" class="mtt-menu-button mtt-show-on-select-tasks-some"><span class="title"><?php _e('Action');?></span> <span class="arrdown2"></span></span>
+    <span id="seltaskstagsbtn" class="mtt-menu-button mtt-show-on-select-tasks-some"><span class="title"><?php _e('tags');?></span> <span class="arrdown2"></span></span>
     <span id="seltasksbtn" class="mtt-img-button"><span></span>&nbsp;</span>
 </span>
 </h3>
@@ -126,7 +127,7 @@ $().ready(function(){
 <div class="form-row">
   <div class="h"><?php _e('tags');?></div>
   <table cellspacing="0" cellpadding="0" width="100%"><tr>
-    <td><input type="text" name="tags" id="edittags" value="" class="inmax form-input" maxlength="250" autocomplete="off"></td>
+    <td><input type="text" name="tags" id="edittags" value="" class="inmax form-input" maxlength="750" autocomplete="off"></td>
     <td class="alltags-cell">
       <a href="#" id="alltags_show"><?php _e('alltags_show');?></a>
       <a href="#" id="alltags_hide" style="display:none"><?php _e('alltags_hide');?></a>
@@ -240,6 +241,16 @@ $().ready(function(){
   <li id="seltasks_move" class="mtt-menu-indicator" submenu="cmenulistscontainer"><div class="submenu-icon"></div><?php _e('action_move');?></li>
   <li id="seltasks_delete"><?php _e('action_delete');?></li>
 </ul>
+</div>
+
+<div id="seltaskstagscontainer" class="mtt-menu-container" style="display:none">
+  <div class="actions">
+    <div class="filterbar">
+      <input type="checkbox" id="seltaskstagsAllLists"> <label for="seltaskstagsAllLists"><?php _e('showTagsFromAllLists');?></label>
+      <input type="text" class="form-input" id="seltaskstagsSearch" autocomplete="off" placeholder="<?php _e('filterTags');?>">
+    </div>
+  </div>
+  <ul id="seltaskstagscontent"></ul>
 </div>
 
 <div id="taskcontextcontainer" class="mtt-menu-container" style="display:none">

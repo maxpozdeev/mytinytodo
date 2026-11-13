@@ -20,7 +20,9 @@ var flag = {
     editFormChanged: false,
     firstLoad: true,
     dontChangeHistoryOnce: false,
-    showTagsFromAllLists: false
+    showTagsFromAllLists: false,
+    selTasksTagsChanged: false,
+    selTasksTagsMenuReopening: false
 };
 var taskCnt = { total:0, totalOnPage:0, past: 0, today:0, soon:0 };
 const tabLists = {
@@ -77,6 +79,7 @@ const tabLists = {
 };
 var curList = 0;
 var tagsList = [];
+var selTasksTagsList = [];
 var pagination = {
   limit: 20,
   page: 1,
@@ -123,7 +126,13 @@ const mtt = window.mytinytodo = {
         newTaskFlashColor: '#ffffaa',
         editTaskFlashColor: '#bbffaa',
         deleteTaskFlashColor: '#ffaaaa',
-        msgFlashColor: '#ffffff'
+        msgFlashColor: '#ffffff',
+        isDarkMode() {
+            if (document.documentElement.dataset.appearance === 'system') {
+                return document.documentElement.dataset.systemAppearance === 'dark' ? true : false;
+            }
+            return document.documentElement.dataset.appearance === 'dark' ? true : false;
+        }
     },
 
     actions: {},
@@ -163,6 +172,7 @@ const mtt = window.mytinytodo = {
         ajaxAnimation: 0,
         newTaskCounter: 0,
         searchTags: 0,
+        searchSelTasksTags: 0,
     },
 
     lang: {
@@ -503,6 +513,117 @@ const mtt = window.mytinytodo = {
                 });
             }
             mtt.menus.seltasksaction.show(this);
+        });
+
+        $('#seltaskstagsbtn').click(function(){
+            const caller = this;
+            if (!selectedTasks().length) {
+                return false;
+            }
+            if (mtt.menus.seltaskstags && mtt.menus.seltaskstags.isOpen) {
+                mtt.menus.seltaskstags.close();
+                return false;
+            }
+            flag.selTasksTagsChanged = false;
+            loadSelTasksTags(function(){
+                if (!mtt.menus.seltaskstags) {
+                    mtt.menus.seltaskstags = new mttMenu('seltaskstagscontainer', {
+                        beforeShow: function(){
+                            updateSelTasksTagsAllListsCheckbox();
+                            const search = document.getElementById('seltaskstagsSearch');
+                            if (search) search.value = '';
+                            renderSelTasksTags();
+                        },
+                        onClose: function(){
+                            const search = document.getElementById('seltaskstagsSearch');
+                            if (search) search.value = '';
+                            if (flag.selTasksTagsMenuReopening || !flag.selTasksTagsChanged) {
+                                return;
+                            }
+                            flag.selTasksTagsChanged = false;
+                            const listId = curList.id;
+                            switchSelectTasksMode(false);
+                            setTimeout(function(){
+                                if (curList && curList.id === listId) {
+                                    loadTasks({ isPagination:1 });
+                                }
+                            }, 0);
+                        },
+                        alignRight: true
+                    });
+                }
+                mtt.menus.seltaskstags.show(caller);
+            });
+            return false;
+        });
+
+        $('#seltaskstagsAllLists').click(function(){
+            flag.showTagsFromAllLists = this.checked;
+            flag.tagsChanged = true;
+            const search = document.getElementById('seltaskstagsSearch');
+            if (search) search.value = '';
+            const menu = mtt.menus.seltaskstags;
+            if (!menu) {
+                return;
+            }
+            const caller = menu.caller || document.getElementById('seltaskstagsbtn');
+            flag.selTasksTagsMenuReopening = true;
+            menu.close();
+            flag.selTasksTagsMenuReopening = false;
+            loadSelTasksTags(function(){
+                menu.show(caller);
+            });
+        });
+
+        $('#seltaskstagsSearch').keyup(function(event){
+            if (event.keyCode == 27) return;
+            clearTimeout(mtt.timers.searchSelTasksTags);
+            mtt.timers.searchSelTasksTags = setTimeout(function(){renderSelTasksTags()}, 400);
+        })
+        .keydown(function(event){
+            if (event.keyCode == 27) {
+                if (this.value === '') return; // allow to close the menu
+                this.value = '';
+                clearTimeout(mtt.timers.searchSelTasksTags);
+                renderSelTasksTags();
+                return false;
+            }
+        });
+
+        $('#seltaskstagscontent').on('click', 'li', function(event){
+            if ($(this).is('.mtt-item-disabled')) {
+                return false;
+            }
+            const tagId = parseInt(this.dataset.tagId, 10);
+            if (!tagId) {
+                return false;
+            }
+            const ids = selectedTasks();
+            if (!ids.length) {
+                return false;
+            }
+            const add = !commonTagIdsForSelectedTasks().has(String(tagId));
+            const $item = $(this);
+            $item.addClass('mtt-item-disabled');
+
+            const params = { ids: ids };
+            if (add) params.tagsAdd = [tagId];
+            else params.tagsRemove = [tagId];
+
+            mtt.db.request('setTasksTags', params, function(json){
+                if (json && json.ok && json.list) {
+                    for (const item of json.list) {
+                        updateTaskRowTags(item);
+                    }
+                    if (json.total) {
+                        flag.selTasksTagsChanged = true;
+                    }
+                    flag.tagsChanged = true;
+                }
+                $item.removeClass('mtt-item-disabled');
+                renderSelTasksTags();
+            });
+            return false;
         });
 
         $('#mtt-notes-show').click(function(e){
@@ -1823,6 +1944,95 @@ function stateSelectedTasks(isSelected)
     refreshSelectedTasksCnt();
 }
 
+function loadSelTasksTags(callback)
+{
+    let listId = curList.id;
+    if (flag.showTagsFromAllLists) {
+        listId = -1;
+    }
+    selTasksTagsList = [];
+    $('#seltaskstagscontent').html('');
+
+    mtt.db.request('tagCloud', {list:listId, username:mtt.options.username}, function(json){
+        if (!parseInt(json.total)) selTasksTagsList = [];
+        else selTasksTagsList = json.items;
+        callback();
+    });
+}
+
+function updateSelTasksTagsAllListsCheckbox()
+{
+    const el = document.getElementById('seltaskstagsAllLists');
+    if (!el) {
+        return;
+    }
+    if (flag.readOnly) {
+        el.checked = false;
+        el.disabled = true;
+    }
+    else if (curList.id == -1) {
+        el.checked = true;
+        el.disabled = true;
+    }
+    else {
+        el.checked = flag.showTagsFromAllLists;
+        el.disabled = false;
+    }
+}
+
+function commonTagIdsForSelectedTasks()
+{
+    const ids = selectedTasks();
+    let common = null;
+    for (const id of ids) {
+        const item = taskList[id];
+        const itemIds = (item && item.tags_ids) ? item.tags_ids.split(',') : [];
+        const set = new Set(itemIds.filter(v => v !== ''));
+        if (common === null) common = set;
+        else common = new Set([...common].filter(v => set.has(v)));
+    }
+    return common ?? new Set();
+}
+
+function renderSelTasksTags()
+{
+    const common = commonTagIdsForSelectedTasks();
+    const searchEl = document.getElementById('seltaskstagsSearch');
+    const filter = searchEl ? searchEl.value.toLocaleLowerCase() : '';
+    let content = '';
+    for (const item of selTasksTagsList) {
+        if (filter !== '' && item.tagText.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                .toLocaleLowerCase().search(filter) === -1) {
+            continue;
+        }
+        const checked = common.has(String(item.id));
+        // item.tag is escaped with htmlspecialchars()
+        content += `<li data-tag-id="${item.id}"${checked ? ' class="mtt-item-checked"' : ''}>` +
+                   `<div class="menu-icon"></div>${item.tag}</li>`;
+    }
+    if (content === '') {
+        content = `<li class="mtt-item-disabled">${mtt.lang.get('noTags')}</li>`;
+    }
+    $('#seltaskstagscontent').html(content);
+}
+
+function updateTaskRowTags(item)
+{
+    taskList[item.id] = item;
+    const $row = $('#taskrow_'+item.id);
+    if (!$row.length) {
+        return;
+    }
+    $row.find('.task-tags').html(prepareTagsStr(item));
+    $row.removeClass(function(index, className){
+        return (className.match(/(^|\s)tag-id-\S+/g) || []).join(' ');
+    });
+    const classes = prepareDomClassOfTags(item.tags_ids).trim();
+    if (classes) {
+        $row.addClass(classes);
+    }
+}
+
 function toggleAllNotes(show, event)
 {
     for (let id in taskList)
@@ -1861,6 +2071,7 @@ function tabSelect(elementOrId)
         $('.mtt-need-list').removeClass('mtt-item-disabled');
         $('#mtt').removeClass('no-list-selected');
     }
+    switchSelectTasksMode(false);
 
     const prevList = curList;
     curList = tabLists.get(id);

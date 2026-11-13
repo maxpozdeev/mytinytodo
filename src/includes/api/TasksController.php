@@ -225,10 +225,99 @@ class TasksController extends ApiController {
             $list = checkAndGetListForWrite((int)$body['listId'], true);
             $this->response->data = $this->moveTasks($tasks, $list);
         }
+        else if (isset($body['tagsAdd']) || isset($body['tagsRemove'])) {
+            $result = $this->updateTasksTags($tasks, $body);
+            if ($result !== null) {
+                # if null the response is already set in updateTasksTags
+                $this->response->data = $result;
+            }
+        }
         else {
             $this->response->errorJsonContent("Unexpected action", 400);
             return;
         }
+    }
+
+
+    /**
+     * Normalizes an array of tag ids.
+     * Returns null when the value is not a list of positive integers.
+     * @param mixed $value
+     * @return int[]|null
+     */
+    private function parseArrayOfTagIds($value): ?array
+    {
+        if (!is_array($value) || !array_is_list($value)) {
+            return null;
+        }
+        $ids = [];
+        foreach ($value as $id) {
+            if (!is_int($id) && !(is_string($id) && preg_match('/^\d+$/', $id))) {
+                return null;
+            }
+            $id = (int)$id;
+            if ($id <= 0) {
+                return null;
+            }
+            $ids[$id] = $id;
+        }
+        return array_values($ids);
+    }
+
+
+    /**
+     * Add or remove tags for multiple tasks.
+     * @param Task[] $tasks
+     * @param array $body
+     * @return array|null
+     * @throws Exception
+     */
+    private function updateTasksTags(array $tasks, array $body): ?array
+    {
+        $addIds = $this->parseArrayOfTagIds($body['tagsAdd'] ?? []);
+        $removeIds = $this->parseArrayOfTagIds($body['tagsRemove'] ?? []);
+        if ($addIds === null || $removeIds === null) {
+            $this->response->errorJsonContent("Malformed field: `tagsAdd` or `tagsRemove`", 400);
+            return null;
+        }
+        if (!$addIds && !$removeIds) {
+            $this->response->errorJsonContent("No tags specified", 400);
+            return null;
+        }
+        if (array_intersect($addIds, $removeIds)) {
+            $this->response->errorJsonContent("Tag ids in `tagsAdd` and `tagsRemove` must not overlap", 400);
+            return null;
+        }
+
+        $allIds = array_values(array_unique(array_merge($addIds, $removeIds)));
+        $tagRepo = new TagRepo(DBConnection::instance());
+        $tags = $tagRepo->getTagsByIds($allIds, $this->req->ownerUserId());
+        if (count($tags) !== count($allIds)) {
+            $this->response->errorJsonContent("Tag not found", 404);
+            return null;
+        }
+
+        $repo = new TaskRepo(DBConnection::instance());
+        $changedIds = $repo->updateTasksTags($tasks, $addIds, $removeIds);
+
+        $a = [];
+        foreach ($changedIds as $id) {
+            $task = $repo->findTaskById($id);
+            if (!$task) {
+                continue;
+            }
+            MTTNotificationCenter::postNotification(MTTNotification::didEditTask, [
+                'property' => 'tags',
+                'task' => $task
+            ]);
+            $a[] = $task->toJsonApiArray();
+        }
+
+        return [
+            'ok' => true,
+            'total' => count($a),
+            'list' => $a,
+        ];
     }
 
 

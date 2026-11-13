@@ -714,6 +714,7 @@ select.form-input {
   margin-left:3px;
   display:inline-block;
   width:1em; height:1em; /* em! */
+  min-width:1em;
   mask: var(--svg-closetag) no-repeat; -webkit-mask: var(--svg-closetag) no-repeat;
   background-color: var(--color-btn-reduced);
   transition: background-color 0.1s ease-in;
@@ -1128,11 +1129,37 @@ textarea.form-input.inmax {
   background-color: var(--color-btn-pressed);
 }
 
-#tagcloudbtn, #sortmenubtn, #seltasksactionbtn {
+#tagcloudbtn, #sortmenubtn, #seltasksactionbtn, #seltaskstagsbtn {
   font-size: 1rem;
 }
-#tagcloudbtn {
+#tagcloudbtn, #seltaskstagsbtn {
   margin-left: 0.5em;
+}
+#seltaskstagscontainer {
+  min-width: 12rem;
+  max-width: min(40rem, 90vw);
+}
+#seltaskstagscontainer > ul {
+  max-height: 70vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+#seltaskstagscontainer .actions {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--color-menu-border);
+  padding: 5px;
+}
+#seltaskstagscontainer .filterbar {
+  flex-grow: 1;
+  text-align: center;
+}
+#seltaskstagsSearch {
+  margin-left: 0.5rem;
+  box-sizing: border-box;
+}
+#seltaskstagsAllLists:disabled + label {
+  opacity: 0.6;
 }
 #tagcloud {
   overflow: hidden; z-index:100;
@@ -1348,7 +1375,7 @@ textarea.form-input.inmax {
 
 .mtt-menu-container {
   overflow: hidden;
-  max-width: 100vw;
+  max-width: 95vw;
   z-index: 100;
   background-color: var(--color-menu);
   border: 1px solid var(--color-menu-border);

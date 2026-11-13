@@ -867,4 +867,18 @@ class Tag
     public int $id;
     public string $name;
     public int $userId;
+
+    /**
+     * Create Tag instance from a database record of the tags table.
+     * @param array $a
+     * @return static
+     */
+    static function fromArray(array $a): self
+    {
+        $tag = new static();
+        $tag->id = (int)$a['id'];
+        $tag->userId = (int)$a['user_id'];
+        $tag->name = (string)$a['name'];
+        return $tag;
+    }
 }

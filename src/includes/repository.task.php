@@ -438,6 +438,61 @@ class TaskRepo
     }
 
 
+    /**
+     * Add and/or remove tags for multiple tasks in a single transaction.
+     * @param Task[] $tasks
+     * @param int[] $addTagIds
+     * @param int[] $removeTagIds
+     * @return int[] ids of changed tasks
+     * @throws Exception
+     */
+    public function updateTasksTags(array $tasks, array $addTagIds, array $removeTagIds): array
+    {
+        $addTagIds = array_values(array_unique(array_map('intval', $addTagIds)));
+        $removeTagIds = array_values(array_unique(array_map('intval', $removeTagIds)));
+        if (!$addTagIds && !$removeTagIds) {
+            return [];
+        }
+
+        $changed = [];
+        $this->db->ex("BEGIN");
+        try {
+            foreach ($tasks as $task) {
+                foreach ($addTagIds as $tagId) {
+                    $exists = (int)$this->db->sq(
+                        "SELECT COUNT(*) FROM {$this->db->prefix}tag2task WHERE task_id=? AND tag_id=?",
+                        [$task->id, $tagId]
+                    );
+                    if ($exists) {
+                        continue;
+                    }
+                    $this->db->ex(
+                        "INSERT INTO {$this->db->prefix}tag2task (task_id,tag_id,list_id) VALUES (?,?,?)",
+                        [$task->id, $tagId, $task->listId]
+                    );
+                    $changed[$task->id] = true;
+                }
+                foreach ($removeTagIds as $tagId) {
+                    $this->db->ex(
+                        "DELETE FROM {$this->db->prefix}tag2task WHERE task_id=? AND tag_id=?",
+                        [$task->id, $tagId]
+                    );
+                    if ($this->db->affected()) {
+                        $changed[$task->id] = true;
+                    }
+                }
+            }
+            $this->db->ex("COMMIT");
+        }
+        catch (Exception $e) {
+            $this->db->ex("ROLLBACK");
+            throw $e;
+        }
+
+        return array_map('intval', array_keys($changed));
+    }
+
+
     public function updateTaskProperties(Task $task): int
     {
         $fv = $task->toArray(true);

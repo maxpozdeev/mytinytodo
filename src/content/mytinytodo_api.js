@@ -507,6 +507,23 @@ MytinytodoAjaxApi.prototype = {
         });
     },
 
+    setTasksTags(params, callback) {
+        const data = {
+            ids: params.ids
+        };
+        if (params.tagsAdd) data.tagsAdd = params.tagsAdd;
+        if (params.tagsRemove) data.tagsRemove = params.tagsRemove;
+        if (!this.useREST) data['_method'] = 'PATCH';
+        $.ajax({
+            url: mytinytodo.apiUrl + 'tasks',
+            method: this.useREST ? 'PATCH' : 'POST',
+            contentType : 'application/json',
+            data: JSON.stringify(data),
+            success: callback,
+            dataType: 'json'
+        });
+    },
+
     deleteTasks(params, callback) {
         const data = {
             ids: params.ids

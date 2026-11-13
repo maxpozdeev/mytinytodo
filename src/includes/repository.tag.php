@@ -41,6 +41,33 @@ class TagRepo
 
 
     /**
+     * Finds tags by their ids for the specified user.
+     * @param int[] $ids
+     * @param int $userId
+     * @return Tag[]
+     */
+    public function getTagsByIds(array $ids, int $userId): array
+    {
+        $ids = array_values(array_unique(array_map('intval', $ids)));
+        if (!$ids) {
+            return [];
+        }
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        $q = $this->db->dq(
+            "SELECT id, user_id, name FROM {$this->db->prefix}tags
+             WHERE user_id=? AND id IN ($placeholders)",
+            array_merge([$userId], $ids)
+        );
+        $tags = [];
+        while ($r = $q->fetchAssoc()) {
+            $tag = Tag::fromArray($r);
+            $tags[$tag->id] = $tag;
+        }
+        return array_values($tags);
+    }
+
+
+    /**
      * Finds tag by its name. Return array of id.
      * @param string $name
      * @return int[]
