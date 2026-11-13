@@ -1,4 +1,4 @@
-name: Unit Tests
+name: Tests
 
 on:
   push:
@@ -45,5 +45,5 @@ jobs:
       - name: Install libs
         run: composer install --no-interaction --optimize-autoloader --prefer-dist --no-dev
 
-      - name: Run unit tests
+      - name: Run tests
         run: phpunit --configuration ./tests/phpunit.xml --testsuite default,functional
