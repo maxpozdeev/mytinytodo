@@ -49,7 +49,7 @@ class TagsController extends ApiController {
 
         foreach ($aTags as $tag) {
             $t['items'][] = [
-                'tag' => htmlspecialchars($tag['name']),
+                'tag' => htmlspecialchars($tag['name'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
                 'tagText' => (string)$tag['name'],
                 'id' => (int)$tag['id'],
             ];

@@ -73,6 +73,7 @@ class MTTParsedown extends Parsedown
             $attrs = array(
                 'href' => get_mttinfo('url'). '?task='. $matches[1],
                 'target' => '_blank',
+                'rel' => 'noopener',
             );
             if (!$this->toExternal) {
                 $attrs['class'] = 'mtt-link-to-task';
@@ -97,6 +98,7 @@ class MTTParsedown extends Parsedown
         $a = parent::inlineLink($Excerpt);
         if (is_array($a) && isset($a['element']['attributes']['href'])) {
             $a['element']['attributes']['target'] = '_blank';
+            $a['element']['attributes']['rel'] = 'noopener';
         }
         return $a;
      }
@@ -105,6 +107,7 @@ class MTTParsedown extends Parsedown
         $a = parent::inlineUrl($Excerpt);
         if (is_array($a) && isset($a['element']['attributes']['href'])) {
             $a['element']['attributes']['target'] = '_blank';
+            $a['element']['attributes']['rel'] = 'noopener';
         }
         return $a;
     }

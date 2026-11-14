@@ -193,7 +193,7 @@ class TaskList extends AbstractTaskList
 
         return array(
             'id' => $this->id ?? '',
-            'name' => htmlspecialchars($this->name ?? ''),
+            'name' => htmlspecialchars($this->name ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
             'sort' => $this->sorting,
             'published' => $this->isPublished ? 1 : 0,
             'showCompl' => $this->isShowCompleted ? 1 : 0,
@@ -414,7 +414,7 @@ class Task extends AbstractTask
         return array(
             'id' => $this->id ?? '',                //int
             'listId' => $this->listId ?? 0,         //int
-            'listName' => htmlspecialchars($this->listName ?? ''),
+            'listName' => htmlspecialchars($this->listName ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
             'title' => $this->titleHtml(),
             'titleText' => $this->title,            // raw, not escaped
             'note' => $this->noteHtml(),
@@ -443,8 +443,8 @@ class Task extends AbstractTask
             'dueInt' => $dueA['int'],                           //int
             'dueTitle' => $dueA['formattedlong'] !== '' ? htmlspecialchars(sprintf($lang->get('taskdate_inline_duedate'), $dueA['formattedlong'])) : '',
 
-            'tags' => htmlspecialchars( implode(',', $this->tagNames) ),
-            'tags_ids' => htmlspecialchars( implode(',', $this->tagIds) ),
+            'tags' => htmlspecialchars(implode(',', $this->tagNames), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+            'tags_ids' => htmlspecialchars(implode(',', $this->tagIds), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
 
             //FIXME: dont use ow
             'ow' => $this->ow,
