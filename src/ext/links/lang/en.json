@@ -1,0 +1,8 @@
+{
+    "ext.links.name": "Links",
+    "links.h_ref_policy": "Referrer policy",
+    "links.d_ref_policy": "Set the document-wide default referrer policy (applied to all outgoing requests: links, images, scripts, etc.) using the <meta name=\"referrer\"> element.",
+    "links.h_schemas": "Allow protocols",
+    "links.d_schemas": "Make links in task titles and notes clickable when the text starts with one of the supported URL schemes. This also works for Markdown links, e.g. [Link Title](schema:url).",
+    "links.no_policy": "No policy"
+}

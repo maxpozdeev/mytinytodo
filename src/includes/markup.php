@@ -25,6 +25,9 @@ final class MTTMarkdown
     private static $instanceClass = MTTParsedownWrapper::class;
     //private static $instanceClass = MTTCommonmarkWrapper::class;
 
+    /** @var array */
+    private static $instanceArgs = [];
+
     /**
      *
      * @return MTTMarkdownInterface
@@ -38,16 +41,18 @@ final class MTTMarkdown
         //     self::setInstanceClass($newClass);
         // }
 
-        self::$instance = new self::$instanceClass();
+        $class = self::$instanceClass;
+        self::$instance = new $class(...self::$instanceArgs);
         return self::$instance;
     }
 
-    public static function setInstanceClass(string $class): void
+    public static function setInstanceClass(string $class, array $constructorArgs = []): void
     {
         if (!is_a($class, MTTMarkdownInterface::class, true)) {
             throw new Exception("Class '$class' is not a MTTMarkdownInterface");
         }
         self::$instanceClass = $class;
+        self::$instanceArgs = $constructorArgs;
         self::$instance = null;
     }
 }
@@ -90,21 +95,26 @@ final class MTTTitleMarkup
     /** @var string */
     private static $instanceClass = MTTTitleMarkupConverter::class;
 
+    /** @var array */
+    private static $instanceArgs = [];
+
     public static function instance() : MTTTitleMarkupInterface
     {
         if (isset(self::$instance))
             return self::$instance;
 
-        self::$instance = new self::$instanceClass();
+        $class = self::$instanceClass;
+        self::$instance = new $class(...self::$instanceArgs);
         return self::$instance;
     }
 
-    public static function setInstanceClass(string $class): void
+    public static function setInstanceClass(string $class, array $constructorArgs = []): void
     {
         if (!is_a($class, MTTTitleMarkupInterface::class, true)) {
             throw new Exception("Class '$class' is not a MTTTitleMarkupInterface");
         }
         self::$instanceClass = $class;
+        self::$instanceArgs = $constructorArgs;
         self::$instance = null;
     }
 }

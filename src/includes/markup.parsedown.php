@@ -43,6 +43,8 @@ class MTTParsedown extends Parsedown
 
         $this->InlineTypes['#'][]= 'TaskId';
         $this->inlineMarkerList .= '#';
+
+        $this->safeLinksWhitelist[] = 'sms:';
     }
 
     public function setToExternal(bool $v)
@@ -94,11 +96,28 @@ class MTTParsedown extends Parsedown
         }
     }
 
+    /**
+     * Inline types that must not be processed inside a link text.
+     */
+    protected function nonNestableInlineTypes(): array
+    {
+        return array();
+    }
+
     protected function inlineLink($Excerpt) {
         $a = parent::inlineLink($Excerpt);
         if (is_array($a) && isset($a['element']['attributes']['href'])) {
             $a['element']['attributes']['target'] = '_blank';
             $a['element']['attributes']['rel'] = 'noopener';
+        }
+        if (is_array($a)) {
+            $nonNestables = $this->nonNestableInlineTypes();
+            if ($nonNestables) {
+                $a['element']['nonNestables'] = array_merge(
+                    $a['element']['nonNestables'] ?? array(),
+                    $nonNestables
+                );
+            }
         }
         return $a;
      }
