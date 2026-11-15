@@ -1516,9 +1516,16 @@ function loadTasks(opts)
         $('#tasklist').html('');
         $('#total').html('');
     }
+    const expandedTasks = {};
     if (!opts.isPagination) {
         pagination.page = 1;
         refreshPagination(null);
+    }
+    else {
+        for (let id in taskList) {
+            if (taskList[id].note != '' && $('#taskrow_'+id).is('.task-expanded'))
+                expandedTasks[String(id)] = true;
+        }
     }
 
     mtt.db.request('loadTasks', {
@@ -1538,7 +1545,7 @@ function loadTasks(opts)
         taskCnt.total = taskCnt.totalOnPage = taskCnt.past = taskCnt.today = taskCnt.soon = 0;
         let tasks = '';
         $.each(json.list, function(i,item){
-            tasks += mtt.prepareTaskStr(item);
+            tasks += mtt.prepareTaskStr(item, expandedTasks[String(item.id)] ? true : false);
             taskList[item.id] = item;
             changeTaskCnt(item, 1);
         });
