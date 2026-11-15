@@ -2750,7 +2750,7 @@ function tasklistSortUpdated(event, ui)
 
 function mttMenu(container, options)
 {
-    var menu = this;
+    const menu = this;
     this.container = document.getElementById(container);
     this.$container = $(this.container);
     this.isOpen = false;
@@ -2758,6 +2758,7 @@ function mttMenu(container, options)
     this.submenu = [];
     this.curSubmenu = null;
     this.showTimer = null;
+    this.activeItem = null; // li that currently has 'mtt-menu-item-active' class (at most one)
     this.ts = (new Date).getTime();
     this.container.mttmenu = this.ts;
 
@@ -2770,15 +2771,21 @@ function mttMenu(container, options)
     if (!this.options.hasOwnProperty('adjustWidth')) {
         this.options.adjustWidth = true;
     }
+    if (!this.options.hasOwnProperty('showDelay')) {
+        this.options.showDelay = 400; //ms, delay before opening a submenu on hover
+    }
+    if (!this.options.hasOwnProperty('hideDelay')) {
+        this.options.hideDelay = 300; //ms, delay before hiding a submenu after hover leaves it
+    }
 
     this.$container.find('li').click(function(){
-        var r = menu.onclick(this, menu);
+        const r = menu.onclick(this, menu);
         return (typeof r === 'undefined') ? false : r;
     })
     .each(function(){
 
-        var submenu = 0;
-        if($(this).is('.mtt-menu-indicator'))
+        let submenu = 0;
+        if ($(this).is('.mtt-menu-indicator'))
         {
             submenu = new mttMenu($(this).attr('submenu'), menu.options);
             submenu.$caller = $(this);
@@ -2789,46 +2796,72 @@ function mttMenu(container, options)
             submenu.ts = submenu.container.mttmenu = submenu.root.ts;
         }
 
-        $(this).hover(
-            function(){
-                if(!$(this).is('.mtt-menu-item-active')) menu.$container.find('li').removeClass('mtt-menu-item-active');
-                clearTimeout(menu.showTimer);
-                if(menu.hideTimer && menu.parent) {
-                    clearTimeout(menu.hideTimer);
-                    menu.hideTimer = null;
-                    menu.$caller.addClass('mtt-menu-item-active');
-                    clearTimeout(menu.parent.showTimer);
-                }
-
-                if(menu.curSubmenu && menu.curSubmenu.isOpen && menu.curSubmenu != submenu && !menu.curSubmenu.hideTimer)
-                {
-                    menu.$container.find('li').removeClass('mtt-menu-item-active');
-                    var curSubmenu = menu.curSubmenu;
-                    curSubmenu.hideTimer = setTimeout(function(){
-                        curSubmenu.hide();
-                        curSubmenu.hideTimer = null;
-                    }, 300);
-                }
-
-                if (menu.options.onhover) menu.options.onhover(this, menu);
-
-                if(!submenu || menu.curSubmenu == submenu && menu.curSubmenu.isOpen)
-                    return;
-
-                menu.showTimer = setTimeout(function(){
-                    menu.curSubmenu = submenu;
-                    submenu.showSub();
-                }, 400);
-            },
-            function(){}
-        );
-
+        // keep submenu of the item on the li item itself: the delegated hover handler below needs it
+        this.mttMenuSubmenu = submenu;
     });
+
+    this.$container.on('mouseenter.mttmenu', 'li', function(){
+        if (this.mttMenuSubmenu === undefined) return;
+        menu.itemHover(this, this.mttMenuSubmenu);
+    });
+
+    this.setActiveItem = function(li)
+    {
+        if (this.activeItem === li) return;
+        this.clearActiveItem();
+        if (li) {
+            this.activeItem = li;
+            $(li).addClass('mtt-menu-item-active');
+        }
+    };
+
+    this.clearActiveItem = function()
+    {
+        if (!this.activeItem) return;
+        $(this.activeItem).removeClass('mtt-menu-item-active');
+        this.activeItem = null;
+    };
+
+    this.itemHover = function(li, submenu)
+    {
+        const self = this;
+
+        // do not drop highlight of the item which submenu is already opened
+        if (this.activeItem !== li) this.clearActiveItem();
+        clearTimeout(this.showTimer);
+
+        if (this.hideTimer && this.parent) {
+            clearTimeout(this.hideTimer);
+            this.hideTimer = null;
+            this.parent.setActiveItem(this.$caller[0]);
+            clearTimeout(this.parent.showTimer);
+        }
+
+        if (this.curSubmenu && this.curSubmenu.isOpen && this.curSubmenu != submenu && !this.curSubmenu.hideTimer)
+        {
+            this.clearActiveItem();
+            const curSubmenu = this.curSubmenu;
+            curSubmenu.hideTimer = setTimeout(function(){
+                curSubmenu.hide();
+                curSubmenu.hideTimer = null;
+            }, this.options.hideDelay);
+        }
+
+        if (this.options.onhover) this.options.onhover(li, this);
+
+        if (!submenu || (this.curSubmenu == submenu && this.curSubmenu.isOpen))
+            return;
+
+        this.showTimer = setTimeout(function(){
+            self.curSubmenu = submenu;
+            submenu.showSub();
+        }, this.options.showDelay);
+    };
 
     this.onclick = function(item, fromMenu)
     {
         if ($(item).is('.mtt-item-disabled,.mtt-menu-indicator,.mtt-item-hidden')) return;
-        var r = undefined;
+        let r = undefined;
         if (this.options.onclick) r = this.options.onclick(item, fromMenu);
         if (menu.root) menu.root.close();
         else menu.close();
@@ -2837,23 +2870,23 @@ function mttMenu(container, options)
 
     this.hide = function()
     {
-        for(var i in this.submenu) this.submenu[i].hide();
+        for (let i in this.submenu) this.submenu[i].hide();
         clearTimeout(this.showTimer);
         this.$container.hide();
-        this.$container.find('li').removeClass('mtt-menu-item-active');
+        this.clearActiveItem();
         this.isOpen = false;
     };
 
     this.close = function(event)
     {
-        if(!this.isOpen) return;
-        if(event)
+        if (!this.isOpen) return;
+        if (event)
         {
             // ignore if event (click) was on caller or container
-            var t = event.target;
-            if(t == this.caller || (t.mttmenu && t.mttmenu == this.ts)) return;
-            while(t.parentNode) {
-                if(t.parentNode == this.caller || (t.mttmenu && t.mttmenu == this.ts)) return;
+            let t = event.target;
+            if (t === this.caller || (t.mttmenu && t.mttmenu === this.ts)) return;
+            while (t.parentNode) {
+                if (t.parentNode === this.caller || (t.mttmenu && t.mttmenu === this.ts)) return;
                 t = t.parentNode;
             }
         }
@@ -2870,10 +2903,10 @@ function mttMenu(container, options)
 
     this.show = function(caller)
     {
-        if(this.isOpen)
+        if (this.isOpen)
         {
             this.close();
-            if(this.caller && this.caller == caller) return;
+            if (this.caller && this.caller === caller) return;
         }
         $(document).triggerHandler('mousedown.mttmenu'); //close any other open menu
         $(document).on('keydown.mttmenu', function(event) {
@@ -2882,7 +2915,7 @@ function mttMenu(container, options)
             }
         });
         this.caller = caller;
-        var $caller = $(caller);
+        const $caller = $(caller);
 
         // beforeShow trigger
         if(this.options.beforeShow && this.options.beforeShow.call) {
@@ -2903,12 +2936,12 @@ function mttMenu(container, options)
         this.$container.width( Math.ceil(this.$container.width()) );
 
         $caller.addClass('mtt-menu-button-active');
-        var offset = $caller.offset();
-        var containerWidth = this.$container.outerWidth(true);
-        var alignRight = this.options.isRTL ^ this.options.alignRight; //alignRight is not for submenu
+        const offset = $caller.offset();
+        const containerWidth = this.$container.outerWidth(true);
+        const alignRight = this.options.isRTL ^ this.options.alignRight; //alignRight is not for submenu
 
-        var x2 = $(window).width() + $(document).scrollLeft() - containerWidth - 1; // TODO: rtl?
-        var x = alignRight ? offset.left + $caller.outerWidth() - containerWidth : offset.left;
+        const x2 = $(window).width() + $(document).scrollLeft() - containerWidth - 1; // TODO: rtl?
+        let x = alignRight ? offset.left + $caller.outerWidth() - containerWidth : offset.left;
 
         if (x > x2) {
             x = x2; //move left if container overflows right edge
@@ -2919,12 +2952,11 @@ function mttMenu(container, options)
             this.$container.addClass('mtt-left-adjusted');
         }
 
-        var y = offset.top + caller.offsetHeight - 1;
-        if(y + this.$container.outerHeight(true) > $(window).height() + $(document).scrollTop()) y = offset.top - this.$container.outerHeight();
-        if(y<0) y=0;
+        let y = offset.top + caller.offsetHeight - 1;
+        if (y + this.$container.outerHeight(true) > $(window).height() + $(document).scrollTop()) y = offset.top - this.$container.outerHeight();
+        if (y < 0) y = 0;
 
         this.$container.css({ position: 'absolute', top: y, left: x, width:this.$container.width() /*, 'min-width': $caller.width()*/ }).show();
-        var menu = this;
         $(document).on('mousedown.mttmenu', function(e) { menu.close(e) });
         this.isOpen = true;
     };
@@ -2944,11 +2976,11 @@ function mttMenu(container, options)
         //round the width to avoid overflow issues
         this.$container.width( Math.ceil(this.$container.width()) );
 
-        this.$caller.addClass('mtt-menu-item-active');
-        var offset = this.$caller.offset();
-        var containerWidth = this.$container.outerWidth(true);
+        if (this.parent) this.parent.setActiveItem(this.$caller[0]);
+        const offset = this.$caller.offset();
+        const containerWidth = this.$container.outerWidth(true);
 
-        var x = 0;
+        let x = 0;
         if (this.options.isRTL) {
             x = offset.left - containerWidth - 1;
             if (x < 0) {
@@ -2970,9 +3002,9 @@ function mttMenu(container, options)
             }
         }
 
-        var y = offset.top + this.parent.$container.offset().top-this.parent.$container.find('li:first').offset().top;
-        if(y +  this.$container.outerHeight(true) > $(window).height() + $(document).scrollTop()) y = $(window).height() + $(document).scrollTop()- this.$container.outerHeight(true) - 1;
-        if(y<0) y=0;
+        let y = offset.top + this.parent.$container.offset().top-this.parent.$container.find('li:first').offset().top;
+        if (y +  this.$container.outerHeight(true) > $(window).height() + $(document).scrollTop()) y = $(window).height() + $(document).scrollTop()- this.$container.outerHeight(true) - 1;
+        if (y < 0) y = 0;
 
         this.$container.css({ position: 'absolute', top: y, left: x, width:this.$container.width() /*, 'min-width': this.$caller.outerWidth()*/ }).show();
         this.isOpen = true;
@@ -2980,11 +3012,28 @@ function mttMenu(container, options)
 
     this.destroy = function()
     {
-        for(var i in this.submenu) {
+        for (let i in this.submenu) {
             this.submenu[i].destroy();
             delete this.submenu[i];
         }
-        this.$container.find('li').unbind(); //'click mouseenter mouseleave'
+        this.$container.off('.mttmenu');
+        this.$container.find('li').each(function(){
+            if (this.mttMenuSubmenu) this.mttMenuSubmenu = 0;
+        }).unbind(); //'click'
+        this.clearActiveItem();
+        clearTimeout(this.showTimer);
+        clearTimeout(this.hideTimer);
+        this.showTimer = null;
+        this.hideTimer = null;
+        this.curSubmenu = null;
+        if (this.isOpen) {
+            // destroy() can be called for an opened menu (lists are reloaded),
+            // so document handlers bound in show() must be released;
+            // only one (root) menu can be open at a time, so it is safe
+            this.$container.hide();
+            $(document).off('mousedown.mttmenu keydown.mttmenu');
+            this.isOpen = false;
+        }
     };
 };
 
