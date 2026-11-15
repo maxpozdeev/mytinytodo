@@ -2748,64 +2748,68 @@ function tasklistSortUpdated(event, ui)
 };
 
 
-function mttMenu(container, options)
+class mttMenu
 {
-    const menu = this;
-    this.container = document.getElementById(container);
-    this.$container = $(this.container);
-    this.isOpen = false;
-    this.options = options || {};
-    this.submenu = [];
-    this.curSubmenu = null;
-    this.showTimer = null;
-    this.activeItem = null; // li that currently has 'mtt-menu-item-active' class (at most one)
-    this.ts = (new Date).getTime();
-    this.container.mttmenu = this.ts;
+    isOpen = false;
+    submenu = [];
+    curSubmenu = null;
+    showTimer = null;
+    activeItem = null; // li that currently has 'mtt-menu-item-active' class (at most one)
+    constructor(container, options)
+    {
+        this.container = document.getElementById(container);
+        this.$container = $(this.container);
+        this.options = options || {};
+        this.ts = (new Date).getTime();
+        this.container.mttmenu = this.ts;
 
-    if (!this.options.hasOwnProperty('isRTL')) {
-        this.options.isRTL = ($('body').css('direction') == 'rtl') ? true : false;
-    }
-    if (!this.options.hasOwnProperty('alignRight')) {
-        this.options.alignRight = false;
-    }
-    if (!this.options.hasOwnProperty('adjustWidth')) {
-        this.options.adjustWidth = true;
-    }
-    if (!this.options.hasOwnProperty('showDelay')) {
-        this.options.showDelay = 400; //ms, delay before opening a submenu on hover
-    }
-    if (!this.options.hasOwnProperty('hideDelay')) {
-        this.options.hideDelay = 300; //ms, delay before hiding a submenu after hover leaves it
-    }
-
-    this.$container.find('li').click(function(){
-        const r = menu.onclick(this, menu);
-        return (typeof r === 'undefined') ? false : r;
-    })
-    .each(function(){
-
-        let submenu = 0;
-        if ($(this).is('.mtt-menu-indicator'))
-        {
-            submenu = new mttMenu($(this).attr('submenu'), menu.options);
-            submenu.$caller = $(this);
-            submenu.parent = menu;
-            if(menu.root) submenu.root = menu.root;  //!! be careful with circular references
-            else submenu.root = menu;
-            menu.submenu.push(submenu);
-            submenu.ts = submenu.container.mttmenu = submenu.root.ts;
+        if (!this.options.hasOwnProperty('isRTL')) {
+            this.options.isRTL = ($('body').css('direction') == 'rtl') ? true : false;
+        }
+        if (!this.options.hasOwnProperty('alignRight')) {
+            this.options.alignRight = false;
+        }
+        if (!this.options.hasOwnProperty('adjustWidth')) {
+            this.options.adjustWidth = true;
+        }
+        if (!this.options.hasOwnProperty('showDelay')) {
+            this.options.showDelay = 400; //ms, delay before opening a submenu on hover
+        }
+        if (!this.options.hasOwnProperty('hideDelay')) {
+            this.options.hideDelay = 300; //ms, delay before hiding a submenu after hover leaves it
         }
 
-        // keep submenu of the item on the li item itself: the delegated hover handler below needs it
-        this.mttMenuSubmenu = submenu;
-    });
+        this.$container.find('li').click((event) => {
+            const r = this.onclick(event.currentTarget, this);
+            return (typeof r === 'undefined') ? false : r;
+        })
+        .each((index, el) => {
 
-    this.$container.on('mouseenter.mttmenu', 'li', function(){
-        if (this.mttMenuSubmenu === undefined) return;
-        menu.itemHover(this, this.mttMenuSubmenu);
-    });
+            let submenu = 0;
+            const $el = $(el);
+            if ($el.is('.mtt-menu-indicator'))
+            {
+                submenu = new mttMenu($el.attr('submenu'), this.options);
+                submenu.$caller = $el;
+                submenu.parent = this;
+                if (this.root) submenu.root = this.root;  //!! be careful with circular references
+                else submenu.root = this;
+                this.submenu.push(submenu);
+                submenu.ts = submenu.container.mttmenu = submenu.root.ts;
+            }
 
-    this.setActiveItem = function(li)
+            // keep submenu of the item on the li item itself: the delegated hover handler below needs it
+            el.mttMenuSubmenu = submenu;
+        });
+
+        this.$container.on('mouseenter.mttmenu', 'li', (event) => {
+            const el = event.currentTarget;
+            if (el.mttMenuSubmenu === undefined) return;
+            this.itemHover(el, el.mttMenuSubmenu);
+        });
+    }
+
+    setActiveItem(li)
     {
         if (this.activeItem === li) return;
         this.clearActiveItem();
@@ -2813,19 +2817,17 @@ function mttMenu(container, options)
             this.activeItem = li;
             $(li).addClass('mtt-menu-item-active');
         }
-    };
+    }
 
-    this.clearActiveItem = function()
+    clearActiveItem()
     {
         if (!this.activeItem) return;
         $(this.activeItem).removeClass('mtt-menu-item-active');
         this.activeItem = null;
-    };
+    }
 
-    this.itemHover = function(li, submenu)
+    itemHover(li, submenu)
     {
-        const self = this;
-
         // do not drop highlight of the item which submenu is already opened
         if (this.activeItem !== li) this.clearActiveItem();
         clearTimeout(this.showTimer);
@@ -2841,7 +2843,7 @@ function mttMenu(container, options)
         {
             this.clearActiveItem();
             const curSubmenu = this.curSubmenu;
-            curSubmenu.hideTimer = setTimeout(function(){
+            curSubmenu.hideTimer = setTimeout(() => {
                 curSubmenu.hide();
                 curSubmenu.hideTimer = null;
             }, this.options.hideDelay);
@@ -2852,32 +2854,32 @@ function mttMenu(container, options)
         if (!submenu || (this.curSubmenu == submenu && this.curSubmenu.isOpen))
             return;
 
-        this.showTimer = setTimeout(function(){
-            self.curSubmenu = submenu;
+        this.showTimer = setTimeout(() => {
+            this.curSubmenu = submenu;
             submenu.showSub();
         }, this.options.showDelay);
-    };
+    }
 
-    this.onclick = function(item, fromMenu)
+    onclick(item, fromMenu)
     {
         if ($(item).is('.mtt-item-disabled,.mtt-menu-indicator,.mtt-item-hidden')) return;
         let r = undefined;
         if (this.options.onclick) r = this.options.onclick(item, fromMenu);
-        if (menu.root) menu.root.close();
-        else menu.close();
+        if (this.root) this.root.close();
+        else this.close();
         return r;
-    };
+    }
 
-    this.hide = function()
+    hide()
     {
         for (let i in this.submenu) this.submenu[i].hide();
         clearTimeout(this.showTimer);
         this.$container.hide();
         this.clearActiveItem();
         this.isOpen = false;
-    };
+    }
 
-    this.close = function(event)
+    close(event)
     {
         if (!this.isOpen) return;
         if (event)
@@ -2899,9 +2901,9 @@ function mttMenu(container, options)
         if(this.options.onClose && this.options.onClose.call) {
             this.options.onClose.call(this);
         }
-    };
+    }
 
-    this.show = function(caller)
+    show(caller)
     {
         if (this.isOpen)
         {
@@ -2909,9 +2911,9 @@ function mttMenu(container, options)
             if (this.caller && this.caller === caller) return;
         }
         $(document).triggerHandler('mousedown.mttmenu'); //close any other open menu
-        $(document).on('keydown.mttmenu', function(event) {
+        $(document).on('keydown.mttmenu', (event) => {
             if (event.keyCode == 27) {
-                menu.close(); //close the menu on Esc pressed
+                this.close(); //close the menu on Esc pressed
             }
         });
         this.caller = caller;
@@ -2957,11 +2959,11 @@ function mttMenu(container, options)
         if (y < 0) y = 0;
 
         this.$container.css({ position: 'absolute', top: y, left: x, width:this.$container.width() /*, 'min-width': $caller.width()*/ }).show();
-        $(document).on('mousedown.mttmenu', function(e) { menu.close(e) });
+        $(document).on('mousedown.mttmenu', (e) => this.close(e));
         this.isOpen = true;
-    };
+    }
 
-    this.showSub = function()
+    showSub()
     {
         // adjust width
         if (this.options.adjustWidth) {
@@ -3008,17 +3010,17 @@ function mttMenu(container, options)
 
         this.$container.css({ position: 'absolute', top: y, left: x, width:this.$container.width() /*, 'min-width': this.$caller.outerWidth()*/ }).show();
         this.isOpen = true;
-    };
+    }
 
-    this.destroy = function()
+    destroy()
     {
         for (let i in this.submenu) {
             this.submenu[i].destroy();
             delete this.submenu[i];
         }
         this.$container.off('.mttmenu');
-        this.$container.find('li').each(function(){
-            if (this.mttMenuSubmenu) this.mttMenuSubmenu = 0;
+        this.$container.find('li').each((index, el) => {
+            if (el.mttMenuSubmenu) el.mttMenuSubmenu = 0;
         }).unbind(); //'click'
         this.clearActiveItem();
         clearTimeout(this.showTimer);
@@ -3034,8 +3036,8 @@ function mttMenu(container, options)
             $(document).off('mousedown.mttmenu keydown.mttmenu');
             this.isOpen = false;
         }
-    };
-};
+    }
+}
 
 
 function taskContextMenu(el, id)
