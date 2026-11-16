@@ -773,21 +773,3 @@ function mtt_mail(string $to, string $subject, string $message)
     MTTVars::$mailerLastError = '';
     return true;
 }
-
-function mtt_debug_print_urls()
-{
-    $a = [
-        'url' => get_unsafe_mttinfo('url'),
-        'uri' => get_unsafe_mttinfo('uri'),
-        'mtt_url' => get_unsafe_mttinfo('mtt_url'),
-        'mtt_uri' => get_unsafe_mttinfo('mtt_uri'),
-        'REQUEST_URI' => $_SERVER['REQUEST_URI'] ?? '<unset>',
-        'DOCUMENT_ROOT' => $_SERVER['DOCUMENT_ROOT'] ?? '<unset>',
-        'SCRIPT_FILENAME' => $_SERVER['SCRIPT_FILENAME'] ?? '<unset>',
-        'SCRIPT_NAME' => $_SERVER['SCRIPT_NAME'] ?? '<unset>',
-        'PATH_INFO' => $_SERVER['PATH_INFO'] ?? '<unset>',
-        'ORIG_PATH_INFO' => $_SERVER['ORIG_PATH_INFO'] ?? '<unset>',
-        'HTTP_HOST' => $_SERVER['HTTP_HOST'] ?? '<unset>',
-    ];
-    print_r($a);
-}
