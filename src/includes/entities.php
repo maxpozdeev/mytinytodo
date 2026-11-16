@@ -44,6 +44,7 @@ abstract class AbstractTaskList extends AbstractEntity implements JsonApiSeriali
     abstract function setSort(int $sort);
     abstract function setIsHidden(bool $hidden);
     const defaultSort = 103; # by date created desc (latest on top)
+    const defaultShowCompl = 0;
 }
 
 class TaskList extends AbstractTaskList
@@ -190,6 +191,15 @@ class TaskList extends AbstractTaskList
         if (!$public) {
             $feedKey = (string) ($this->extra['feedKey'] ?? '');
         }
+
+        if ($public)
+            return array(
+                'id' => $this->id ?? '',
+                'name' => htmlspecialchars($this->name ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+                'sort' => static::defaultSort,
+                'published' => $this->isPublished ? 1 : 0,
+                'showCompl' => static::defaultShowCompl,
+        );
 
         return array(
             'id' => $this->id ?? '',

@@ -1837,7 +1837,7 @@ function setSort(v, init)
         return;
     }
     curList.sort = v;
-    loadTasks({saveSort:1});
+    loadTasks({ saveSort: flag.readOnly ? 0 : 1 });
 };
 
 
@@ -3417,7 +3417,9 @@ function hideList(listId)
     }
 
     const order = tabLists.updateOrder();
-    mtt.db.request('setHideList', { list: listId, hide: 1, order: order });
+    if (!flag.readOnly) {
+        mtt.db.request('setHideList', { list: listId, hide: 1, order: order });
+    }
     mtt.doAction('listHidden', tabLists.get(listId));
 
     if (listIdToSelect) {
@@ -3646,6 +3648,10 @@ function updateAccessStatus()
         // remove some tab menu items
         $('#btnRenameList,#btnDeleteList,#btnClearCompleted,#btnPublish').remove();
         $('#seltasksbtn').remove();
+        $('#sortByHand').remove();
+        $('#btnFeedKey').prev().remove().addBack().remove(); //with menu delimeter
+        $('#btnShowFeedKey').remove();
+        $('#slmenucontainer li.list-id--1').addClass('mtt-item-disabled');
     }
     else {
         flag.readOnly = false;
