@@ -1005,6 +1005,17 @@ li.task-row.task-completed .task-note-block .task-note { text-decoration:line-th
 .form-row div.h {
   margin-bottom:3px;
 }
+.form-row-header-actions .h {
+  display: flex;
+  align-items: baseline;
+}
+.form-row-header-actions .h .note-toggle-action {
+  margin-left: auto;
+  cursor: pointer;
+  font-weight: normal;
+  text-decoration: underline dashed;
+}
+
 .form-input {
   color: var(--color-text-reduced);
 }
@@ -1021,6 +1032,15 @@ textarea.form-input.inmax {
   font-family: ui-monospace,Consolas,"SF Mono",Menlo,"Liberation Mono",monospace;
   white-space: pre;
   padding: 5px;
+}
+#taskedit_note_preview {
+  box-sizing:border-box;
+  min-height:280px;
+  padding:10px;
+  border:1px solid var(--color-border-default);
+  border-radius: 2px;
+  overflow:auto;
+  word-wrap:break-word;
 }
 .alltags-cell { width:1%; white-space:nowrap; padding-left:5px; }
 #page_taskedit.mtt-inadd .mtt-inedit { display:none; }
@@ -1066,8 +1086,7 @@ textarea.form-input.inmax {
 #page_taskviewer .title {
   word-break: break-word;
 }
-#page_taskviewer .note {
-  line-height: 1.3;
+#page_taskviewer .task-note {
   display: block;
   white-space: normal;
   word-wrap: break-word;
@@ -1079,7 +1098,7 @@ textarea.form-input.inmax {
 #page_taskviewer.no-note .no-note {
   display: block;
 }
-#page_taskviewer.no-note .note {
+#page_taskviewer.no-note .task-note {
   display: none;
 }
 #page_taskviewer .property.tags .content {
@@ -1798,7 +1817,7 @@ li.mtt-item-hidden { display:none; }
   #page_taskviewer .container .right .form-bottom-buttons .mtt-back-button {
     display: block;
   }
-  #page_taskviewer .note,
+  #page_taskviewer .task-note,
   #page_taskviewer .no-note {
     padding-bottom: 1rem;
     margin-bottom: 1rem;

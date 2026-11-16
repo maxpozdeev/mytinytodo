@@ -120,9 +120,14 @@ $().ready(function(){
   <div class="h"><?php _e('task');?></div>
   <input type="text" name="task" value="" class="inmax form-input" maxlength="250" autocomplete="off">
 </div>
-<div class="form-row">
-  <div class="h"><?php _e('note');?></div>
-  <textarea name="note" class="inmax form-input" spellcheck="false"></textarea>
+<div class="form-row form-row-header-actions">
+  <div class="h">
+    <?php _e('note');?>
+    <span id="taskedit_note_edit_btn" class="note-toggle-action" style="display:none"><?php _e('action_edit');?></span>
+    <span id="taskedit_note_preview_btn" class="note-toggle-action"><?php _e('action_preview');?></span>
+  </div>
+  <textarea id="taskedit_note_editor" name="note" class="inmax form-input" spellcheck="false"></textarea>
+  <div id="taskedit_note_preview" class="task-note markdown-note" style="display:none;"></div>
 </div>
 <div class="form-row">
   <div class="h"><?php _e('tags');?></div>
@@ -154,7 +159,7 @@ $().ready(function(){
   <div class="container">
     <div class="left">
       <div class="no-note"><?php _e('no_note'); ?></div>
-      <div class="note markdown-note"></div>
+      <div class="task-note markdown-note"></div>
     </div>
     <div class="right">
       <div class="property prio"><?php _e('priority');?>: <span class="content"></span> </div>

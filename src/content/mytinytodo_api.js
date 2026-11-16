@@ -299,6 +299,19 @@ MytinytodoAjaxApi.prototype = {
         });
     },
 
+    previewNote(params, callback) {
+        $.ajax({
+            url: mytinytodo.apiUrl + 'tasks/previewNote',
+            method: 'POST',
+            contentType : 'application/json',
+            data: JSON.stringify({
+                note: params.note
+            }),
+            success: callback,
+            dataType: 'json'
+        });
+    },
+
     newTaskCounter(params, callback) {
         fetch(mytinytodo.apiUrl + 'tasks/newTaskCounter', {
             method: 'POST',

@@ -700,6 +700,24 @@ class ApiHttpTest extends TestCase
         $this->assertStatus(200, $r);
         $this->assertArrayHasKey('title', $r['json']);
 
+        $r = $this->api('POST', '/tasks/previewNote', ['note' => '**bold** and #123']);
+        $this->assertStatus(200, $r);
+        $this->assertTrue($r['json']['ok'] ?? false);
+        $this->assertSame('markdown', $r['json']['markup'] ?? null);
+        $html = (string)($r['json']['html'] ?? '');
+        $this->assertStringContainsString('<strong>bold</strong>', $html);
+        $this->assertStringContainsString('class="mtt-link-to-task"', $html);
+
+        $r = $this->api('POST', '/tasks/previewNote', ['note' => '<script>alert(1)</script>']);
+        $this->assertStatus(200, $r);
+        $html = (string)($r['json']['html'] ?? '');
+        $this->assertStringNotContainsString('<script>', $html);
+        $this->assertStringContainsString('&lt;script&gt;', $html);
+
+        $r = $this->api('POST', '/tasks/previewNote', ['note' => '']);
+        $this->assertStatus(200, $r);
+        $this->assertSame('', $r['json']['html'] ?? null);
+
         $r = $this->api('POST', '/tasks/newTaskCounter', [
             'list' => self::ALICE_PRIVATE_LIST,
             'later' => 0,
@@ -710,6 +728,14 @@ class ApiHttpTest extends TestCase
         ]);
         $this->assertStatus(200, $r);
         $this->assertTrue($r['json']['ok'] ?? false);
+    }
+
+    public function testTaskPreviewNoteRequiresLogin(): void
+    {
+        $this->bootstrapGuestSession();
+
+        $r = $this->api('POST', '/tasks/previewNote', ['note' => '**bold**']);
+        $this->assertDenied($r);
     }
 
 

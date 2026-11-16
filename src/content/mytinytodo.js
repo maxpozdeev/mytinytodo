@@ -22,7 +22,8 @@ var flag = {
     dontChangeHistoryOnce: false,
     showTagsFromAllLists: false,
     selTasksTagsChanged: false,
-    selTasksTagsMenuReopening: false
+    selTasksTagsMenuReopening: false,
+    notePreviewSeq: 0
 };
 var taskCnt = { total:0, totalOnPage:0, past: 0, today:0, soon:0 };
 const tabLists = {
@@ -750,6 +751,13 @@ const mtt = window.mytinytodo = {
         $('#taskviewer_edit_btn').on('click', function() {
             const id = document.getElementById('page_taskviewer').dataset.id;
             editTask(id);
+        });
+
+        $('#taskedit_note_edit_btn').on('click', function() {
+            toggleNotePreview(0);
+        });
+        $('#taskedit_note_preview_btn').on('click', function() {
+            toggleNotePreview(1);
         });
 
         if (this.options.touchDevice) {
@@ -2228,7 +2236,7 @@ function fillTaskViewer(id)
     $('#page_taskviewer').attr('data-id', item.id);
     $('#taskviewer_id').text('#' + item.id).attr('href', mtt.urlForTask(item.id));
     $('#page_taskviewer .title').html(item.title);
-    $('#page_taskviewer .note').html(item.note);
+    $('#page_taskviewer .task-note').html(item.note);
     $('#page_taskviewer .prio .content').html(preparePrio(item.prio,item.id));
     $('#page_taskviewer .due .content').html(item.duedate);
     $('#page_taskviewer .tags .content').html(prepareTagsStr(item, ''));
@@ -2329,6 +2337,8 @@ function showEditForm(isAdd)
     });
 
     flag.editFormChanged = false;
+    toggleNotePreview(0);
+    $('#taskedit_note_preview').empty();
     mtt.pageSet('taskedit');
     if (isAdd) form.elements.task.focus();
 };
@@ -2373,6 +2383,37 @@ function saveTask(form)
     flag.tagsChanged = true;
     return false;
 };
+
+function toggleNotePreview(show)
+{
+    const $preview = $('#taskedit_note_preview');
+    if (show) {
+        const note = document.getElementById('taskedit_form').note.value;
+        $('#taskedit_note_preview_btn').hide();
+        $('#taskedit_note_edit_btn').show();
+        $('#taskedit_note_editor').hide();
+        $preview.show();
+        if (note == '') {
+            $preview.text(mtt.lang.get('no_note'));
+            return;
+        }
+        const reqId = ++flag.notePreviewSeq;
+        mtt.db.request('previewNote', { note: note }, function(json) {
+            // ignore outdated responses and responses after leaving the preview mode
+            if (reqId !== flag.notePreviewSeq) return;
+            if (!json || typeof json.html !== 'string') return;
+            $preview.html(json.html);
+        });
+    }
+    else {
+        flag.notePreviewSeq++; // invalidate a pending request
+        $('#taskedit_note_preview_btn').show();
+        $('#taskedit_note_edit_btn').hide();
+        $('#taskedit_note_editor').show();
+        $preview.hide();
+    }
+}
+
 
 function toggleEditAllTags(show)
 {

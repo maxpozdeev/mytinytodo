@@ -152,6 +152,7 @@
     "action_copy": "Копировать в",
     "action_ok": "ОК",
     "action_cancel": "Отмена",
+    "action_preview": "Предпросмотр",
     "action_mark_completed": "Отметить как Выполнено",
     "action_mark_open": "Отметить как Открыто",
     "action": "Действие",

@@ -83,6 +83,9 @@ $endpoints = array(
     '/tasks/parseTitle' => [
         'POST' => [ TasksController::class , 'postParseTitle' ],
     ],
+    '/tasks/previewNote' => [
+        'POST' => [ TasksController::class , 'postPreviewNote' ],
+    ],
     '/tasks/newTaskCounter' => [
         'POST' => [ TasksController::class , 'postNewTaskCounter' ],
     ],

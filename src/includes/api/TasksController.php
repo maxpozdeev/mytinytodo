@@ -593,6 +593,27 @@ class TasksController extends ApiController {
     }
 
 
+    /**
+     * Convert a note from the markup to HTML for the note preview in the task edit form.
+     * @return void
+     * @throws Exception
+     */
+    function postPreviewNote(): void
+    {
+        checkWriteAccess();
+        $note = $this->req->jsonBody['note'] ?? '';
+        if (!is_string($note)) {
+            $this->response->errorJsonContent("Malformed field: `note`", 400);
+            return;
+        }
+        $this->response->data = [
+            'ok' => true,
+            'html' => noteMarkup($note, false),
+            'markup' => Config::get('markup') == 'v1' ? 'v1' : 'markdown',
+        ];
+    }
+
+
     function postNewTaskCounter(): void
     {
         $curList = (int) ($this->req->jsonBody['list'] ?? 0);

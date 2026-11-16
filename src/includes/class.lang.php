@@ -141,6 +141,7 @@ class Lang
             'f_today',
             'f_soon',
             'alltasks',
+            'no_note',
             'set_header',
             'sortShort',
             "sortShortByHand",

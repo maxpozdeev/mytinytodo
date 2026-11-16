@@ -152,6 +152,7 @@
     "action_copy": "Copy to",
     "action_ok": "OK",
     "action_cancel": "Cancel",
+    "action_preview": "Preview",
     "action_mark_completed": "Mark as Completed",
     "action_mark_open": "Mark as Open",
     "action": "Action",
