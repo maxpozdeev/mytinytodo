@@ -1307,7 +1307,9 @@ const mtt = window.mytinytodo = {
         prepareTagHtml(tagId, tag, classes)
         {
             // tag is not escaped
-            return `<span class="${classes.join(' ')} mtt-filter-close" tagid="${tagId}">${escapeHtml(tag)}<span class="tag-filter-btn"></span></span>`;
+            return `<span class="${classes.join(' ')} mtt-filter-close" tagid="${tagId}">` +
+                   `<span class="tag-filter-text">${escapeHtml(tag)}</span>` +
+                   `<span class="tag-filter-btn"></span></span>`;
         }
     },
 

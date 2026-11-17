@@ -693,7 +693,7 @@ select.form-input {
 
 /* Tag Toolbar */
 #mtt-tag-toolbar { font-size:1.0rem; font-weight:normal; margin-top:0.5rem; line-height:1.5rem; display:flex; }
-.tag-toolbar-content { flex:auto; margin-bottom:-3px; }
+.tag-toolbar-content { flex:auto; min-width:0; margin-bottom:-3px; }
 .tag-toolbar-close { flex-shrink:0; }
 .tag-toolbar-header { font-weight:normal; }
 .tag-filter {
@@ -707,14 +707,23 @@ select.form-input {
   padding:0.1rem 0.5rem;
   margin-bottom:3px;
   cursor:pointer;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 .tag-filter-exclude { text-decoration:line-through; }
+.tag-filter-text {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
 .mtt-filter-header { font-weight:bold; margin-right:.33rem; }
 .tag-filter-btn {
   margin-left:3px;
   display:inline-block;
   width:1em; height:1em; /* em! */
   min-width:1em;
+  flex-shrink: 0;
   mask: var(--svg-closetag) no-repeat; -webkit-mask: var(--svg-closetag) no-repeat;
   background-color: var(--color-btn-reduced);
   transition: background-color 0.1s ease-in;
@@ -1244,6 +1253,8 @@ textarea.form-input.inmax {
   text-overflow: ellipsis;
   font-size: 1em;
   font-weight: normal;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 #alltags .tag {
   margin-right: 3px;
