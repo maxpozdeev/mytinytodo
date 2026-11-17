@@ -86,14 +86,6 @@ fi
 
 rm -rf src/includes/vendor/erusev/parsedown/.github
 
-# clear extensions
-mkdir src/ext2
-cp src/ext/.htaccess src/ext2/
-cp src/ext/index.html src/ext2/
-rm -rf src/ext
-mv src/ext2 src/ext
-
-
 mv src mytinytodo
 tar --no-xattrs -czf mytinytodo.tar.gz mytinytodo
 if [ ! -f mytinytodo.tar.gz ]; then
