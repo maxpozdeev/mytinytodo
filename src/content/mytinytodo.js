@@ -21,6 +21,7 @@ var flag = {
     firstLoad: true,
     dontChangeHistoryOnce: false,
     showTagsFromAllLists: false,
+    showAllTagsInEditor: false,
     selTasksTagsChanged: false,
     selTasksTagsMenuReopening: false,
     notePreviewSeq: 0
@@ -2288,7 +2289,6 @@ function editTask(id)
     else {
         $('#taskedit_info .date-completed').hide();
     }
-    toggleEditAllTags(0);
     showEditForm();
     return false;
 };
@@ -2302,7 +2302,6 @@ function clearEditForm()
     form.duedate.value = '';
     form.prio.value = '0';
     form.id.value = '';
-    toggleEditAllTags(0);
 };
 
 function showEditForm(isAdd)
@@ -2341,6 +2340,7 @@ function showEditForm(isAdd)
     toggleNotePreview(0);
     $('#taskedit_note_preview').empty();
     mtt.pageSet('taskedit');
+    toggleEditAllTags(flag.showAllTagsInEditor);
     if (isAdd) form.elements.task.focus();
 };
 
@@ -2418,10 +2418,12 @@ function toggleNotePreview(show)
 
 function toggleEditAllTags(show)
 {
+    flag.showAllTagsInEditor = !!show;
+    $('#alltags').hide();
     if (show)
     {
-        if (curList.id == -1) {
-            const taskId = document.getElementById('taskedit_form').id.value;
+        const taskId = document.getElementById('taskedit_form').id.value;
+        if (curList.id == -1 && taskId != '') {
             loadTags(taskList[taskId].listId, fillEditAllTags);
         }
         else if (flag.tagsChanged)
@@ -2431,7 +2433,6 @@ function toggleEditAllTags(show)
         showhide($('#alltags_hide'), $('#alltags_show'));
     }
     else {
-        $('#alltags').hide();
         showhide($('#alltags_show'), $('#alltags_hide'))
     }
 };
