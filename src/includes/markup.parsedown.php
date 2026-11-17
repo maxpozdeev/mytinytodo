@@ -73,7 +73,7 @@ class MTTParsedown extends Parsedown
         if (preg_match('/^#(\d+)/', $excerpt['text'], $matches))
         {
             $attrs = array(
-                'href' => get_mttinfo('url'). '?task='. $matches[1],
+                'href' => routerMakeUserUrl('task/'. $matches[1]),  # or routerGetUserGoPrefix(). 'task='. $matches[1],
                 'target' => '_blank',
                 'rel' => 'noopener',
             );

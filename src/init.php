@@ -596,20 +596,21 @@ function routerMakeUserUrl(string $path = '', string $user = ''): string
     $prefix = routerMakeUrl('');
     if ($path !== '' && $path[0] !== '/')
         $path = '/'. $path;
-    if ($user == '')
-        $user = username();
+    if ($user === '') {
+        if (isset(MTTVars::$requestedUsername) && MTTVars::$requestedUsername !== '')
+            $user = MTTVars::$requestedUsername;
+        else
+            $user = username();
+    }
     return $prefix . '@'. $user. $path;
 }
 
-function routerGetGoPrefix()
+
+function routerGetUserGoPrefix(string $user = ''): string
 {
-    $prefix = get_unsafe_mttinfo('uri');
-    if (!MTT_USE_REWRITE) {
-        return $prefix. '?';
-    }
-    else {
-        return $prefix .= 'go?';
-    }
+    $prefix = routerMakeUserUrl('/go', $user);
+    $prefix .= (false === $queryPos = strpos($prefix, '?')) ? '?' : '&';
+    return $prefix;
 }
 
 function logAndDie(string $userText, ?string $errText = null)

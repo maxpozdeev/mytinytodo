@@ -2255,7 +2255,8 @@ function viewTask(id)
     const item = fillTaskViewer(id);
     if (!item) return;
     mtt.pageSet('taskviewer');
-    updateHistoryState({ task: item.id, list: item.listId }, '#task/'+item.id, item.titleText + ' - ' + curList.nameText + ' - ' + mtt.options.title);
+    const hash = '#list/' + (curList.id == -1 ? 'alltasks' : curList.id) + '/task/' + item.id;
+    updateHistoryState({ task: item.id, list: item.listId }, hash, item.titleText + ' - ' + curList.nameText + ' - ' + mtt.options.title);
 }
 
 

@@ -94,14 +94,17 @@ function getIndexPath(): string
 }
 
 /*
-    MTTVars::$requestedUserId and MTTVars::$requestedUsername are already set
+    MTTVars::$requestedUserId and MTTVars::$requestedUsername must be already set
 */
 function handleUserGoRoute(?string $queryString = null)
 {
+    if (!isset(MTTVars::$requestedUserId) || !MTTVars::$requestedUserId) {
+        return page_404();
+    }
     if ($queryString === null)
         $queryString = $_SERVER['QUERY_STRING'] ?? '';
 
-    if ($queryString == '')
+    if ($queryString === '')
         redirectExit(routerMakeUserUrl());
 
     parse_str($queryString, $q);
@@ -120,14 +123,15 @@ function handleUserGoRoute(?string $queryString = null)
             $hash[] = (string)$q['search'];
             unset($q['search']);
         }
-        redirectWithHashRoute($hash, $q);
+        redirectWithHashRoute($hash);
     }
     else if (isset($q['task'])) {
         $listRepo = new ListRepo(DBConnection::instance());
         $listId = $listRepo->findListIdByTaskIdAndUserId((int)$q['task'], MTTVars::$requestedUserId);
         if ($listId) {
-            $h = [ 'list', $listId, 'search', '#'. (int)$q['task']];
-            redirectWithHashRoute($h);
+            $hash = [ 'list', $listId, 'search', '#'. (int)$q['task']];
+            unset($q['task']);
+            redirectWithHashRoute($hash);
         }
         else {
             return page_404();
@@ -135,11 +139,9 @@ function handleUserGoRoute(?string $queryString = null)
     }
 }
 
-function redirectWithHashRoute(array $hash, array $q = [])
+function redirectWithHashRoute(array $hash)
 {
-    $url = get_unsafe_mttinfo('url');
-    $query = http_build_query($q);
-    if ($query != '') $url .= "?$query";
+    $url = routerMakeUserUrl();
     if (count($hash) > 0) {
         $encodedHash = implode("/", array_map("rawurlencode", $hash));
         $url .= "#$encodedHash";
@@ -167,7 +169,7 @@ function jsOptions()
         "mttUrl" => get_mttinfo('mtt_uri'),
         "homeUrl" => $homeUrl,
         "apiUrl" =>  htmlspecialchars(apiMakeUrl('')),
-        "goPrefix" => htmlspecialchars(routerGetGoPrefix()),
+        "goPrefix" => htmlspecialchars(routerGetUserGoPrefix()),
         "routerPrefix" => htmlspecialchars(routerMakeUrl('')),
         "tasksUrl" => get_mttinfo('tasks_uri'),
         "needAuth" => need_auth() ? true : false,

@@ -97,6 +97,8 @@ class ApiRequest
         $this->targetUserId = $id;
         $this->targetExplicit = ($id !== null);
         $this->targetUsername = $username;
+        MTTVars::$requestedUserId = $id;
+        MTTVars::$requestedUsername = $username;
     }
 
     function resetTargetUser(): void

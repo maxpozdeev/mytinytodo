@@ -41,7 +41,7 @@ class MTTCommonmarkWrapper implements MTTMarkdownInterface
                         if (!($mention instanceof Mention)) {
                             return null;
                         }
-                        $mention->setUrl(\sprintf(get_mttinfo('url'). "?task=%d", $mention->getIdentifier()));
+                        $mention->setUrl(\sprintf(\routerMakeUserUrl('task/%d'), $mention->getIdentifier()));
                         if (!$this->toExternal) {
                             $mention->data->append('attributes/class', 'mtt-link-to-task');
                             $mention->data->append('attributes/data-target-id', $mention->getIdentifier());
