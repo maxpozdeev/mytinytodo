@@ -27,6 +27,13 @@ if (need_auth() && !isset($dontStartSession) && !Config::$noDatabase) {
         setup_and_start_session();
     }
 }
+else if (!need_auth()) {
+    MTTVars::$isStateless = true;
+}
+if (!isset(MTTVars::$isStateless)) {
+    MTTVars::$isStateless = false;
+}
+
 if (!isset($dontStartSession)) {
     Config::loadUserConfig();
 }
@@ -261,7 +268,7 @@ function access_token(): string
  */
 function check_token()
 {
-    if (MTTVars::$isStateless) {
+    if (MTTVars::$isStateless && need_auth()) {
         if (MTTVars::$userId) {
             return;
         }
@@ -288,19 +295,22 @@ function check_token()
 function update_token(): string
 {
     $token = generateUUID();
-    if ( need_auth() ) {
+    if ( need_auth() )
+    {
         $_SESSION['token'] = $token;
+
+        # Clear mtt-token cookie
         if (isset($_COOKIE['mtt-token'])) {
-             //clear mtt-token cookie
              setcookie('mtt-token', '', [
                 'path' => url_dir(get_unsafe_mttinfo('mtt_url')),
                 'httponly' => true,
                 'samesite' => 'lax',
-                'expires' => time() - 3600,
+                'expires' => time() - 36000,
             ]);
         }
     }
-    else {
+    else
+    {
         setcookie('mtt-token', $token, [
             'path' => url_dir(get_unsafe_mttinfo('mtt_url')),
             'httponly' => true,

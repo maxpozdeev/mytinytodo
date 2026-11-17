@@ -154,6 +154,10 @@ class Config
             $user->setLastVisit(time());
             $userRepo->updateUserProperties($user);
         }
+        else {
+            MTTVars::$user = 'Admin';
+            MTTVars::$username = 'admin';
+        }
 
         $j = UserConfig::requestUserDomain($userId, static::userDomain);
         if (is_null($j))
