@@ -108,14 +108,17 @@ class ApiRequest
 
     static function getApiPath(): string
     {
-        if (!MTT_USE_REWRITE) {
-            if (isset($_GET['_path'])) {
-                $path = $_GET['_path'];
-                if ($path === '' || $path[0] !== '/')
-                    return '/'. $path;
-                return $path;
+        # _path is always supported, even when URL rewriting is enabled
+        $pathFromQuery = null;
+        if (isset($_GET['_path']) && is_string($_GET['_path'])) {
+            $pathFromQuery = $_GET['_path'];
+            if ($pathFromQuery === '' || $pathFromQuery[0] !== '/') {
+                $pathFromQuery = '/'. $pathFromQuery;
             }
-            return '/';
+        }
+
+        if (!MTT_USE_REWRITE) {
+            return $pathFromQuery ?? '/';
         }
 /*
         $docRoot = rtrim($_SERVER['DOCUMENT_ROOT'], '/');                       # e.g. /var/www/html
@@ -126,10 +129,14 @@ class ApiRequest
         $uri = apiMakeUrl('', null, false);
         $path = $_SERVER['REQUEST_URI'] ?? '';
         if (false !== $p = strpos($path, '?')) {
-            $path = substr($path, 0, $p);
+            $path = substr($path, 0, $p); # remove query string
         }
         if ($path !== '' && 0 === strncmp($path, $uri, strlen($uri))) {
-            $path = substr($path, strlen($uri) -1);
+            return substr($path, strlen($uri) -1); # if request have the api prefix when pretty links are enabled
+        }
+        # fallback. api.php?_path=/... is also supported when URL rewriting is enabled
+        if ($pathFromQuery !== null) {
+            return $pathFromQuery;
         }
         return $path;
     }
