@@ -227,6 +227,7 @@
     "set_mailfromname": "Mail From Name",
     "set_mailfromname_descr": "Use this name for sender's title.",
     "set_general": "General",
+    "set_general_default": "User defaults",
     "set_users": "Users",
     "set_adduser": "Add user",
     "set_edituser": "Edit user",

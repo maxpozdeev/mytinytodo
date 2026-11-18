@@ -20,40 +20,82 @@ if (isset($_POST['save']))
     $config = AppConfig::requestDictionary(Config::appDomain, Config::$appSchema);
     $allSaved = true;
 
-    $config->set('lang', _post('lang'));
-    $config->set('smartsyntax', (int)_post('smartsyntax'));
-    // Do not set invalid timezone
-    try {
-        $tz = trim(_post('timezone'));
-        $testTZ = new DateTimeZone($tz); //will throw Exception on invalid timezone
-        $config->set('timezone', $tz);
+    # There are several forms on the page, so update only the settings that were submitted
+
+    if (array_key_exists('lang', $_POST)) {
+        $config->set('lang', _post('lang'));
     }
-    catch (Exception $e) {
-        $allSaved = false;
+    if (array_key_exists('smartsyntax', $_POST)) {
+        $config->set('smartsyntax', (int)_post('smartsyntax'));
     }
-    $config->set('title', removeNewLines(trim(_post('title'))) );
-    $config->set('autotag', (int)_post('autotag'));
-    $config->set('markup', (int)_post('markdown') == 0 ? 'v1' : 'markdown');
-    $config->set('firstdayofweek', (int)_post('firstdayofweek'));
-    $config->set('clock', (int)_post('clock'));
-    $config->set('dateformat', removeNewLines(_post('dateformat')) );
-    $config->set('dateformat2', removeNewLines(_post('dateformat2')) );
-    $config->set('dateformatshort', removeNewLines(_post('dateformatshort')) );
-    $config->set('showdate', (int)_post('showdate'));
-    $config->set('showtime', (int)_post('showtime'));
-    $config->set('showdateInline', (int)_post('showdateInline'));
-    $config->set('exactduedate', (int)_post('exactduedate'));
-    $config->set('appearance', removeNewLines(trim(_post('appearance'))) );
-    $config->set('newTaskCounter', (int)_post('newTaskCounter'));
-    $config->set('newTaskCounterIcon', (int)_post('newTaskCounterIcon'));
-    $mailFrom = trim(_post('mailFrom'));
-    if ($mailFrom === '' || isValidEmail($mailFrom)) {
-        $config->set('mailFrom', $mailFrom);
+    if (array_key_exists('timezone', $_POST)) {
+        // Do not set invalid timezone
+        try {
+            $tz = trim(_post('timezone'));
+            $testTZ = new DateTimeZone($tz); //will throw Exception on invalid timezone
+            $config->set('timezone', $tz);
+        }
+        catch (Exception $e) {
+            $allSaved = false;
+        }
     }
-    else {
-        $allSaved = false;
+    if (array_key_exists('title', $_POST)) {
+        $config->set('title', removeNewLines(trim(_post('title'))) );
     }
-    $config->set('mailFromName', removeNewLines(trim(_post('mailFromName'))) );
+    if (array_key_exists('autotag', $_POST)) {
+        $config->set('autotag', (int)_post('autotag'));
+    }
+    if (array_key_exists('markdown', $_POST)) {
+        $config->set('markup', (int)_post('markdown') == 0 ? 'v1' : 'markdown');
+    }
+    if (array_key_exists('firstdayofweek', $_POST)) {
+        $config->set('firstdayofweek', (int)_post('firstdayofweek'));
+    }
+    if (array_key_exists('clock', $_POST)) {
+        $config->set('clock', (int)_post('clock'));
+    }
+    if (array_key_exists('dateformat', $_POST)) {
+        $config->set('dateformat', removeNewLines(_post('dateformat')) );
+    }
+    if (array_key_exists('dateformat2', $_POST)) {
+        $config->set('dateformat2', removeNewLines(_post('dateformat2')) );
+    }
+    if (array_key_exists('dateformatshort', $_POST)) {
+        $config->set('dateformatshort', removeNewLines(_post('dateformatshort')) );
+    }
+    if (array_key_exists('showdate', $_POST)) {
+        $config->set('showdate', (int)_post('showdate'));
+    }
+    if (array_key_exists('showtime', $_POST)) {
+        $config->set('showtime', (int)_post('showtime'));
+    }
+    if (array_key_exists('showdateInline', $_POST)) {
+        $config->set('showdateInline', (int)_post('showdateInline'));
+    }
+    if (array_key_exists('exactduedate', $_POST)) {
+        $config->set('exactduedate', (int)_post('exactduedate'));
+    }
+    if (array_key_exists('appearance', $_POST)) {
+        $config->set('appearance', removeNewLines(trim(_post('appearance'))) );
+    }
+    if (array_key_exists('newTaskCounter', $_POST)) {
+        $config->set('newTaskCounter', (int)_post('newTaskCounter'));
+    }
+    if (array_key_exists('newTaskCounterIcon', $_POST)) {
+        $config->set('newTaskCounterIcon', (int)_post('newTaskCounterIcon'));
+    }
+    if (array_key_exists('mailFrom', $_POST)) {
+        $mailFrom = trim(_post('mailFrom'));
+        if ($mailFrom === '' || isValidEmail($mailFrom)) {
+            $config->set('mailFrom', $mailFrom);
+        }
+        else {
+            $allSaved = false;
+        }
+    }
+    if (array_key_exists('mailFromName', $_POST)) {
+        $config->set('mailFromName', removeNewLines(trim(_post('mailFromName'))) );
+    }
 
     AppConfig::saveDomain(Config::appDomain, $config->asArray());
 
@@ -68,17 +110,12 @@ if (isset($_POST['save']))
 
 <h4> <?php _e('set_general');?> </h4>
 
-<form action="<?php mtt_settings_page_url(); ?>" method="post" data-ok-reload="1">
+<form action="<?php mtt_settings_page_url(); ?>" method="post" data-ok-reload="1" data-form-id="general">
 <div class="mtt-settings-table">
 
 <div class="tr">
   <div class="th"> <?php _e('set_title');?> <div class="descr"><?php _e('set_title_descr');?></div></div>
   <div class="td"> <input name="title" value="<?php echo htmlspecialchars(_c('title'));?>" class="in350" autocomplete="off" /> </div>
-</div>
-
-<div class="tr">
-  <div class="th"><?php _e('set_language');?></div>
-  <div class="td"> <select name="lang"><?php echo selectOptionsA(getLangs(), _c('lang')); ?></select> </div>
 </div>
 
 <div class="tr">
@@ -89,18 +126,38 @@ if (isset($_POST['save']))
 </div></div>
 
 <div class="tr">
-<div class="th"><?php _e('set_autotag');?> <div class="descr"><?php _e('set_autotag_descr');?></div></div>
-<div class="td">
- <label><input type="radio" name="autotag" value="1" <?php if(_c('autotag')) echo 'checked="checked"'; ?> /> <?php _e('set_enabled');?></label> <br/>
- <label><input type="radio" name="autotag" value="0" <?php if(!_c('autotag')) echo 'checked="checked"'; ?> /> <?php _e('set_disabled');?></label>
-</div></div>
-
-<div class="tr">
 <div class="th"><?php _e('set_markdown');?> <div class="descr"><?php _e('set_markdown_descr');?></div></div>
 <div class="td">
  <label><input type="radio" name="markdown" value="1" <?php if (_c('markup') != 'v1') echo 'checked="checked"'; ?> /> <?php _e('set_enabled');?></label> <br/>
  <label><input type="radio" name="markdown" value="0" <?php if (_c('markup') == 'v1') echo 'checked="checked"'; ?> /> <?php _e('set_disabled');?></label>
 </div></div>
+
+<div class="tr">
+  <div class="th"> <?php _e('set_mailfrom');?> <div class="descr"><?php _e('set_mailfrom_descr');?></div></div>
+  <div class="td"> <input name="mailFrom" value="<?php echo htmlspecialchars(_c('mailFrom'));?>" placeholder="<?php echo htmlspecialchars(suggestedMailFrom()); ?>" class="in350" autocomplete="off" /> </div>
+</div>
+
+<div class="tr">
+  <div class="th"> <?php _e('set_mailfromname');?> <div class="descr"><?php _e('set_mailfromname_descr');?></div></div>
+  <div class="td"> <input name="mailFromName" value="<?php echo htmlspecialchars(_c('mailFromName'));?>" placeholder="myTinyTodo" class="in350" autocomplete="off" /> </div>
+</div>
+
+<div class="tr form-bottom-buttons">
+  <button type="submit"><?php _e('set_submit'); ?></button>
+</div>
+
+</div>
+</form>
+
+<h4> <?php _e('set_general_default');?> </h4>
+
+<form action="<?php mtt_settings_page_url(); ?>" method="post" data-ok-reload="1" data-form-id="general-defaults">
+<div class="mtt-settings-table">
+
+<div class="tr">
+  <div class="th"><?php _e('set_language');?></div>
+  <div class="td"> <select name="lang"><?php echo selectOptionsA(getLangs(), _c('lang')); ?></select> </div>
+</div>
 
 <div class="tr">
 <div class="th"><?php _e('set_timezone');?></div>
@@ -196,21 +253,18 @@ if (isset($_POST['save']))
 </div>
 
 <div class="tr">
+<div class="th"><?php _e('set_autotag');?> <div class="descr"><?php _e('set_autotag_descr');?></div></div>
+<div class="td">
+ <label><input type="radio" name="autotag" value="1" <?php if(_c('autotag')) echo 'checked="checked"'; ?> /> <?php _e('set_enabled');?></label> <br/>
+ <label><input type="radio" name="autotag" value="0" <?php if(!_c('autotag')) echo 'checked="checked"'; ?> /> <?php _e('set_disabled');?></label>
+</div></div>
+
+<div class="tr">
   <div class="th"><?php _e('set_newtaskcounter_h');?></div>
   <div class="td">
     <label><input type="checkbox" name="newTaskCounter" value="1" <?php if(_c('newTaskCounter')) echo 'checked="checked"'; ?> /> <?php _e('set_newtaskcounter');?></label> <br>
     <label><input type="checkbox" name="newTaskCounterIcon" value="1" <?php if(_c('newTaskCounterIcon')) echo 'checked="checked"'; ?> /> <?php _e('set_newtaskcountericon');?></label>
   </div>
-</div>
-
-<div class="tr">
-  <div class="th"> <?php _e('set_mailfrom');?> <div class="descr"><?php _e('set_mailfrom_descr');?></div></div>
-  <div class="td"> <input name="mailFrom" value="<?php echo htmlspecialchars(_c('mailFrom'));?>" placeholder="<?php echo htmlspecialchars(suggestedMailFrom()); ?>" class="in350" autocomplete="off" /> </div>
-</div>
-
-<div class="tr">
-  <div class="th"> <?php _e('set_mailfromname');?> <div class="descr"><?php _e('set_mailfromname_descr');?></div></div>
-  <div class="td"> <input name="mailFromName" value="<?php echo htmlspecialchars(_c('mailFromName'));?>" placeholder="myTinyTodo" class="in350" autocomplete="off" /> </div>
 </div>
 
 <div class="tr form-bottom-buttons">

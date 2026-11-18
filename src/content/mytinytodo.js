@@ -3700,8 +3700,18 @@ function saveSettings(frm)
     if (frm.dataset.ext) {
         params['ext'] = frm.dataset.ext;
     }
+    if (frm.dataset.formId) {
+        params['_formId'] = frm.dataset.formId;
+    }
     $(frm).find('input:not([type=submit],[type=reset],[type=button],[type=image],[type=file],[type=checkbox],[type=radio]),input:checked,select,textarea').filter(":enabled").each(function() {
         params[this.name || '__'] = this.value;
+    });
+    // Browsers do not send unchecked checkboxes, so send 0 explicitly.
+    // This lets the server distinguish "unchecked in this form" from "field absent from this form".
+    $(frm).find('input[type=checkbox]').filter(':enabled').each(function() {
+        if (this.name && !(this.name in params)) {
+            params[this.name] = '0';
+        }
     });
     $(frm).find(":submit").attr('disabled','disabled').blur();
     $.post(frm.action, params, function(json){
