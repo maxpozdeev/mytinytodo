@@ -60,7 +60,7 @@ if (isset($_POST['save']))
 
 ?>
 
-<h4> <?php _e('set_general');?> </h4>
+<h2> <?php _e('set_general');?> </h2>
 
 <form action="<?php mtt_settings_page_url(); ?>" method="post" data-ok-reload="yes">
 <div class="mtt-settings-table">

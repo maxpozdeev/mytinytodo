@@ -22,7 +22,7 @@ if (isset($_POST['save']))
 
 ?>
 
-<h4> <?php _e('set_deleteuser');?> </h4>
+<h2> <?php _e('set_deleteuser');?> </h2>
 
 <form action="<?php mtt_settings_page_url(); ?>" method="post" data-ok-redirect="<?php mtturl('controlpanel/users'); ?>">
 <input type="hidden" name="id" value="<?php echo $user->id; ?>">

@@ -2,7 +2,7 @@
 <!-- Page: Reset -->
 <div id="page_auth">
   <div class="auth-header">
-    <h3><?php _e('resetpassword_h'); ?></h3>
+    <h1><?php _e('resetpassword_h'); ?></h1>
     <div><?php _e('resetpassword_d'); ?></div>
   </div>
   <div id="authmsg">&nbsp;</div>

@@ -185,7 +185,7 @@ body::after {
   content:url(images/logo-loading.gif);
 }
 
-h3.page-title {
+h1.page-title {
   margin:0;
   border-bottom:2px solid var(--color-content-delimiter);
   margin-bottom:1rem;
@@ -197,7 +197,7 @@ a {
   cursor:pointer;
   text-decoration:underline;
 }
-h3.page-title .page-title-right {
+h1.page-title .page-title-right {
   margin-left: auto;
 }
 
@@ -321,6 +321,10 @@ select.form-input {
   max-width: 350px;
   margin:0 auto; /* center */
   margin-top: 100px;
+}
+#page_auth h1 {
+  font-size: 1.17em;
+  margin: 1em 0;
 }
 #page_auth .auth-header {
   text-align: center;
@@ -673,9 +677,9 @@ select.form-input {
 #searchbarkeyword { font-weight:bold; }
 
 /* */
-#page_tasks h3 { display:flex; align-items:baseline; font-weight:normal; }
-#mtt.no-lists         #page_tasks h3 { visibility:hidden; }
-#mtt.no-list-selected #page_tasks h3 { visibility:hidden; }
+#page_tasks h1 { display:flex; align-items:baseline; font-weight:normal; }
+#mtt.no-lists         #page_tasks h1 { visibility:hidden; }
+#mtt.no-list-selected #page_tasks h1 { visibility:hidden; }
 .mtt-notes-showhide { font-size:1rem; font-weight:normal; margin-left:5px; margin-right:5px; }
 .mtt-notes-showhide a { text-decoration:none; border-bottom:1px dotted; }
 #taskview, #total_selected {
@@ -739,7 +743,7 @@ select.form-input {
 a.mtt-back-button {
   font-size:1rem;
 }
-h3.page-title a.mtt-back-button {
+h1.page-title a.mtt-back-button {
   display:inline-block;
   width:1.3rem;
   min-width:1.3rem;
@@ -1063,7 +1067,7 @@ textarea.form-input.inmax {
 #taskedit_info { font-size:1rem; font-weight:normal; color:var(--color-text-reduced2); margin-bottom:6px; }
 #taskedit_info > div { margin-top:6px; }
 
-#page_taskviewer h3 {
+#page_taskviewer h1 {
   display: flex;
   align-items: baseline;
 }
@@ -1497,7 +1501,7 @@ li.mtt-item-hidden { display:none; }
   font-family: ui-monospace,Consolas,"SF Mono",Menlo,"Liberation Mono",monospace;
 }
 
-#page_settings h4 {
+#page_settings h2 {
   font-size: 1.1rem;
   font-weight: 600;
   margin: 1rem 0;
@@ -1731,14 +1735,14 @@ li.mtt-item-hidden { display:none; }
 
   .mtt-img-button { padding:4px; }
   .mtt-menu-button { padding:4px; }
-  h3.page-title a.mtt-back-button {
+  h1.page-title a.mtt-back-button {
     width: 2rem;
   }
-  #page_ajax.mtt-page-settings h3.page-title {
+  #page_ajax.mtt-page-settings h1.page-title {
     padding-left: 10px;
     border: none;
   }
-  #page_ajax.mtt-page-settings h3.page-title a.mtt-back-button {
+  #page_ajax.mtt-page-settings h1.page-title a.mtt-back-button {
     width: 1.5rem;
   }
 

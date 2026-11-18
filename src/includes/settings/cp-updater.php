@@ -61,7 +61,7 @@ if (!boolval(ini_get('allow_url_fopen'))) {
 
 ?>
 
-<h4> <?php _e('set_updater');?> </h4>
+<h2> <?php _e('set_updater');?> </h2>
 
 <div class="mtt-settings-table">
 

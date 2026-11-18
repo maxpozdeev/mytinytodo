@@ -105,7 +105,7 @@ function listExtensions()
 
 ?>
 
-<h4> <?php _e('set_extensions');?> </h4>
+<h2> <?php _e('set_extensions');?> </h2>
 
 <form action="<?php mtt_settings_page_url(); ?>" method="post">
 <div class="mtt-settings-table">

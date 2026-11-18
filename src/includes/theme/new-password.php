@@ -48,7 +48,7 @@ $code = htmlspecialchars($code);
 <!-- Page: Reset Password Link-->
 <div id="page_auth">
   <div class="auth-header">
-    <h3><?php _e('newpassword_h'); ?></h3>
+    <h1><?php _e('newpassword_h'); ?></h1>
     <div><?php _e('newpassword_d'); ?></div>
   </div>
   <div id="authmsg">&nbsp;</div>

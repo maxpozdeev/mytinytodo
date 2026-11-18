@@ -34,7 +34,7 @@ function listUsers()
 
 ?>
 
-<h4> <?php _e('set_users');?> </h4>
+<h2> <?php _e('set_users');?> </h2>
 
 <form action="<?php mtt_settings_page_url(); ?>" method="post">
 <div class="mtt-settings-table">

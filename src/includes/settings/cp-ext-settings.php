@@ -63,7 +63,7 @@ EOD;
 
     echo
 <<<EOD
-  <h4> $name </h4>
+  <h2> $name </h2>
   $formStart
   <div class="mtt-settings-table">
     $data

@@ -2,7 +2,7 @@
 
   html,body { height:auto; }
   #mtt_title { display: none; }
-  h3 { border-bottom:2px solid #777777; }
+  h1.page-title { border-bottom:2px solid #777777; }
   #toolbar { display: none; }
 
   #topblock { display:none; }

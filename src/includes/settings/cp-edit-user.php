@@ -49,7 +49,7 @@ $_u = function(string $key) use($user) {
 
 ?>
 
-<h4> <?php _e('set_edituser');?> </h4>
+<h2> <?php _e('set_edituser');?> </h2>
 
 <div class="mtt-settings-table">
 

@@ -14,7 +14,7 @@ if (!defined('MTT_PAGE')) {
 
 <div id="page_settings">
 
-<h3 class="page-title"><?php _e('a_settings');?></h3>
+<h1 class="page-title"><?php _e('a_settings');?></h1>
 
 <div id="settings_container">
 

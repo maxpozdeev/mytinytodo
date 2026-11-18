@@ -250,7 +250,7 @@ function printAppPasswordsTable()
 
 ?>
 
-<h4> <?php _e('set_account');?> </h4>
+<h2> <?php _e('set_account');?> </h2>
 
 <div class="mtt-settings-table">
 

@@ -57,7 +57,7 @@ $().ready(function(){
 
 
 
-<h3 class="page-title">
+<h1 class="page-title">
   <span id="taskview" class="mtt-menu-button mtt-hide-on-select-tasks"><span class="btnstr"><?php _e('tasks');?></span> <span id="total"></span> <span class="arrdown"></span></span>
   <span class="mtt-notes-showhide mtt-hide-on-select-tasks"><?php _e('notes');?> <a href="#" id="mtt-notes-show"><?php _e('notes_show');?></a> / <a href="#" id="mtt-notes-hide"><?php _e('notes_hide');?></a></span>
   <label id="seltask_all_label" class="mtt-show-on-select-tasks"><input type="checkbox" id="seltask_all"></label>
@@ -69,7 +69,7 @@ $().ready(function(){
     <span id="seltaskstagsbtn" class="mtt-menu-button mtt-show-on-select-tasks-some"><span class="title"><?php _e('tags');?></span> <span class="arrdown2"></span></span>
     <span id="seltasksbtn" class="mtt-img-button"><span></span>&nbsp;</span>
 </span>
-</h3>
+</h1>
 
 <div id="tasks_info" style="display:none;">
   <div class="v"></div>
@@ -89,8 +89,8 @@ $().ready(function(){
 <!-- Page: Edit Task -->
 <div id="page_taskedit" style="display:none">
 
-<h3 class="page-title mtt-inadd"><a class="mtt-back-button"></a><?php _e('add_task');?></h3>
-<h3 class="page-title mtt-inedit"><a class="mtt-back-button"></a><?php _e('edit_task');?> <a id="taskedit_id" href=""></a></h3>
+<h1 class="page-title mtt-inadd"><a class="mtt-back-button"></a><?php _e('add_task');?></h1>
+<h1 class="page-title mtt-inedit"><a class="mtt-back-button"></a><?php _e('edit_task');?> <a id="taskedit_id" href=""></a></h1>
 
 <div id="taskedit_info" class="mtt-inedit">
     <div class="date-created"><?php _e('taskdate_created'); ?>: <span class="date-created-value"></span></div>
@@ -152,10 +152,10 @@ $().ready(function(){
 
 <!-- Page: View Task -->
 <div id="page_taskviewer" style="display:none">
-<h3 class="page-title">
+<h1 class="page-title">
   <a class="mtt-back-button"></a>
   <div><span class="title"></span> <a id="taskviewer_id" href=""></a></div>
-</h3>
+</h1>
   <div class="container">
     <div class="left">
       <div class="no-note"><?php _e('no_note'); ?></div>

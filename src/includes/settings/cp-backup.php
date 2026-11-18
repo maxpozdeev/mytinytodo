@@ -34,7 +34,7 @@ function onBackupFileChange(el) {
 }
 </script>
 
-<h4> <?php _e('set_backup');?> </h4>
+<h2> <?php _e('set_backup');?> </h2>
 
 <div class="mtt-settings-table">
 

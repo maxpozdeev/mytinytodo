@@ -14,7 +14,7 @@ if (!defined('MTT_PAGE')) {
 
 <div id="page_settings">
 
-<h3 class="page-title"><?php _e('a_controlpanel');?></h3>
+<h1 class="page-title"><?php _e('a_controlpanel');?></h1>
 
 <div id="settings_msg" style="display:none"></div>
 
