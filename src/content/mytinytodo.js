@@ -1404,7 +1404,7 @@ const mtt = window.mytinytodo = {
 
     urlForTask: function(id)
     {
-        return mtt.goPrefix + 'task=' + id;
+        return new URL(dehtml(mtt.goPrefix + 'task=' + id), window.location.href).href;
     }
 
 }; // End of mytinytodo object
@@ -3092,6 +3092,7 @@ function taskContextMenu(el, id)
         beforeShow: function() {
             var taskId = this.tag;
             $('#taskrow_'+taskId).addClass('menu-active');
+            $('#cmenu_copy_link a').attr('href', mtt.urlForTask(taskId));
             $('#cmenupriocontainer li').removeClass('mtt-item-checked');
             $('#cmenu_prio\\:'+ taskList[taskId].prio).addClass('mtt-item-checked');
         },
@@ -3117,12 +3118,48 @@ function taskContextClick(el, menu)
     switch(id) {
         case 'cmenu_edit': editTask(taskId); break;
         /*case 'cmenu_note': toggleTaskNote(taskId); break;*/
+        case 'cmenu_copy_link': copyTaskLink(taskId); break;
         case 'cmenu_delete': deleteTask(taskId); break;
         case 'cmenu_prio': setTaskPrio(taskId, parseInt(value)); break;
         case 'cmenu_list':
             if(menu.$caller && menu.$caller.attr('id')=='cmenu_move') moveTaskToList(taskId, value);
             break;
     }
+};
+
+function copyTaskLink(id)
+{
+    copyToClipboard(mtt.urlForTask(id)).then(function() {
+        flashInfo(mtt.lang.get('linkCopied'));
+    }, function() {
+        flashError(mtt.lang.get('error'));
+    });
+};
+
+function copyToClipboard(text)
+{
+    if (navigator.clipboard && window.isSecureContext) {
+        return navigator.clipboard.writeText(text);
+    }
+    // Fallback for non-secure contexts (plain http) where Clipboard API is unavailable
+    return new Promise(function(resolve, reject) {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.setAttribute('readonly', '');
+        textarea.style.position = 'fixed';
+        textarea.style.top = '-1000px';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        let ok = false;
+        try {
+            ok = document.execCommand('copy');
+        } catch (e) {
+            ok = false;
+        }
+        document.body.removeChild(textarea);
+        ok ? resolve() : reject(new Error('copy failed'));
+    });
 };
 
 

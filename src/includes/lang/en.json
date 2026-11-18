@@ -150,6 +150,8 @@
     "action_priority": "Priority",
     "action_move": "Move to",
     "action_copy": "Copy to",
+    "action_copy_link": "Copy link",
+    "linkCopied": "Link copied to clipboard",
     "action_ok": "OK",
     "action_cancel": "Cancel",
     "action_preview": "Preview",

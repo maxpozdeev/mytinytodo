@@ -569,9 +569,9 @@ function redirectExit(string $url)
     exit;
 }
 
-function routerMakeUrl(string $path = '', ?array $qsa = null, bool $fullUrl = false): string
+function routerMakeUrl(string $path = '', ?array $qsa = null, bool $absoluteUrl = false): string
 {
-    $prefix = $fullUrl ? get_unsafe_mttinfo('url') : get_unsafe_mttinfo('uri');
+    $prefix = $absoluteUrl ? get_unsafe_mttinfo('url') : get_unsafe_mttinfo('uri');
     if (!MTT_USE_REWRITE) {
         return $prefix. '?p='. $path. ($qsa !== null ? '&'. http_build_query($qsa) : '');
     }
@@ -601,9 +601,9 @@ function get_mtturl(string $path, ?array $qsa = null): string
     return htmlspecialchars(routerMakeUrl($path, $qsa));
 }
 
-function routerMakeUserUrl(string $path = '', string $user = ''): string
+function routerMakeUserUrl(string $path = '', string $user = '', bool $absoluteUrl = false): string
 {
-    $prefix = routerMakeUrl('');
+    $prefix = routerMakeUrl('', null, $absoluteUrl);
     if ($path !== '' && $path[0] !== '/')
         $path = '/'. $path;
     if ($user === '') {
@@ -618,8 +618,8 @@ function routerMakeUserUrl(string $path = '', string $user = ''): string
 
 function routerGetUserGoPrefix(string $user = ''): string
 {
-    $prefix = routerMakeUserUrl('/go', $user);
-    $prefix .= (false === $queryPos = strpos($prefix, '?')) ? '?' : '&';
+    $prefix = routerMakeUserUrl('/go', $user, true);
+    $prefix .= (false === strpos($prefix, '?')) ? '?' : '&';
     return $prefix;
 }
 

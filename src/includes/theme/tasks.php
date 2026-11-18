@@ -264,6 +264,7 @@ $().ready(function(){
   <li id="cmenu_edit"><b><?php _e('action_edit');?></b></li>
   <li id="cmenu_prio" class="mtt-menu-indicator" submenu="cmenupriocontainer"><div class="submenu-icon"></div><?php _e('action_priority');?></li>
   <li id="cmenu_move" class="mtt-menu-indicator" submenu="cmenulistscontainer"><div class="submenu-icon"></div><?php _e('action_move');?></li>
+  <li id="cmenu_copy_link"><?php _e('action_copy_link');?></li>
   <li id="cmenu_delete"><?php _e('action_delete');?></li>
 </ul>
 </div>

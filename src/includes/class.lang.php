@@ -151,6 +151,7 @@ class Lang
             "sortShortByDateCreated",
             "sortShortByDateModified",
             'selectedOf',
+            'linkCopied',
         ]);
         $a['_rtl'] = $this->rtl() ? 1 : 0;
 
