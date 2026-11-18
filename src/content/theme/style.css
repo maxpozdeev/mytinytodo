@@ -1268,10 +1268,10 @@ textarea.form-input.inmax {
   text-overflow: ellipsis;
   margin-bottom:0;
   margin-top:3px;
+  cursor: default;
 }
 #tagcloud .tag:hover,
-#alltags .tag:hover,
-#page_taskviewer .property.tags .tag:hover {
+#alltags .tag:hover {
   /*background-color:var(--color-taglist-tag-hover-bg);*/
   border-color: var(--color-taglist-tag-hover-bg);;
   color: var(--color-taglist-tag-hover);
