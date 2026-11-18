@@ -255,7 +255,7 @@
     "confirmDelete": "Are you sure you want to delete the task?",
     "confirmDeleteMulti": "Are you sure you want to delete the tasks?",
     "confirmLeave": "There can be unsaved data. Do you really want to leave?",
-    "error": "Some error occurred (click for details)",
+    "error": "Some error occurred",
     "denied": "Access denied",
     "listNotFound": "List not found",
     "taskNotFound": "Task not found",

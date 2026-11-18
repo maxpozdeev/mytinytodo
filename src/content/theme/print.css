@@ -54,5 +54,5 @@
   .mtt-notes-showhide { display:none; }
   #taskview img { display:none; }
   #pagination { display: none; }
-
+  #mtt-flash-container { display: none; }
 }

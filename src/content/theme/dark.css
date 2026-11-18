@@ -26,10 +26,7 @@
     --color-row-underlinig: #303030;
     --color-border-default: #555;
     --color-border-focus: #5a8df0;
-    --color-error: #ff3333;
-    --color-error-bg: var(--color-bg);
-    --color-info: #EFC300;
-    --color-info-bg: var(--color-bg);
+    --color-flash-error: #fff;
     --color-input-bg: #1e1e1e;
 
     --color-toolbar: #3b3b3b;
@@ -67,7 +64,7 @@
     --color-tasklist-note-link: #999;
     --color-tasklist-link-hover: var(--color-link);
     --color-tasklisk-hover-shadow: rgba(255,255,255,0.4);
-    --color-tasklist-row-hover: #f3f8ff;
+    --color-tasklist-row-hover: #262626;
     --color-taglist-tag: var(--color-text-reduced);
     --color-taglist-tag-bg: #444;
     --color-taglist-tag-hover: var(--color-taglist-tag);

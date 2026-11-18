@@ -167,6 +167,9 @@ const mtt = window.mytinytodo = {
         viewTaskOnClick: false,
         newTaskCounter: false,
         newTaskCounterIcon: false,
+        flashMaxVisible: 3, // maximum number of simultaneously visible notifications
+        flashInfoTimeout: 5000, // auto-dismiss timeout for info notifications in ms
+        flashErrorTimeout: 10000, // auto-dismiss timeout for error notifications in ms
     },
 
     timers: {
@@ -888,7 +891,7 @@ const mtt = window.mytinytodo = {
 
         // AJAX Errors
         $(document).ajaxSend(function(r,s){
-            hideAlert();
+            //removeAllFlashMessages();
             clearTimeout(mtt.timers.ajaxAnimation);
             mtt.timers.ajaxAnimation = setTimeout( function(){
                 $("#mtt").addClass("ajax-loading");
@@ -913,12 +916,6 @@ const mtt = window.mytinytodo = {
             else
                 errtxt = request.responseText;
             flashError(mtt.lang.get('error'), errtxt);
-        });
-
-
-        // Error Message details
-        $("#msg>.msg-text").click(function(){
-            $("#msg>.msg-details").toggle();
         });
 
 
@@ -1213,7 +1210,7 @@ const mtt = window.mytinytodo = {
 
     pageBack: function(clicked)
     {
-        hideAlert();
+        removeAllFlashMessages();
         $(document).off('keydown.mttback');
         // If clicked on back button in settings or taskviewer we'll use history navigation
         if ( clicked && this.pages.current && this.pages.prev.length > 0 &&
@@ -3645,29 +3642,111 @@ function newTaskCounterUpdated()
     Errors and Info messages
 */
 
-function flashError(str, details)
+/**
+ * Remove a flash notification from the page.
+ * @param {HTMLElement} el notification element
+ */
+function removeFlashMessage(el)
+{
+    if (el._flashTimer) {
+        clearTimeout(el._flashTimer);
+        el._flashTimer = 0;
+    }
+    $(el).fadeOut(200, function() {
+        $(el).remove();
+    });
+}
+
+/**
+ * Show a flash notification in the top-right corner of the page.
+ * New notifications appear on top, older ones shift down.
+ * @param {string} str     short notification text
+ * @param {string} details optional details shown in a modal dialog on click
+ * @param {string} type    'error' or 'info'
+ */
+function showFlashMessage(str, details, type)
 {
     if (details === undefined) details = '';
-    $("#msg>.msg-text").text(dehtml(str))
-    $("#msg>.msg-details").text(dehtml(details));
+    str = dehtml(str);
+    details = dehtml(details);
+
     $("#loading").hide();
-    $("#msg").addClass('mtt-error').effect("highlight", {color:mtt.theme.msgFlashColor}, 700);
+
+    let container = document.getElementById('mtt-flash-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'mtt-flash-container';
+        document.body.appendChild(container);
+    }
+
+    const el = document.createElement('div');
+    el.className = 'mtt-flash ' + (type === 'error' ? 'mtt-error' : 'mtt-info');
+
+    const timeout = type === 'error' ? mtt.options.flashErrorTimeout : mtt.options.flashInfoTimeout;
+    el.style.setProperty('--mtt-flash-duration', timeout + 'ms');
+
+    const text = document.createElement('span');
+    text.className = 'mtt-flash-text';
+    text.textContent = str;
+
+    const closeBtn = document.createElement('button');
+    closeBtn.type = 'button';
+    closeBtn.className = 'mtt-flash-close';
+    closeBtn.setAttribute('aria-label', 'Close');
+    closeBtn.addEventListener('click', function(event) {
+        event.stopPropagation();
+        removeFlashMessage(el);
+    });
+
+    el.appendChild(text);
+    el.appendChild(closeBtn);
+
+    el.addEventListener('click', function() {
+        const dialog = mttModalDialog('alert').ok();
+        if (str) {
+            dialog.header(str);
+        }
+        dialog.message(details).show();
+    });
+
+    // new notification appears on top, older ones shift down
+    container.insertBefore(el, container.firstChild);
+
+    // remove the oldest notification if the limit is exceeded
+    while (container.children.length > mtt.options.flashMaxVisible) {
+        const oldest = container.lastChild;
+        if (oldest._flashTimer) {
+            clearTimeout(oldest._flashTimer);
+        }
+        container.removeChild(oldest);
+    }
+
+    // auto-dismiss
+    el._flashTimer = setTimeout(function() {
+        removeFlashMessage(el);
+    }, timeout);
+}
+
+function flashError(str, details)
+{
+    showFlashMessage(str, details, 'error');
 }
 
 function flashInfo(str, details)
 {
-    if (details === undefined) details = '';
-    $("#msg>.msg-text").text(dehtml(str))
-    $("#msg>.msg-details").text(dehtml(details));
-    $("#loading").hide();
-    $("#msg").addClass('mtt-info').effect("highlight", {color:mtt.theme.msgFlashColor}, 700);
+    showFlashMessage(str, details, 'info');
 }
 
-function hideAlert()
+function removeAllFlashMessages()
 {
-    $("#msg>.msg-text").text('');
-    $("#msg>.msg-details").text('');
-    $("#msg").hide().removeClass('mtt-error mtt-info').find('.msg-details').hide();
+    // remove all active flash notifications
+    const container = document.getElementById('mtt-flash-container');
+    if (container) {
+        $(container).children('.mtt-flash').each(function() {
+            removeFlashMessage(this);
+        });
+    }
+    $("#loading").hide();
 }
 
 

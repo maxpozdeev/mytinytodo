@@ -54,7 +54,6 @@ $().ready(function(){
   <div id="mtt_title"><?php mttinfo('title'); ?></div>
 
   <div class="topblock-bar">
-    <div id="msg"><span class="msg-text"></span><div class="msg-details"></div></div>
     <div class="bar-menu">
       <span id="bar_public" style="display:none" class="mtt-need-auth-enabled"><?php _e('public_tasks');?></span>
     <?php if (is_logged()): ?>

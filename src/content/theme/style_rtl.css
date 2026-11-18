@@ -44,3 +44,7 @@ h1.page-title a.mtt-back-button { transform:rotate(180deg); }
 .mtt-menu-container { box-shadow:-1px 2px 5px rgba(0,0,0,0.5);  }
 .mtt-menu-container .menu-icon { left:auto; right:6px; }
 li.mtt-menu-indicator .submenu-icon { left:6px; right:auto; transform:rotate(180deg); }
+
+.mtt-flash::after {
+  transform-origin: right;
+}
