@@ -210,6 +210,7 @@ $().ready(function(){
   <li class="mtt-need-list mtt-need-real-list" id="btnClearCompleted"><?php _e('list_clearcompleted');?></li>
   <li class="mtt-need-list" id="btnHideList"><?php _e('list_hide');?></li>
   <li class="mtt-menu-delimiter"></li>
+  <li class="mtt-need-list mtt-need-real-list mtt-menu-indicator" id="btnPublish" submenu="listaccessmenucontainer"><div class="submenu-icon"></div><?php _e('list_publish');?></li>
   <li class="mtt-need-list mtt-need-real-list mtt-menu-indicator" submenu="listsharemenucontainer"><div class="submenu-icon"></div><?php _e('list_share'); ?></li>
   <li class="mtt-menu-delimiter mtt-need-real-list"></li>
   <li class="mtt-need-list" id="btnShowCompleted"><div class="menu-icon"></div><?php _e('list_showcompleted');?></li>
@@ -218,13 +219,20 @@ $().ready(function(){
 
 <div id="listsharemenucontainer" class="mtt-menu-container" style="display:none">
 <ul>
-  <li class="mtt-need-list mtt-need-real-list" id="btnPublish"><div class="menu-icon"></div><?php _e('list_publish');?></li>
   <li class="mtt-need-list mtt-need-real-list" id="btnRssFeed"><div class="menu-icon"></div><a href="#"><?php _e('list_rssfeed');?></a></li>
   <li class="mtt-need-list mtt-need-real-list" id="btnExportCSV"><a href="#"><?php _e('list_export_to_csv');?></a></li>
   <li class="mtt-need-list mtt-need-real-list" id="btnExportICAL"><a href="#"><?php _e('list_export_to_ical');?></a></li>
   <li class="mtt-menu-delimiter"></li>
   <li class="mtt-need-list mtt-need-real-list" id="btnFeedKey"><div class="menu-icon"></div><?php _e('list_enable_feedkey');?></li>
   <li class="mtt-need-list mtt-need-real-list" id="btnShowFeedKey"><div class="menu-icon"></div><?php _e('list_show_feedkey');?></li>
+</ul>
+</div>
+
+<div id="listaccessmenucontainer" class="mtt-menu-container" style="display:none">
+<ul>
+  <li class="mtt-need-list mtt-need-real-list" id="listaccess_0"><div class="menu-icon"></div><?php _e('list_access_private');?></li>
+  <li class="mtt-need-list mtt-need-real-list" id="listaccess_1"><div class="menu-icon"></div><?php _e('list_access_read');?></li>
+  <li class="mtt-need-list mtt-need-real-list" id="listaccess_2"><div class="menu-icon"></div><?php _e('list_access_create');?></li>
 </ul>
 </div>
 

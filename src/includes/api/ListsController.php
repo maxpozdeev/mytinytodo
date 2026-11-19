@@ -131,7 +131,12 @@ class ListsController extends ApiController {
         switch ($action) {
             case 'rename':         $this->response->data = $this->renameList($list);     break;
             case 'sort':           $this->response->data = $this->sortList($list);       break;
-            case 'publish':        $this->response->data = $this->publishList($list);    break;
+            case 'publish':
+                $result = $this->publishList($list);
+                if ($result !== null) {
+                    $this->response->data = $result;
+                }
+                break;
             case 'enableFeedKey':  $this->response->data = $this->enableFeedKey($list);  break;
             case 'showNotes':      $this->response->data = $this->showNotes($list);      break;
             case 'hide':           $this->response->data = $this->hideList($list);       break;
@@ -193,13 +198,20 @@ class ListsController extends ApiController {
 
     private function publishList(TaskList $list): ?array
     {
-        $publish = boolval($this->req->jsonBody['publish'] ?? 0);
-        $list->setPublished($publish ? $list::ACCESS_READ : $list::ACCESS_PRIVATE);
+        $published = (int)($this->req->jsonBody['publish'] ?? 0);
+        if (!in_array($published, [$list::ACCESS_PRIVATE, $list::ACCESS_READ, $list::ACCESS_CREATE], true)) {
+            $this->response->errorJsonContent("Invalid value of `publish`", 400);
+            return null;
+        }
+        $list->setPublished($published);
         $repo = new ListRepo(DBConnection::instance());
         $repo->updateListProperties($list);
         return [
             'ok' => true,
             'total' => 1,
+            'list' => [
+                [ 'id' => $list->id, 'published' => $list->published ]
+            ]
         ];
     }
 

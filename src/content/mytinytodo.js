@@ -1463,20 +1463,28 @@ function deleteCurList()
     });
 };
 
-function publishCurList()
+function updatePublishMenuState(published)
+{
+    const access = parseInt(published) || 0;
+    $('#listaccessmenucontainer li').removeClass('mtt-item-checked');
+    $('#listaccess_'+access).addClass('mtt-item-checked');
+    if (access) {
+        $('#btnRssFeed').removeClass('mtt-item-disabled');
+    }
+    else {
+        $('#btnRssFeed').addClass('mtt-item-disabled');
+    }
+}
+
+function publishCurList(access)
 {
     if(!curList) return false;
-    mtt.db.request('publishList', { list:curList.id, publish:curList.published?0:1 }, function(json){
+    access = parseInt(access) || 0;
+    mtt.db.request('publishList', { list:curList.id, publish:access }, function(json){
         if(!parseInt(json.total)) return;
-        curList.published = curList.published?0:1;
-        if(curList.published) {
-            $('#btnPublish').addClass('mtt-item-checked');
-            $('#btnRssFeed').removeClass('mtt-item-disabled');
-        }
-        else {
-            $('#btnPublish').removeClass('mtt-item-checked');
-            $('#btnRssFeed').addClass('mtt-item-disabled');
-        }
+        curList.published = access;
+        tabLists.replace(curList);
+        updatePublishMenuState(access);
         $('#list_'+curList.id).replaceWith(prepareListHtml(curList, true));
     });
 };
@@ -2165,7 +2173,9 @@ function listMenuClick(el, menu)
         case 'btnAddList': addList(); break;
         case 'btnRenameList': renameCurList(); break;
         case 'btnDeleteList': deleteCurList(); break;
-        case 'btnPublish': publishCurList(); break;
+        case 'listaccess_0': publishCurList(0); break;
+        case 'listaccess_1': publishCurList(1); break;
+        case 'listaccess_2': publishCurList(2); break;
         case 'btnFeedKey': enableFeedKeyInCurList(); break;
         case 'btnShowFeedKey': showFeedKeyInCurList(); break;
         case 'btnHideList': hideList(curList.id); break;
@@ -3252,14 +3262,7 @@ function cmenuOnListHidden(list)
 function tabmenuOnListSelected(a)
 {
     const list = a.list;
-    if (list.published) {
-        $('#btnPublish').addClass('mtt-item-checked');
-        $('#btnRssFeed').removeClass('mtt-item-disabled');
-    }
-    else {
-        $('#btnPublish').removeClass('mtt-item-checked');
-        $('#btnRssFeed').addClass('mtt-item-disabled');
-    }
+    updatePublishMenuState(list.published);
     if (list.showCompl) {
         $('#btnShowCompleted').addClass('mtt-item-checked');
     }
