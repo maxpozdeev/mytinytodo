@@ -2254,6 +2254,7 @@ function viewTask(id)
 {
     const item = fillTaskViewer(id);
     if (!item) return;
+    switchSelectTasksMode(false);
     mtt.pageSet('taskviewer');
     const hash = '#list/' + (curList.id == -1 ? 'alltasks' : curList.id) + '/task/' + item.id;
     updateHistoryState({ task: item.id, list: item.listId }, hash, item.titleText + ' - ' + curList.nameText + ' - ' + mtt.options.title);
@@ -2305,6 +2306,7 @@ function clearEditForm()
 
 function showEditForm(isAdd)
 {
+    switchSelectTasksMode(false);
     let form = document.getElementById('taskedit_form');
     if (isAdd)
     {
