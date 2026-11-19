@@ -321,8 +321,14 @@ class Restore
         $db = DBConnection::instance();
         $db->ex("UPDATE {$db->prefix}lists SET user_id = ?", [$this->userId]);
         $db->ex("UPDATE {$db->prefix}tags SET user_id = ?", [$this->userId]);
-        // $db->ex("INSERT INTO {$db->prefix}usersettings (user_id,param_key,param_value)
-        //         SELECT ?,param_key,param_value FROM {$db->prefix}settings WHERE param_key='alltasks.json' ", [$this->userId]);
+        $db->ex("UPDATE {$db->prefix}todolist SET author_id = ?", [$this->userId]);
+
+        # Move the alltasks list settings from the global settings to the current user settings
+        $db->ex("DELETE FROM {$db->prefix}usersettings WHERE user_id = ? AND param_key = 'alltasks.json'",
+            [$this->userId]);
+        $db->ex("INSERT INTO {$db->prefix}usersettings (user_id,param_key,param_value)
+            SELECT ?,param_key,param_value FROM {$db->prefix}settings WHERE param_key='alltasks.json'",
+            [$this->userId]);
         $db->ex("DELETE FROM {$db->prefix}settings WHERE param_key='alltasks.json'");
     }
 

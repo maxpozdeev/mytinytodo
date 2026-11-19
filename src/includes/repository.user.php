@@ -128,6 +128,8 @@ class UserRepo
         $db->ex("BEGIN");
         $db->ex("DELETE FROM {$db->prefix}todolist WHERE list_id IN (SELECT id FROM {$db->prefix}lists WHERE user_id=?)", [$userId]);
         $db->ex("DELETE FROM {$db->prefix}tag2task WHERE list_id IN (SELECT id FROM {$db->prefix}lists WHERE user_id=?)", [$userId]);
+        # Tasks authored by the user but placed in other users' lists must be kept
+        $db->ex("UPDATE {$db->prefix}todolist SET author_id = 0 WHERE author_id = ?", [$userId]);
         $db->ex("DELETE FROM {$db->prefix}tags WHERE user_id=?", [$userId]);
         $db->ex("DELETE FROM {$db->prefix}lists WHERE user_id=?", [$userId]);
         $db->ex("DELETE FROM {$db->prefix}usersettings WHERE user_id=?", [$userId]);

@@ -627,6 +627,7 @@ function update_18_20(AbstractDatabase $db, string $dbtype)
         $db->ex("ALTER TABLE {$db->prefix}lists ADD `user_id` INT UNSIGNED NOT NULL default 0");
         $db->ex("ALTER TABLE {$db->prefix}lists ADD KEY (`user_id`)");
 
+        $db->ex("ALTER TABLE {$db->prefix}todolist ADD `author_id` INT UNSIGNED NOT NULL default 0 AFTER `list_id`");
         $db->ex("ALTER TABLE {$db->prefix}todolist ADD `parent_id` INT UNSIGNED NOT NULL default 0");
         $db->ex("ALTER TABLE {$db->prefix}todolist ADD `extra` TEXT default NULL");
 
@@ -671,6 +672,7 @@ function update_18_20(AbstractDatabase $db, string $dbtype)
         $db->ex("ALTER TABLE {$db->prefix}sessions ALTER last_access TYPE BIGINT");
         $db->ex("ALTER TABLE {$db->prefix}sessions ALTER expires TYPE BIGINT");
 
+        $db->ex("ALTER TABLE {$db->prefix}todolist ADD author_id INTEGER NOT NULL default 0");
         $db->ex("ALTER TABLE {$db->prefix}todolist ADD parent_id INTEGER NOT NULL default 0");
         $db->ex("ALTER TABLE {$db->prefix}todolist ADD extra TEXT default NULL");
 
@@ -713,7 +715,7 @@ function update_18_20(AbstractDatabase $db, string $dbtype)
         $db->ex("ALTER TABLE {$db->prefix}lists ADD user_id INTEGER UNSIGNED NOT NULL default 0");
         $db->ex("CREATE INDEX lists_user_id ON {$db->prefix}lists (user_id)");
 
-        // todolist: remove collation from title and note column; add parent_id and extra columns
+        // todolist: remove collation from title and note column; add parent_id, author_id and extra columns
         $db->ex("DROP INDEX todo_list_id");
         $db->ex("DROP INDEX todo_uuid");
         $db->ex("ALTER TABLE {$db->prefix}todolist RENAME TO {$db->prefix}todolist_old");
@@ -722,6 +724,7 @@ function update_18_20(AbstractDatabase $db, string $dbtype)
                 id INTEGER PRIMARY KEY,
                 uuid CHAR(36) NOT NULL default '',
                 list_id INTEGER UNSIGNED NOT NULL default 0,
+                author_id INTEGER UNSIGNED NOT NULL default 0,
                 parent_id INTEGER UNSIGNED NOT NULL default 0,
                 d_created INTEGER UNSIGNED NOT NULL default 0,
                 d_completed INTEGER UNSIGNED NOT NULL default 0,
@@ -734,7 +737,10 @@ function update_18_20(AbstractDatabase $db, string $dbtype)
                 duedate DATE default NULL,
                 extra TEXT default NULL
         ) ");
-        $db->ex("INSERT INTO {$db->prefix}todolist SELECT id,uuid,list_id,0,d_created,d_completed,d_edited,compl,title,note,prio,ow,duedate,null FROM {$db->prefix}todolist_old");
+        $db->ex("INSERT INTO {$db->prefix}todolist "
+            . "(id,uuid,list_id,author_id,parent_id,d_created,d_completed,d_edited,compl,title,note,prio,ow,duedate,extra) "
+            . "SELECT id,uuid,list_id,1,0,d_created,d_completed,d_edited,compl,title,note,prio,ow,duedate,null "
+            . "FROM {$db->prefix}todolist_old");
         $db->ex("CREATE INDEX todo_list_id ON {$db->prefix}todolist (list_id)");
         $db->ex("CREATE UNIQUE INDEX todo_uuid ON {$db->prefix}todolist (uuid)");
         $db->ex("DROP TABLE {$db->prefix}todolist_old");
@@ -799,6 +805,7 @@ function update_18_20(AbstractDatabase $db, string $dbtype)
 
     $db->ex("UPDATE {$db->prefix}lists SET user_id = 1");
     $db->ex("UPDATE {$db->prefix}tags SET user_id = 1");
+    $db->ex("UPDATE {$db->prefix}todolist SET author_id = 1");
 
     $db->ex("INSERT INTO {$db->prefix}usersettings (user_id,param_key,param_value)
         SELECT 1,param_key,param_value FROM {$db->prefix}settings WHERE param_key='alltasks.json' ");

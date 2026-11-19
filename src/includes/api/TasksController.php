@@ -390,7 +390,7 @@ class TasksController extends ApiController {
         $repo = new TaskRepo(DBConnection::instance());
         $ids = [];
         foreach ($tasks as $task) {
-            $copy = Task::create($task->title, $list->id);
+            $copy = Task::create($task->title, $list->id, (int)$list->userId);
             $copy->setNote($task->note ?? '');
             $copy->setPriority($task->priority);
             $copy->setDuedate($task->duedate !== '' ? $task->duedate : null);
@@ -704,7 +704,7 @@ class TasksController extends ApiController {
             $tags .= ',' . ($this->req->jsonBody['tag'] ?? '');
         }
 
-        $task = Task::create($title, $list->id);
+        $task = Task::create($title, $list->id, (int)$list->userId);
         $task->setPriority($prio);
         $task->setDuedate($duedate);
         $task->tagNames = explode(',', $tags);
@@ -740,7 +740,7 @@ class TasksController extends ApiController {
         if (Config::get('autotag'))
             $tags .= ',' . ($this->req->jsonBody['tag'] ?? '');
 
-        $task = Task::create($title, $list->id);
+        $task = Task::create($title, $list->id, (int)$list->userId);
         $task->setNote($note);
         $task->setPriority($prio);
         $task->setDuedate($duedate);

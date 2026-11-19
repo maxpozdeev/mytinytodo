@@ -302,13 +302,14 @@ abstract class AbstractTask extends AbstractEntity
 
 class Task extends AbstractTask
 {
-    protected static array $dbfields = ['id','uuid','list_id','parent_id','d_created','d_completed','d_edited',
-        'compl','title','note','prio','duedate','extra','ow','tags_ids','tags','list_name'];
+    protected static array $dbfields = ['id','uuid','list_id','author_id','parent_id','d_created',
+        'd_completed','d_edited','compl','title','note','prio','duedate','extra','ow','tags_ids','tags','list_name'];
     protected array $changed = [];
 
     public ?int $id = null;
     public ?string $uuid;
     public ?int $listId;                # list_id
+    public int $authorId = 0;           # author_id
     public ?int $parentId = null;       # parent_id
     public ?string $title;              # title
     public ?string $note = null;        # note
@@ -333,6 +334,7 @@ class Task extends AbstractTask
         $entity->id = (int)$a['id'];
         $entity->uuid = (string)$a['uuid'];
         $entity->listId = (int)$a['list_id'];
+        $entity->authorId = (int)$a['author_id'];
         $entity->parentId = (int)$a['parent_id'];
         $entity->title = (string)$a['title'];
         $entity->note = (string)$a['note'];
@@ -372,6 +374,7 @@ class Task extends AbstractTask
             'id' => $this->id,
             'uuid' => $this->uuid,
             'list_id' => $this->listId,
+            'author_id' => $this->authorId,
             'title' => $this->title,
             'note' => $this->note,
             'compl' => $this->isCompleted ? 1 : 0,
@@ -462,14 +465,15 @@ class Task extends AbstractTask
     }
 
 
-    static function create(string $title, int $listId): Task
+    static function create(string $title, int $listId, int $authorId): Task
     {
-        if ($title === '' || !$listId) {
-            throw new InvalidArgumentException("Unspecified title or list id");
+        if ($title === '' || !$listId || !$authorId) {
+            throw new InvalidArgumentException("Unspecified title, list id or author id");
         }
         $task = new static();
         $task->title = $title;
         $task->listId = $listId;
+        $task->authorId = $authorId;
         $task->uuid = generateUUID();
         $task->d_created = time();
         $task->d_edited = $task->d_created;
