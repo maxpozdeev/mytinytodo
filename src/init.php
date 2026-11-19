@@ -699,7 +699,7 @@ function canReadList(TaskList $list, string $inFeedKey = '') : bool
     if (!need_auth() && userId(false) !== $list->userId)
         return false;
 
-    if ($list->isPublished)
+    if ($list->published === $list::ACCESS_READ || $list->published == $list::ACCESS_CREATE)
         return true;
 
     if (is_logged() && userId() === $list->userId)

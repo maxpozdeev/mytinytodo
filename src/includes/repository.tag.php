@@ -135,7 +135,7 @@ class TagRepo
                 INNER JOIN {$this->db->prefix}lists AS lists ON t2t.list_id = lists.id
                 WHERE lists.user_id = ? AND tags.user_id = ?";
             if ($publishedOnly)
-                $sql .= " AND lists.published = 1";
+                $sql .= " AND lists.published != 0";
             $sql .= " ORDER BY name $orderBy ASC";
             $q = $this->db->dq($sql, [$userId, $userId]);
         }

@@ -194,7 +194,7 @@ class ListsController extends ApiController {
     private function publishList(TaskList $list): ?array
     {
         $publish = boolval($this->req->jsonBody['publish'] ?? 0);
-        $list->setIsPublished($publish);
+        $list->setPublished($publish ? $list::ACCESS_READ : $list::ACCESS_PRIVATE);
         $repo = new ListRepo(DBConnection::instance());
         $repo->updateListProperties($list);
         return [

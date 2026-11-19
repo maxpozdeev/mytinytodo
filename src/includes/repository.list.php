@@ -46,7 +46,7 @@ class ListRepo
     function findPublicListsByUserId(int $userId): array
     {
         $a = [];
-        $q = $this->db->dq("SELECT * FROM {$this->db->prefix}lists WHERE user_id=? AND published=1 ORDER BY ow ASC, id ASC", [$userId]);
+        $q = $this->db->dq("SELECT * FROM {$this->db->prefix}lists WHERE user_id=? AND published !=0 ORDER BY ow ASC, id ASC", [$userId]);
         while ($r = $q->fetchAssoc()) {
             $a[] = TaskList::fromArray($r);
         }
@@ -110,7 +110,7 @@ class ListRepo
     {
         $sqlWhere = '';
         if ($publicOnly) {
-            $sqlWhere .= " AND published=1";
+            $sqlWhere .= " AND published != 0";
         }
         $a = array();
         $q = $this->db->dq("SELECT id,name FROM {$this->db->prefix}lists WHERE user_id=? $sqlWhere", [$userId]);
@@ -179,7 +179,7 @@ class ListRepo
         $strIds = implode(',', $ids);
 
         $a = [];
-        $q = $this->db->dq("SELECT id FROM {$this->db->prefix}lists WHERE id IN ($strIds) AND (user_id=? OR published=1)", [$userId]);
+        $q = $this->db->dq("SELECT id FROM {$this->db->prefix}lists WHERE id IN ($strIds) AND (user_id=? OR published != 0)", [$userId]);
         while ($r = $q->fetchAssoc()) {
             $a[] = (int) $r['id'];
         }

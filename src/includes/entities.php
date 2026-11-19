@@ -49,6 +49,10 @@ abstract class AbstractTaskList extends AbstractEntity implements JsonApiSeriali
 
 class TaskList extends AbstractTaskList
 {
+    const ACCESS_PRIVATE = 0;
+    const ACCESS_READ = 1;
+    const ACCESS_CREATE = 2;
+
     protected static array $dbfields = ['id','user_id','uuid','ow','name','d_created','d_edited','sorting','published','taskview','extra'];
     protected array $changed = [];
 
@@ -60,7 +64,7 @@ class TaskList extends AbstractTaskList
     public ?int $d_created;
     public ?int $d_edited;
     public int $sorting = parent::defaultSort;
-    public bool $isPublished = false;       # published
+    public int $published = 0;              # access type: 0/1/2
     public bool $isShowCompleted = false;   # taskview & 1
     public bool $isShowNotes = false;       # taskview & 2
     public bool $isHidden = false;          # taskview & 4
@@ -87,9 +91,12 @@ class TaskList extends AbstractTaskList
         $this->changed['d_edited'] = true;
     }
 
-    function setIsPublished(bool $published)
+    function setPublished(int $published)
     {
-        $this->isPublished = $published;
+        if ($published !== self::ACCESS_PRIVATE && $published !== self::ACCESS_READ && $published !== self::ACCESS_CREATE) {
+            throw new InvalidArgumentException("Invalid `published` property value");
+        }
+        $this->published = $published;
         $this->d_edited = time();
         $this->changed['published'] = true;
         $this->changed['d_edited'] = true;
@@ -134,7 +141,7 @@ class TaskList extends AbstractTaskList
             'd_created' => $this->d_created,
             'd_edited' => $this->d_edited,
             'sorting' => $this->sorting,
-            'published' => $this->isPublished ? 1 : 0,
+            'published' => $this->published,
             'taskview' => ($this->isShowCompleted ? 1:0) + ($this->isShowNotes ? 2:0) + ($this->isHidden ? 4:0),
             'extra' => null,
         ];
@@ -165,7 +172,10 @@ class TaskList extends AbstractTaskList
         $entity->d_created = (int)$a['d_created'];
         $entity->d_edited = (int)$a['d_edited'];
         $entity->sorting = (int)$a['sorting'];
-        $entity->isPublished = boolval($a['published']);
+        $entity->published = (int)$a['published'];
+        if (!in_array($entity->published, [self::ACCESS_PRIVATE, self::ACCESS_READ,self::ACCESS_CREATE])) {
+            $entity->published = self::ACCESS_PRIVATE;
+        }
 
         $flags = (int)$a['taskview'];
         $entity->isShowCompleted = boolval($flags & 1);
@@ -197,7 +207,7 @@ class TaskList extends AbstractTaskList
                 'id' => $this->id ?? '',
                 'name' => htmlspecialchars($this->name ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
                 'sort' => static::defaultSort,
-                'published' => $this->isPublished ? 1 : 0,
+                'published' => $this->published,
                 'showCompl' => static::defaultShowCompl,
         );
 
@@ -205,7 +215,7 @@ class TaskList extends AbstractTaskList
             'id' => $this->id ?? '',
             'name' => htmlspecialchars($this->name ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
             'sort' => $this->sorting,
-            'published' => $this->isPublished ? 1 : 0,
+            'published' => $this->published,
             'showCompl' => $this->isShowCompleted ? 1 : 0,
             'showNotes' => $this->isShowNotes ? 1 : 0,
             'hidden' => $this->isHidden ? 1 : 0,
@@ -215,7 +225,7 @@ class TaskList extends AbstractTaskList
 
     function toPublicJsonApiArray(): array
     {
-        return $this->isPublished ? $this->toJsonApiArray(true) : [];
+        return $this->published === self::ACCESS_PRIVATE ? [] : $this->toJsonApiArray(true);
     }
 }
 
