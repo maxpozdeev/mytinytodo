@@ -440,10 +440,7 @@ const mtt = window.mytinytodo = {
         });
 
         $('#tagcloudbtn').click(function(){
-            if (flag.readOnly) {
-                $('#tagcloudAllLists').prop('checked', false).prop('disabled', true);
-            }
-            else if (curList.id == -1) {
+            if (curList.id == -1) {
                 $('#tagcloudAllLists').prop('checked', true).prop('disabled', true);
             }
             else {
