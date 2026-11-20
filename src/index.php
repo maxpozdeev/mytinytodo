@@ -160,6 +160,7 @@ function jsOptions()
     $a = array(
         "token" => htmlspecialchars(access_token()),
         "me" => username() ?? '',                   # logged-in username (may be empty for guest)
+        "meId" => userId() ?? 0,                    # logged-in user id (may be 0 for guest)
         "username" => $requestedUsername,           # the user who owns the requested lists
         "title" => get_unsafe_mttinfo('title'),
         "mttUrl" => get_mttinfo('mtt_uri'),
@@ -168,7 +169,7 @@ function jsOptions()
         "goPrefix" => htmlspecialchars(routerGetUserGoPrefix()),
         "routerPrefix" => htmlspecialchars(routerMakeUrl('')),
         "tasksUrl" => get_mttinfo('tasks_uri'),
-        "needAuth" => need_auth() ? true : false,
+        "needAuth" => need_auth() ? true : false, //TODO: not needed in js
         "isLogged" => is_logged() ? true : false,
         "showdate" => Config::get('showdate') ? true : false,
         "showtime" => Config::get('showtime') ? true : false,

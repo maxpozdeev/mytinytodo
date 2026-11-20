@@ -17,6 +17,11 @@ var flag = {
     isLogged: false,
     tagsChanged: true,
     readOnly: false,
+    foreignUser: false,  // true if not a list owner
+    accessMode: 'owner', // owner, create, read
+    canManageList: true,
+    canCreateTasks: true,
+    canSelectTasks: true,
     editFormChanged: false,
     firstLoad: true,
     dontChangeHistoryOnce: false,
@@ -791,7 +796,7 @@ const mtt = window.mytinytodo = {
 
         $('#tasklist').on('dblclick', '> li.task-row .task-middle, > li.task-row .task-note-block', function(){
             let id = parseInt(getLiTaskId(this));
-            if (id) {
+            if (id && isTaskEditable(taskList[id])) {
                 //clear selection
                 if (document.selection && document.selection.empty && document.selection.createRange().text)
                     document.selection.empty();
@@ -803,12 +808,16 @@ const mtt = window.mytinytodo = {
 
         $('#tasklist').on('click', '.taskactionbtn', function(){
             var id = parseInt(getLiTaskId(this));
-            if(id) taskContextMenu(this, id);
+            if (id && isTaskEditable(taskList[id])) taskContextMenu(this, id);
             return false;
         });
 
         $('#tasklist').on('click', 'input[type=checkbox].mtt-complete-btn', function(){
             const id = parseInt(getLiTaskId(this));
+            if (!isTaskEditable(taskList[id])) {
+                this.checked = !this.checked;
+                return false;
+            }
             if (id) completeTask(id, this);
             //return false;
         });
@@ -1080,7 +1089,7 @@ const mtt = window.mytinytodo = {
                 }
                 else {
                     const lastOpenList = getLocalStorageItem('lastList');
-                    if (lastOpenList && !flag.readOnly) {
+                    if (lastOpenList && !flag.foreignUser) {
                         list = res.list.find( item => !item.hidden && lastOpenList == item.id );
                     }
                     if (!list) {
@@ -1528,6 +1537,10 @@ function loadTasks(opts)
         return false;
     updateSortUI(curList.sort);
     opts = opts || {};
+    if (!flag.canManageList) {
+        opts.saveSort = 0;
+        opts.saveCompl = 0;
+    }
     if (opts.clearTasklist) {
         $('#tasklist').html('');
         $('#total').html('');
@@ -1594,6 +1607,55 @@ function prepareListHtml(list, isSelected)
            '</a></li>';
 }
 
+function getCurrentListAccessMode()
+{
+    if (!flag.foreignUser)
+        return 'owner';
+    if (flag.isLogged && curList && curList.id && curList.id != -1 && parseInt(curList.published) === 2)
+        return 'create';
+    return 'read';
+}
+
+function isTaskEditable(item)
+{
+    if (!item)
+        return false;
+    if (flag.accessMode === 'owner')
+        return true;
+    return flag.accessMode === 'create'
+        && flag.isLogged
+        && mtt.options.meId > 0
+        && item.authorId == mtt.options.meId;
+}
+
+function applyListAccessUI(mode)
+{
+    flag.accessMode = mode;
+    flag.readOnly = (mode === 'read');
+    flag.canManageList = (mode === 'owner');
+    flag.canCreateTasks = (mode === 'owner' || mode === 'create');
+    flag.canSelectTasks = (mode === 'owner');
+
+    $('#mtt')
+        .toggleClass('readonly', flag.readOnly)
+        .toggleClass('create-access', mode === 'create')
+        .toggleClass('foreign-user', flag.foreignUser);
+
+    const ownerOnly = flag.canManageList;
+    const ownerOnlySelector = '#btnRenameList,#btnDeleteList,#btnClearCompleted,#btnPublish,#btnFeedKey,#btnShowFeedKey,#btnHideList';
+    $(ownerOnlySelector).toggle(ownerOnly);
+    $('#btnHideList').next().toggle(ownerOnly); //delimiter
+    $('#btnFeedKey').prev().toggle(ownerOnly); //delimiter
+    $('.mtt-tabs-new-button').toggle(ownerOnly);
+    $('#seltasksbtn').toggle(flag.canSelectTasks);
+    $('#sortByHand').toggle(ownerOnly);
+    $('#taskedit_prio_row').toggle(ownerOnly);
+
+    if (!flag.canSelectTasks && $('#mtt').is('.select-tasks')) {
+        switchSelectTasksMode(false);
+    }
+}
+
 function prepareTaskStr(item, noteExp)
 {
     return '<li id="taskrow_'+item.id+'" ' + 'data-id="'+item.id + '" class="task-row ' + (item.compl?'task-completed ':'') + item.dueClass + (item.note!=''?' task-has-note':'') +
@@ -1607,12 +1669,16 @@ function prepareTaskBlocks(item)
     const id = item.id;
     let markdown = '';
     if (mtt.options.markdown == true) markdown = 'markdown-note';
+    const editable = isTaskEditable(item);
+    const multiselect = flag.canSelectTasks
+        ? `<div class="task-multiselect mtt-show-on-select-tasks"><label><input type="checkbox" name="seltask" class="mtt-multi-task" value="${id}"><label></div>`
+        : '';
     return '' +
         '<div class="task-block">' +
             '<div class="task-left">' +
-                `<div class="task-multiselect mtt-show-on-select-tasks"><label><input type="checkbox" name="seltask" class="mtt-multi-task" value="${id}"><label></div>` +
+                multiselect +
                 '<div class="task-toggle mtt-hide-on-select-tasks"></div>' +
-                '<label class="mtt-hide-on-select-tasks"><input type="checkbox" '+(flag.readOnly?'disabled="disabled"':'')+(item.compl?'checked="checked"':'')+' class="mtt-complete-btn"></label>' +
+                '<label class="mtt-hide-on-select-tasks"><input type="checkbox" '+(!editable?'disabled="disabled"':'')+(item.compl?'checked="checked"':'')+' class="mtt-complete-btn"></label>' +
             "</div>\n" +
 
             '<div class="task-middle">' +
@@ -1628,7 +1694,7 @@ function prepareTaskBlocks(item)
                 '</div>' +
             "</div>" +
 
-            '<div class="task-actions"><div class="taskactionbtn"></div></div>' +
+            (editable ? '<div class="task-actions"><div class="taskactionbtn"></div></div>' : '') +
         '</div>' +
 
         '<div class="task-note-block">' +
@@ -1807,7 +1873,7 @@ function refreshPagination(json)
 
 function submitNewTask(form)
 {
-    if (form.task.value == '') return false;
+    if (form.task.value == '' || !flag.canCreateTasks) return false;
     mtt.db.request('newTask', { list:curList.id, title: form.task.value, tag:mtt.filter.getTags() }, function(json){
         if (!json.total) {
             return;
@@ -1845,7 +1911,7 @@ function setSort(v, init)
         return;
     }
     curList.sort = v;
-    loadTasks({ saveSort: flag.readOnly ? 0 : 1 });
+    loadTasks({ saveSort: flag.canManageList ? 1 : 0 });
 };
 
 
@@ -1882,7 +1948,7 @@ function updateSortUI(v)
     }
 
     curList.sort = v;
-    if ( (v == 0 || v == 100) && !flag.readOnly && curList.id !== -1) $("#tasklist").sortable('enable');
+    if ( (v == 0 || v == 100) && flag.canManageList && curList.id !== -1) $("#tasklist").sortable('enable');
     else $("#tasklist").sortable('disable');
 };
 
@@ -1924,6 +1990,8 @@ function switchSelectTasksMode(onoff)
         // toggle
         onoff = ! $('#mtt').is('.select-tasks');
     }
+    if (onoff && !flag.canSelectTasks)
+        return;
     if (onoff) {
         refreshSelectedTasksCnt();
         toggleAllNotes(0);
@@ -2098,6 +2166,7 @@ function tabSelect(elementOrId)
 
     const prevList = curList;
     curList = tabLists.get(id);
+    applyListAccessUI(getCurrentListAccessMode());
 
     $('#lists .mtt-tab-selected').removeClass('mtt-tab-selected');
 
@@ -2251,6 +2320,7 @@ function fillTaskViewer(id)
     $('#page_taskviewer .due .content').html(item.duedate);
     $('#page_taskviewer .tags .content').html(prepareTagsStr(item, ''));
     $('#page_taskviewer .list .content').text(curList.id == -1 ? item.listName : curList.name);
+    $('#taskviewer_edit_btn').toggle(isTaskEditable(item));
     if (item.note == '') {
         $('#page_taskviewer').addClass('no-note');
     }
@@ -2274,7 +2344,7 @@ function viewTask(id)
 function editTask(id)
 {
     var item = taskList[id];
-    if(!item) return false;
+    if(!item || !isTaskEditable(item)) return false;
     // no need to clear form
     var form = document.getElementById('taskedit_form');
     form.task.value = item.titleText;
@@ -2316,8 +2386,11 @@ function clearEditForm()
 
 function showEditForm(isAdd)
 {
+    if (isAdd && !flag.canCreateTasks)
+        return false;
     switchSelectTasksMode(false);
     let form = document.getElementById('taskedit_form');
+    $('#taskedit_prio_row').toggle(flag.canManageList);
     if (isAdd)
     {
         clearEditForm();
@@ -2364,6 +2437,8 @@ function saveTask(form)
         return submitFullTask(form);
 
     const oldItem = taskList[form.id.value];
+    if (oldItem && !isTaskEditable(oldItem))
+        return false;
     let duedate = $("#duedate").datepicker('getDate');
     if (duedate) {
         duedate = duedate.getFullYear() + '-' + (duedate.getMonth() + 1) + '-' + duedate.getDate();
@@ -2580,7 +2655,7 @@ function searchTasks(force)
 
 function submitFullTask(form)
 {
-    if (flag.readOnly) return false;
+    if (flag.readOnly || !flag.canCreateTasks) return false;
 
     let duedate = $("#duedate").datepicker('getDate');
     if (duedate) {
@@ -3108,12 +3183,15 @@ class mttMenu
 
 function taskContextMenu(el, id)
 {
+    if (!isTaskEditable(taskList[id]))
+        return false;
     if(!mtt.menus.cmenu) mtt.menus.cmenu = new mttMenu('taskcontextcontainer', {
         onclick: taskContextClick,
         beforeShow: function() {
             var taskId = this.tag;
             $('#taskrow_'+taskId).addClass('menu-active');
             $('#cmenu_copy_link a').attr('href', mtt.urlForTask(taskId));
+            $('#cmenu_prio, #cmenu_move').toggle(flag.canManageList);
             $('#cmenupriocontainer li').removeClass('mtt-item-checked');
             $('#cmenu_prio\\:'+ taskList[taskId].prio).addClass('mtt-item-checked');
         },
@@ -3294,6 +3372,8 @@ function tabmenuOnListSelected(a)
 
 function listOrderChanged(event, ui)
 {
+    if (!flag.canManageList)
+        return;
     const order = tabLists.updateOrder();
     mtt.db.request('changeListOrder', {order:order});
     mtt.doAction('listOrderChanged', {order:order});
@@ -3776,23 +3856,18 @@ function updateAccessStatus()
     if (!flag.needAuth) {
         $('#mtt').addClass('no-need-auth');
     }
-    if (flag.needAuth && (!flag.isLogged || (mtt.options.username != '' && mtt.options.username != mtt.options.me))) {
-        flag.readOnly = true;
+
+    flag.foreignUser = (mtt.options.username != '' && mtt.options.username != mtt.options.me);
+
+    if (flag.needAuth && (!flag.isLogged || flag.foreignUser)) {
+        applyListAccessUI('read');
         if (mtt.options.username != '')
             $("#bar_public").show();
-        $('#mtt').addClass('readonly')
         liveSearchToggle(1);
-        // remove some tab menu items
-        $('#btnRenameList,#btnDeleteList,#btnClearCompleted,#btnPublish').remove();
-        $('#seltasksbtn').remove();
-        $('#sortByHand').remove();
-        $('#btnFeedKey').prev().remove().addBack().remove(); //with menu delimeter
-        $('#btnShowFeedKey').remove();
         $('#slmenucontainer li.list-id--1').addClass('mtt-item-disabled');
     }
     else {
-        flag.readOnly = false;
-        $('#mtt').removeClass('readonly')
+        applyListAccessUI(flag.foreignUser ? 'read' : 'owner');
         $("#bar_public").hide();
         liveSearchToggle(0);
     }

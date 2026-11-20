@@ -332,8 +332,8 @@ class Task extends AbstractTask
     public ?array $extra = null;
 
     public int $ow = 0;
-    protected ?array $tagIds;
-    public ?array $tagNames;
+    protected array $tagIds = [];
+    public array $tagNames = [];
 
     protected ?string $listName;
 
@@ -437,6 +437,7 @@ class Task extends AbstractTask
         return array(
             'id' => $this->id ?? '',                //int
             'listId' => $this->listId ?? 0,         //int
+            'authorId' => $this->authorId,          //int
             'listName' => htmlspecialchars($this->listName ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
             'title' => $this->titleHtml(),
             'titleText' => $this->title,            // raw, not escaped

@@ -66,10 +66,26 @@ class TagsController extends ApiController {
     function getSuggestions(): void
     {
         $listId = (int)_get('list');
-        checkWriteAccess($listId);
         $db = DBConnection::instance();
         $prefix = trim(_get('q'));
-        $this->response->data = (new TagRepo($db))->getSuggestions($listId, $prefix, 8);
+        $tagRepo = new TagRepo($db);
+
+        if ($listId === -1) {
+            checkWriteAccess(-1);
+            $this->response->data = $tagRepo->getSuggestions(-1, $prefix, 8);
+            return;
+        }
+
+        $list = checkAndGetListForRead($listId);
+        if (canWriteToList($list)) {
+            $this->response->data = $tagRepo->getSuggestions($listId, $prefix, 8);
+            return;
+        }
+        if (canCreateInList($list)) {
+            $this->response->data = $tagRepo->getPublicSuggestions((int)$list->userId, $prefix, 8);
+            return;
+        }
+        denyAccess();
     }
 
 }

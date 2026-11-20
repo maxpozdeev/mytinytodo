@@ -74,6 +74,43 @@ function checkWriteAccessToList(AbstractTaskList $list)
     denyAccess();
 }
 
+
+/**
+ * Ensure that the current user can create tasks in the requested list.
+ * Returns the list instance.
+ * @throws Exception
+ */
+function checkAndGetListForCreate(int $listId): TaskList
+{
+    $req = ApiRequest::instance();
+    if (!is_logged())
+        denyAccess();
+
+    $repo = new ListRepo(DBConnection::instance());
+    $ownerId = $req->isTargetExplicit() ? $req->targetUserId() : null;
+    $list = $repo->findRealListById($listId, $ownerId);
+    if (!$list) {
+        if (is_logged())
+            ErrorApiResponse::exitWithMessage(__("listNotFound"), 404);
+        denyAccess();
+    }
+    if (!canReadList($list) || !canCreateInList($list))
+        denyAccess();
+    return $list;
+}
+
+
+/**
+ * Ensure that the current user can edit or delete the task.
+ * @throws Exception
+ */
+function checkTaskForEdit(Task $task, TaskList $list): void
+{
+    if (canEditTask($task, $list))
+        return;
+    denyAccess();
+}
+
 /**
  * @param int $listId
  * @param bool $onlyReal

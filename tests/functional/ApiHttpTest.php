@@ -541,6 +541,149 @@ class ApiHttpTest extends TestCase
         ]));
     }
 
+    public function testCreateAccessAllowsOtherUsersToManageOwnTasks(): void
+    {
+        // Bob creates a list and opens it for reading and task creation
+        $this->login('bob', self::BOB_PASSWORD);
+        $r = $this->api('POST', '/lists', ['action' => 'new', 'name' => 'Bob create access']);
+        $this->assertStatus(200, $r);
+        $listId = (int)$r['json']['list'][0]['id'];
+        $this->assertStatus(200, $this->api('PUT', '/lists/'. $listId, [
+            'action' => 'publish',
+            'publish' => TaskList::ACCESS_CREATE,
+        ]));
+        $r = $this->api('PUT', '/lists/'. $listId, [
+            'action' => 'publish',
+            'publish' => 3,
+        ]);
+        $this->assertStatus(400, $r);
+        $this->assertFalse($r['json']['ok'] ?? true, $this->requestMessage($r));
+
+        $r = $this->api('POST', '/tasks', [
+            'action' => 'newSimple',
+            'list' => $listId,
+            'title' => 'Task by Bob',
+        ]);
+        $this->assertStatus(200, $r);
+        $ownerTaskId = (int)$r['json']['list'][0]['id'];
+
+        // Alice creates a task in Bob's list; her authorship is stored
+        $this->login('alice', self::ALICE_PASSWORD);
+        $r = $this->api('POST', '/tasks', [
+            'action' => 'newFull',
+            'list' => $listId,
+            'title' => 'Task by Alice',
+            'note' => 'note',
+            'prio' => 2,
+            'tags' => 'bob-tag',
+            'duedate' => '2030-01-01',
+        ]);
+        $this->assertStatus(200, $r);
+        $taskId = (int)$r['json']['list'][0]['id'];
+        $this->assertSame(self::ALICE, $r['json']['list'][0]['authorId']);
+        $this->assertSame(0, $r['json']['list'][0]['prio']); // non-owners cannot set priority
+
+        // A new or foreign tag is rejected
+        $this->assertStatus(400, $this->api('POST', '/tasks', [
+            'action' => 'newFull',
+            'list' => $listId,
+            'title' => 'Task with a new tag',
+            'tags' => 'new-tag',
+        ]));
+        $this->assertStatus(400, $this->api('POST', '/tasks', [
+            'action' => 'newFull',
+            'list' => $listId,
+            'title' => 'Task with a foreign tag',
+            'tags' => 'alice-tag',
+        ]));
+
+        // Alice can edit her own task
+        $r = $this->api('PUT', '/tasks/'. $taskId, [
+            'action' => 'edit',
+            'title' => 'Edited by Alice',
+            'note' => 'edited note',
+            'prio' => 2,
+            'tags' => 'bob-tag',
+            'duedate' => '2031-02-03',
+        ]);
+        $this->assertStatus(200, $r);
+        $this->assertSame('Edited by Alice', $r['json']['list'][0]['titleText']);
+        $this->assertSame(0, $r['json']['list'][0]['prio']);
+
+        // Removing all tags is reflected in the response
+        $r = $this->api('PUT', '/tasks/'. $taskId, [
+            'action' => 'edit',
+            'title' => 'Edited by Alice',
+            'tags' => '',
+        ]);
+        $this->assertStatus(200, $r);
+        $this->assertSame('', $r['json']['list'][0]['tags']);
+        $this->assertSame('', $r['json']['list'][0]['tags_ids']);
+
+        // Alice cannot use a new tag while editing
+        $this->assertStatus(400, $this->api('PUT', '/tasks/'. $taskId, [
+            'action' => 'edit',
+            'title' => 'Edited by Alice',
+            'tags' => 'new-tag',
+        ]));
+
+        // Alice can change the completion state of her own task
+        $r = $this->api('PUT', '/tasks/'. $taskId, [
+            'action' => 'complete',
+            'compl' => 1,
+        ]);
+        $this->assertStatus(200, $r);
+        $this->assertSame(1, $r['json']['list'][0]['compl']);
+
+        // Tag suggestions for another user's list contain only public tags
+        $r = $this->api('GET', '/suggestTags?list='. $listId. '&q=bob');
+        $this->assertStatus(200, $r);
+        $this->assertSame(['bob-tag'], $r['json']);
+
+        // Alice cannot edit or delete a task authored by the list owner
+        $this->assertStatus(200, $this->api('GET', '/tasks/'. $ownerTaskId));
+        $this->assertDenied($this->api('PUT', '/tasks/'. $ownerTaskId, [
+            'action' => 'edit',
+            'title' => 'Edited by Alice',
+        ]));
+        $this->assertDenied($this->api('DELETE', '/tasks/'. $ownerTaskId));
+
+        // Priority, moving, manual ordering and bulk operations are owner-only
+        $this->assertDenied($this->api('PUT', '/tasks/'. $taskId, [
+            'action' => 'priority',
+            'prio' => 1,
+        ]));
+        $this->assertDenied($this->api('PUT', '/tasks/'. $taskId, [
+            'action' => 'move',
+            'to' => self::ALICE_PRIVATE_LIST,
+        ]));
+        $this->assertDenied($this->api('PUT', '/tasks/'. $taskId. '/position', [
+            'afterId' => self::ALICE_PRIVATE_TASK,
+        ]));
+        $this->assertDenied($this->api('PATCH', '/tasks', [
+            'ids' => [$taskId],
+            'compl' => 1,
+        ]));
+        $this->assertDenied($this->api('DELETE', '/tasks', [
+            'ids' => [$taskId],
+        ]));
+
+        // The list owner can read and edit the task
+        $this->login('bob', self::BOB_PASSWORD);
+        $this->assertStatus(200, $this->api('GET', '/tasks/'. $taskId));
+        $r = $this->api('PUT', '/tasks/'. $taskId, [
+            'action' => 'priority',
+            'prio' => 1,
+        ]);
+        $this->assertStatus(200, $r);
+        $this->assertSame(1, $r['json']['list'][0]['prio']);
+
+        // Alice can still delete her own task
+        $this->login('alice', self::ALICE_PASSWORD);
+        $this->assertStatus(200, $this->api('DELETE', '/tasks/'. $taskId));
+        $this->assertStatus(404, $this->api('GET', '/tasks/'. $taskId));
+    }
+
     public function testTasksBulkTags(): void
     {
         $this->login('alice', self::ALICE_PASSWORD);

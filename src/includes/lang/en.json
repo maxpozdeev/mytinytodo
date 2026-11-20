@@ -260,6 +260,7 @@
     "confirmLeave": "There can be unsaved data. Do you really want to leave?",
     "error": "Some error occurred",
     "denied": "Access denied",
+    "tagNotAllowed": "Tag is not allowed",
     "listNotFound": "List not found",
     "taskNotFound": "Task not found",
     "noPublicLists": "No public tasks",

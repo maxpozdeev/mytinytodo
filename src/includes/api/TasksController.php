@@ -167,12 +167,17 @@ class TasksController extends ApiController {
             $this->response->errorJsonContent(__("listNotFound"), 404);
             return;
         }
-        $list = checkAndGetListForWrite($listId, true);
+        $list = checkAndGetListForCreate($listId);
+        $isOwner = canWriteToList($list);
+        $authorId = $isOwner ? (int)$list->userId : (int)userId();
         if ($action == 'newFull') {
-            $this->response->data = $this->fullNewTaskInList($list);
+            $result = $this->fullNewTaskInList($list, $authorId, $isOwner);
         }
         else {
-            $this->response->data = $this->newTaskInList($list);
+            $result = $this->newTaskInList($list, $authorId, $isOwner);
+        }
+        if ($result !== null) {
+            $this->response->data = $result;
         }
     }
 
@@ -452,7 +457,6 @@ class TasksController extends ApiController {
      */
     function deleteId($id): void
     {
-        checkWriteAccess();
         $id = (int)$id;
         $repo = new TaskRepo(DBConnection::instance());
         $task = $repo->findTaskById($id);
@@ -460,7 +464,8 @@ class TasksController extends ApiController {
             $this->response->errorJsonContent(__("taskNotFound"), 404);
             return;
         }
-        checkWriteAccess($task->listId);
+        $list = checkAndGetListForRead($task->listId);
+        checkTaskForEdit($task, $list);
         $this->response->data = $this->deleteTask($task);
     }
 
@@ -479,15 +484,28 @@ class TasksController extends ApiController {
             $this->response->errorJsonContent(__("taskNotFound"), 404);
             return;
         }
-        $list = checkAndGetListForWrite($task->listId);
+        $list = checkAndGetListForRead($task->listId);
+        checkTaskForEdit($task, $list);
+        $isOwner = canWriteToList($list);
 
         $action = $this->req->jsonBody['action'] ?? '';
         switch ($action) {
-            case 'edit':     $this->response->data = $this->editTask($task, $list); break;
+            case 'edit':
+                $result = $this->editTask($task, $list, $isOwner);
+                if ($result !== null) {
+                    $this->response->data = $result;
+                }
+                break;
             case 'complete': $this->response->data = $this->completeTask($task); break;
             case 'note':     $this->response->data = $this->editNote($task);     break;
-            case 'move':     $this->response->data = $this->moveTask($task);     break;
-            case 'priority': $this->response->data = $this->priorityTask($task); break;
+            case 'move':
+                if (!$isOwner) denyAccess();
+                $this->response->data = $this->moveTask($task);
+                break;
+            case 'priority':
+                if (!$isOwner) denyAccess();
+                $this->response->data = $this->priorityTask($task);
+                break;
             case 'delete':   $this->response->data = $this->deleteTask($task);   break; //compatibility
             default:         $this->response->errorJsonContent("Unexpected action", 400); return;
         }
@@ -572,7 +590,13 @@ class TasksController extends ApiController {
      */
     function postParseTitle(): void
     {
-        checkWriteAccess();
+        $listId = (int)($this->req->jsonBody['list'] ?? 0);
+        if ($listId > 0) {
+            checkAndGetListForCreate($listId);
+        }
+        else {
+            checkWriteAccess();
+        }
         $t = array(
             'title' => trim( $this->req->jsonBody['title'] ?? '' ),
             'prio' => 0,
@@ -600,7 +624,8 @@ class TasksController extends ApiController {
      */
     function postPreviewNote(): void
     {
-        checkWriteAccess();
+        if (!is_logged())
+            denyAccess();
         $note = $this->req->jsonBody['note'] ?? '';
         if (!is_string($note)) {
             $this->response->errorJsonContent("Malformed field: `note`", 400);
@@ -673,7 +698,55 @@ class TasksController extends ApiController {
 
     /* Private Functions */
 
-    private function newTaskInList(TaskList $list): ?array
+    /**
+     * Normalize a comma-separated list of tag names and validate it.
+     * Owners may use any tag (new tags are created by TaskRepo::saveTask()).
+     * Other users may use only existing public tags of the list owner,
+     * plus tags that are already assigned to the task.
+     * @param string $tags
+     * @param TaskList $list
+     * @param bool $isOwner
+     * @param string[] $existingTagNames
+     * @return string[]|null null when a tag is not allowed (response is set)
+     * @throws Exception
+     */
+    private function prepareTaskTagNames(string $tags, TaskList $list, bool $isOwner, array $existingTagNames = []): ?array
+    {
+        $names = [];
+        foreach (explode(',', $tags) as $tagName) {
+            $tagName = str_replace(array('^','#'), '', trim($tagName));
+            if ($tagName !== '') {
+                $names[$tagName] = $tagName;
+            }
+        }
+        $names = array_values($names);
+
+        if (!$isOwner && $names) {
+            $tagRepo = new TagRepo(DBConnection::instance());
+            $allowed = $tagRepo->findTagsByNames($names, (int)$list->userId, true);
+            $allowedNames = [];
+            foreach ($allowed as $tag) {
+                $allowedNames[mb_strtolower($tag->name)] = true;
+            }
+            foreach ($existingTagNames as $tagName) {
+                $tagName = trim((string)$tagName);
+                if ($tagName !== '') {
+                    $allowedNames[mb_strtolower($tagName)] = true;
+                }
+            }
+            foreach ($names as $tagName) {
+                if (!isset($allowedNames[mb_strtolower($tagName)])) {
+                    $this->response->errorJsonContent(__("tagNotAllowed"), 400);
+                    return null;
+                }
+            }
+        }
+
+        return $names;
+    }
+
+
+    private function newTaskInList(TaskList $list, int $authorId, bool $isOwner): ?array
     {
         $failedResult = [
             'ok' => false,
@@ -703,11 +776,18 @@ class TasksController extends ApiController {
         if (Config::get('autotag')) {
             $tags .= ',' . ($this->req->jsonBody['tag'] ?? '');
         }
+        if (!$isOwner) {
+            $prio = 0;
+        }
+        $tagNames = $this->prepareTaskTagNames($tags, $list, $isOwner);
+        if ($tagNames === null) {
+            return null;
+        }
 
-        $task = Task::create($title, $list->id, (int)$list->userId);
+        $task = Task::create($title, $list->id, $authorId);
         $task->setPriority($prio);
         $task->setDuedate($duedate);
-        $task->tagNames = explode(',', $tags);
+        $task->tagNames = $tagNames;
 
         $repo = new TaskRepo(DBConnection::instance());
         $repo->saveTask($task, $list);
@@ -720,7 +800,7 @@ class TasksController extends ApiController {
         ];
     }
 
-    private function fullNewTaskInList(TaskList $list): ?array
+    private function fullNewTaskInList(TaskList $list, int $authorId, bool $isOwner): ?array
     {
         $title = trim($this->req->jsonBody['title'] ?? '');
         if ($title == '')
@@ -739,12 +819,19 @@ class TasksController extends ApiController {
         $tags = $this->req->jsonBody['tags'] ?? '';
         if (Config::get('autotag'))
             $tags .= ',' . ($this->req->jsonBody['tag'] ?? '');
+        if (!$isOwner) {
+            $prio = 0;
+        }
+        $tagNames = $this->prepareTaskTagNames(is_string($tags) ? $tags : '', $list, $isOwner);
+        if ($tagNames === null) {
+            return null;
+        }
 
-        $task = Task::create($title, $list->id, (int)$list->userId);
+        $task = Task::create($title, $list->id, $authorId);
         $task->setNote($note);
         $task->setPriority($prio);
         $task->setDuedate($duedate);
-        $task->tagNames = explode(',', $tags);
+        $task->tagNames = $tagNames;
 
         $repo = new TaskRepo(DBConnection::instance());
         $repo->saveTask($task, $list);
@@ -757,7 +844,7 @@ class TasksController extends ApiController {
         ];
     }
 
-    private function editTask(Task $task, TaskList $list): ?array
+    private function editTask(Task $task, TaskList $list, bool $isOwner): ?array
     {
         $title = trim($this->req->jsonBody['title'] ?? '');
         if ($title == '')
@@ -775,11 +862,18 @@ class TasksController extends ApiController {
         $duedate = MTTSmartSyntax::parseDuedate(trim( $this->req->jsonBody['duedate'] ?? '' ));
         $tags = trim( $this->req->jsonBody['tags'] ?? '' );
 
+        $tagNames = $this->prepareTaskTagNames($tags, $list, $isOwner, $task->tagNames ?? []);
+        if ($tagNames === null) {
+            return null;
+        }
+
         $task->setTitle($title);
         $task->setNote($note);
-        $task->setPriority($prio);
+        if ($isOwner) {
+            $task->setPriority($prio);
+        }
         $task->setDuedate($duedate);
-        $task->tagNames = explode(',', $tags);
+        $task->tagNames = $tagNames;
 
         $repo = new TaskRepo(DBConnection::instance());
         $repo->saveTask($task, $list);

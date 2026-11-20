@@ -569,6 +569,9 @@ class TaskRepo
                 }
                 $task->setTags($tags);
             }
+            else {
+                $task->setTags([]);
+            }
             $this->db->ex("COMMIT");
         }
         else {
@@ -590,6 +593,9 @@ class TaskRepo
                     );
                 }
                 $task->setTags($tags);
+            }
+            else {
+                $task->setTags([]);
             }
 
             $this->db->dq("UPDATE {$this->db->prefix}todolist SET title=?,note=?,prio=?,duedate=?,d_edited=?,extra=? WHERE id=?",

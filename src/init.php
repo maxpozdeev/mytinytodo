@@ -720,6 +720,36 @@ function canWriteToList(AbstractTaskList $list) : bool
 }
 
 
+/**
+ * Whether the current user can create tasks in the list.
+ * Owners can always create tasks. Other authenticated users can create tasks
+ * only in lists with ACCESS_CREATE.
+ */
+function canCreateInList(TaskList $list) : bool
+{
+    if (!is_logged())
+        return false;
+    return userId() === $list->userId || $list->published === TaskList::ACCESS_CREATE;
+}
+
+
+/**
+ * Whether the current user can edit or delete the task.
+ * Owners of the list can manage all tasks. Other users can manage only
+ * their own tasks in lists with ACCESS_CREATE.
+ */
+function canEditTask(Task $task, TaskList $list) : bool
+{
+    if (!is_logged())
+        return false;
+    if (userId() === $list->userId)
+        return true;
+    return $list->published === TaskList::ACCESS_CREATE
+        && $task->authorId > 0
+        && $task->authorId === userId();
+}
+
+
 function suggestedMailFrom(): string
 {
     $host = parse_url(get_unsafe_mttinfo('url'), PHP_URL_HOST);

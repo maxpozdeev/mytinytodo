@@ -103,7 +103,7 @@ $().ready(function(){
 <input type="hidden" name="id" value="">
 
 <div class="form-container">
-<div class="form-row form-row-short">
+<div class="form-row form-row-short" id="taskedit_prio_row">
   <span class="h"><?php _e('priority');?></span>
   <select name="prio" class="form-input">
     <option value="2">+2</option>

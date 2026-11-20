@@ -68,6 +68,102 @@ class TagRepo
 
 
     /**
+     * Find existing tags by their names without creating new ones.
+     * When $publicOnly is true, only tags used in published lists of the user are returned.
+     * @param string[] $tagNames
+     * @param int $userId
+     * @param bool $publicOnly
+     * @return Tag[]
+     */
+    public function findTagsByNames(array $tagNames, int $userId, bool $publicOnly = false): array
+    {
+        $names = [];
+        foreach ($tagNames as $tagName) {
+            $tagName = str_replace(array('^','#'), '', trim((string)$tagName));
+            if ($tagName !== '') {
+                $names[$tagName] = $tagName;
+            }
+        }
+        if (!$names) {
+            return [];
+        }
+
+        $names = array_values($names);
+        $placeholders = implode(',', array_fill(0, count($names), '?'));
+        $sql = "SELECT id, user_id, name FROM {$this->db->prefix}tags
+                WHERE user_id=? AND name IN ($placeholders)";
+        $params = array_merge([$userId], $names);
+
+        if ($publicOnly) {
+            $sql .= " AND id IN (
+                SELECT t2t.tag_id FROM {$this->db->prefix}tag2task AS t2t
+                INNER JOIN {$this->db->prefix}lists AS lists ON lists.id = t2t.list_id
+                WHERE lists.user_id=? AND lists.published != 0
+            )";
+            $params[] = $userId;
+        }
+
+        $tags = [];
+        $q = $this->db->dq($sql, $params);
+        while ($r = $q->fetchAssoc()) {
+            $tag = Tag::fromArray($r);
+            $tags[$tag->id] = $tag;
+        }
+        return array_values($tags);
+    }
+
+
+    /**
+     * Get ids of tags used in published lists of the user.
+     * @param int $userId
+     * @return int[]
+     */
+    public function getPublicTagIds(int $userId): array
+    {
+        $ids = [];
+        $q = $this->db->dq(
+            "SELECT DISTINCT t2t.tag_id FROM {$this->db->prefix}tag2task AS t2t
+             INNER JOIN {$this->db->prefix}lists AS lists ON lists.id = t2t.list_id
+             WHERE lists.user_id=? AND lists.published != 0",
+            [$userId]
+        );
+        while ($r = $q->fetchAssoc()) {
+            $ids[] = (int) $r['tag_id'];
+        }
+        return $ids;
+    }
+
+
+    /**
+     * Get tag name suggestions from published lists of the user.
+     * @return string[]
+     */
+    public function getPublicSuggestions(int $userId, string $begin, int $limit = 8): array
+    {
+        $ids = $this->getPublicTagIds($userId);
+        if (!$ids) {
+            return [];
+        }
+        $orderCollation = $this->tagNameOrderByCollation();
+        $where = $this->db->aiciLike('name', '%s%%', $begin);
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        $q = $this->db->dq(
+            "SELECT name FROM {$this->db->prefix}tags
+             WHERE user_id=? AND id IN ($placeholders) AND $where
+             GROUP BY id, name
+             ORDER BY name $orderCollation
+             LIMIT $limit",
+            array_merge([$userId], $ids)
+        );
+        $t = [];
+        while ($r = $q->fetchRow()) {
+            $t[] = $r[0];
+        }
+        return $t;
+    }
+
+
+    /**
      * Finds tag by its name. Return array of id.
      * @param string $name
      * @return int[]
