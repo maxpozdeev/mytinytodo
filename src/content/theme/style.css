@@ -936,6 +936,9 @@ li.task-row .task-multiselect {
 .task-id::after {
   content: ' · '; /* '&middot;' */
 }
+.task-author::after {
+  content: ' · '; /* '&middot;' */
+}
 #mtt.show-date .task-date {
   display: block;
 }

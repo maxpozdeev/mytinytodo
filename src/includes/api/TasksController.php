@@ -170,11 +170,12 @@ class TasksController extends ApiController {
         $list = checkAndGetListForCreate($listId);
         $isOwner = canWriteToList($list);
         $authorId = $isOwner ? (int)$list->userId : (int)userId();
+        $authorUsername = (string)(username() ?? '');
         if ($action == 'newFull') {
-            $result = $this->fullNewTaskInList($list, $authorId, $isOwner);
+            $result = $this->fullNewTaskInList($list, $authorId, $authorUsername, $isOwner);
         }
         else {
-            $result = $this->newTaskInList($list, $authorId, $isOwner);
+            $result = $this->newTaskInList($list, $authorId, $authorUsername, $isOwner);
         }
         if ($result !== null) {
             $this->response->data = $result;
@@ -746,7 +747,7 @@ class TasksController extends ApiController {
     }
 
 
-    private function newTaskInList(TaskList $list, int $authorId, bool $isOwner): ?array
+    private function newTaskInList(TaskList $list, int $authorId, string $authorUsername, bool $isOwner): ?array
     {
         $failedResult = [
             'ok' => false,
@@ -785,6 +786,7 @@ class TasksController extends ApiController {
         }
 
         $task = Task::create($title, $list->id, $authorId);
+        $task->authorUsername = $authorUsername;
         $task->setPriority($prio);
         $task->setDuedate($duedate);
         $task->tagNames = $tagNames;
@@ -800,7 +802,7 @@ class TasksController extends ApiController {
         ];
     }
 
-    private function fullNewTaskInList(TaskList $list, int $authorId, bool $isOwner): ?array
+    private function fullNewTaskInList(TaskList $list, int $authorId, string $authorUsername, bool $isOwner): ?array
     {
         $title = trim($this->req->jsonBody['title'] ?? '');
         if ($title == '')
@@ -828,6 +830,7 @@ class TasksController extends ApiController {
         }
 
         $task = Task::create($title, $list->id, $authorId);
+        $task->authorUsername = $authorUsername;
         $task->setNote($note);
         $task->setPriority($prio);
         $task->setDuedate($duedate);

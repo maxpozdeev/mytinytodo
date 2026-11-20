@@ -342,7 +342,7 @@ MytinytodoAjaxApi.prototype = {
 
     // Lists
     loadLists(params, callback) {
-        const endpoint = params.username ? `user/${params.username}/lists` : 'lists';
+        const endpoint = params.username ? `user/${encodeURIComponent(params.username)}/lists` : 'lists';
         $.getJSON(mytinytodo.apiUrl + endpoint, callback);
     },
 

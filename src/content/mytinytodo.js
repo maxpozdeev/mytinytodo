@@ -1624,8 +1624,8 @@ function isTaskEditable(item)
         return true;
     return flag.accessMode === 'create'
         && flag.isLogged
-        && mtt.options.meId > 0
-        && item.authorId == mtt.options.meId;
+        && mtt.options.me != ''
+        && item.authorUsername == mtt.options.me;
 }
 
 function applyListAccessUI(mode)
@@ -1769,8 +1769,8 @@ mtt.prepareDueDate = prepareDueDate;
 
 function prepareInlineDate(item)
 {
-    var inlineDate = item.dateInlineTitle;
-    var title = item.dateFull;
+    let inlineDate = item.dateInlineTitle;
+    let title = item.dateFull;
     if (item.compl) {
         inlineDate = item.dateCompletedInlineTitle;
         title = item.dateCompletedFull;
@@ -1779,7 +1779,7 @@ function prepareInlineDate(item)
         inlineDate = item.dateEditedInlineTitle;
         title = item.dateEditedFull;
     }
-    return '<span class="task-id">#' + item.id + '</span> <span title="' + title +'">' + inlineDate + '</span>';
+    return `<span class="task-id">#${item.id}</span> <span class="task-author">${item.authorUsername}</span> <span title="${title}">${inlineDate}</span>`;
 }
 mtt.prepareInlineDate = prepareInlineDate;
 

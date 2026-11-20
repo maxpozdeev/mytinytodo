@@ -312,7 +312,7 @@ abstract class AbstractTask extends AbstractEntity
 
 class Task extends AbstractTask
 {
-    protected static array $dbfields = ['id','uuid','list_id','author_id','parent_id','d_created',
+    protected static array $dbfields = ['id','uuid','list_id','author_id','author_username','parent_id','d_created',
         'd_completed','d_edited','compl','title','note','prio','duedate','extra','ow','tags_ids','tags','list_name'];
     protected array $changed = [];
 
@@ -320,6 +320,7 @@ class Task extends AbstractTask
     public ?string $uuid;
     public ?int $listId;                # list_id
     public int $authorId = 0;           # author_id
+    public ?string $authorUsername = null; # username of the author, filled on select
     public ?int $parentId = null;       # parent_id
     public ?string $title;              # title
     public ?string $note = null;        # note
@@ -345,6 +346,7 @@ class Task extends AbstractTask
         $entity->uuid = (string)$a['uuid'];
         $entity->listId = (int)$a['list_id'];
         $entity->authorId = (int)$a['author_id'];
+        $entity->authorUsername = (string)($a['author_username'] ?? '');
         $entity->parentId = (int)$a['parent_id'];
         $entity->title = (string)$a['title'];
         $entity->note = (string)$a['note'];
@@ -437,7 +439,7 @@ class Task extends AbstractTask
         return array(
             'id' => $this->id ?? '',                //int
             'listId' => $this->listId ?? 0,         //int
-            'authorId' => $this->authorId,          //int
+            'authorUsername' => htmlspecialchars($this->authorUsername),
             'listName' => htmlspecialchars($this->listName ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
             'title' => $this->titleHtml(),
             'titleText' => $this->title,            // raw, not escaped

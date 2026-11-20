@@ -652,8 +652,28 @@ class ApiHttpTest extends TestCase
         ]);
         $this->assertStatus(200, $r);
         $taskId = (int)$r['json']['list'][0]['id'];
-        $this->assertSame(self::ALICE, $r['json']['list'][0]['authorId']);
+        $this->assertSame('alice', $r['json']['list'][0]['authorUsername']);
+        $this->assertArrayNotHasKey('authorId', $r['json']['list'][0]);
         $this->assertSame(0, $r['json']['list'][0]['prio']); // non-owners cannot set priority
+
+        // The author username is loaded from the database on subsequent reads
+        $r = $this->api('GET', '/tasks/'. $taskId);
+        $this->assertStatus(200, $r);
+        $this->assertSame('alice', $r['json']['list'][0]['authorUsername']);
+        $this->assertArrayNotHasKey('authorId', $r['json']['list'][0]);
+
+        $r = $this->api('GET', '/tasks?list='. $listId);
+        $this->assertStatus(200, $r);
+        $listedTask = null;
+        foreach ($r['json']['list'] as $item) {
+            if ((int)$item['id'] === $taskId) {
+                $listedTask = $item;
+                break;
+            }
+        }
+        $this->assertNotNull($listedTask);
+        $this->assertSame('alice', $listedTask['authorUsername']);
+        $this->assertArrayNotHasKey('authorId', $listedTask);
 
         // A new or foreign tag is rejected
         $this->assertStatus(400, $this->api('POST', '/tasks', [

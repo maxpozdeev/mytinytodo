@@ -159,9 +159,8 @@ function jsOptions()
     }
     $a = array(
         "token" => htmlspecialchars(access_token()),
-        "me" => username() ?? '',                   # logged-in username (may be empty for guest)
-        "meId" => userId() ?? 0,                    # logged-in user id (may be 0 for guest)
-        "username" => $requestedUsername,           # the user who owns the requested lists
+        "me" => htmlspecialchars(username() ?? ''),          # logged-in username (may be empty for guest)
+        "username" => htmlspecialchars($requestedUsername),  # the user who owns the requested lists
         "title" => get_unsafe_mttinfo('title'),
         "mttUrl" => get_mttinfo('mtt_uri'),
         "homeUrl" => $homeUrl,
