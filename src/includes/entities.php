@@ -50,8 +50,8 @@ abstract class AbstractTaskList extends AbstractEntity implements JsonApiSeriali
 class TaskList extends AbstractTaskList
 {
     const ACCESS_PRIVATE = 0;
-    const ACCESS_READ = 1;
-    const ACCESS_CREATE = 2;
+    const ACCESS_READ_ONLY = 1;
+    const ACCESS_READ_AND_CREATE = 2;
 
     protected static array $dbfields = ['id','user_id','uuid','ow','name','d_created','d_edited','sorting','published','taskview','extra'];
     protected array $changed = [];
@@ -93,7 +93,7 @@ class TaskList extends AbstractTaskList
 
     function setPublished(int $published)
     {
-        if ($published !== self::ACCESS_PRIVATE && $published !== self::ACCESS_READ && $published !== self::ACCESS_CREATE) {
+        if ($published !== self::ACCESS_PRIVATE && $published !== self::ACCESS_READ_ONLY && $published !== self::ACCESS_READ_AND_CREATE) {
             throw new InvalidArgumentException("Invalid `published` property value");
         }
         $this->published = $published;
@@ -173,7 +173,7 @@ class TaskList extends AbstractTaskList
         $entity->d_edited = (int)$a['d_edited'];
         $entity->sorting = (int)$a['sorting'];
         $entity->published = (int)$a['published'];
-        if (!in_array($entity->published, [self::ACCESS_PRIVATE, self::ACCESS_READ,self::ACCESS_CREATE])) {
+        if (!in_array($entity->published, [self::ACCESS_PRIVATE, self::ACCESS_READ_ONLY,self::ACCESS_READ_AND_CREATE])) {
             $entity->published = self::ACCESS_PRIVATE;
         }
 

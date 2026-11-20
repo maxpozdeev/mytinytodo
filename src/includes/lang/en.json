@@ -168,7 +168,7 @@
     "list_clearcompleted": "Clear completed tasks",
     "list_select": "Select list",
     "list_share": "Share",
-    "list_publish": "Publish list",
+    "list_accessmode": "Access mode",
     "list_access_private": "Private",
     "list_access_read": "Read only",
     "list_access_create": "Read and Create",

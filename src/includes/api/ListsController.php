@@ -199,7 +199,7 @@ class ListsController extends ApiController {
     private function publishList(TaskList $list): ?array
     {
         $published = (int)($this->req->jsonBody['publish'] ?? 0);
-        if (!in_array($published, [$list::ACCESS_PRIVATE, $list::ACCESS_READ, $list::ACCESS_CREATE], true)) {
+        if (!in_array($published, [$list::ACCESS_PRIVATE, $list::ACCESS_READ_ONLY, $list::ACCESS_READ_AND_CREATE], true)) {
             $this->response->errorJsonContent("Invalid value of `publish`", 400);
             return null;
         }

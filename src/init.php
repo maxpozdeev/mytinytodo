@@ -699,7 +699,7 @@ function canReadList(TaskList $list, string $inFeedKey = '') : bool
     if (!need_auth() && userId(false) !== $list->userId)
         return false;
 
-    if ($list->published === $list::ACCESS_READ || $list->published == $list::ACCESS_CREATE)
+    if ($list->published === $list::ACCESS_READ_ONLY || $list->published == $list::ACCESS_READ_AND_CREATE)
         return true;
 
     if (is_logged() && userId() === $list->userId)
@@ -729,7 +729,7 @@ function canCreateInList(TaskList $list) : bool
 {
     if (!is_logged())
         return false;
-    return userId() === $list->userId || $list->published === TaskList::ACCESS_CREATE;
+    return userId() === $list->userId || $list->published === TaskList::ACCESS_READ_AND_CREATE;
 }
 
 
@@ -744,7 +744,7 @@ function canEditTask(Task $task, TaskList $list) : bool
         return false;
     if (userId() === $list->userId)
         return true;
-    return $list->published === TaskList::ACCESS_CREATE
+    return $list->published === TaskList::ACCESS_READ_AND_CREATE
         && $task->authorId > 0
         && $task->authorId === userId();
 }

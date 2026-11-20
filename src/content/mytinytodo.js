@@ -1642,10 +1642,9 @@ function applyListAccessUI(mode)
         .toggleClass('foreign-user', flag.foreignUser);
 
     const ownerOnly = flag.canManageList;
-    const ownerOnlySelector = '#btnRenameList,#btnDeleteList,#btnClearCompleted,#btnPublish,#btnFeedKey,#btnShowFeedKey,#btnHideList';
+    const ownerOnlySelector = '#btnRenameList,#btnDeleteList,#btnClearCompleted,#btnAccessMode,#btnHideList';
     $(ownerOnlySelector).toggle(ownerOnly);
     $('#btnHideList').next().toggle(ownerOnly); //delimiter
-    $('#btnFeedKey').prev().toggle(ownerOnly); //delimiter
     $('.mtt-tabs-new-button').toggle(ownerOnly);
     $('#seltasksbtn').toggle(flag.canSelectTasks);
     $('#sortByHand').toggle(ownerOnly);

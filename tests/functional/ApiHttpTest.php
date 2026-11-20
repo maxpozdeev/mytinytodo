@@ -550,7 +550,7 @@ class ApiHttpTest extends TestCase
         $listId = (int)$r['json']['list'][0]['id'];
         $this->assertStatus(200, $this->api('PUT', '/lists/'. $listId, [
             'action' => 'publish',
-            'publish' => TaskList::ACCESS_CREATE,
+            'publish' => TaskList::ACCESS_READ_AND_CREATE,
         ]));
         $r = $this->api('PUT', '/lists/'. $listId, [
             'action' => 'publish',
