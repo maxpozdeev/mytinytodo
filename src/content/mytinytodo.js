@@ -3058,11 +3058,23 @@ class mttMenu
             }
         }
 
-        let y = offset.top + this.parent.$container.offset().top-this.parent.$container.find('li:first').offset().top;
-        if (y +  this.$container.outerHeight(true) > $(window).height() + $(document).scrollTop()) y = $(window).height() + $(document).scrollTop()- this.$container.outerHeight(true) - 1;
+        // find the first "visible" item in the hidden container
+        const $firstItem = this.$container.find('li').filter(function() {
+            return $(this).css('display') !== 'none';
+        }).first();
+        const borderTop = parseFloat(this.$container.css('border-top-width')) || 0;
+        const paddingTop = parseFloat(this.$container.css('padding-top')) || 0;
+        const marginTop = parseFloat($firstItem.css('margin-top')) || 0;
+        let y = offset.top - borderTop - paddingTop - marginTop;
+        if (y + this.$container.outerHeight(true) > $(window).height() + $(document).scrollTop())
+            y = $(window).height() + $(document).scrollTop()- this.$container.outerHeight(true) - 1;
         if (y < 0) y = 0;
 
-        this.$container.css({ position: 'absolute', top: y, left: x, width:this.$container.width() /*, 'min-width': this.$caller.outerWidth()*/ }).show();
+        this.$container.css({
+            position: 'absolute',
+            top: y, left: x,
+            width:this.$container.width() /*, 'min-width': this.$caller.outerWidth()*/
+        }).show();
         this.isOpen = true;
     }
 
