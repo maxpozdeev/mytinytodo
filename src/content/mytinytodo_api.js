@@ -260,7 +260,9 @@ MytinytodoAjaxApi.prototype = {
     },
 
     suggestTags(params, callback) {
-        $.getJSON(mytinytodo.apiUrl + 'suggestTags', {list:params.list, q:params.q}, callback);
+        const username = params.username || mytinytodo.options.username;
+        $.getJSON(mytinytodo.apiUrl + 'user/' + encodeURIComponent(username) +
+            '/suggestTags/' + encodeURIComponent(params.list), {q:params.q}, callback);
     },
 
     tagCloud(params, callback) {

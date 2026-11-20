@@ -114,56 +114,6 @@ class TagRepo
 
 
     /**
-     * Get ids of tags used in published lists of the user.
-     * @param int $userId
-     * @return int[]
-     */
-    public function getPublicTagIds(int $userId): array
-    {
-        $ids = [];
-        $q = $this->db->dq(
-            "SELECT DISTINCT t2t.tag_id FROM {$this->db->prefix}tag2task AS t2t
-             INNER JOIN {$this->db->prefix}lists AS lists ON lists.id = t2t.list_id
-             WHERE lists.user_id=? AND lists.published != 0",
-            [$userId]
-        );
-        while ($r = $q->fetchAssoc()) {
-            $ids[] = (int) $r['tag_id'];
-        }
-        return $ids;
-    }
-
-
-    /**
-     * Get tag name suggestions from published lists of the user.
-     * @return string[]
-     */
-    public function getPublicSuggestions(int $userId, string $begin, int $limit = 8): array
-    {
-        $ids = $this->getPublicTagIds($userId);
-        if (!$ids) {
-            return [];
-        }
-        $orderCollation = $this->tagNameOrderByCollation();
-        $where = $this->db->aiciLike('name', '%s%%', $begin);
-        $placeholders = implode(',', array_fill(0, count($ids), '?'));
-        $q = $this->db->dq(
-            "SELECT name FROM {$this->db->prefix}tags
-             WHERE user_id=? AND id IN ($placeholders) AND $where
-             GROUP BY id, name
-             ORDER BY name $orderCollation
-             LIMIT $limit",
-            array_merge([$userId], $ids)
-        );
-        $t = [];
-        while ($r = $q->fetchRow()) {
-            $t[] = $r[0];
-        }
-        return $t;
-    }
-
-
-    /**
      * Finds tag by its name. Return array of id.
      * @param string $name
      * @return int[]
@@ -253,20 +203,42 @@ class TagRepo
     }
 
     /**
-     * Get tag name suggestions for a list.
+     * Get tag name suggestions for a real list or for all lists of the user.
+     * @param int $listId List id or -1 for all tasks of the user
+     * @param int $userId Owner of the lists
+     * @param string $begin Tag name prefix
+     * @param int $limit Maximum number of suggestions
+     * @param bool $publishedOnly Take into account published lists only (for another user's all lists)
      * @return string[]
      */
-    public function getSuggestions(int $listId, string $begin, int $limit = 8): array
+    public function getSuggestions(int $listId, int $userId, string $begin, int $limit = 8,
+        bool $publishedOnly = false): array
     {
         $orderBy = $this->tagNameOrderByCollation();
         $where = $this->db->aiciLike('name', '%s%%', $begin);
-        $q = $this->db->dq(
-            "SELECT name, tag_id AS id FROM {$this->db->prefix}tags
-             INNER JOIN {$this->db->prefix}tag2task ON id=tag_id
-             WHERE list_id=$listId AND $where
-             GROUP BY tag_id, name
-             ORDER BY name $orderBy
-             LIMIT $limit");
+
+        if ($listId === -1) {
+            $sql = "SELECT DISTINCT tags.name AS name
+                FROM {$this->db->prefix}tag2task AS t2t
+                INNER JOIN {$this->db->prefix}tags AS tags ON t2t.tag_id = tags.id
+                WHERE tags.user_id = ? AND $where
+                  AND t2t.list_id IN (
+                      SELECT id FROM {$this->db->prefix}lists WHERE user_id = ?";
+            if ($publishedOnly)
+                $sql .= " AND published != 0";
+            $sql .= ") ORDER BY name $orderBy LIMIT $limit";
+            $q = $this->db->dq($sql, [$userId, $userId]);
+        }
+        else {
+            $q = $this->db->dq(
+                "SELECT name, tag_id AS id FROM {$this->db->prefix}tags
+                 INNER JOIN {$this->db->prefix}tag2task ON id=tag_id
+                 WHERE list_id=? AND $where
+                 GROUP BY tag_id, name
+                 ORDER BY name $orderBy
+                 LIMIT $limit", [$listId]);
+        }
+
         $t = [];
         while ($r = $q->fetchRow()) {
             $t[] = $r[0];

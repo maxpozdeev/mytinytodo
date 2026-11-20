@@ -725,6 +725,9 @@ const mtt = window.mytinytodo = {
             source: function(request, response) {
                 var taskId = document.getElementById('taskedit_form').id.value;
                 var listId = (taskId != '') ? taskList[taskId].listId : curList.id;
+                if (flag.showTagsFromAllLists) {
+                    listId = -1;
+                }
                 mtt.db.request('suggestTags', {list:listId, q:ac_extractLast(request.term)}, function(json){
                     response(json);
                 })

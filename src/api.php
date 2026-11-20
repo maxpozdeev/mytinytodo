@@ -92,7 +92,7 @@ $endpoints = array(
     '/user/([^/]+)/tags/(-?\d+)' => [
         'GET'  => [ TagsController::class , 'getUserCloud' ]
     ],
-    '/suggestTags' => [
+    '/user/([^/]+)/suggestTags/(-?\d+)' => [
         'GET'  => [ TagsController::class , 'getSuggestions' ],
     ],
     '/(login|logout|session|resetPassword|newPassword)' => [

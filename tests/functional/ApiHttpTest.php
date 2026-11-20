@@ -208,6 +208,11 @@ class ApiHttpTest extends TestCase
         $this->assertStatus(404, $r);
         $this->assertFalse($r['json']['ok'] ?? true);
         $this->assertSame('User not found', $r['json']['error']);
+
+        $r = $this->api('GET', '/user/unknown/suggestTags/-1');
+        $this->assertStatus(404, $r);
+        $this->assertFalse($r['json']['ok'] ?? true);
+        $this->assertSame('User not found', $r['json']['error']);
     }
 
 
@@ -243,8 +248,8 @@ class ApiHttpTest extends TestCase
         $this->assertDenied($this->api('GET', '/tasks/'. self::BOB_PRIVATE_TASK));
         $this->assertStatus(200, $this->api('GET', '/tasks/'. self::BOB_PUBLIC_TASK));
 
-        $this->assertStatus(200, $this->api('GET', '/suggestTags?list='. self::ALICE_PRIVATE_LIST));
-        $this->assertDenied($this->api('GET', '/suggestTags?list='. self::BOB_PRIVATE_LIST));
+        $this->assertStatus(200, $this->api('GET', '/user/alice/suggestTags/'. self::ALICE_PRIVATE_LIST));
+        $this->assertDenied($this->api('GET', '/user/bob/suggestTags/'. self::BOB_PRIVATE_LIST));
     }
 
     public function testUserTasksRouteForForeignUser(): void
@@ -299,6 +304,73 @@ class ApiHttpTest extends TestCase
         $this->assertStatus(200, $r);
         $this->assertSame(1, $r['json']['total']);
         $this->assertSame('bob-tag', $r['json']['items'][0]['tagText']);
+    }
+
+    public function testSuggestTagsForOwnListsFollowsRequestedScope(): void
+    {
+        $this->login('alice', self::ALICE_PASSWORD);
+
+        $r = $this->api('POST', '/tasks', [
+            'action' => 'newFull',
+            'list' => self::ALICE_PRIVATE_LIST,
+            'title' => 'Private tagged task',
+            'tags' => 'alice-private-tag',
+        ]);
+        $this->assertStatus(200, $r);
+
+        // A real list gives suggestions from that list only
+        $r = $this->api('GET', '/user/alice/suggestTags/'. self::ALICE_PRIVATE_LIST. '?q=alice');
+        $this->assertStatus(200, $r);
+        $this->assertSame(['alice-private-tag'], $r['json']);
+
+        // All lists gives suggestions from every own list, including private ones
+        $r = $this->api('GET', '/user/alice/suggestTags/-1?q=alice');
+        $this->assertStatus(200, $r);
+        $this->assertSame(['alice-private-tag', 'alice-tag'], $r['json']);
+    }
+
+    public function testSuggestTagsForForeignListsFollowsRequestedScope(): void
+    {
+        $this->login('bob', self::BOB_PASSWORD);
+        $r = $this->api('POST', '/lists', [
+            'action' => 'new',
+            'name' => 'Bob create suggestions',
+        ]);
+        $this->assertStatus(200, $r);
+        $listId = (int)$r['json']['list'][0]['id'];
+
+        $r = $this->api('PUT', '/lists/'. $listId, [
+            'action' => 'publish',
+            'publish' => TaskList::ACCESS_READ_AND_CREATE,
+        ]);
+        $this->assertStatus(200, $r);
+
+        $r = $this->api('POST', '/tasks', [
+            'action' => 'newFull',
+            'list' => $listId,
+            'title' => 'Bob tagged task',
+            'tags' => 'bob-other-tag',
+        ]);
+        $this->assertStatus(200, $r);
+
+        $this->login('alice', self::ALICE_PASSWORD);
+
+        // A real list gives suggestions from that list only
+        $r = $this->api('GET', '/user/bob/suggestTags/'. $listId. '?q=bob');
+        $this->assertStatus(200, $r);
+        $this->assertSame(['bob-other-tag'], $r['json']);
+
+        // All lists gives suggestions from all published lists of the owner
+        $r = $this->api('GET', '/user/bob/suggestTags/-1?q=bob');
+        $this->assertStatus(200, $r);
+        $this->assertSame(['bob-other-tag', 'bob-tag'], $r['json']);
+
+        // Guests also see tags of published lists only
+        $this->cookies = [];
+        $this->bootstrapGuestSession();
+        $r = $this->api('GET', '/user/bob/suggestTags/-1?q=bob');
+        $this->assertStatus(200, $r);
+        $this->assertSame(['bob-other-tag', 'bob-tag'], $r['json']);
     }
 
     public function testInvalidLogin(): void
@@ -635,8 +707,13 @@ class ApiHttpTest extends TestCase
         $this->assertStatus(200, $r);
         $this->assertSame(1, $r['json']['list'][0]['compl']);
 
-        // Tag suggestions for another user's list contain only public tags
-        $r = $this->api('GET', '/suggestTags?list='. $listId. '&q=bob');
+        // A real list gives suggestions from that list only; all its tags were removed above
+        $r = $this->api('GET', '/user/bob/suggestTags/'. $listId. '?q=bob');
+        $this->assertStatus(200, $r);
+        $this->assertSame([], $r['json']);
+
+        // All lists gives suggestions from all published lists of the owner
+        $r = $this->api('GET', '/user/bob/suggestTags/-1?q=bob');
         $this->assertStatus(200, $r);
         $this->assertSame(['bob-tag'], $r['json']);
 

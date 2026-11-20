@@ -60,29 +60,31 @@ class TagsController extends ApiController {
 
     /**
      * Suggest tags by its prefix (for jQuery UI autocomplete widget)
+     * @param mixed $username Owner of the requested lists
+     * @param mixed $listId List id or -1 for all lists
      * @return void
      * @throws Exception
      */
-    function getSuggestions(): void
+    function getSuggestions($username, $listId): void
     {
-        $listId = (int)_get('list');
+        if (!$this->resolveTargetUser($username, true)) {
+            return;
+        }
+        $listId = (int)$listId;
         $db = DBConnection::instance();
         $prefix = trim(_get('q'));
         $tagRepo = new TagRepo($db);
 
         if ($listId === -1) {
-            checkWriteAccess(-1);
-            $this->response->data = $tagRepo->getSuggestions(-1, $prefix, 8);
+            checkReadAccess(-1);
+            $publishedOnly = !$this->req->isOwnerOfTarget();
+            $this->response->data = $tagRepo->getSuggestions(-1, $this->req->ownerUserId(), $prefix, 8, $publishedOnly);
             return;
         }
 
         $list = checkAndGetListForRead($listId);
-        if (canWriteToList($list)) {
-            $this->response->data = $tagRepo->getSuggestions($listId, $prefix, 8);
-            return;
-        }
-        if (canCreateInList($list)) {
-            $this->response->data = $tagRepo->getPublicSuggestions((int)$list->userId, $prefix, 8);
+        if (canWriteToList($list) || canCreateInList($list)) {
+            $this->response->data = $tagRepo->getSuggestions($listId, (int)$list->userId, $prefix, 8);
             return;
         }
         denyAccess();
