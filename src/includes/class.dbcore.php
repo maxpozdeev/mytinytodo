@@ -187,7 +187,7 @@ class DBCore
         }
         $ow = 1 + (int)$db->sq("SELECT MAX(ow) FROM {$db->prefix}lists");
         $time = time();
-        $db->dq("INSERT INTO {$db->prefix}lists (uuid,name,ow,d_created,d_edited,taskview) VALUES (?,?,?,?,?,?)",
+        $db->dq("INSERT INTO {$db->prefix}lists (uuid,name,ow,d_created,d_edited,taskview,sorting) VALUES (?,?,?,?,?,?,103)",
                     array(generateUUID(), $name, $ow, $time, $time, 1) );
         $id = $db->lastInsertId();
         return (int)$id;

@@ -175,7 +175,7 @@ if ($ver == '')
         createAllTables($db, $dbtype);  # throws
 
         # create default list
-        $db->ex( "INSERT INTO {$db->prefix}lists (uuid,name,d_created,taskview) VALUES (?,?,?,?)", array(generateUUID(), 'Todo', time(), 1) );
+        $db->ex( "INSERT INTO {$db->prefix}lists (uuid,name,d_created,taskview,sorting) VALUES (?,?,?,?)", array(generateUUID(), 'Todo', time(), 1, 103) );
 
         Config::save();
     }
