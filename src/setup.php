@@ -173,8 +173,8 @@ if ($ver == '')
             array(1, "admin", "admin") );
 
         # create default list
-        $db->ex( "INSERT INTO {$db->prefix}lists (user_id,uuid,name,d_created,taskview) VALUES (?,?,?,?,?)",
-            array(1, generateUUID(), 'Todo', time(), 1) );
+        $db->ex( "INSERT INTO {$db->prefix}lists (user_id,uuid,name,d_created,taskview,sorting) VALUES (?,?,?,?,?,?)",
+            array(1, generateUUID(), 'Todo', time(), 1, 103) );
     }
     else {
         exitMessage("Unknown action");

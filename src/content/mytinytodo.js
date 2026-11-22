@@ -42,7 +42,7 @@ const tabLists = {
         this._lists = {};
         this._length = 0;
         this._order = [];
-        this._alltasks = { id:-1, showCompl:0, sort:3, name:mtt.lang.get('alltasks') };
+        this._alltasks = { id:-1, showCompl:0, sort:103, name:mtt.lang.get('alltasks') };
     },
     length() {
         return this._length;
