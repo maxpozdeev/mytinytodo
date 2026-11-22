@@ -65,14 +65,14 @@ class MTTTitleMarkupConverter implements MTTTitleMarkupInterface
         // make links from text starting with 'www.'
         $title = preg_replace(
             "/(^|\s|>)(www\.([\w\#$%&~\/.\-\+;:=,\?\[\]@]+?))(,|\.|:|)?(?=\s|&quot;|&lt;|&gt;|\"|<|>|$)/iu" ,
-            '$1<a href="http://$2" target="_blank">$2</a>$4' ,
+            '$1<a href="http://$2" target="_blank" rel="noopener">$2</a>$4' ,
             $title
             );
 
-        // make link from text starting with protocol like 'http://'
+        // make link from text starting with protocol like http[s]://, ftp[s]://
         $title = preg_replace(
-            "/(^|\s|>)([a-z]+:\/\/([\w\#$%&~\/.\-\+;:=,\?\[\]@]+?))(,|\.|:|)?(?=\s|&quot;|&lt;|&gt;|\"|<|>|$)/iu" ,
-            '$1<a href="$2" target="_blank">$2</a>$4' ,
+            "/(^|\s|>)((?:https?|ftps?):\/\/([\w\#$%&~\/.\-\+;:=,\?\[\]@]+?))(,|\.|:|)?(?=\s|&quot;|&lt;|&gt;|\"|<|>|$)/iu" ,
+            '$1<a href="$2" target="_blank" rel="noopener">$2</a>$4' ,
             $title
         );
         return $title;
@@ -126,32 +126,37 @@ function markdownToHtml($s, $toExternal = false)
 // Convert note's raw text to html with allowed elements (b,i,u,s and raw urls)
 function mttMarkup_v1($s)
 {
-    //hide allowed elements from escaping
-    $c1 = chr(1);
-    $c2 = chr(2);
-    $s = preg_replace("~<b>([\s\S]*?)</b>~i", "{$c1}b{$c2}\$1{$c1}/b{$c2}", $s);
-    $s = preg_replace("~<i>([\s\S]*?)</i>~i", "{$c1}i{$c2}\$1{$c1}/i{$c2}", $s);
-    $s = preg_replace("~<u>([\s\S]*?)</u>~i", "{$c1}u{$c2}\$1{$c1}/u{$c2}", $s);
-    $s = preg_replace("~<s>([\s\S]*?)</s>~i", "{$c1}s{$c2}\$1{$c1}/s{$c2}", $s);
-    $s = htmlspecialchars($s, ENT_QUOTES); //escape all elements, except above
-    $s = str_replace( [$c1, $c2], ['<','>'], $s ); //unhide
+    // escape everything first, then restore only allowed tags
+    $s = htmlspecialchars($s, ENT_QUOTES);
+
+    foreach (['b', 'i', 'u', 's'] as $tag) {
+        $s = (string)preg_replace_callback(
+            '~&lt;'. $tag. '&gt;([\s\S]*?)&lt;/'. $tag. '&gt;~i',
+            function (array $m) use ($tag): string {
+                return '<'. $tag. '>'. $m[1]. '</'. $tag. '>';
+            },
+            $s
+        );
+    }
+
     $s = nl2br($s);
 
     // make links from text starting with 'www.'
     $s = preg_replace(
         "/(^|\s|>)(www\.([\w\#$%&~\/.\-\+;:=,\?\[\]@]+?))(,|\.|:|)?(?=\s|&quot;|&lt;|&gt;|\"|<|>|$)/iu" ,
-        '$1<a href="http://$2" target="_blank">$2</a>$4' ,
+        '$1<a href="http://$2" target="_blank" rel="noopener">$2</a>$4' ,
         $s
     );
 
-    // make link from text starting with protocol like 'http://'
+    // make link from text starting with protocol like http[s]://, ftp[s]://
+    // only safe schemes are allowed ()
     $s = preg_replace(
-        "/(^|\s|>)([a-z]+:\/\/([\w\#$%&~\/.\-\+;:=,\?\[\]@]+?))(,|\.|:|)?(?=\s|&quot;|&lt;|&gt;|\"|<|>|$)/iu" ,
-        '$1<a href="$2" target="_blank">$2</a>$4' ,
+        "/(^|\s|>)((?:https?|ftps?):\/\/([\w\#$%&~\/.\-\+;:=,\?\[\]@]+?))(,|\.|:|)?(?=\s|&quot;|&lt;|&gt;|\"|<|>|$)/iu" ,
+        '$1<a href="$2" target="_blank" rel="noopener">$2</a>$4' ,
         $s
     );
 
-    return $s;
+    return (string)$s;
 }
 
 // Convert raw title to html with allowed urls
